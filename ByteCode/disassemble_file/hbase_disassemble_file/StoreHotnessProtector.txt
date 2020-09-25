@@ -1,0 +1,351 @@
+Compiled from "StoreHotnessProtector.java"
+public class org.apache.hadoop.hbase.regionserver.throttle.StoreHotnessProtector {
+  public static final java.lang.String PARALLEL_PUT_STORE_THREADS_LIMIT;
+
+  public static final java.lang.String PARALLEL_PREPARE_PUT_STORE_MULTIPLIER;
+
+  public static final java.lang.String PARALLEL_PUT_STORE_THREADS_LIMIT_MIN_COLUMN_COUNT;
+
+  public static final long FIXED_SIZE;
+
+  public org.apache.hadoop.hbase.regionserver.throttle.StoreHotnessProtector(org.apache.hadoop.hbase.regionserver.Region, org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/ConcurrentSkipListMap
+       8: dup
+       9: getstatic     #3                  // Field org/apache/hadoop/hbase/util/Bytes.BYTES_RAWCOMPARATOR:Lorg/apache/hadoop/io/RawComparator;
+      12: invokespecial #4                  // Method java/util/concurrent/ConcurrentSkipListMap."<init>":(Ljava/util/Comparator;)V
+      15: putfield      #5                  // Field preparePutToStoreMap:Ljava/util/Map;
+      18: aload_0
+      19: aload_2
+      20: invokevirtual #6                  // Method init:(Lorg/apache/hadoop/conf/Configuration;)V
+      23: aload_0
+      24: aload_1
+      25: putfield      #7                  // Field region:Lorg/apache/hadoop/hbase/regionserver/Region;
+      28: return
+
+  public void init(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: ldc           #9                  // String hbase.region.store.parallel.put.limit
+       4: bipush        10
+       6: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       9: putfield      #11                 // Field parallelPutToStoreThreadLimit:I
+      12: aload_0
+      13: aload_1
+      14: ldc           #12                 // String hbase.region.store.parallel.prepare.put.multiplier
+      16: iconst_2
+      17: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      20: aload_0
+      21: getfield      #11                 // Field parallelPutToStoreThreadLimit:I
+      24: imul
+      25: putfield      #13                 // Field parallelPreparePutToStoreThreadLimit:I
+      28: aload_0
+      29: aload_1
+      30: ldc           #14                 // String hbase.region.store.parallel.put.limit.min.column.count
+      32: bipush        100
+      34: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      37: putfield      #15                 // Field parallelPutToStoreThreadLimitCheckMinColumnCount:I
+      40: return
+
+  public void update(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #6                  // Method init:(Lorg/apache/hadoop/conf/Configuration;)V
+       5: aload_0
+       6: getfield      #5                  // Field preparePutToStoreMap:Ljava/util/Map;
+       9: invokeinterface #16,  1           // InterfaceMethod java/util/Map.clear:()V
+      14: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+      17: new           #18                 // class java/lang/StringBuilder
+      20: dup
+      21: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      24: ldc           #20                 // String update config:
+      26: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      29: aload_0
+      30: invokevirtual #22                 // Method toString:()Ljava/lang/String;
+      33: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      36: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      39: invokeinterface #24,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      44: return
+
+  public void start(java.util.Map<byte[], java.util.List<org.apache.hadoop.hbase.Cell>>) throws org.apache.hadoop.hbase.RegionTooBusyException;
+    Code:
+       0: aload_0
+       1: invokevirtual #25                 // Method isEnable:()Z
+       4: ifne          8
+       7: return
+       8: aconst_null
+       9: astore_2
+      10: aload_1
+      11: invokeinterface #26,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      16: invokeinterface #27,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      21: astore_3
+      22: aload_3
+      23: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      28: ifeq          322
+      31: aload_3
+      32: invokeinterface #29,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      37: checkcast     #30                 // class java/util/Map$Entry
+      40: astore        4
+      42: aload_0
+      43: getfield      #7                  // Field region:Lorg/apache/hadoop/hbase/regionserver/Region;
+      46: aload         4
+      48: invokeinterface #31,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      53: checkcast     #32                 // class "[B"
+      56: invokeinterface #33,  2           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getStore:([B)Lorg/apache/hadoop/hbase/regionserver/Store;
+      61: astore        5
+      63: aload         5
+      65: ifnull        22
+      68: aload         4
+      70: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      75: ifnonnull     81
+      78: goto          22
+      81: aload         4
+      83: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      88: checkcast     #35                 // class java/util/List
+      91: invokeinterface #36,  1           // InterfaceMethod java/util/List.size:()I
+      96: aload_0
+      97: getfield      #15                 // Field parallelPutToStoreThreadLimitCheckMinColumnCount:I
+     100: if_icmple     319
+     103: aload_0
+     104: getfield      #5                  // Field preparePutToStoreMap:Ljava/util/Map;
+     107: aload         4
+     109: invokeinterface #31,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     114: new           #37                 // class java/util/concurrent/atomic/AtomicInteger
+     117: dup
+     118: invokespecial #38                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":()V
+     121: invokeinterface #39,  3           // InterfaceMethod java/util/Map.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     126: pop
+     127: aload_0
+     128: getfield      #5                  // Field preparePutToStoreMap:Ljava/util/Map;
+     131: aload         4
+     133: invokeinterface #31,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     138: invokeinterface #40,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     143: checkcast     #37                 // class java/util/concurrent/atomic/AtomicInteger
+     146: astore        6
+     148: aload         6
+     150: ifnonnull     181
+     153: new           #37                 // class java/util/concurrent/atomic/AtomicInteger
+     156: dup
+     157: invokespecial #38                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":()V
+     160: astore        6
+     162: aload_0
+     163: getfield      #5                  // Field preparePutToStoreMap:Ljava/util/Map;
+     166: aload         4
+     168: invokeinterface #31,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     173: aload         6
+     175: invokeinterface #39,  3           // InterfaceMethod java/util/Map.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     180: pop
+     181: aload         6
+     183: invokevirtual #41                 // Method java/util/concurrent/atomic/AtomicInteger.incrementAndGet:()I
+     186: istore        7
+     188: aload         5
+     190: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Store.getCurrentParallelPutCount:()I
+     195: aload_0
+     196: getfield      #11                 // Field parallelPutToStoreThreadLimit:I
+     199: if_icmpgt     211
+     202: iload         7
+     204: aload_0
+     205: getfield      #13                 // Field parallelPreparePutToStoreThreadLimit:I
+     208: if_icmple     255
+     211: aload_2
+     212: ifnonnull     225
+     215: aload         5
+     217: invokeinterface #43,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Store.getColumnFamilyName:()Ljava/lang/String;
+     222: goto          254
+     225: new           #18                 // class java/lang/StringBuilder
+     228: dup
+     229: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     232: aload_2
+     233: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     236: ldc           #44                 // String ,
+     238: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     241: aload         5
+     243: invokeinterface #43,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Store.getColumnFamilyName:()Ljava/lang/String;
+     248: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     251: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     254: astore_2
+     255: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+     258: invokeinterface #45,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     263: ifeq          319
+     266: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+     269: new           #18                 // class java/lang/StringBuilder
+     272: dup
+     273: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     276: aload         5
+     278: invokeinterface #43,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Store.getColumnFamilyName:()Ljava/lang/String;
+     283: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     286: ldc           #46                 // String : preparePutCount=
+     288: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     291: iload         7
+     293: invokevirtual #47                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     296: ldc           #48                 // String ; currentParallelPutCount=
+     298: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     301: aload         5
+     303: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Store.getCurrentParallelPutCount:()I
+     308: invokevirtual #47                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     311: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     314: invokeinterface #49,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     319: goto          22
+     322: aload_2
+     323: ifnull        414
+     326: new           #18                 // class java/lang/StringBuilder
+     329: dup
+     330: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     333: ldc           #50                 // String StoreTooBusy,
+     335: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     338: aload_0
+     339: getfield      #7                  // Field region:Lorg/apache/hadoop/hbase/regionserver/Region;
+     342: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     347: invokeinterface #52,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+     352: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     355: ldc           #53                 // String :
+     357: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     360: aload_2
+     361: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     364: ldc           #54                 // String  Above parallelPutToStoreThreadLimit(
+     366: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     369: aload_0
+     370: getfield      #11                 // Field parallelPutToStoreThreadLimit:I
+     373: invokevirtual #47                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     376: ldc           #55                 // String )
+     378: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     381: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     384: astore_3
+     385: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+     388: invokeinterface #45,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     393: ifeq          405
+     396: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+     399: aload_3
+     400: invokeinterface #49,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     405: new           #56                 // class org/apache/hadoop/hbase/RegionTooBusyException
+     408: dup
+     409: aload_3
+     410: invokespecial #57                 // Method org/apache/hadoop/hbase/RegionTooBusyException."<init>":(Ljava/lang/String;)V
+     413: athrow
+     414: return
+
+  public void finish(java.util.Map<byte[], java.util.List<org.apache.hadoop.hbase.Cell>>);
+    Code:
+       0: aload_0
+       1: invokevirtual #25                 // Method isEnable:()Z
+       4: ifne          8
+       7: return
+       8: aload_1
+       9: invokeinterface #26,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      14: invokeinterface #27,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      19: astore_2
+      20: aload_2
+      21: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          139
+      29: aload_2
+      30: invokeinterface #29,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #30                 // class java/util/Map$Entry
+      38: astore_3
+      39: aload_0
+      40: getfield      #7                  // Field region:Lorg/apache/hadoop/hbase/regionserver/Region;
+      43: aload_3
+      44: invokeinterface #31,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      49: checkcast     #32                 // class "[B"
+      52: invokeinterface #33,  2           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getStore:([B)Lorg/apache/hadoop/hbase/regionserver/Store;
+      57: astore        4
+      59: aload         4
+      61: ifnull        20
+      64: aload_3
+      65: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      70: ifnonnull     76
+      73: goto          20
+      76: aload_3
+      77: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      82: checkcast     #35                 // class java/util/List
+      85: invokeinterface #36,  1           // InterfaceMethod java/util/List.size:()I
+      90: aload_0
+      91: getfield      #15                 // Field parallelPutToStoreThreadLimitCheckMinColumnCount:I
+      94: if_icmple     136
+      97: aload_0
+      98: getfield      #5                  // Field preparePutToStoreMap:Ljava/util/Map;
+     101: aload_3
+     102: invokeinterface #31,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     107: invokeinterface #40,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     112: checkcast     #37                 // class java/util/concurrent/atomic/AtomicInteger
+     115: astore        5
+     117: aload         5
+     119: ifnull        136
+     122: aload         5
+     124: invokevirtual #58                 // Method java/util/concurrent/atomic/AtomicInteger.decrementAndGet:()I
+     127: ifge          136
+     130: aload         5
+     132: invokevirtual #41                 // Method java/util/concurrent/atomic/AtomicInteger.incrementAndGet:()I
+     135: pop
+     136: goto          20
+     139: return
+
+  public java.lang.String toString();
+    Code:
+       0: new           #18                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #59                 // String StoreHotnessProtector, parallelPutToStoreThreadLimit=
+       9: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: getfield      #11                 // Field parallelPutToStoreThreadLimit:I
+      16: invokevirtual #47                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      19: ldc           #60                 // String  ; minColumnNum=
+      21: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: aload_0
+      25: getfield      #15                 // Field parallelPutToStoreThreadLimitCheckMinColumnCount:I
+      28: invokevirtual #47                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      31: ldc           #61                 // String  ; preparePutThreadLimit=
+      33: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      36: aload_0
+      37: getfield      #13                 // Field parallelPreparePutToStoreThreadLimit:I
+      40: invokevirtual #47                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      43: ldc           #62                 // String  ; hotProtect now
+      45: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      48: aload_0
+      49: invokevirtual #25                 // Method isEnable:()Z
+      52: ifeq          60
+      55: ldc           #63                 // String enable
+      57: goto          62
+      60: ldc           #64                 // String disable
+      62: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      65: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      68: areturn
+
+  public boolean isEnable();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field parallelPutToStoreThreadLimit:I
+       4: ifle          11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+
+  java.util.Map<byte[], java.util.concurrent.atomic.AtomicInteger> getPreparePutToStoreMap();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field preparePutToStoreMap:Ljava/util/Map;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #8                  // class org/apache/hadoop/hbase/regionserver/throttle/StoreHotnessProtector
+       2: invokestatic  #65                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+       8: getstatic     #66                 // Field org/apache/hadoop/hbase/util/ClassSize.OBJECT:I
+      11: iconst_2
+      12: getstatic     #67                 // Field org/apache/hadoop/hbase/util/ClassSize.REFERENCE:I
+      15: imul
+      16: iadd
+      17: bipush        12
+      19: iadd
+      20: invokestatic  #69                 // Method org/apache/hadoop/hbase/util/ClassSize.align:(I)I
+      23: i2l
+      24: putstatic     #70                 // Field FIXED_SIZE:J
+      27: return
+}

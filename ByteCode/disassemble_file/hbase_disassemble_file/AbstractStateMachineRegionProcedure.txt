@@ -1,0 +1,175 @@
+Compiled from "AbstractStateMachineRegionProcedure.java"
+public abstract class org.apache.hadoop.hbase.master.procedure.AbstractStateMachineRegionProcedure<TState> extends org.apache.hadoop.hbase.master.procedure.AbstractStateMachineTableProcedure<TState> {
+  protected org.apache.hadoop.hbase.master.procedure.AbstractStateMachineRegionProcedure(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv, org.apache.hadoop.hbase.client.RegionInfo);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method org/apache/hadoop/hbase/master/procedure/AbstractStateMachineTableProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;)V
+       5: aload_0
+       6: aload_2
+       7: putfield      #2                  // Field hri:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      10: return
+
+  protected org.apache.hadoop.hbase.master.procedure.AbstractStateMachineRegionProcedure();
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method org/apache/hadoop/hbase/master/procedure/AbstractStateMachineTableProcedure."<init>":()V
+       4: return
+
+  public org.apache.hadoop.hbase.client.RegionInfo getRegion();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field hri:Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: areturn
+
+  protected void setRegion(org.apache.hadoop.hbase.client.RegionInfo);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #2                  // Field hri:Lorg/apache/hadoop/hbase/client/RegionInfo;
+       5: return
+
+  public org.apache.hadoop.hbase.TableName getTableName();
+    Code:
+       0: aload_0
+       1: invokevirtual #4                  // Method getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+       9: areturn
+
+  public abstract org.apache.hadoop.hbase.master.procedure.TableProcedureInterface$TableOperationType getTableOperationType();
+
+  public void toStringClassDetails(java.lang.StringBuilder);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #6                  // Method org/apache/hadoop/hbase/master/procedure/AbstractStateMachineTableProcedure.toStringClassDetails:(Ljava/lang/StringBuilder;)V
+       5: aload_1
+       6: ldc           #7                  // String , region=
+       8: invokevirtual #8                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      11: aload_0
+      12: invokevirtual #4                  // Method getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      15: invokeinterface #9,  1            // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getShortNameToLog:()Ljava/lang/String;
+      20: invokevirtual #8                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      23: pop
+      24: return
+
+  protected void checkTableModifiable(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #10                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getMasterServices:()Lorg/apache/hadoop/hbase/master/MasterServices;
+       4: invokeinterface #11,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+       9: aload_0
+      10: invokevirtual #12                 // Method getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      13: invokestatic  #13                 // Method org/apache/hadoop/hbase/MetaTableAccessor.tableExists:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;)Z
+      16: ifne          31
+      19: new           #14                 // class org/apache/hadoop/hbase/TableNotFoundException
+      22: dup
+      23: aload_0
+      24: invokevirtual #12                 // Method getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      27: invokespecial #15                 // Method org/apache/hadoop/hbase/TableNotFoundException."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      30: athrow
+      31: return
+
+  protected boolean holdLock(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv);
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  protected org.apache.hadoop.hbase.procedure2.Procedure$LockState acquireLock(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv);
+    Code:
+       0: aload_1
+       1: invokevirtual #16                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getProcedureScheduler:()Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler;
+       4: aload_0
+       5: aload_0
+       6: invokevirtual #12                 // Method getTableName:()Lorg/apache/hadoop/hbase/TableName;
+       9: iconst_1
+      10: anewarray     #17                 // class org/apache/hadoop/hbase/client/RegionInfo
+      13: dup
+      14: iconst_0
+      15: aload_0
+      16: invokevirtual #4                  // Method getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      19: aastore
+      20: invokevirtual #18                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler.waitRegions:(Lorg/apache/hadoop/hbase/procedure2/Procedure;Lorg/apache/hadoop/hbase/TableName;[Lorg/apache/hadoop/hbase/client/RegionInfo;)Z
+      23: ifeq          30
+      26: getstatic     #19                 // Field org/apache/hadoop/hbase/procedure2/Procedure$LockState.LOCK_EVENT_WAIT:Lorg/apache/hadoop/hbase/procedure2/Procedure$LockState;
+      29: areturn
+      30: getstatic     #20                 // Field org/apache/hadoop/hbase/procedure2/Procedure$LockState.LOCK_ACQUIRED:Lorg/apache/hadoop/hbase/procedure2/Procedure$LockState;
+      33: areturn
+
+  protected void releaseLock(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv);
+    Code:
+       0: aload_1
+       1: invokevirtual #16                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getProcedureScheduler:()Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler;
+       4: aload_0
+       5: aload_0
+       6: invokevirtual #12                 // Method getTableName:()Lorg/apache/hadoop/hbase/TableName;
+       9: iconst_1
+      10: anewarray     #17                 // class org/apache/hadoop/hbase/client/RegionInfo
+      13: dup
+      14: iconst_0
+      15: aload_0
+      16: invokevirtual #4                  // Method getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      19: aastore
+      20: invokevirtual #21                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler.wakeRegions:(Lorg/apache/hadoop/hbase/procedure2/Procedure;Lorg/apache/hadoop/hbase/TableName;[Lorg/apache/hadoop/hbase/client/RegionInfo;)V
+      23: return
+
+  protected void setFailure(java.lang.Throwable);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: invokevirtual #22                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       5: invokevirtual #23                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+       8: aload_1
+       9: invokespecial #24                 // Method org/apache/hadoop/hbase/master/procedure/AbstractStateMachineTableProcedure.setFailure:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      12: return
+
+  protected void serializeStateData(org.apache.hadoop.hbase.procedure2.ProcedureStateSerializer) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #25                 // Method org/apache/hadoop/hbase/master/procedure/AbstractStateMachineTableProcedure.serializeStateData:(Lorg/apache/hadoop/hbase/procedure2/ProcedureStateSerializer;)V
+       5: aload_1
+       6: aload_0
+       7: invokevirtual #4                  // Method getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      10: invokestatic  #26                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toRegionInfo:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$RegionInfo;
+      13: invokeinterface #27,  2           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureStateSerializer.serialize:(Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;)V
+      18: return
+
+  protected void deserializeStateData(org.apache.hadoop.hbase.procedure2.ProcedureStateSerializer) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #28                 // Method org/apache/hadoop/hbase/master/procedure/AbstractStateMachineTableProcedure.deserializeStateData:(Lorg/apache/hadoop/hbase/procedure2/ProcedureStateSerializer;)V
+       5: aload_0
+       6: aload_1
+       7: ldc           #29                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$RegionInfo
+       9: invokeinterface #30,  2           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureStateSerializer.deserialize:(Ljava/lang/Class;)Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;
+      14: checkcast     #29                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$RegionInfo
+      17: invokestatic  #31                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toRegionInfo:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+      20: putfield      #2                  // Field hri:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      23: return
+
+  protected boolean holdLock(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #32                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+       5: invokevirtual #33                 // Method holdLock:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;)Z
+       8: ireturn
+
+  protected void releaseLock(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #32                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+       5: invokevirtual #34                 // Method releaseLock:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;)V
+       8: return
+
+  protected org.apache.hadoop.hbase.procedure2.Procedure$LockState acquireLock(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #32                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+       5: invokevirtual #35                 // Method acquireLock:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;)Lorg/apache/hadoop/hbase/procedure2/Procedure$LockState;
+       8: areturn
+}

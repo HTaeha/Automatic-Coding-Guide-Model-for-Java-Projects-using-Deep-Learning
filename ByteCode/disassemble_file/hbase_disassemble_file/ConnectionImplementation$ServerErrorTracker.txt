@@ -1,0 +1,89 @@
+Compiled from "ConnectionImplementation.java"
+class org.apache.hadoop.hbase.client.ConnectionImplementation$ServerErrorTracker {
+  public org.apache.hadoop.hbase.client.ConnectionImplementation$ServerErrorTracker(long, int);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #4                  // Field errorsByServer:Ljava/util/concurrent/ConcurrentMap;
+      15: aload_0
+      16: iload_3
+      17: putfield      #5                  // Field maxTries:I
+      20: aload_0
+      21: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      24: lload_1
+      25: ladd
+      26: putfield      #7                  // Field canRetryUntil:J
+      29: aload_0
+      30: new           #8                  // class java/util/Date
+      33: dup
+      34: invokespecial #9                  // Method java/util/Date."<init>":()V
+      37: invokevirtual #10                 // Method java/util/Date.getTime:()J
+      40: putfield      #11                 // Field startTrackingTime:J
+      43: return
+
+  boolean canTryMore(int);
+    Code:
+       0: iload_1
+       1: aload_0
+       2: getfield      #5                  // Field maxTries:I
+       5: if_icmplt     27
+       8: aload_0
+       9: getfield      #5                  // Field maxTries:I
+      12: iconst_1
+      13: if_icmple     31
+      16: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      19: aload_0
+      20: getfield      #7                  // Field canRetryUntil:J
+      23: lcmp
+      24: ifge          31
+      27: iconst_1
+      28: goto          32
+      31: iconst_0
+      32: ireturn
+
+  long calculateBackoffTime(org.apache.hadoop.hbase.ServerName, long);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field errorsByServer:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #12,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #13                 // class org/apache/hadoop/hbase/client/ConnectionImplementation$ServerErrorTracker$ServerErrors
+      13: astore        6
+      15: aload         6
+      17: ifnull        40
+      20: lload_2
+      21: iconst_0
+      22: aload         6
+      24: invokevirtual #14                 // Method org/apache/hadoop/hbase/client/ConnectionImplementation$ServerErrorTracker$ServerErrors.getCount:()I
+      27: iconst_1
+      28: isub
+      29: invokestatic  #15                 // Method java/lang/Math.max:(II)I
+      32: invokestatic  #16                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.getPauseTime:(JI)J
+      35: lstore        4
+      37: goto          43
+      40: lconst_0
+      41: lstore        4
+      43: lload         4
+      45: lreturn
+
+  void reportServerError(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field errorsByServer:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokedynamic #17,  0             // InvokeDynamic #0:get:()Ljava/util/function/Supplier;
+      10: invokestatic  #18                 // Method org/apache/hadoop/hbase/util/ConcurrentMapUtils.computeIfAbsent:(Ljava/util/concurrent/ConcurrentMap;Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;
+      13: checkcast     #13                 // class org/apache/hadoop/hbase/client/ConnectionImplementation$ServerErrorTracker$ServerErrors
+      16: invokevirtual #19                 // Method org/apache/hadoop/hbase/client/ConnectionImplementation$ServerErrorTracker$ServerErrors.addError:()V
+      19: return
+
+  long getStartTrackingTime();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field startTrackingTime:J
+       4: lreturn
+}

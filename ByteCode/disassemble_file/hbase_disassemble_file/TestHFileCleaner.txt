@@ -1,0 +1,906 @@
+Compiled from "TestHFileCleaner.java"
+public class org.apache.hadoop.hbase.master.cleaner.TestHFileCleaner {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.apache.hadoop.hbase.master.cleaner.TestHFileCleaner();
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void setupCluster() throws java.lang.Exception;
+    Code:
+       0: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: iconst_1
+       4: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniDFSCluster:(I)Lorg/apache/hadoop/hdfs/MiniDFSCluster;
+       7: pop
+       8: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      11: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      14: invokestatic  #5                  // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore.initChorePool:(Lorg/apache/hadoop/conf/Configuration;)V
+      17: return
+
+  public static void shutdownCluster() throws java.io.IOException;
+    Code:
+       0: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniDFSCluster:()V
+       6: return
+
+  public void testTTLCleaner() throws java.io.IOException, java.lang.InterruptedException;
+    Code:
+       0: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #7                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDFSCluster:()Lorg/apache/hadoop/hdfs/MiniDFSCluster;
+       6: invokevirtual #8                  // Method org/apache/hadoop/hdfs/MiniDFSCluster.getFileSystem:()Lorg/apache/hadoop/hdfs/DistributedFileSystem;
+       9: astore_1
+      10: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      13: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:()Lorg/apache/hadoop/fs/Path;
+      16: astore_2
+      17: new           #10                 // class org/apache/hadoop/fs/Path
+      20: dup
+      21: aload_2
+      22: ldc           #11                 // String file
+      24: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      27: astore_3
+      28: aload_1
+      29: aload_3
+      30: invokevirtual #13                 // Method org/apache/hadoop/fs/FileSystem.createNewFile:(Lorg/apache/hadoop/fs/Path;)Z
+      33: pop
+      34: invokestatic  #14                 // Method java/lang/System.currentTimeMillis:()J
+      37: lstore        4
+      39: ldc           #15                 // String Test file not created!
+      41: aload_1
+      42: aload_3
+      43: invokevirtual #16                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      46: invokestatic  #17                 // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+      49: new           #18                 // class org/apache/hadoop/hbase/master/cleaner/TimeToLiveHFileCleaner
+      52: dup
+      53: invokespecial #19                 // Method org/apache/hadoop/hbase/master/cleaner/TimeToLiveHFileCleaner."<init>":()V
+      56: astore        6
+      58: aload_1
+      59: aload_3
+      60: lload         4
+      62: ldc2_w        #20                 // long 100l
+      65: lsub
+      66: ldc2_w        #22                 // long -1l
+      69: invokevirtual #24                 // Method org/apache/hadoop/fs/FileSystem.setTimes:(Lorg/apache/hadoop/fs/Path;JJ)V
+      72: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      75: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      78: astore        7
+      80: aload         7
+      82: ldc           #25                 // String hbase.master.hfilecleaner.ttl
+      84: ldc2_w        #20                 // long 100l
+      87: invokevirtual #26                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+      90: aload         6
+      92: aload         7
+      94: invokevirtual #27                 // Method org/apache/hadoop/hbase/master/cleaner/TimeToLiveHFileCleaner.setConf:(Lorg/apache/hadoop/conf/Configuration;)V
+      97: new           #28                 // class java/lang/StringBuilder
+     100: dup
+     101: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     104: ldc           #30                 // String File not set deletable - check mod time:
+     106: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     109: aload_0
+     110: aload_3
+     111: aload_1
+     112: invokespecial #32                 // Method getFileStats:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/FileSystem;)Ljava/lang/String;
+     115: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     118: ldc           #33                 // String  with create time:
+     120: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     123: lload         4
+     125: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     128: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     131: aload         6
+     133: aload_1
+     134: aload_3
+     135: invokevirtual #36                 // Method org/apache/hadoop/fs/FileSystem.getFileStatus:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/FileStatus;
+     138: invokevirtual #37                 // Method org/apache/hadoop/hbase/master/cleaner/TimeToLiveHFileCleaner.isFileDeletable:(Lorg/apache/hadoop/fs/FileStatus;)Z
+     141: invokestatic  #17                 // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     144: return
+
+  public void testHFileCleaning() throws java.lang.Exception;
+    Code:
+       0: invokestatic  #44                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.getDelegate:()Lorg/apache/hadoop/hbase/util/EnvironmentEdge;
+       3: astore_1
+       4: ldc           #45                 // String someHFileThatWouldBeAUUID
+       6: astore_2
+       7: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      10: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      13: astore_3
+      14: ldc2_w        #46                 // long 2000l
+      17: lstore        4
+      19: aload_3
+      20: ldc           #49                 // String hbase.master.hfilecleaner.plugins
+      22: ldc           #50                 // String org.apache.hadoop.hbase.master.cleaner.TimeToLiveHFileCleaner
+      24: invokevirtual #51                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      27: aload_3
+      28: ldc           #25                 // String hbase.master.hfilecleaner.ttl
+      30: lload         4
+      32: invokevirtual #26                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+      35: new           #52                 // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer
+      38: dup
+      39: invokespecial #53                 // Method org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer."<init>":()V
+      42: astore        6
+      44: new           #10                 // class org/apache/hadoop/fs/Path
+      47: dup
+      48: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      51: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:()Lorg/apache/hadoop/fs/Path;
+      54: ldc           #55                 // String archive
+      56: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      59: astore        7
+      61: aload_3
+      62: invokestatic  #56                 // Method org/apache/hadoop/fs/FileSystem.get:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+      65: astore        8
+      67: new           #48                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner
+      70: dup
+      71: sipush        1000
+      74: aload         6
+      76: aload_3
+      77: aload         8
+      79: aload         7
+      81: invokespecial #57                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner."<init>":(ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+      84: astore        9
+      86: invokestatic  #14                 // Method java/lang/System.currentTimeMillis:()J
+      89: lstore        10
+      91: aload         8
+      93: aload         7
+      95: iconst_1
+      96: invokevirtual #58                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+      99: pop
+     100: aload         8
+     102: aload         7
+     104: invokevirtual #59                 // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+     107: pop
+     108: aload         8
+     110: new           #10                 // class org/apache/hadoop/fs/Path
+     113: dup
+     114: aload         7
+     116: ldc           #60                 // String dfd-dfd
+     118: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     121: invokevirtual #13                 // Method org/apache/hadoop/fs/FileSystem.createNewFile:(Lorg/apache/hadoop/fs/Path;)Z
+     124: pop
+     125: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     128: new           #28                 // class java/lang/StringBuilder
+     131: dup
+     132: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     135: ldc           #62                 // String Now is:
+     137: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     140: lload         10
+     142: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     145: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     148: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     153: iconst_1
+     154: istore        12
+     156: iload         12
+     158: bipush        32
+     160: if_icmpge     267
+     163: new           #10                 // class org/apache/hadoop/fs/Path
+     166: dup
+     167: aload         7
+     169: new           #28                 // class java/lang/StringBuilder
+     172: dup
+     173: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     176: aload_2
+     177: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     180: ldc           #64                 // String .
+     182: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     185: lload         10
+     187: iload         12
+     189: i2l
+     190: ladd
+     191: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     194: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     197: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     200: astore        13
+     202: aload         8
+     204: aload         13
+     206: invokevirtual #13                 // Method org/apache/hadoop/fs/FileSystem.createNewFile:(Lorg/apache/hadoop/fs/Path;)Z
+     209: pop
+     210: aload         8
+     212: aload         13
+     214: lload         10
+     216: lload         4
+     218: lsub
+     219: lconst_1
+     220: lsub
+     221: ldc2_w        #22                 // long -1l
+     224: invokevirtual #24                 // Method org/apache/hadoop/fs/FileSystem.setTimes:(Lorg/apache/hadoop/fs/Path;JJ)V
+     227: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     230: new           #28                 // class java/lang/StringBuilder
+     233: dup
+     234: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     237: ldc           #65                 // String Creating
+     239: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     242: aload_0
+     243: aload         13
+     245: aload         8
+     247: invokespecial #32                 // Method getFileStats:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/FileSystem;)Ljava/lang/String;
+     250: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     253: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     256: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     261: iinc          12, 1
+     264: goto          156
+     267: new           #10                 // class org/apache/hadoop/fs/Path
+     270: dup
+     271: aload         7
+     273: new           #28                 // class java/lang/StringBuilder
+     276: dup
+     277: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     280: aload_2
+     281: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     284: ldc           #66                 // String .00000000000
+     286: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     289: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     292: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     295: astore        12
+     297: aload         8
+     299: aload         12
+     301: invokevirtual #13                 // Method org/apache/hadoop/fs/FileSystem.createNewFile:(Lorg/apache/hadoop/fs/Path;)Z
+     304: pop
+     305: aload         8
+     307: aload         12
+     309: lload         10
+     311: lload         4
+     313: ldc2_w        #67                 // long 2l
+     316: ldiv
+     317: lsub
+     318: ldc2_w        #22                 // long -1l
+     321: invokevirtual #24                 // Method org/apache/hadoop/fs/FileSystem.setTimes:(Lorg/apache/hadoop/fs/Path;JJ)V
+     324: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     327: new           #28                 // class java/lang/StringBuilder
+     330: dup
+     331: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     334: ldc           #65                 // String Creating
+     336: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     339: aload_0
+     340: aload         12
+     342: aload         8
+     344: invokespecial #32                 // Method getFileStats:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/FileSystem;)Ljava/lang/String;
+     347: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     350: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     353: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     358: aload         8
+     360: aload         7
+     362: invokevirtual #69                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+     365: astore        13
+     367: aload         13
+     369: arraylength
+     370: istore        14
+     372: iconst_0
+     373: istore        15
+     375: iload         15
+     377: iload         14
+     379: if_icmpge     411
+     382: aload         13
+     384: iload         15
+     386: aaload
+     387: astore        16
+     389: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     392: aload         16
+     394: invokevirtual #70                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     397: invokevirtual #71                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     400: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     405: iinc          15, 1
+     408: goto          375
+     411: ldc2_w        #72                 // long 33l
+     414: aload         8
+     416: aload         7
+     418: invokevirtual #69                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+     421: arraylength
+     422: i2l
+     423: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     426: new           #75                 // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$1
+     429: dup
+     430: aload_0
+     431: lload         10
+     433: invokespecial #76                 // Method org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$1."<init>":(Lorg/apache/hadoop/hbase/master/cleaner/TestHFileCleaner;J)V
+     436: astore        13
+     438: aload         13
+     440: invokestatic  #77                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.injectEdge:(Lorg/apache/hadoop/hbase/util/EnvironmentEdge;)V
+     443: aload         9
+     445: invokevirtual #78                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.chore:()V
+     448: lconst_1
+     449: aload         8
+     451: aload         7
+     453: invokevirtual #69                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+     456: arraylength
+     457: i2l
+     458: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     461: aload         8
+     463: aload         7
+     465: invokevirtual #69                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+     468: astore        14
+     470: aload         14
+     472: arraylength
+     473: istore        15
+     475: iconst_0
+     476: istore        16
+     478: iload         16
+     480: iload         15
+     482: if_icmpge     532
+     485: aload         14
+     487: iload         16
+     489: aaload
+     490: astore        17
+     492: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     495: new           #28                 // class java/lang/StringBuilder
+     498: dup
+     499: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     502: ldc           #79                 // String Kept hfiles:
+     504: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     507: aload         17
+     509: invokevirtual #70                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     512: invokevirtual #80                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     515: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     518: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     521: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     526: iinc          16, 1
+     529: goto          478
+     532: aload_1
+     533: invokestatic  #77                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.injectEdge:(Lorg/apache/hadoop/hbase/util/EnvironmentEdge;)V
+     536: return
+
+  public void testRemovesEmptyDirectories() throws java.lang.Exception;
+    Code:
+       0: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: astore_1
+       7: aload_1
+       8: ldc           #49                 // String hbase.master.hfilecleaner.plugins
+      10: iconst_1
+      11: anewarray     #81                 // class java/lang/String
+      14: dup
+      15: iconst_0
+      16: ldc           #82                 // String
+      18: aastore
+      19: invokevirtual #83                 // Method org/apache/hadoop/conf/Configuration.setStrings:(Ljava/lang/String;[Ljava/lang/String;)V
+      22: new           #52                 // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer
+      25: dup
+      26: invokespecial #53                 // Method org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer."<init>":()V
+      29: astore_2
+      30: new           #10                 // class org/apache/hadoop/fs/Path
+      33: dup
+      34: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      37: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:()Lorg/apache/hadoop/fs/Path;
+      40: ldc           #55                 // String archive
+      42: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      45: astore_3
+      46: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      49: invokevirtual #7                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDFSCluster:()Lorg/apache/hadoop/hdfs/MiniDFSCluster;
+      52: invokevirtual #8                  // Method org/apache/hadoop/hdfs/MiniDFSCluster.getFileSystem:()Lorg/apache/hadoop/hdfs/DistributedFileSystem;
+      55: astore        4
+      57: new           #48                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner
+      60: dup
+      61: sipush        1000
+      64: aload_2
+      65: aload_1
+      66: aload         4
+      68: aload_3
+      69: invokespecial #57                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner."<init>":(ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+      72: astore        5
+      74: new           #10                 // class org/apache/hadoop/fs/Path
+      77: dup
+      78: aload_3
+      79: ldc           #84                 // String table
+      81: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      84: astore        6
+      86: new           #10                 // class org/apache/hadoop/fs/Path
+      89: dup
+      90: aload         6
+      92: ldc           #85                 // String regionsomthing
+      94: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      97: astore        7
+      99: new           #10                 // class org/apache/hadoop/fs/Path
+     102: dup
+     103: aload         7
+     105: ldc           #86                 // String fam
+     107: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     110: astore        8
+     112: new           #10                 // class org/apache/hadoop/fs/Path
+     115: dup
+     116: aload         8
+     118: ldc           #87                 // String file12345
+     120: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     123: astore        9
+     125: aload         4
+     127: aload         8
+     129: invokevirtual #59                 // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+     132: pop
+     133: aload         4
+     135: aload         8
+     137: invokevirtual #16                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     140: ifne          171
+     143: new           #88                 // class java/lang/RuntimeException
+     146: dup
+     147: new           #28                 // class java/lang/StringBuilder
+     150: dup
+     151: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     154: ldc           #89                 // String Couldn't create test family:
+     156: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     159: aload         8
+     161: invokevirtual #39                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     164: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     167: invokespecial #90                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     170: athrow
+     171: aload         4
+     173: aload         9
+     175: invokevirtual #91                 // Method org/apache/hadoop/fs/FileSystem.create:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/FSDataOutputStream;
+     178: invokevirtual #92                 // Method org/apache/hadoop/fs/FSDataOutputStream.close:()V
+     181: aload         4
+     183: aload         9
+     185: invokevirtual #16                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     188: ifne          219
+     191: new           #88                 // class java/lang/RuntimeException
+     194: dup
+     195: new           #28                 // class java/lang/StringBuilder
+     198: dup
+     199: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     202: ldc           #93                 // String Test file didn't get created:
+     204: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     207: aload         9
+     209: invokevirtual #39                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     212: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     215: invokespecial #90                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     218: athrow
+     219: aload         5
+     221: invokevirtual #78                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.chore:()V
+     224: ldc           #94                 // String family directory not removed for empty directory
+     226: aload         4
+     228: aload         8
+     230: invokevirtual #16                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     233: invokestatic  #95                 // Method org/junit/Assert.assertFalse:(Ljava/lang/String;Z)V
+     236: ldc           #96                 // String region directory not removed for empty directory
+     238: aload         4
+     240: aload         7
+     242: invokevirtual #16                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     245: invokestatic  #95                 // Method org/junit/Assert.assertFalse:(Ljava/lang/String;Z)V
+     248: ldc           #97                 // String table directory not removed for empty directory
+     250: aload         4
+     252: aload         6
+     254: invokevirtual #16                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     257: invokestatic  #95                 // Method org/junit/Assert.assertFalse:(Ljava/lang/String;Z)V
+     260: ldc           #98                 // String archive directory
+     262: aload         4
+     264: aload_3
+     265: invokevirtual #16                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     268: invokestatic  #17                 // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     271: return
+
+  public void testThreadCleanup() throws java.lang.Exception;
+    Code:
+       0: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: astore_1
+       7: aload_1
+       8: ldc           #49                 // String hbase.master.hfilecleaner.plugins
+      10: iconst_1
+      11: anewarray     #81                 // class java/lang/String
+      14: dup
+      15: iconst_0
+      16: ldc           #82                 // String
+      18: aastore
+      19: invokevirtual #83                 // Method org/apache/hadoop/conf/Configuration.setStrings:(Ljava/lang/String;[Ljava/lang/String;)V
+      22: new           #52                 // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer
+      25: dup
+      26: invokespecial #53                 // Method org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer."<init>":()V
+      29: astore_2
+      30: new           #10                 // class org/apache/hadoop/fs/Path
+      33: dup
+      34: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      37: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:()Lorg/apache/hadoop/fs/Path;
+      40: ldc           #55                 // String archive
+      42: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      45: astore_3
+      46: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      49: invokevirtual #7                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDFSCluster:()Lorg/apache/hadoop/hdfs/MiniDFSCluster;
+      52: invokevirtual #8                  // Method org/apache/hadoop/hdfs/MiniDFSCluster.getFileSystem:()Lorg/apache/hadoop/hdfs/DistributedFileSystem;
+      55: astore        4
+      57: new           #48                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner
+      60: dup
+      61: sipush        1000
+      64: aload_2
+      65: aload_1
+      66: aload         4
+      68: aload_3
+      69: invokespecial #57                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner."<init>":(ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+      72: astore        5
+      74: aload         4
+      76: aload_3
+      77: iconst_1
+      78: invokevirtual #58                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+      81: pop
+      82: aload         4
+      84: aload_3
+      85: invokevirtual #59                 // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+      88: pop
+      89: aload         4
+      91: new           #10                 // class org/apache/hadoop/fs/Path
+      94: dup
+      95: aload_3
+      96: ldc           #60                 // String dfd-dfd
+      98: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     101: invokevirtual #13                 // Method org/apache/hadoop/fs/FileSystem.createNewFile:(Lorg/apache/hadoop/fs/Path;)Z
+     104: pop
+     105: aload         5
+     107: invokevirtual #78                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.chore:()V
+     110: aload         5
+     112: invokevirtual #99                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.cleanup:()V
+     115: ldc2_w        #20                 // long 100l
+     118: invokestatic  #100                // Method java/lang/Thread.sleep:(J)V
+     121: aload         5
+     123: invokevirtual #101                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreads:()Ljava/util/List;
+     126: invokeinterface #102,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     131: astore        6
+     133: aload         6
+     135: invokeinterface #103,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     140: ifeq          166
+     143: aload         6
+     145: invokeinterface #104,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     150: checkcast     #105                // class java/lang/Thread
+     153: astore        7
+     155: aload         7
+     157: invokevirtual #106                // Method java/lang/Thread.isAlive:()Z
+     160: invokestatic  #107                // Method org/junit/Assert.assertFalse:(Z)V
+     163: goto          133
+     166: return
+
+  public void testLargeSmallIsolation() throws java.lang.Exception;
+    Code:
+       0: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: astore_1
+       7: aload_1
+       8: ldc           #49                 // String hbase.master.hfilecleaner.plugins
+      10: iconst_1
+      11: anewarray     #81                 // class java/lang/String
+      14: dup
+      15: iconst_0
+      16: ldc           #82                 // String
+      18: aastore
+      19: invokevirtual #83                 // Method org/apache/hadoop/conf/Configuration.setStrings:(Ljava/lang/String;[Ljava/lang/String;)V
+      22: aload_1
+      23: ldc           #108                // String hbase.regionserver.thread.hfilecleaner.throttle
+      25: ldc           #109                // int 524288
+      27: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      30: new           #52                 // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer
+      33: dup
+      34: invokespecial #53                 // Method org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer."<init>":()V
+      37: astore_2
+      38: new           #10                 // class org/apache/hadoop/fs/Path
+      41: dup
+      42: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      45: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:()Lorg/apache/hadoop/fs/Path;
+      48: ldc           #55                 // String archive
+      50: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      53: astore_3
+      54: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      57: invokevirtual #7                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDFSCluster:()Lorg/apache/hadoop/hdfs/MiniDFSCluster;
+      60: invokevirtual #8                  // Method org/apache/hadoop/hdfs/MiniDFSCluster.getFileSystem:()Lorg/apache/hadoop/hdfs/DistributedFileSystem;
+      63: astore        4
+      65: new           #48                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner
+      68: dup
+      69: sipush        1000
+      72: aload_2
+      73: aload_1
+      74: aload         4
+      76: aload_3
+      77: invokespecial #57                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner."<init>":(ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+      80: astore        5
+      82: aload         4
+      84: aload_3
+      85: iconst_1
+      86: invokevirtual #58                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+      89: pop
+      90: aload         4
+      92: aload_3
+      93: invokevirtual #59                 // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+      96: pop
+      97: iconst_5
+      98: istore        6
+     100: bipush        20
+     102: istore        7
+     104: aload_0
+     105: iconst_5
+     106: bipush        20
+     108: aload         4
+     110: aload_3
+     111: invokespecial #111                // Method createFilesForTesting:(IILorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+     114: aload         5
+     116: invokevirtual #78                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.chore:()V
+     119: ldc2_w        #112                // long 5l
+     122: aload         5
+     124: invokevirtual #114                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedLargeFiles:()J
+     127: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     130: ldc2_w        #115                // long 20l
+     133: aload         5
+     135: invokevirtual #117                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedSmallFiles:()J
+     138: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     141: return
+
+  public void testOnConfigurationChange() throws java.lang.Exception;
+    Code:
+       0: ldc           #109                // int 524288
+       2: istore_1
+       3: sipush        512
+       6: istore_2
+       7: sipush        1024
+      10: istore_3
+      11: sipush        1024
+      14: istore        4
+      16: iconst_5
+      17: istore        5
+      19: bipush        20
+      21: istore        6
+      23: iconst_2
+      24: istore        7
+      26: iconst_4
+      27: istore        8
+      29: ldc2_w        #118                // long 30000l
+      32: lstore        9
+      34: ldc2_w        #120                // long 500l
+      37: lstore        11
+      39: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      42: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      45: astore        13
+      47: aload         13
+      49: ldc           #49                 // String hbase.master.hfilecleaner.plugins
+      51: iconst_1
+      52: anewarray     #81                 // class java/lang/String
+      55: dup
+      56: iconst_0
+      57: ldc           #82                 // String
+      59: aastore
+      60: invokevirtual #83                 // Method org/apache/hadoop/conf/Configuration.setStrings:(Ljava/lang/String;[Ljava/lang/String;)V
+      63: aload         13
+      65: ldc           #108                // String hbase.regionserver.thread.hfilecleaner.throttle
+      67: ldc           #109                // int 524288
+      69: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      72: aload         13
+      74: ldc           #122                // String hbase.regionserver.hfilecleaner.large.queue.size
+      76: sipush        512
+      79: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      82: aload         13
+      84: ldc           #123                // String hbase.regionserver.hfilecleaner.small.queue.size
+      86: sipush        512
+      89: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      92: new           #52                 // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer
+      95: dup
+      96: invokespecial #53                 // Method org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$DummyServer."<init>":()V
+      99: astore        14
+     101: new           #10                 // class org/apache/hadoop/fs/Path
+     104: dup
+     105: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     108: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:()Lorg/apache/hadoop/fs/Path;
+     111: ldc           #55                 // String archive
+     113: invokespecial #12                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     116: astore        15
+     118: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     121: invokevirtual #7                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDFSCluster:()Lorg/apache/hadoop/hdfs/MiniDFSCluster;
+     124: invokevirtual #8                  // Method org/apache/hadoop/hdfs/MiniDFSCluster.getFileSystem:()Lorg/apache/hadoop/hdfs/DistributedFileSystem;
+     127: astore        16
+     129: new           #48                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner
+     132: dup
+     133: sipush        1000
+     136: aload         14
+     138: aload         13
+     140: aload         16
+     142: aload         15
+     144: invokespecial #57                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner."<init>":(ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+     147: astore        17
+     149: ldc2_w        #124                // long 524288l
+     152: aload         17
+     154: invokevirtual #126                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getThrottlePoint:()J
+     157: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     160: ldc2_w        #127                // long 512l
+     163: aload         17
+     165: invokevirtual #129                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getLargeQueueInitSize:()J
+     168: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     171: ldc2_w        #127                // long 512l
+     174: aload         17
+     176: invokevirtual #130                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getSmallQueueInitSize:()J
+     179: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     182: ldc2_w        #131                // long 60000l
+     185: aload         17
+     187: invokevirtual #133                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreadTimeoutMsec:()J
+     190: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     193: ldc2_w        #134                // long 1000l
+     196: aload         17
+     198: invokevirtual #136                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreadCheckIntervalMsec:()J
+     201: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     204: aload         16
+     206: aload         15
+     208: iconst_1
+     209: invokevirtual #58                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+     212: pop
+     213: aload         16
+     215: aload         15
+     217: invokevirtual #59                 // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+     220: pop
+     221: aload_0
+     222: iconst_5
+     223: bipush        20
+     225: aload         16
+     227: aload         15
+     229: invokespecial #111                // Method createFilesForTesting:(IILorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+     232: new           #137                // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$2
+     235: dup
+     236: aload_0
+     237: aload         17
+     239: invokespecial #138                // Method org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner$2."<init>":(Lorg/apache/hadoop/hbase/master/cleaner/TestHFileCleaner;Lorg/apache/hadoop/hbase/master/cleaner/HFileCleaner;)V
+     242: astore        18
+     244: aload         18
+     246: iconst_1
+     247: invokevirtual #139                // Method java/lang/Thread.setDaemon:(Z)V
+     250: aload         18
+     252: invokevirtual #140                // Method java/lang/Thread.start:()V
+     255: aload         17
+     257: invokevirtual #117                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedSmallFiles:()J
+     260: lconst_0
+     261: lcmp
+     262: ifne          271
+     265: invokestatic  #141                // Method java/lang/Thread.yield:()V
+     268: goto          255
+     271: new           #142                // class org/apache/hadoop/conf/Configuration
+     274: dup
+     275: aload         13
+     277: invokespecial #143                // Method org/apache/hadoop/conf/Configuration."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     280: astore        19
+     282: aload         19
+     284: ldc           #108                // String hbase.regionserver.thread.hfilecleaner.throttle
+     286: sipush        1024
+     289: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     292: aload         19
+     294: ldc           #122                // String hbase.regionserver.hfilecleaner.large.queue.size
+     296: sipush        1024
+     299: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     302: aload         19
+     304: ldc           #123                // String hbase.regionserver.hfilecleaner.small.queue.size
+     306: sipush        1024
+     309: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     312: aload         19
+     314: ldc           #144                // String hbase.regionserver.hfilecleaner.large.thread.count
+     316: iconst_2
+     317: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     320: aload         19
+     322: ldc           #145                // String hbase.regionserver.hfilecleaner.small.thread.count
+     324: iconst_4
+     325: invokevirtual #110                // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     328: aload         19
+     330: ldc           #146                // String hbase.regionserver.hfilecleaner.thread.timeout.msec
+     332: ldc2_w        #118                // long 30000l
+     335: invokevirtual #26                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+     338: aload         19
+     340: ldc           #147                // String hbase.regionserver.hfilecleaner.thread.check.interval.msec
+     342: ldc2_w        #120                // long 500l
+     345: invokevirtual #26                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+     348: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     351: new           #28                 // class java/lang/StringBuilder
+     354: dup
+     355: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     358: ldc           #148                // String File deleted from large queue:
+     360: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     363: aload         17
+     365: invokevirtual #114                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedLargeFiles:()J
+     368: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     371: ldc           #149                // String ; from small queue:
+     373: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     376: aload         17
+     378: invokevirtual #117                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedSmallFiles:()J
+     381: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     384: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     387: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     392: aload         17
+     394: aload         19
+     396: invokevirtual #150                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.onConfigurationChange:(Lorg/apache/hadoop/conf/Configuration;)V
+     399: ldc2_w        #151                // long 1024l
+     402: aload         17
+     404: invokevirtual #126                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getThrottlePoint:()J
+     407: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     410: ldc2_w        #151                // long 1024l
+     413: aload         17
+     415: invokevirtual #129                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getLargeQueueInitSize:()J
+     418: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     421: ldc2_w        #151                // long 1024l
+     424: aload         17
+     426: invokevirtual #130                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getSmallQueueInitSize:()J
+     429: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     432: ldc2_w        #153                // long 6l
+     435: aload         17
+     437: invokevirtual #101                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreads:()Ljava/util/List;
+     440: invokeinterface #155,  1          // InterfaceMethod java/util/List.size:()I
+     445: i2l
+     446: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     449: ldc2_w        #118                // long 30000l
+     452: aload         17
+     454: invokevirtual #133                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreadTimeoutMsec:()J
+     457: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     460: ldc2_w        #120                // long 500l
+     463: aload         17
+     465: invokevirtual #136                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreadCheckIntervalMsec:()J
+     468: invokestatic  #74                 // Method org/junit/Assert.assertEquals:(JJ)V
+     471: aload         17
+     473: invokevirtual #101                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreads:()Ljava/util/List;
+     476: astore        20
+     478: aload         17
+     480: aload         19
+     482: invokevirtual #150                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.onConfigurationChange:(Lorg/apache/hadoop/conf/Configuration;)V
+     485: aload         17
+     487: invokevirtual #101                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getCleanerThreads:()Ljava/util/List;
+     490: astore        21
+     492: aload         20
+     494: invokeinterface #156,  1          // InterfaceMethod java/util/List.toArray:()[Ljava/lang/Object;
+     499: aload         21
+     501: invokeinterface #156,  1          // InterfaceMethod java/util/List.toArray:()[Ljava/lang/Object;
+     506: invokestatic  #157                // Method org/junit/Assert.assertArrayEquals:([Ljava/lang/Object;[Ljava/lang/Object;)V
+     509: aload         18
+     511: invokevirtual #158                // Method java/lang/Thread.join:()V
+     514: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     517: new           #28                 // class java/lang/StringBuilder
+     520: dup
+     521: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     524: ldc           #148                // String File deleted from large queue:
+     526: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     529: aload         17
+     531: invokevirtual #114                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedLargeFiles:()J
+     534: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     537: ldc           #149                // String ; from small queue:
+     539: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     542: aload         17
+     544: invokevirtual #117                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedSmallFiles:()J
+     547: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     550: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     553: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     558: new           #28                 // class java/lang/StringBuilder
+     561: dup
+     562: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     565: ldc           #159                // String Should delete more than 5 files from large queue but actually
+     567: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     570: aload         17
+     572: invokevirtual #114                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedLargeFiles:()J
+     575: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     578: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     581: aload         17
+     583: invokevirtual #114                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedLargeFiles:()J
+     586: ldc2_w        #112                // long 5l
+     589: lcmp
+     590: ifle          597
+     593: iconst_1
+     594: goto          598
+     597: iconst_0
+     598: invokestatic  #17                 // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     601: new           #28                 // class java/lang/StringBuilder
+     604: dup
+     605: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     608: ldc           #160                // String Should delete less than 20 files from small queue but actually
+     610: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     613: aload         17
+     615: invokevirtual #117                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedSmallFiles:()J
+     618: invokevirtual #34                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     621: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     624: aload         17
+     626: invokevirtual #117                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner.getNumOfDeletedSmallFiles:()J
+     629: ldc2_w        #115                // long 20l
+     632: lcmp
+     633: ifge          640
+     636: iconst_1
+     637: goto          641
+     640: iconst_0
+     641: invokestatic  #17                 // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     644: return
+
+  static org.apache.hadoop.hbase.HBaseTestingUtility access$000();
+    Code:
+       0: getstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #169                // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner
+       2: invokestatic  #170                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #171                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: ldc           #169                // class org/apache/hadoop/hbase/master/cleaner/TestHFileCleaner
+      10: invokestatic  #172                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      13: putstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+      16: new           #173                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      19: dup
+      20: invokespecial #174                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      23: putstatic     #1                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      26: return
+}

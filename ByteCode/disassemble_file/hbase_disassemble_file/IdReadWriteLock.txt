@@ -1,0 +1,120 @@
+Compiled from "IdReadWriteLock.java"
+public class org.apache.hadoop.hbase.util.IdReadWriteLock<T> {
+  public org.apache.hadoop.hbase.util.IdReadWriteLock();
+    Code:
+       0: aload_0
+       1: getstatic     #1                  // Field org/apache/hadoop/hbase/util/IdReadWriteLock$ReferenceType.WEAK:Lorg/apache/hadoop/hbase/util/IdReadWriteLock$ReferenceType;
+       4: invokespecial #2                  // Method "<init>":(Lorg/apache/hadoop/hbase/util/IdReadWriteLock$ReferenceType;)V
+       7: return
+
+  public org.apache.hadoop.hbase.util.IdReadWriteLock(org.apache.hadoop.hbase.util.IdReadWriteLock$ReferenceType);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #4                  // Field refType:Lorg/apache/hadoop/hbase/util/IdReadWriteLock$ReferenceType;
+       9: getstatic     #5                  // Field org/apache/hadoop/hbase/util/IdReadWriteLock$3.$SwitchMap$org$apache$hadoop$hbase$util$IdReadWriteLock$ReferenceType:[I
+      12: aload_1
+      13: invokevirtual #6                  // Method org/apache/hadoop/hbase/util/IdReadWriteLock$ReferenceType.ordinal:()I
+      16: iaload
+      17: lookupswitch  { // 2
+                     1: 44
+                     2: 69
+               default: 69
+          }
+      44: aload_0
+      45: new           #7                  // class org/apache/hadoop/hbase/util/SoftObjectPool
+      48: dup
+      49: new           #8                  // class org/apache/hadoop/hbase/util/IdReadWriteLock$1
+      52: dup
+      53: aload_0
+      54: invokespecial #9                  // Method org/apache/hadoop/hbase/util/IdReadWriteLock$1."<init>":(Lorg/apache/hadoop/hbase/util/IdReadWriteLock;)V
+      57: sipush        1000
+      60: invokespecial #11                 // Method org/apache/hadoop/hbase/util/SoftObjectPool."<init>":(Lorg/apache/hadoop/hbase/util/ObjectPool$ObjectFactory;I)V
+      63: putfield      #12                 // Field lockPool:Lorg/apache/hadoop/hbase/util/ObjectPool;
+      66: goto          91
+      69: aload_0
+      70: new           #13                 // class org/apache/hadoop/hbase/util/WeakObjectPool
+      73: dup
+      74: new           #14                 // class org/apache/hadoop/hbase/util/IdReadWriteLock$2
+      77: dup
+      78: aload_0
+      79: invokespecial #15                 // Method org/apache/hadoop/hbase/util/IdReadWriteLock$2."<init>":(Lorg/apache/hadoop/hbase/util/IdReadWriteLock;)V
+      82: sipush        1000
+      85: invokespecial #16                 // Method org/apache/hadoop/hbase/util/WeakObjectPool."<init>":(Lorg/apache/hadoop/hbase/util/ObjectPool$ObjectFactory;I)V
+      88: putfield      #12                 // Field lockPool:Lorg/apache/hadoop/hbase/util/ObjectPool;
+      91: return
+
+  public java.util.concurrent.locks.ReentrantReadWriteLock getLock(T);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field lockPool:Lorg/apache/hadoop/hbase/util/ObjectPool;
+       4: invokevirtual #17                 // Method org/apache/hadoop/hbase/util/ObjectPool.purge:()V
+       7: aload_0
+       8: getfield      #12                 // Field lockPool:Lorg/apache/hadoop/hbase/util/ObjectPool;
+      11: aload_1
+      12: invokevirtual #18                 // Method org/apache/hadoop/hbase/util/ObjectPool.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      15: checkcast     #19                 // class java/util/concurrent/locks/ReentrantReadWriteLock
+      18: astore_2
+      19: aload_2
+      20: areturn
+
+  int purgeAndGetEntryPoolSize();
+    Code:
+       0: aload_0
+       1: invokespecial #20                 // Method gc:()V
+       4: ldc2_w        #21                 // long 200l
+       7: invokestatic  #23                 // Method org/apache/hadoop/hbase/util/Threads.sleep:(J)V
+      10: aload_0
+      11: getfield      #12                 // Field lockPool:Lorg/apache/hadoop/hbase/util/ObjectPool;
+      14: invokevirtual #17                 // Method org/apache/hadoop/hbase/util/ObjectPool.purge:()V
+      17: aload_0
+      18: getfield      #12                 // Field lockPool:Lorg/apache/hadoop/hbase/util/ObjectPool;
+      21: invokevirtual #24                 // Method org/apache/hadoop/hbase/util/ObjectPool.size:()I
+      24: ireturn
+
+  public void waitForWaiters(T, int) throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field lockPool:Lorg/apache/hadoop/hbase/util/ObjectPool;
+       4: aload_1
+       5: invokevirtual #18                 // Method org/apache/hadoop/hbase/util/ObjectPool.get:(Ljava/lang/Object;)Ljava/lang/Object;
+       8: checkcast     #19                 // class java/util/concurrent/locks/ReentrantReadWriteLock
+      11: astore_3
+      12: aload_3
+      13: ifnull        47
+      16: aload_3
+      17: dup
+      18: astore        4
+      20: monitorenter
+      21: aload_3
+      22: invokevirtual #26                 // Method java/util/concurrent/locks/ReentrantReadWriteLock.getQueueLength:()I
+      25: iload_2
+      26: if_icmplt     33
+      29: aload         4
+      31: monitorexit
+      32: return
+      33: aload         4
+      35: monitorexit
+      36: goto          47
+      39: astore        5
+      41: aload         4
+      43: monitorexit
+      44: aload         5
+      46: athrow
+      47: ldc2_w        #27                 // long 50l
+      50: invokestatic  #29                 // Method java/lang/Thread.sleep:(J)V
+      53: goto          0
+    Exception table:
+       from    to  target type
+          21    32    39   any
+          33    36    39   any
+          39    44    39   any
+
+  public org.apache.hadoop.hbase.util.IdReadWriteLock$ReferenceType getReferenceType();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field refType:Lorg/apache/hadoop/hbase/util/IdReadWriteLock$ReferenceType;
+       4: areturn
+}

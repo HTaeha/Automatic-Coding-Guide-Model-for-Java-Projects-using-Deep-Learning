@@ -1,0 +1,523 @@
+Compiled from "ProcedureWALPerformanceEvaluation.java"
+public class org.apache.hadoop.hbase.procedure2.store.wal.ProcedureWALPerformanceEvaluation extends org.apache.hadoop.hbase.util.AbstractHBaseTool {
+  protected static final org.apache.hadoop.hbase.HBaseCommonTestingUtility UTIL;
+
+  public static int DEFAULT_NUM_THREADS;
+
+  public static org.apache.hbase.thirdparty.org.apache.commons.cli.Option NUM_THREADS_OPTION;
+
+  public static int DEFAULT_NUM_PROCS;
+
+  public static org.apache.hbase.thirdparty.org.apache.commons.cli.Option NUM_PROCS_OPTION;
+
+  public static int DEFAULT_NUM_WALS;
+
+  public static org.apache.hbase.thirdparty.org.apache.commons.cli.Option NUM_WALS_OPTION;
+
+  public static int DEFAULT_STATE_SIZE;
+
+  public static org.apache.hbase.thirdparty.org.apache.commons.cli.Option STATE_SIZE_OPTION;
+
+  public static org.apache.hbase.thirdparty.org.apache.commons.cli.Option SYNC_OPTION;
+
+  public static java.lang.String DEFAULT_SYNC_OPTION;
+
+  public int numThreads;
+
+  public long numProcs;
+
+  public long numProcsPerWal;
+
+  public int numWals;
+
+  public java.lang.String syncType;
+
+  public int stateSize;
+
+  static byte[] serializedState;
+
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.procedure2.store.wal.ProcedureWALPerformanceEvaluation();
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method org/apache/hadoop/hbase/util/AbstractHBaseTool."<init>":()V
+       4: aload_0
+       5: ldc2_w        #6                  // long 9223372036854775807l
+       8: putfield      #8                  // Field numProcsPerWal:J
+      11: aload_0
+      12: new           #9                  // class java/util/concurrent/atomic/AtomicLong
+      15: dup
+      16: lconst_0
+      17: invokespecial #10                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      20: putfield      #2                  // Field procIds:Ljava/util/concurrent/atomic/AtomicLong;
+      23: aload_0
+      24: new           #11                 // class java/util/concurrent/atomic/AtomicBoolean
+      27: dup
+      28: iconst_0
+      29: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      32: putfield      #3                  // Field workersFailed:Ljava/util/concurrent/atomic/AtomicBoolean;
+      35: return
+
+  public void processOptions(org.apache.hbase.thirdparty.org.apache.commons.cli.CommandLine);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: aload_1
+       3: getstatic     #61                 // Field NUM_THREADS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+       6: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+       9: getstatic     #63                 // Field DEFAULT_NUM_THREADS:I
+      12: invokevirtual #64                 // Method getOptionAsInt:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine;Ljava/lang/String;I)I
+      15: putfield      #43                 // Field numThreads:I
+      18: aload_0
+      19: aload_0
+      20: aload_1
+      21: getstatic     #65                 // Field NUM_PROCS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      24: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+      27: getstatic     #66                 // Field DEFAULT_NUM_PROCS:I
+      30: invokevirtual #64                 // Method getOptionAsInt:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine;Ljava/lang/String;I)I
+      33: i2l
+      34: putfield      #23                 // Field numProcs:J
+      37: aload_0
+      38: aload_0
+      39: aload_1
+      40: getstatic     #67                 // Field NUM_WALS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      43: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+      46: getstatic     #68                 // Field DEFAULT_NUM_WALS:I
+      49: invokevirtual #64                 // Method getOptionAsInt:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine;Ljava/lang/String;I)I
+      52: putfield      #20                 // Field numWals:I
+      55: aload_0
+      56: aload_1
+      57: getstatic     #69                 // Field SYNC_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      60: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+      63: getstatic     #70                 // Field DEFAULT_SYNC_OPTION:Ljava/lang/String;
+      66: invokevirtual #71                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.getOptionValue:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      69: putfield      #17                 // Field syncType:Ljava/lang/String;
+      72: getstatic     #72                 // Field $assertionsDisabled:Z
+      75: ifne          124
+      78: ldc           #16                 // String hsync
+      80: aload_0
+      81: getfield      #17                 // Field syncType:Ljava/lang/String;
+      84: invokevirtual #18                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      87: ifne          124
+      90: ldc           #73                 // String hflush
+      92: aload_0
+      93: getfield      #17                 // Field syncType:Ljava/lang/String;
+      96: invokevirtual #18                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      99: ifne          124
+     102: ldc           #39                 // String nosync
+     104: aload_0
+     105: getfield      #17                 // Field syncType:Ljava/lang/String;
+     108: invokevirtual #18                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     111: ifne          124
+     114: new           #74                 // class java/lang/AssertionError
+     117: dup
+     118: ldc           #75                 // String sync argument can only accept one of these three values: hsync, hflush, nosync
+     120: invokespecial #76                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+     123: athrow
+     124: aload_0
+     125: aload_0
+     126: aload_1
+     127: getstatic     #77                 // Field STATE_SIZE_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     130: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+     133: getstatic     #78                 // Field DEFAULT_STATE_SIZE:I
+     136: invokevirtual #64                 // Method getOptionAsInt:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine;Ljava/lang/String;I)I
+     139: putfield      #79                 // Field stateSize:I
+     142: aload_0
+     143: getfield      #79                 // Field stateSize:I
+     146: newarray       byte
+     148: putstatic     #80                 // Field serializedState:[B
+     151: aload_0
+     152: invokespecial #81                 // Method setupConf:()V
+     155: return
+
+  public void addOptions();
+    Code:
+       0: aload_0
+       1: getstatic     #61                 // Field NUM_THREADS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+       4: invokevirtual #82                 // Method addOption:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;)V
+       7: aload_0
+       8: getstatic     #65                 // Field NUM_PROCS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      11: invokevirtual #82                 // Method addOption:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;)V
+      14: aload_0
+      15: getstatic     #67                 // Field NUM_WALS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      18: invokevirtual #82                 // Method addOption:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;)V
+      21: aload_0
+      22: getstatic     #69                 // Field SYNC_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      25: invokevirtual #82                 // Method addOption:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;)V
+      28: aload_0
+      29: getstatic     #77                 // Field STATE_SIZE_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      32: invokevirtual #82                 // Method addOption:(Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;)V
+      35: return
+
+  public int doWork();
+    Code:
+       0: aload_0
+       1: invokespecial #83                 // Method setupProcedureStore:()V
+       4: aload_0
+       5: getfield      #43                 // Field numThreads:I
+       8: invokestatic  #84                 // Method java/util/concurrent/Executors.newFixedThreadPool:(I)Ljava/util/concurrent/ExecutorService;
+      11: astore_1
+      12: aload_0
+      13: getfield      #43                 // Field numThreads:I
+      16: anewarray     #85                 // class java/util/concurrent/Future
+      19: astore_2
+      20: invokestatic  #86                 // Method java/lang/System.currentTimeMillis:()J
+      23: lstore_3
+      24: iconst_0
+      25: istore        5
+      27: iload         5
+      29: aload_0
+      30: getfield      #43                 // Field numThreads:I
+      33: if_icmpge     61
+      36: aload_2
+      37: iload         5
+      39: aload_1
+      40: new           #87                 // class org/apache/hadoop/hbase/procedure2/store/wal/ProcedureWALPerformanceEvaluation$Worker
+      43: dup
+      44: aload_0
+      45: lload_3
+      46: invokespecial #88                 // Method org/apache/hadoop/hbase/procedure2/store/wal/ProcedureWALPerformanceEvaluation$Worker."<init>":(Lorg/apache/hadoop/hbase/procedure2/store/wal/ProcedureWALPerformanceEvaluation;J)V
+      49: invokeinterface #89,  2           // InterfaceMethod java/util/concurrent/ExecutorService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+      54: aastore
+      55: iinc          5, 1
+      58: goto          27
+      61: iconst_0
+      62: istore        5
+      64: aload_2
+      65: astore        6
+      67: aload         6
+      69: arraylength
+      70: istore        7
+      72: iconst_0
+      73: istore        8
+      75: iload         8
+      77: iload         7
+      79: if_icmpge     130
+      82: aload         6
+      84: iload         8
+      86: aaload
+      87: astore        9
+      89: lload_3
+      90: ldc2_w        #91                 // long 600000l
+      93: ladd
+      94: invokestatic  #86                 // Method java/lang/System.currentTimeMillis:()J
+      97: lsub
+      98: lstore        10
+     100: iload         5
+     102: aload         9
+     104: lload         10
+     106: getstatic     #93                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+     109: invokeinterface #94,  4           // InterfaceMethod java/util/concurrent/Future.get:(JLjava/util/concurrent/TimeUnit;)Ljava/lang/Object;
+     114: iconst_1
+     115: invokestatic  #96                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     118: invokevirtual #97                 // Method java/lang/Object.equals:(Ljava/lang/Object;)Z
+     121: ior
+     122: istore        5
+     124: iinc          8, 1
+     127: goto          75
+     130: goto          158
+     133: astore        6
+     135: getstatic     #58                 // Field java/lang/System.err:Ljava/io/PrintStream;
+     138: ldc           #99                 // String Exception in worker thread.
+     140: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     143: aload         6
+     145: invokevirtual #100                // Method java/lang/Exception.printStackTrace:()V
+     148: iconst_1
+     149: istore        7
+     151: aload_0
+     152: invokespecial #101                // Method tearDownProcedureStore:()V
+     155: iload         7
+     157: ireturn
+     158: aload_1
+     159: invokeinterface #102,  1          // InterfaceMethod java/util/concurrent/ExecutorService.shutdown:()V
+     164: iload         5
+     166: ifeq          179
+     169: iconst_1
+     170: istore        6
+     172: aload_0
+     173: invokespecial #101                // Method tearDownProcedureStore:()V
+     176: iload         6
+     178: ireturn
+     179: invokestatic  #86                 // Method java/lang/System.currentTimeMillis:()J
+     182: lload_3
+     183: lsub
+     184: lstore        6
+     186: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     189: ldc           #103                // String ******************************************
+     191: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     194: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     197: new           #31                 // class java/lang/StringBuilder
+     200: dup
+     201: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     204: ldc           #104                // String Num threads    :
+     206: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     209: aload_0
+     210: getfield      #43                 // Field numThreads:I
+     213: invokevirtual #105                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     216: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     219: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     222: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     225: new           #31                 // class java/lang/StringBuilder
+     228: dup
+     229: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     232: ldc           #106                // String Num procedures :
+     234: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     237: aload_0
+     238: getfield      #23                 // Field numProcs:J
+     241: invokevirtual #107                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     244: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     247: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     250: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     253: new           #31                 // class java/lang/StringBuilder
+     256: dup
+     257: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     260: ldc           #108                // String Sync type      :
+     262: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     265: aload_0
+     266: getfield      #17                 // Field syncType:Ljava/lang/String;
+     269: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     272: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     275: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     278: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     281: new           #31                 // class java/lang/StringBuilder
+     284: dup
+     285: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     288: ldc           #109                // String Time taken     :
+     290: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     293: lload         6
+     295: l2f
+     296: ldc           #110                // float 1000.0f
+     298: fdiv
+     299: invokevirtual #111                // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+     302: ldc           #112                // String sec
+     304: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     307: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     310: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     313: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     316: ldc           #103                // String ******************************************
+     318: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     321: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     324: ldc           #113                // String Raw format for scripts
+     326: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     329: getstatic     #30                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     332: ldc           #114                // String RESULT [%s=%s, %s=%s, %s=%s, %s=%s, %s=%s, total_time_ms=%s]
+     334: bipush        11
+     336: anewarray     #115                // class java/lang/Object
+     339: dup
+     340: iconst_0
+     341: getstatic     #65                 // Field NUM_PROCS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     344: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+     347: aastore
+     348: dup
+     349: iconst_1
+     350: aload_0
+     351: getfield      #23                 // Field numProcs:J
+     354: invokestatic  #116                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     357: aastore
+     358: dup
+     359: iconst_2
+     360: getstatic     #77                 // Field STATE_SIZE_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     363: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+     366: aastore
+     367: dup
+     368: iconst_3
+     369: aload_0
+     370: getfield      #79                 // Field stateSize:I
+     373: invokestatic  #96                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     376: aastore
+     377: dup
+     378: iconst_4
+     379: getstatic     #69                 // Field SYNC_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     382: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+     385: aastore
+     386: dup
+     387: iconst_5
+     388: aload_0
+     389: getfield      #17                 // Field syncType:Ljava/lang/String;
+     392: aastore
+     393: dup
+     394: bipush        6
+     396: getstatic     #61                 // Field NUM_THREADS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     399: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+     402: aastore
+     403: dup
+     404: bipush        7
+     406: aload_0
+     407: getfield      #43                 // Field numThreads:I
+     410: invokestatic  #96                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     413: aastore
+     414: dup
+     415: bipush        8
+     417: getstatic     #67                 // Field NUM_WALS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     420: invokevirtual #62                 // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option.getOpt:()Ljava/lang/String;
+     423: aastore
+     424: dup
+     425: bipush        9
+     427: aload_0
+     428: getfield      #20                 // Field numWals:I
+     431: invokestatic  #96                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     434: aastore
+     435: dup
+     436: bipush        10
+     438: lload         6
+     440: invokestatic  #116                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     443: aastore
+     444: invokestatic  #117                // Method java/lang/String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+     447: invokevirtual #37                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     450: iconst_0
+     451: istore        8
+     453: aload_0
+     454: invokespecial #101                // Method tearDownProcedureStore:()V
+     457: iload         8
+     459: ireturn
+     460: astore_1
+     461: aload_1
+     462: invokevirtual #60                 // Method java/io/IOException.printStackTrace:()V
+     465: iconst_1
+     466: istore_2
+     467: aload_0
+     468: invokespecial #101                // Method tearDownProcedureStore:()V
+     471: iload_2
+     472: ireturn
+     473: astore        12
+     475: aload_0
+     476: invokespecial #101                // Method tearDownProcedureStore:()V
+     479: aload         12
+     481: athrow
+    Exception table:
+       from    to  target type
+          64   130   133   Class java/lang/Exception
+           0   151   460   Class java/io/IOException
+         158   172   460   Class java/io/IOException
+         179   453   460   Class java/io/IOException
+           0   151   473   any
+         158   172   473   any
+         179   453   473   any
+         460   467   473   any
+         473   475   473   any
+
+  public static void main(java.lang.String[]) throws java.io.IOException;
+    Code:
+       0: new           #90                 // class org/apache/hadoop/hbase/procedure2/store/wal/ProcedureWALPerformanceEvaluation
+       3: dup
+       4: invokespecial #118                // Method "<init>":()V
+       7: astore_1
+       8: aload_1
+       9: getstatic     #24                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseCommonTestingUtility;
+      12: invokevirtual #119                // Method org/apache/hadoop/hbase/HBaseCommonTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      15: invokevirtual #120                // Method setConf:(Lorg/apache/hadoop/conf/Configuration;)V
+      18: aload_1
+      19: aload_0
+      20: invokevirtual #121                // Method run:([Ljava/lang/String;)I
+      23: pop
+      24: return
+
+  static java.util.concurrent.atomic.AtomicBoolean access$000(org.apache.hadoop.hbase.procedure2.store.wal.ProcedureWALPerformanceEvaluation);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field workersFailed:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: areturn
+
+  static java.util.concurrent.atomic.AtomicLong access$100(org.apache.hadoop.hbase.procedure2.store.wal.ProcedureWALPerformanceEvaluation);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field procIds:Ljava/util/concurrent/atomic/AtomicLong;
+       4: areturn
+
+  static org.apache.hadoop.hbase.procedure2.store.wal.WALProcedureStore access$200(org.apache.hadoop.hbase.procedure2.store.wal.ProcedureWALPerformanceEvaluation);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field store:Lorg/apache/hadoop/hbase/procedure2/store/wal/WALProcedureStore;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #90                 // class org/apache/hadoop/hbase/procedure2/store/wal/ProcedureWALPerformanceEvaluation
+       2: invokevirtual #122                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #72                 // Field $assertionsDisabled:Z
+      16: new           #123                // class org/apache/hadoop/hbase/HBaseCommonTestingUtility
+      19: dup
+      20: invokespecial #124                // Method org/apache/hadoop/hbase/HBaseCommonTestingUtility."<init>":()V
+      23: putstatic     #24                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseCommonTestingUtility;
+      26: bipush        20
+      28: putstatic     #63                 // Field DEFAULT_NUM_THREADS:I
+      31: new           #125                // class org/apache/hbase/thirdparty/org/apache/commons/cli/Option
+      34: dup
+      35: ldc           #126                // String threads
+      37: iconst_1
+      38: new           #31                 // class java/lang/StringBuilder
+      41: dup
+      42: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+      45: ldc           #127                // String Number of parallel threads which will write insert/updates/deletes to WAL. Default:
+      47: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: getstatic     #63                 // Field DEFAULT_NUM_THREADS:I
+      53: invokevirtual #105                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      56: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      59: invokespecial #128                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option."<init>":(Ljava/lang/String;ZLjava/lang/String;)V
+      62: putstatic     #61                 // Field NUM_THREADS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+      65: ldc           #129                // int 1000000
+      67: putstatic     #66                 // Field DEFAULT_NUM_PROCS:I
+      70: new           #125                // class org/apache/hbase/thirdparty/org/apache/commons/cli/Option
+      73: dup
+      74: ldc           #130                // String procs
+      76: iconst_1
+      77: new           #31                 // class java/lang/StringBuilder
+      80: dup
+      81: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+      84: ldc           #131                // String Total number of procedures. Each procedure writes one insert and one update. Default:
+      86: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      89: getstatic     #66                 // Field DEFAULT_NUM_PROCS:I
+      92: invokevirtual #105                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      95: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      98: invokespecial #128                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option."<init>":(Ljava/lang/String;ZLjava/lang/String;)V
+     101: putstatic     #65                 // Field NUM_PROCS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     104: iconst_0
+     105: putstatic     #68                 // Field DEFAULT_NUM_WALS:I
+     108: new           #125                // class org/apache/hbase/thirdparty/org/apache/commons/cli/Option
+     111: dup
+     112: ldc           #132                // String wals
+     114: iconst_1
+     115: new           #31                 // class java/lang/StringBuilder
+     118: dup
+     119: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     122: ldc           #133                // String Number of WALs to write. If -ve or 0, uses hbase.procedure.store.wal.roll.threshold conf to roll the logs. Default:
+     124: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     127: getstatic     #68                 // Field DEFAULT_NUM_WALS:I
+     130: invokevirtual #105                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     133: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     136: invokespecial #128                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option."<init>":(Ljava/lang/String;ZLjava/lang/String;)V
+     139: putstatic     #67                 // Field NUM_WALS_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     142: sipush        1024
+     145: putstatic     #78                 // Field DEFAULT_STATE_SIZE:I
+     148: new           #125                // class org/apache/hbase/thirdparty/org/apache/commons/cli/Option
+     151: dup
+     152: ldc           #134                // String state_size
+     154: iconst_1
+     155: new           #31                 // class java/lang/StringBuilder
+     158: dup
+     159: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     162: ldc           #135                // String Size of serialized state in bytes to write on update. Default:
+     164: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     167: getstatic     #78                 // Field DEFAULT_STATE_SIZE:I
+     170: invokevirtual #105                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     173: ldc           #136                // String bytes
+     175: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     178: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     181: invokespecial #128                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option."<init>":(Ljava/lang/String;ZLjava/lang/String;)V
+     184: putstatic     #77                 // Field STATE_SIZE_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     187: new           #125                // class org/apache/hbase/thirdparty/org/apache/commons/cli/Option
+     190: dup
+     191: ldc           #137                // String sync
+     193: iconst_1
+     194: ldc           #138                // String Type of sync to use when writing WAL contents to file system. Accepted values: hflush, hsync, nosync. Default: hflush
+     196: invokespecial #128                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/Option."<init>":(Ljava/lang/String;ZLjava/lang/String;)V
+     199: putstatic     #69                 // Field SYNC_OPTION:Lorg/apache/hbase/thirdparty/org/apache/commons/cli/Option;
+     202: ldc           #73                 // String hflush
+     204: putstatic     #70                 // Field DEFAULT_SYNC_OPTION:Ljava/lang/String;
+     207: return
+}

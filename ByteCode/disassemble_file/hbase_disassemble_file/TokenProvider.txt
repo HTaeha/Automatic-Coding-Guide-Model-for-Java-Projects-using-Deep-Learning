@@ -1,0 +1,139 @@
+Compiled from "TokenProvider.java"
+public class org.apache.hadoop.hbase.security.token.TokenProvider implements org.apache.hadoop.hbase.protobuf.generated.AuthenticationProtos$AuthenticationService$Interface,org.apache.hadoop.hbase.coprocessor.RegionCoprocessor {
+  public org.apache.hadoop.hbase.security.token.TokenProvider();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public void start(org.apache.hadoop.hbase.CoprocessorEnvironment);
+    Code:
+       0: aload_1
+       1: instanceof    #2                  // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+       4: ifeq          57
+       7: aload_1
+       8: checkcast     #2                  // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      11: astore_2
+      12: aload_2
+      13: checkcast     #3                  // class org/apache/hadoop/hbase/coprocessor/HasRegionServerServices
+      16: invokeinterface #4,  1            // InterfaceMethod org/apache/hadoop/hbase/coprocessor/HasRegionServerServices.getRegionServerServices:()Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      21: astore_3
+      22: aload_3
+      23: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRpcServer:()Lorg/apache/hadoop/hbase/ipc/RpcServerInterface;
+      28: astore        4
+      30: aload         4
+      32: checkcast     #6                  // class org/apache/hadoop/hbase/ipc/RpcServer
+      35: invokevirtual #7                  // Method org/apache/hadoop/hbase/ipc/RpcServer.getSecretManager:()Lorg/apache/hadoop/security/token/SecretManager;
+      38: astore        5
+      40: aload         5
+      42: instanceof    #8                  // class org/apache/hadoop/hbase/security/token/AuthenticationTokenSecretManager
+      45: ifeq          57
+      48: aload_0
+      49: aload         5
+      51: checkcast     #8                  // class org/apache/hadoop/hbase/security/token/AuthenticationTokenSecretManager
+      54: putfield      #9                  // Field secretManager:Lorg/apache/hadoop/hbase/security/token/AuthenticationTokenSecretManager;
+      57: return
+
+  public void stop(org.apache.hadoop.hbase.CoprocessorEnvironment) throws java.io.IOException;
+    Code:
+       0: return
+
+  public java.lang.Iterable<com.google.protobuf.Service> getServices();
+    Code:
+       0: aload_0
+       1: invokestatic  #16                 // Method org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$AuthenticationService.newReflectiveService:(Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$AuthenticationService$Interface;)Lcom/google/protobuf/Service;
+       4: invokestatic  #17                 // Method java/util/Collections.singleton:(Ljava/lang/Object;)Ljava/util/Set;
+       7: areturn
+
+  public void getAuthenticationToken(com.google.protobuf.RpcController, org.apache.hadoop.hbase.protobuf.generated.AuthenticationProtos$GetAuthenticationTokenRequest, com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.protobuf.generated.AuthenticationProtos$GetAuthenticationTokenResponse>);
+    Code:
+       0: invokestatic  #18                 // Method org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse$Builder;
+       3: astore        4
+       5: aload_0
+       6: getfield      #9                  // Field secretManager:Lorg/apache/hadoop/hbase/security/token/AuthenticationTokenSecretManager;
+       9: ifnonnull     22
+      12: new           #19                 // class java/io/IOException
+      15: dup
+      16: ldc           #20                 // String No secret manager configured for token authentication
+      18: invokespecial #21                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      21: athrow
+      22: invokestatic  #22                 // Method org/apache/hadoop/hbase/ipc/RpcServer.getRequestUser:()Ljava/util/Optional;
+      25: invokedynamic #23,  0             // InvokeDynamic #0:get:()Ljava/util/function/Supplier;
+      30: invokevirtual #24                 // Method java/util/Optional.orElseThrow:(Ljava/util/function/Supplier;)Ljava/lang/Object;
+      33: checkcast     #25                 // class org/apache/hadoop/hbase/security/User
+      36: astore        5
+      38: aload         5
+      40: invokevirtual #26                 // Method org/apache/hadoop/hbase/security/User.getUGI:()Lorg/apache/hadoop/security/UserGroupInformation;
+      43: astore        6
+      45: aload_0
+      46: aload         6
+      48: invokespecial #27                 // Method isAllowedDelegationTokenOp:(Lorg/apache/hadoop/security/UserGroupInformation;)Z
+      51: ifne          108
+      54: getstatic     #28                 // Field LOG:Lorg/slf4j/Logger;
+      57: new           #29                 // class java/lang/StringBuilder
+      60: dup
+      61: invokespecial #30                 // Method java/lang/StringBuilder."<init>":()V
+      64: ldc           #31                 // String Token generation denied for user=
+      66: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: aload         5
+      71: invokevirtual #33                 // Method org/apache/hadoop/hbase/security/User.getName:()Ljava/lang/String;
+      74: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      77: ldc           #34                 // String , authMethod=
+      79: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      82: aload         6
+      84: invokevirtual #10                 // Method org/apache/hadoop/security/UserGroupInformation.getAuthenticationMethod:()Lorg/apache/hadoop/security/UserGroupInformation$AuthenticationMethod;
+      87: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      90: invokevirtual #36                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      93: invokeinterface #37,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      98: new           #38                 // class org/apache/hadoop/hbase/security/AccessDeniedException
+     101: dup
+     102: ldc           #39                 // String Token generation only allowed for Kerberos authenticated clients
+     104: invokespecial #40                 // Method org/apache/hadoop/hbase/security/AccessDeniedException."<init>":(Ljava/lang/String;)V
+     107: athrow
+     108: aload_0
+     109: getfield      #9                  // Field secretManager:Lorg/apache/hadoop/hbase/security/token/AuthenticationTokenSecretManager;
+     112: aload         5
+     114: invokevirtual #33                 // Method org/apache/hadoop/hbase/security/User.getName:()Ljava/lang/String;
+     117: invokevirtual #41                 // Method org/apache/hadoop/hbase/security/token/AuthenticationTokenSecretManager.generateToken:(Ljava/lang/String;)Lorg/apache/hadoop/security/token/Token;
+     120: astore        7
+     122: aload         4
+     124: aload         7
+     126: invokestatic  #42                 // Method org/apache/hadoop/hbase/security/token/TokenUtil.toToken:(Lorg/apache/hadoop/security/token/Token;)Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$Token;
+     129: invokevirtual #43                 // Method org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse$Builder.setToken:(Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$Token;)Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse$Builder;
+     132: invokevirtual #44                 // Method org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse;
+     135: pop
+     136: goto          147
+     139: astore        5
+     141: aload_1
+     142: aload         5
+     144: invokestatic  #45                 // Method org/apache/hadoop/hbase/ipc/CoprocessorRpcUtils.setControllerException:(Lcom/google/protobuf/RpcController;Ljava/io/IOException;)V
+     147: aload_3
+     148: aload         4
+     150: invokevirtual #44                 // Method org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$GetAuthenticationTokenResponse;
+     153: invokeinterface #46,  2           // InterfaceMethod com/google/protobuf/RpcCallback.run:(Ljava/lang/Object;)V
+     158: return
+    Exception table:
+       from    to  target type
+           5   136   139   Class java/io/IOException
+
+  public void whoAmI(com.google.protobuf.RpcController, org.apache.hadoop.hbase.protobuf.generated.AuthenticationProtos$WhoAmIRequest, com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.protobuf.generated.AuthenticationProtos$WhoAmIResponse>);
+    Code:
+       0: invokestatic  #47                 // Method org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$WhoAmIResponse.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$WhoAmIResponse$Builder;
+       3: astore        4
+       5: invokestatic  #22                 // Method org/apache/hadoop/hbase/ipc/RpcServer.getRequestUser:()Ljava/util/Optional;
+       8: aload         4
+      10: invokedynamic #48,  0             // InvokeDynamic #1:accept:(Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$WhoAmIResponse$Builder;)Ljava/util/function/Consumer;
+      15: invokevirtual #49                 // Method java/util/Optional.ifPresent:(Ljava/util/function/Consumer;)V
+      18: aload_3
+      19: aload         4
+      21: invokevirtual #50                 // Method org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$WhoAmIResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$WhoAmIResponse;
+      24: invokeinterface #46,  2           // InterfaceMethod com/google/protobuf/RpcCallback.run:(Ljava/lang/Object;)V
+      29: return
+
+  static {};
+    Code:
+       0: ldc           #56                 // class org/apache/hadoop/hbase/security/token/TokenProvider
+       2: invokestatic  #57                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #28                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

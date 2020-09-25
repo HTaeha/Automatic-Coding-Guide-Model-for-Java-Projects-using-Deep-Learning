@@ -1,0 +1,413 @@
+Compiled from "PreemptiveFastFailInterceptor.java"
+class org.apache.hadoop.hbase.client.PreemptiveFastFailInterceptor extends org.apache.hadoop.hbase.client.RetryingCallerInterceptor {
+  protected final long fastFailThresholdMilliSec;
+
+  protected final java.util.concurrent.ConcurrentMap<org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.client.FailureInfo> repeatedFailuresMap;
+
+  protected final long failureMapCleanupIntervalMilliSec;
+
+  protected volatile long lastFailureMapCleanupTimeMilliSec;
+
+  public org.apache.hadoop.hbase.client.PreemptiveFastFailInterceptor(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptor."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #4                  // Field repeatedFailuresMap:Ljava/util/concurrent/ConcurrentMap;
+      15: aload_0
+      16: new           #5                  // class java/lang/ThreadLocal
+      19: dup
+      20: invokespecial #6                  // Method java/lang/ThreadLocal."<init>":()V
+      23: putfield      #7                  // Field threadRetryingInFastFailMode:Ljava/lang/ThreadLocal;
+      26: aload_0
+      27: aload_1
+      28: ldc           #9                  // String hbase.client.fastfail.threshold
+      30: ldc2_w        #10                 // long 60000l
+      33: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      36: putfield      #13                 // Field fastFailThresholdMilliSec:J
+      39: aload_0
+      40: aload_1
+      41: ldc           #14                 // String hbase.client.failure.map.cleanup.interval
+      43: ldc2_w        #15                 // long 600000l
+      46: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      49: putfield      #17                 // Field failureMapCleanupIntervalMilliSec:J
+      52: aload_0
+      53: aload_1
+      54: ldc           #18                 // String hbase.client.fast.fail.cleanup.duration
+      56: ldc2_w        #15                 // long 600000l
+      59: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      62: putfield      #19                 // Field fastFailClearingTimeMilliSec:J
+      65: aload_0
+      66: invokestatic  #20                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      69: putfield      #21                 // Field lastFailureMapCleanupTimeMilliSec:J
+      72: return
+
+  public void intercept(org.apache.hadoop.hbase.client.FastFailInterceptorContext) throws org.apache.hadoop.hbase.exceptions.PreemptiveFastFailException;
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #4                  // Field repeatedFailuresMap:Ljava/util/concurrent/ConcurrentMap;
+       5: aload_1
+       6: invokevirtual #22                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getServer:()Lorg/apache/hadoop/hbase/ServerName;
+       9: invokeinterface #23,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      14: checkcast     #24                 // class org/apache/hadoop/hbase/client/FailureInfo
+      17: invokevirtual #25                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.setFailureInfo:(Lorg/apache/hadoop/hbase/client/FailureInfo;)V
+      20: aload_0
+      21: aload_1
+      22: invokevirtual #22                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getServer:()Lorg/apache/hadoop/hbase/ServerName;
+      25: invokespecial #26                 // Method inFastFailMode:(Lorg/apache/hadoop/hbase/ServerName;)Z
+      28: ifeq          142
+      31: aload_0
+      32: invokespecial #27                 // Method currentThreadInFastFailMode:()Z
+      35: ifne          142
+      38: aload_1
+      39: aload_0
+      40: aload_1
+      41: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getFailureInfo:()Lorg/apache/hadoop/hbase/client/FailureInfo;
+      44: invokevirtual #29                 // Method shouldRetryInspiteOfFastFail:(Lorg/apache/hadoop/hbase/client/FailureInfo;)Z
+      47: invokevirtual #30                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.setRetryDespiteFastFailMode:(Z)V
+      50: aload_1
+      51: invokevirtual #31                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.isRetryDespiteFastFailMode:()Z
+      54: ifne          142
+      57: getstatic     #32                 // Field LOG:Lorg/slf4j/Logger;
+      60: new           #33                 // class java/lang/StringBuilder
+      63: dup
+      64: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+      67: ldc           #35                 // String Throwing PFFE :
+      69: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      72: aload_1
+      73: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getFailureInfo:()Lorg/apache/hadoop/hbase/client/FailureInfo;
+      76: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      79: ldc           #38                 // String  tries :
+      81: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      84: aload_1
+      85: invokevirtual #39                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getTries:()I
+      88: invokevirtual #40                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      91: invokevirtual #41                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      94: invokeinterface #42,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      99: new           #43                 // class org/apache/hadoop/hbase/exceptions/PreemptiveFastFailException
+     102: dup
+     103: aload_1
+     104: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getFailureInfo:()Lorg/apache/hadoop/hbase/client/FailureInfo;
+     107: getfield      #44                 // Field org/apache/hadoop/hbase/client/FailureInfo.numConsecutiveFailures:Ljava/util/concurrent/atomic/AtomicLong;
+     110: invokevirtual #45                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+     113: aload_1
+     114: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getFailureInfo:()Lorg/apache/hadoop/hbase/client/FailureInfo;
+     117: getfield      #46                 // Field org/apache/hadoop/hbase/client/FailureInfo.timeOfFirstFailureMilliSec:J
+     120: aload_1
+     121: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getFailureInfo:()Lorg/apache/hadoop/hbase/client/FailureInfo;
+     124: getfield      #47                 // Field org/apache/hadoop/hbase/client/FailureInfo.timeOfLatestAttemptMilliSec:J
+     127: aload_1
+     128: invokevirtual #22                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getServer:()Lorg/apache/hadoop/hbase/ServerName;
+     131: aload_1
+     132: invokevirtual #48                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getGuaranteedClientSideOnly:()Lorg/apache/commons/lang3/mutable/MutableBoolean;
+     135: invokevirtual #49                 // Method org/apache/commons/lang3/mutable/MutableBoolean.isTrue:()Z
+     138: invokespecial #50                 // Method org/apache/hadoop/hbase/exceptions/PreemptiveFastFailException."<init>":(JJJLorg/apache/hadoop/hbase/ServerName;Z)V
+     141: athrow
+     142: aload_1
+     143: iconst_1
+     144: invokevirtual #51                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.setDidTry:(Z)V
+     147: return
+
+  public void handleFailure(org.apache.hadoop.hbase.client.FastFailInterceptorContext, java.lang.Throwable) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_2
+       2: aload_1
+       3: invokevirtual #22                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getServer:()Lorg/apache/hadoop/hbase/ServerName;
+       6: aload_1
+       7: invokevirtual #52                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getCouldNotCommunicateWithServer:()Lorg/apache/commons/lang3/mutable/MutableBoolean;
+      10: aload_1
+      11: invokevirtual #48                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getGuaranteedClientSideOnly:()Lorg/apache/commons/lang3/mutable/MutableBoolean;
+      14: invokevirtual #53                 // Method handleThrowable:(Ljava/lang/Throwable;Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/commons/lang3/mutable/MutableBoolean;Lorg/apache/commons/lang3/mutable/MutableBoolean;)V
+      17: return
+
+  public void updateFailureInfo(org.apache.hadoop.hbase.client.FastFailInterceptorContext);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #22                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getServer:()Lorg/apache/hadoop/hbase/ServerName;
+       5: aload_1
+       6: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getFailureInfo:()Lorg/apache/hadoop/hbase/client/FailureInfo;
+       9: aload_1
+      10: invokevirtual #54                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.didTry:()Z
+      13: aload_1
+      14: invokevirtual #52                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.getCouldNotCommunicateWithServer:()Lorg/apache/commons/lang3/mutable/MutableBoolean;
+      17: invokevirtual #55                 // Method org/apache/commons/lang3/mutable/MutableBoolean.booleanValue:()Z
+      20: aload_1
+      21: invokevirtual #31                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext.isRetryDespiteFastFailMode:()Z
+      24: invokespecial #56                 // Method updateFailureInfoForServer:(Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/client/FailureInfo;ZZZ)V
+      27: return
+
+  protected void handleFailureToServer(org.apache.hadoop.hbase.ServerName, java.lang.Throwable);
+    Code:
+       0: aload_1
+       1: ifnull        8
+       4: aload_2
+       5: ifnonnull     9
+       8: return
+       9: invokestatic  #20                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      12: lstore_3
+      13: aload_0
+      14: getfield      #4                  // Field repeatedFailuresMap:Ljava/util/concurrent/ConcurrentMap;
+      17: aload_1
+      18: lload_3
+      19: invokedynamic #57,  0             // InvokeDynamic #0:get:(J)Ljava/util/function/Supplier;
+      24: invokestatic  #58                 // Method org/apache/hadoop/hbase/util/ConcurrentMapUtils.computeIfAbsent:(Ljava/util/concurrent/ConcurrentMap;Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;
+      27: checkcast     #24                 // class org/apache/hadoop/hbase/client/FailureInfo
+      30: astore        5
+      32: aload         5
+      34: lload_3
+      35: putfield      #47                 // Field org/apache/hadoop/hbase/client/FailureInfo.timeOfLatestAttemptMilliSec:J
+      38: aload         5
+      40: getfield      #44                 // Field org/apache/hadoop/hbase/client/FailureInfo.numConsecutiveFailures:Ljava/util/concurrent/atomic/AtomicLong;
+      43: invokevirtual #59                 // Method java/util/concurrent/atomic/AtomicLong.incrementAndGet:()J
+      46: pop2
+      47: return
+
+  public void handleThrowable(java.lang.Throwable, org.apache.hadoop.hbase.ServerName, org.apache.commons.lang3.mutable.MutableBoolean, org.apache.commons.lang3.mutable.MutableBoolean) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokestatic  #60                 // Method org/apache/hadoop/hbase/exceptions/ClientExceptionsUtil.translatePFFE:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+       4: astore        5
+       6: aload         5
+       8: instanceof    #61                 // class org/apache/hadoop/ipc/RemoteException
+      11: ifne          18
+      14: iconst_1
+      15: goto          19
+      18: iconst_0
+      19: istore        6
+      21: iload         6
+      23: ifeq          64
+      26: aload         5
+      28: invokestatic  #62                 // Method org/apache/hadoop/hbase/exceptions/ClientExceptionsUtil.isConnectionException:(Ljava/lang/Throwable;)Z
+      31: ifeq          64
+      34: aload_3
+      35: iconst_1
+      36: invokevirtual #63                 // Method org/apache/commons/lang3/mutable/MutableBoolean.setValue:(Z)V
+      39: aload         4
+      41: aload         5
+      43: instanceof    #64                 // class org/apache/hadoop/hbase/ipc/CallTimeoutException
+      46: ifne          53
+      49: iconst_1
+      50: goto          54
+      53: iconst_0
+      54: invokevirtual #63                 // Method org/apache/commons/lang3/mutable/MutableBoolean.setValue:(Z)V
+      57: aload_0
+      58: aload_2
+      59: aload         5
+      61: invokevirtual #65                 // Method handleFailureToServer:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/Throwable;)V
+      64: return
+
+  protected void occasionallyCleanupFailureInformation();
+    Code:
+       0: invokestatic  #66                 // Method java/lang/System.currentTimeMillis:()J
+       3: lstore_1
+       4: lload_1
+       5: aload_0
+       6: getfield      #21                 // Field lastFailureMapCleanupTimeMilliSec:J
+       9: aload_0
+      10: getfield      #17                 // Field failureMapCleanupIntervalMilliSec:J
+      13: ladd
+      14: lcmp
+      15: ifgt          19
+      18: return
+      19: new           #33                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+      26: astore_3
+      27: aload_0
+      28: getfield      #4                  // Field repeatedFailuresMap:Ljava/util/concurrent/ConcurrentMap;
+      31: invokeinterface #67,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.entrySet:()Ljava/util/Set;
+      36: invokeinterface #68,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      41: astore        4
+      43: aload         4
+      45: invokeinterface #69,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      50: ifeq          247
+      53: aload         4
+      55: invokeinterface #70,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      60: checkcast     #71                 // class java/util/Map$Entry
+      63: astore        5
+      65: lload_1
+      66: aload         5
+      68: invokeinterface #72,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      73: checkcast     #24                 // class org/apache/hadoop/hbase/client/FailureInfo
+      76: getfield      #47                 // Field org/apache/hadoop/hbase/client/FailureInfo.timeOfLatestAttemptMilliSec:J
+      79: aload_0
+      80: getfield      #17                 // Field failureMapCleanupIntervalMilliSec:J
+      83: ladd
+      84: lcmp
+      85: ifle          108
+      88: aload_0
+      89: getfield      #4                  // Field repeatedFailuresMap:Ljava/util/concurrent/ConcurrentMap;
+      92: aload         5
+      94: invokeinterface #73,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      99: invokeinterface #74,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     104: pop
+     105: goto          244
+     108: lload_1
+     109: aload         5
+     111: invokeinterface #72,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     116: checkcast     #24                 // class org/apache/hadoop/hbase/client/FailureInfo
+     119: getfield      #46                 // Field org/apache/hadoop/hbase/client/FailureInfo.timeOfFirstFailureMilliSec:J
+     122: aload_0
+     123: getfield      #19                 // Field fastFailClearingTimeMilliSec:J
+     126: ladd
+     127: lcmp
+     128: ifle          200
+     131: getstatic     #32                 // Field LOG:Lorg/slf4j/Logger;
+     134: new           #33                 // class java/lang/StringBuilder
+     137: dup
+     138: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+     141: aload         5
+     143: invokeinterface #73,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     148: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     151: ldc           #75                 // String  been failing for a long time. clearing out.
+     153: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     156: aload         5
+     158: invokeinterface #72,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     163: checkcast     #24                 // class org/apache/hadoop/hbase/client/FailureInfo
+     166: invokevirtual #76                 // Method org/apache/hadoop/hbase/client/FailureInfo.toString:()Ljava/lang/String;
+     169: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     172: invokevirtual #41                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     175: invokeinterface #77,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     180: aload_0
+     181: getfield      #4                  // Field repeatedFailuresMap:Ljava/util/concurrent/ConcurrentMap;
+     184: aload         5
+     186: invokeinterface #73,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     191: invokeinterface #74,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     196: pop
+     197: goto          244
+     200: aload_3
+     201: aload         5
+     203: invokeinterface #73,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     208: checkcast     #78                 // class org/apache/hadoop/hbase/ServerName
+     211: invokevirtual #79                 // Method org/apache/hadoop/hbase/ServerName.toString:()Ljava/lang/String;
+     214: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     217: ldc           #80                 // String  failing
+     219: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     222: aload         5
+     224: invokeinterface #72,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     229: checkcast     #24                 // class org/apache/hadoop/hbase/client/FailureInfo
+     232: invokevirtual #76                 // Method org/apache/hadoop/hbase/client/FailureInfo.toString:()Ljava/lang/String;
+     235: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     238: ldc           #81                 // String \n
+     240: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     243: pop
+     244: goto          43
+     247: aload_3
+     248: invokevirtual #82                 // Method java/lang/StringBuilder.length:()I
+     251: ifle          284
+     254: getstatic     #32                 // Field LOG:Lorg/slf4j/Logger;
+     257: new           #33                 // class java/lang/StringBuilder
+     260: dup
+     261: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+     264: ldc           #83                 // String Preemptive failure enabled for :
+     266: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     269: aload_3
+     270: invokevirtual #41                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     273: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     276: invokevirtual #41                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     279: invokeinterface #84,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     284: aload_0
+     285: lload_1
+     286: putfield      #21                 // Field lastFailureMapCleanupTimeMilliSec:J
+     289: return
+
+  protected boolean shouldRetryInspiteOfFastFail(org.apache.hadoop.hbase.client.FailureInfo);
+    Code:
+       0: aload_1
+       1: ifnull        54
+       4: aload_1
+       5: getfield      #87                 // Field org/apache/hadoop/hbase/client/FailureInfo.exclusivelyRetringInspiteOfFastFail:Ljava/util/concurrent/atomic/AtomicBoolean;
+       8: iconst_0
+       9: iconst_1
+      10: invokevirtual #88                 // Method java/util/concurrent/atomic/AtomicBoolean.compareAndSet:(ZZ)Z
+      13: ifeq          54
+      16: aload_0
+      17: getfield      #7                  // Field threadRetryingInFastFailMode:Ljava/lang/ThreadLocal;
+      20: invokevirtual #85                 // Method java/lang/ThreadLocal.get:()Ljava/lang/Object;
+      23: checkcast     #86                 // class org/apache/commons/lang3/mutable/MutableBoolean
+      26: astore_2
+      27: aload_2
+      28: ifnonnull     47
+      31: new           #86                 // class org/apache/commons/lang3/mutable/MutableBoolean
+      34: dup
+      35: invokespecial #89                 // Method org/apache/commons/lang3/mutable/MutableBoolean."<init>":()V
+      38: astore_2
+      39: aload_0
+      40: getfield      #7                  // Field threadRetryingInFastFailMode:Ljava/lang/ThreadLocal;
+      43: aload_2
+      44: invokevirtual #90                 // Method java/lang/ThreadLocal.set:(Ljava/lang/Object;)V
+      47: aload_2
+      48: iconst_1
+      49: invokevirtual #63                 // Method org/apache/commons/lang3/mutable/MutableBoolean.setValue:(Z)V
+      52: iconst_1
+      53: ireturn
+      54: iconst_0
+      55: ireturn
+
+  public void intercept(org.apache.hadoop.hbase.client.RetryingCallerInterceptorContext) throws org.apache.hadoop.hbase.exceptions.PreemptiveFastFailException;
+    Code:
+       0: aload_1
+       1: instanceof    #95                 // class org/apache/hadoop/hbase/client/FastFailInterceptorContext
+       4: ifeq          15
+       7: aload_0
+       8: aload_1
+       9: checkcast     #95                 // class org/apache/hadoop/hbase/client/FastFailInterceptorContext
+      12: invokevirtual #96                 // Method intercept:(Lorg/apache/hadoop/hbase/client/FastFailInterceptorContext;)V
+      15: return
+
+  public void handleFailure(org.apache.hadoop.hbase.client.RetryingCallerInterceptorContext, java.lang.Throwable) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: instanceof    #95                 // class org/apache/hadoop/hbase/client/FastFailInterceptorContext
+       4: ifeq          16
+       7: aload_0
+       8: aload_1
+       9: checkcast     #95                 // class org/apache/hadoop/hbase/client/FastFailInterceptorContext
+      12: aload_2
+      13: invokevirtual #97                 // Method handleFailure:(Lorg/apache/hadoop/hbase/client/FastFailInterceptorContext;Ljava/lang/Throwable;)V
+      16: return
+
+  public void updateFailureInfo(org.apache.hadoop.hbase.client.RetryingCallerInterceptorContext);
+    Code:
+       0: aload_1
+       1: instanceof    #95                 // class org/apache/hadoop/hbase/client/FastFailInterceptorContext
+       4: ifeq          15
+       7: aload_0
+       8: aload_1
+       9: checkcast     #95                 // class org/apache/hadoop/hbase/client/FastFailInterceptorContext
+      12: invokevirtual #98                 // Method updateFailureInfo:(Lorg/apache/hadoop/hbase/client/FastFailInterceptorContext;)V
+      15: return
+
+  public org.apache.hadoop.hbase.client.RetryingCallerInterceptorContext createEmptyContext();
+    Code:
+       0: new           #95                 // class org/apache/hadoop/hbase/client/FastFailInterceptorContext
+       3: dup
+       4: invokespecial #99                 // Method org/apache/hadoop/hbase/client/FastFailInterceptorContext."<init>":()V
+       7: areturn
+
+  protected boolean isServerInFailureMap(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field repeatedFailuresMap:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #100,  2          // InterfaceMethod java/util/concurrent/ConcurrentMap.containsKey:(Ljava/lang/Object;)Z
+      10: ireturn
+
+  public java.lang.String toString();
+    Code:
+       0: ldc           #101                // String PreemptiveFastFailInterceptor
+       2: areturn
+
+  static {};
+    Code:
+       0: ldc           #103                // class org/apache/hadoop/hbase/client/PreemptiveFastFailInterceptor
+       2: invokestatic  #104                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #32                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

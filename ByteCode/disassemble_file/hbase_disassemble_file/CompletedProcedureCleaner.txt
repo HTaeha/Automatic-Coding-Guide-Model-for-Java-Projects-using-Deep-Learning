@@ -1,0 +1,185 @@
+Compiled from "CompletedProcedureCleaner.java"
+class org.apache.hadoop.hbase.procedure2.CompletedProcedureCleaner<TEnvironment> extends org.apache.hadoop.hbase.procedure2.ProcedureInMemoryChore<TEnvironment> {
+  static final java.lang.String CLEANER_INTERVAL_CONF_KEY;
+
+  public org.apache.hadoop.hbase.procedure2.CompletedProcedureCleaner(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.procedure2.store.ProcedureStore, org.apache.hadoop.hbase.util.IdLock, java.util.Map<java.lang.Long, org.apache.hadoop.hbase.procedure2.CompletedProcedureRetainer<TEnvironment>>, java.util.Map<org.apache.hadoop.hbase.util.NonceKey, java.lang.Long>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: ldc           #2                  // String hbase.procedure.cleaner.interval
+       4: sipush        30000
+       7: invokevirtual #3                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      10: invokespecial #4                  // Method org/apache/hadoop/hbase/procedure2/ProcedureInMemoryChore."<init>":(I)V
+      13: aload_0
+      14: aload         4
+      16: putfield      #5                  // Field completed:Ljava/util/Map;
+      19: aload_0
+      20: aload         5
+      22: putfield      #6                  // Field nonceKeysToProcIdsMap:Ljava/util/Map;
+      25: aload_0
+      26: aload_2
+      27: putfield      #7                  // Field store:Lorg/apache/hadoop/hbase/procedure2/store/ProcedureStore;
+      30: aload_0
+      31: aload_3
+      32: putfield      #8                  // Field procExecutionLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      35: aload_0
+      36: aload_1
+      37: putfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      40: return
+
+  protected void periodicExecute(TEnvironment);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field completed:Ljava/util/Map;
+       4: invokeinterface #10,  1           // InterfaceMethod java/util/Map.isEmpty:()Z
+       9: ifeq          34
+      12: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+      15: invokeinterface #12,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      20: ifeq          33
+      23: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+      26: ldc           #13                 // String No completed procedures to cleanup.
+      28: invokeinterface #14,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      33: return
+      34: aload_0
+      35: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      38: ldc           #16                 // String hbase.procedure.cleaner.evict.ttl
+      40: ldc           #17                 // int 900000
+      42: invokevirtual #3                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      45: i2l
+      46: lstore_2
+      47: aload_0
+      48: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      51: ldc           #18                 // String hbase.procedure.cleaner.acked.evict.ttl
+      53: ldc           #19                 // int 300000
+      55: invokevirtual #3                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      58: i2l
+      59: lstore        4
+      61: aload_0
+      62: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      65: ldc           #20                 // String hbase.procedure.cleaner.evict.batch.size
+      67: bipush        32
+      69: invokevirtual #3                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      72: istore        6
+      74: iload         6
+      76: newarray       long
+      78: astore        7
+      80: iconst_0
+      81: istore        8
+      83: invokestatic  #21                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      86: lstore        9
+      88: aload_0
+      89: getfield      #5                  // Field completed:Ljava/util/Map;
+      92: invokeinterface #22,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      97: invokeinterface #23,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     102: astore        11
+     104: aload         11
+     106: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     111: ifeq          325
+     114: aload_0
+     115: getfield      #7                  // Field store:Lorg/apache/hadoop/hbase/procedure2/store/ProcedureStore;
+     118: invokeinterface #25,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/store/ProcedureStore.isRunning:()Z
+     123: ifeq          325
+     126: aload         11
+     128: invokeinterface #26,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     133: checkcast     #27                 // class java/util/Map$Entry
+     136: astore        12
+     138: aload         12
+     140: invokeinterface #28,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     145: checkcast     #29                 // class org/apache/hadoop/hbase/procedure2/CompletedProcedureRetainer
+     148: astore        13
+     150: aload         13
+     152: invokevirtual #30                 // Method org/apache/hadoop/hbase/procedure2/CompletedProcedureRetainer.getProcedure:()Lorg/apache/hadoop/hbase/procedure2/Procedure;
+     155: astore        14
+     157: aload_0
+     158: getfield      #8                  // Field procExecutionLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     161: aload         14
+     163: invokevirtual #31                 // Method org/apache/hadoop/hbase/procedure2/Procedure.getProcId:()J
+     166: invokevirtual #32                 // Method org/apache/hadoop/hbase/util/IdLock.getLockEntry:(J)Lorg/apache/hadoop/hbase/util/IdLock$Entry;
+     169: astore        15
+     171: goto          186
+     174: astore        16
+     176: new           #34                 // class java/io/UncheckedIOException
+     179: dup
+     180: aload         16
+     182: invokespecial #35                 // Method java/io/UncheckedIOException."<init>":(Ljava/io/IOException;)V
+     185: athrow
+     186: aload         13
+     188: lload         9
+     190: lload_2
+     191: lload         4
+     193: invokevirtual #36                 // Method org/apache/hadoop/hbase/procedure2/CompletedProcedureRetainer.isExpired:(JJJ)Z
+     196: ifeq          296
+     199: aload         14
+     201: instanceof    #37                 // class org/apache/hadoop/hbase/procedure2/FailedProcedure
+     204: ifne          253
+     207: aload         7
+     209: iload         8
+     211: iinc          8, 1
+     214: aload         12
+     216: invokeinterface #38,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     221: checkcast     #39                 // class java/lang/Long
+     224: invokevirtual #40                 // Method java/lang/Long.longValue:()J
+     227: lastore
+     228: iload         8
+     230: aload         7
+     232: arraylength
+     233: if_icmpne     253
+     236: aload_0
+     237: getfield      #7                  // Field store:Lorg/apache/hadoop/hbase/procedure2/store/ProcedureStore;
+     240: aload         7
+     242: iconst_0
+     243: iload         8
+     245: invokeinterface #41,  4           // InterfaceMethod org/apache/hadoop/hbase/procedure2/store/ProcedureStore.delete:([JII)V
+     250: iconst_0
+     251: istore        8
+     253: aload         14
+     255: invokevirtual #42                 // Method org/apache/hadoop/hbase/procedure2/Procedure.getNonceKey:()Lorg/apache/hadoop/hbase/util/NonceKey;
+     258: astore        16
+     260: aload         16
+     262: ifnull        277
+     265: aload_0
+     266: getfield      #6                  // Field nonceKeysToProcIdsMap:Ljava/util/Map;
+     269: aload         16
+     271: invokeinterface #43,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     276: pop
+     277: aload         11
+     279: invokeinterface #44,  1           // InterfaceMethod java/util/Iterator.remove:()V
+     284: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+     287: ldc           #45                 // String Evict completed {}
+     289: aload         14
+     291: invokeinterface #46,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+     296: aload_0
+     297: getfield      #8                  // Field procExecutionLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     300: aload         15
+     302: invokevirtual #47                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+     305: goto          322
+     308: astore        17
+     310: aload_0
+     311: getfield      #8                  // Field procExecutionLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     314: aload         15
+     316: invokevirtual #47                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+     319: aload         17
+     321: athrow
+     322: goto          104
+     325: iload         8
+     327: ifle          344
+     330: aload_0
+     331: getfield      #7                  // Field store:Lorg/apache/hadoop/hbase/procedure2/store/ProcedureStore;
+     334: aload         7
+     336: iconst_0
+     337: iload         8
+     339: invokeinterface #41,  4           // InterfaceMethod org/apache/hadoop/hbase/procedure2/store/ProcedureStore.delete:([JII)V
+     344: return
+    Exception table:
+       from    to  target type
+         157   171   174   Class java/io/IOException
+         186   296   308   any
+         308   310   308   any
+
+  static {};
+    Code:
+       0: ldc           #1                  // class org/apache/hadoop/hbase/procedure2/CompletedProcedureCleaner
+       2: invokestatic  #48                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

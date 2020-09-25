@@ -1,0 +1,1734 @@
+Compiled from "HTable.java"
+public class org.apache.hadoop.hbase.client.HTable implements org.apache.hadoop.hbase.client.Table {
+  org.apache.hadoop.hbase.client.AsyncProcess multiAp;
+
+  static final boolean $assertionsDisabled;
+
+  public static java.util.concurrent.ThreadPoolExecutor getDefaultExecutor(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #5                  // String hbase.htable.threads.max
+       3: ldc           #7                  // int 2147483647
+       5: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       8: istore_1
+       9: iload_1
+      10: ifne          15
+      13: iconst_1
+      14: istore_1
+      15: aload_0
+      16: ldc           #9                  // String hbase.htable.threads.coresize
+      18: iconst_1
+      19: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      22: istore_2
+      23: aload_0
+      24: ldc           #10                 // String hbase.htable.threads.keepalivetime
+      26: ldc2_w        #11                 // long 60l
+      29: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      32: lstore_3
+      33: new           #14                 // class java/util/concurrent/ThreadPoolExecutor
+      36: dup
+      37: iload_2
+      38: iload_1
+      39: lload_3
+      40: getstatic     #15                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      43: new           #16                 // class java/util/concurrent/SynchronousQueue
+      46: dup
+      47: invokespecial #17                 // Method java/util/concurrent/SynchronousQueue."<init>":()V
+      50: ldc           #18                 // String htable
+      52: invokestatic  #19                 // Method org/apache/hadoop/hbase/util/Threads.newDaemonThreadFactory:(Ljava/lang/String;)Ljava/util/concurrent/ThreadFactory;
+      55: invokespecial #20                 // Method java/util/concurrent/ThreadPoolExecutor."<init>":(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V
+      58: astore        5
+      60: aload         5
+      62: iconst_1
+      63: invokevirtual #21                 // Method java/util/concurrent/ThreadPoolExecutor.allowCoreThreadTimeOut:(Z)V
+      66: aload         5
+      68: areturn
+
+  protected org.apache.hadoop.hbase.client.HTable(org.apache.hadoop.hbase.client.ConnectionImplementation, org.apache.hadoop.hbase.client.TableBuilderBase, org.apache.hadoop.hbase.client.RpcRetryingCallerFactory, org.apache.hadoop.hbase.ipc.RpcControllerFactory, java.util.concurrent.ExecutorService);
+    Code:
+       0: aload_0
+       1: invokespecial #22                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #23                 // Field closed:Z
+       9: aload_0
+      10: aload_1
+      11: ldc           #24                 // String connection is null
+      13: invokestatic  #25                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      16: checkcast     #26                 // class org/apache/hadoop/hbase/client/ClusterConnection
+      19: putfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      22: aload_0
+      23: aload_1
+      24: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/ConnectionImplementation.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      27: putfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+      30: aload_0
+      31: aload_1
+      32: invokevirtual #30                 // Method org/apache/hadoop/hbase/client/ConnectionImplementation.getConnectionConfiguration:()Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+      35: putfield      #31                 // Field connConfiguration:Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+      38: aload         5
+      40: ifnonnull     62
+      43: aload_0
+      44: aload_0
+      45: getfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+      48: invokestatic  #32                 // Method getDefaultExecutor:(Lorg/apache/hadoop/conf/Configuration;)Ljava/util/concurrent/ThreadPoolExecutor;
+      51: putfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      54: aload_0
+      55: iconst_1
+      56: putfield      #34                 // Field cleanupPoolOnClose:Z
+      59: goto          73
+      62: aload_0
+      63: aload         5
+      65: putfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      68: aload_0
+      69: iconst_0
+      70: putfield      #34                 // Field cleanupPoolOnClose:Z
+      73: aload_3
+      74: ifnonnull     92
+      77: aload_0
+      78: aload_1
+      79: aload_0
+      80: getfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+      83: invokevirtual #35                 // Method org/apache/hadoop/hbase/client/ConnectionImplementation.getNewRpcRetryingCallerFactory:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      86: putfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      89: goto          97
+      92: aload_0
+      93: aload_3
+      94: putfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      97: aload         4
+      99: ifnonnull     116
+     102: aload_0
+     103: aload_0
+     104: getfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+     107: invokestatic  #37                 // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     110: putfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     113: goto          122
+     116: aload_0
+     117: aload         4
+     119: putfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     122: aload_0
+     123: aload_2
+     124: getfield      #39                 // Field org/apache/hadoop/hbase/client/TableBuilderBase.tableName:Lorg/apache/hadoop/hbase/TableName;
+     127: putfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+     130: aload_0
+     131: aload_2
+     132: getfield      #41                 // Field org/apache/hadoop/hbase/client/TableBuilderBase.operationTimeout:I
+     135: putfield      #42                 // Field operationTimeoutMs:I
+     138: aload_0
+     139: aload_2
+     140: getfield      #43                 // Field org/apache/hadoop/hbase/client/TableBuilderBase.rpcTimeout:I
+     143: putfield      #44                 // Field rpcTimeoutMs:I
+     146: aload_0
+     147: aload_2
+     148: getfield      #45                 // Field org/apache/hadoop/hbase/client/TableBuilderBase.readRpcTimeout:I
+     151: putfield      #46                 // Field readRpcTimeoutMs:I
+     154: aload_0
+     155: aload_2
+     156: getfield      #47                 // Field org/apache/hadoop/hbase/client/TableBuilderBase.writeRpcTimeout:I
+     159: putfield      #48                 // Field writeRpcTimeoutMs:I
+     162: aload_0
+     163: aload_0
+     164: getfield      #31                 // Field connConfiguration:Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+     167: invokevirtual #49                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getScannerCaching:()I
+     170: putfield      #50                 // Field scannerCaching:I
+     173: aload_0
+     174: aload_0
+     175: getfield      #31                 // Field connConfiguration:Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+     178: invokevirtual #51                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getScannerMaxResultSize:()J
+     181: putfield      #52                 // Field scannerMaxResultSize:J
+     184: aload_0
+     185: aload_0
+     186: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     189: invokeinterface #53,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getAsyncProcess:()Lorg/apache/hadoop/hbase/client/AsyncProcess;
+     194: putfield      #54                 // Field multiAp:Lorg/apache/hadoop/hbase/client/AsyncProcess;
+     197: aload_0
+     198: new           #55                 // class org/apache/hadoop/hbase/client/HRegionLocator
+     201: dup
+     202: aload_0
+     203: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+     206: aload_1
+     207: invokespecial #56                 // Method org/apache/hadoop/hbase/client/HRegionLocator."<init>":(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/ConnectionImplementation;)V
+     210: putfield      #57                 // Field locator:Lorg/apache/hadoop/hbase/client/HRegionLocator;
+     213: return
+
+  public static int getMaxKeyValueSize(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #59                 // String hbase.client.keyvalue.maxsize
+       3: iconst_m1
+       4: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       7: ireturn
+
+  public org.apache.hadoop.conf.Configuration getConfiguration();
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+       4: areturn
+
+  public org.apache.hadoop.hbase.TableName getName();
+    Code:
+       0: aload_0
+       1: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       4: areturn
+
+  protected org.apache.hadoop.hbase.client.Connection getConnection();
+    Code:
+       0: aload_0
+       1: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       4: areturn
+
+  public org.apache.hadoop.hbase.client.TableDescriptor getDescriptor() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       4: aload_0
+       5: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       8: aload_0
+       9: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      12: aload_0
+      13: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      16: aload_0
+      17: getfield      #42                 // Field operationTimeoutMs:I
+      20: aload_0
+      21: getfield      #46                 // Field readRpcTimeoutMs:I
+      24: invokestatic  #60                 // Method org/apache/hadoop/hbase/client/HBaseAdmin.getTableDescriptor:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;II)Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      27: areturn
+
+  public org.apache.hadoop.hbase.client.ResultScanner getScanner(org.apache.hadoop.hbase.client.Scan) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #83                 // Method org/apache/hadoop/hbase/client/Scan.getCaching:()I
+       4: ifgt          16
+       7: aload_1
+       8: aload_0
+       9: getfield      #50                 // Field scannerCaching:I
+      12: invokevirtual #84                 // Method org/apache/hadoop/hbase/client/Scan.setCaching:(I)Lorg/apache/hadoop/hbase/client/Scan;
+      15: pop
+      16: aload_1
+      17: invokevirtual #85                 // Method org/apache/hadoop/hbase/client/Scan.getMaxResultSize:()J
+      20: lconst_0
+      21: lcmp
+      22: ifgt          34
+      25: aload_1
+      26: aload_0
+      27: getfield      #52                 // Field scannerMaxResultSize:J
+      30: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/Scan.setMaxResultSize:(J)Lorg/apache/hadoop/hbase/client/Scan;
+      33: pop
+      34: aload_1
+      35: invokevirtual #87                 // Method org/apache/hadoop/hbase/client/Scan.getMvccReadPoint:()J
+      38: lconst_0
+      39: lcmp
+      40: ifle          48
+      43: aload_1
+      44: invokevirtual #88                 // Method org/apache/hadoop/hbase/client/Scan.resetMvccReadPoint:()Lorg/apache/hadoop/hbase/client/Scan;
+      47: pop
+      48: aload_1
+      49: invokevirtual #89                 // Method org/apache/hadoop/hbase/client/Scan.isAsyncPrefetch:()Ljava/lang/Boolean;
+      52: astore_2
+      53: aload_2
+      54: ifnonnull     68
+      57: aload_0
+      58: getfield      #31                 // Field connConfiguration:Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+      61: invokevirtual #90                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.isClientScannerAsyncPrefetch:()Z
+      64: invokestatic  #91                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      67: astore_2
+      68: aload_1
+      69: invokevirtual #92                 // Method org/apache/hadoop/hbase/client/Scan.isReversed:()Z
+      72: ifeq          115
+      75: new           #93                 // class org/apache/hadoop/hbase/client/ReversedClientScanner
+      78: dup
+      79: aload_0
+      80: invokevirtual #94                 // Method getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      83: aload_1
+      84: aload_0
+      85: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+      88: aload_0
+      89: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      92: aload_0
+      93: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      96: aload_0
+      97: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     100: aload_0
+     101: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     104: aload_0
+     105: getfield      #31                 // Field connConfiguration:Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+     108: invokevirtual #96                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getReplicaCallTimeoutMicroSecondScan:()I
+     111: invokespecial #97                 // Method org/apache/hadoop/hbase/client/ReversedClientScanner."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;Ljava/util/concurrent/ExecutorService;I)V
+     114: areturn
+     115: aload_2
+     116: invokevirtual #98                 // Method java/lang/Boolean.booleanValue:()Z
+     119: ifeq          162
+     122: new           #99                 // class org/apache/hadoop/hbase/client/ClientAsyncPrefetchScanner
+     125: dup
+     126: aload_0
+     127: invokevirtual #94                 // Method getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     130: aload_1
+     131: aload_0
+     132: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+     135: aload_0
+     136: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     139: aload_0
+     140: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+     143: aload_0
+     144: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     147: aload_0
+     148: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     151: aload_0
+     152: getfield      #31                 // Field connConfiguration:Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+     155: invokevirtual #96                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getReplicaCallTimeoutMicroSecondScan:()I
+     158: invokespecial #100                // Method org/apache/hadoop/hbase/client/ClientAsyncPrefetchScanner."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;Ljava/util/concurrent/ExecutorService;I)V
+     161: areturn
+     162: new           #101                // class org/apache/hadoop/hbase/client/ClientSimpleScanner
+     165: dup
+     166: aload_0
+     167: invokevirtual #94                 // Method getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     170: aload_1
+     171: aload_0
+     172: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+     175: aload_0
+     176: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     179: aload_0
+     180: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+     183: aload_0
+     184: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     187: aload_0
+     188: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     191: aload_0
+     192: getfield      #31                 // Field connConfiguration:Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+     195: invokevirtual #96                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getReplicaCallTimeoutMicroSecondScan:()I
+     198: invokespecial #102                // Method org/apache/hadoop/hbase/client/ClientSimpleScanner."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;Ljava/util/concurrent/ExecutorService;I)V
+     201: areturn
+
+  public org.apache.hadoop.hbase.client.ResultScanner getScanner(byte[]) throws java.io.IOException;
+    Code:
+       0: new           #103                // class org/apache/hadoop/hbase/client/Scan
+       3: dup
+       4: invokespecial #104                // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+       7: astore_2
+       8: aload_2
+       9: aload_1
+      10: invokevirtual #105                // Method org/apache/hadoop/hbase/client/Scan.addFamily:([B)Lorg/apache/hadoop/hbase/client/Scan;
+      13: pop
+      14: aload_0
+      15: aload_2
+      16: invokevirtual #106                // Method getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+      19: areturn
+
+  public org.apache.hadoop.hbase.client.ResultScanner getScanner(byte[], byte[]) throws java.io.IOException;
+    Code:
+       0: new           #103                // class org/apache/hadoop/hbase/client/Scan
+       3: dup
+       4: invokespecial #104                // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+       7: astore_3
+       8: aload_3
+       9: aload_1
+      10: aload_2
+      11: invokevirtual #107                // Method org/apache/hadoop/hbase/client/Scan.addColumn:([B[B)Lorg/apache/hadoop/hbase/client/Scan;
+      14: pop
+      15: aload_0
+      16: aload_3
+      17: invokevirtual #106                // Method getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+      20: areturn
+
+  public org.apache.hadoop.hbase.client.Result get(org.apache.hadoop.hbase.client.Get) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: invokevirtual #108                // Method org/apache/hadoop/hbase/client/Get.isCheckExistenceOnly:()Z
+       6: invokespecial #109                // Method get:(Lorg/apache/hadoop/hbase/client/Get;Z)Lorg/apache/hadoop/hbase/client/Result;
+       9: areturn
+
+  public org.apache.hadoop.hbase.client.Result[] get(java.util.List<org.apache.hadoop.hbase.client.Get>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+       6: iconst_1
+       7: if_icmpne     32
+      10: iconst_1
+      11: anewarray     #126                // class org/apache/hadoop/hbase/client/Result
+      14: dup
+      15: iconst_0
+      16: aload_0
+      17: aload_1
+      18: iconst_0
+      19: invokeinterface #133,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      24: checkcast     #114                // class org/apache/hadoop/hbase/client/Get
+      27: invokevirtual #134                // Method get:(Lorg/apache/hadoop/hbase/client/Get;)Lorg/apache/hadoop/hbase/client/Result;
+      30: aastore
+      31: areturn
+      32: aload_1
+      33: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+      38: anewarray     #112                // class java/lang/Object
+      41: astore_2
+      42: aload_0
+      43: aload_1
+      44: aload_2
+      45: aload_0
+      46: getfield      #46                 // Field readRpcTimeoutMs:I
+      49: invokevirtual #135                // Method batch:(Ljava/util/List;[Ljava/lang/Object;I)V
+      52: aload_2
+      53: arraylength
+      54: anewarray     #126                // class org/apache/hadoop/hbase/client/Result
+      57: astore_3
+      58: iconst_0
+      59: istore        4
+      61: aload_2
+      62: astore        5
+      64: aload         5
+      66: arraylength
+      67: istore        6
+      69: iconst_0
+      70: istore        7
+      72: iload         7
+      74: iload         6
+      76: if_icmpge     104
+      79: aload         5
+      81: iload         7
+      83: aaload
+      84: astore        8
+      86: aload_3
+      87: iload         4
+      89: iinc          4, 1
+      92: aload         8
+      94: checkcast     #126                // class org/apache/hadoop/hbase/client/Result
+      97: aastore
+      98: iinc          7, 1
+     101: goto          72
+     104: aload_3
+     105: areturn
+     106: astore_2
+     107: new           #137                // class java/io/InterruptedIOException
+     110: dup
+     111: invokespecial #138                // Method java/io/InterruptedIOException."<init>":()V
+     114: aload_2
+     115: invokevirtual #139                // Method java/io/InterruptedIOException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+     118: checkcast     #137                // class java/io/InterruptedIOException
+     121: athrow
+    Exception table:
+       from    to  target type
+          32   105   106   Class java/lang/InterruptedException
+
+  public void batch(java.util.List<? extends org.apache.hadoop.hbase.client.Row>, java.lang.Object[]) throws java.lang.InterruptedException, java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #48                 // Field writeRpcTimeoutMs:I
+       4: istore_3
+       5: iconst_0
+       6: istore        4
+       8: iconst_0
+       9: istore        5
+      11: aload_1
+      12: invokeinterface #140,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      17: astore        6
+      19: aload         6
+      21: invokeinterface #141,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          74
+      29: aload         6
+      31: invokeinterface #142,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #143                // class org/apache/hadoop/hbase/client/Row
+      39: astore        7
+      41: aload         7
+      43: instanceof    #144                // class org/apache/hadoop/hbase/client/Mutation
+      46: ifeq          55
+      49: iconst_1
+      50: istore        5
+      52: goto          58
+      55: iconst_1
+      56: istore        4
+      58: iload         4
+      60: ifeq          71
+      63: iload         5
+      65: ifeq          71
+      68: goto          74
+      71: goto          19
+      74: iload         4
+      76: ifeq          89
+      79: iload         5
+      81: ifne          89
+      84: aload_0
+      85: getfield      #46                 // Field readRpcTimeoutMs:I
+      88: istore_3
+      89: aload_0
+      90: aload_1
+      91: aload_2
+      92: iload_3
+      93: invokevirtual #135                // Method batch:(Ljava/util/List;[Ljava/lang/Object;I)V
+      96: return
+
+  public void batch(java.util.List<? extends org.apache.hadoop.hbase.client.Row>, java.lang.Object[], int) throws java.lang.InterruptedException, java.io.IOException;
+    Code:
+       0: invokestatic  #145                // Method org/apache/hadoop/hbase/client/AsyncProcessTask.newBuilder:()Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+       3: aload_0
+       4: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+       7: invokevirtual #146                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setPool:(Ljava/util/concurrent/ExecutorService;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      10: aload_0
+      11: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      14: invokevirtual #147                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setTableName:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      17: aload_1
+      18: invokevirtual #148                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRowAccess:(Ljava/util/List;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      21: aload_2
+      22: invokevirtual #149                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setResults:([Ljava/lang/Object;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      25: iload_3
+      26: invokevirtual #150                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRpcTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      29: aload_0
+      30: getfield      #42                 // Field operationTimeoutMs:I
+      33: invokevirtual #151                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setOperationTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      36: getstatic     #152                // Field org/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows.ALL:Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;
+      39: invokevirtual #153                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setSubmittedRows:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      42: invokevirtual #154                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.build:()Lorg/apache/hadoop/hbase/client/AsyncProcessTask;
+      45: astore        4
+      47: aload_0
+      48: getfield      #54                 // Field multiAp:Lorg/apache/hadoop/hbase/client/AsyncProcess;
+      51: aload         4
+      53: invokevirtual #155                // Method org/apache/hadoop/hbase/client/AsyncProcess.submit:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask;)Lorg/apache/hadoop/hbase/client/AsyncRequestFuture;
+      56: astore        5
+      58: aload         5
+      60: invokeinterface #156,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.waitUntilDone:()V
+      65: aload         5
+      67: invokeinterface #157,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.hasError:()Z
+      72: ifeq          83
+      75: aload         5
+      77: invokeinterface #158,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.getErrors:()Lorg/apache/hadoop/hbase/client/RetriesExhaustedWithDetailsException;
+      82: athrow
+      83: return
+
+  public <R> void batchCallback(java.util.List<? extends org.apache.hadoop.hbase.client.Row>, java.lang.Object[], org.apache.hadoop.hbase.client.coprocessor.Batch$Callback<R>) throws java.io.IOException, java.lang.InterruptedException;
+    Code:
+       0: aload_1
+       1: aload_2
+       2: aload_3
+       3: aload_0
+       4: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       7: aload_0
+       8: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      11: aload_0
+      12: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      15: invokestatic  #159                // Method doBatchWithCallback:(Ljava/util/List;[Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;Lorg/apache/hadoop/hbase/client/ClusterConnection;Ljava/util/concurrent/ExecutorService;Lorg/apache/hadoop/hbase/TableName;)V
+      18: return
+
+  public static <R> void doBatchWithCallback(java.util.List<? extends org.apache.hadoop.hbase.client.Row>, java.lang.Object[], org.apache.hadoop.hbase.client.coprocessor.Batch$Callback<R>, org.apache.hadoop.hbase.client.ClusterConnection, java.util.concurrent.ExecutorService, org.apache.hadoop.hbase.TableName) throws java.io.InterruptedIOException, org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
+    Code:
+       0: aload_3
+       1: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConnectionConfiguration:()Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+       6: invokevirtual #161                // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getOperationTimeout:()I
+       9: istore        6
+      11: aload_3
+      12: invokeinterface #162,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      17: ldc           #164                // String hbase.rpc.write.timeout
+      19: aload_3
+      20: invokeinterface #162,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      25: ldc           #165                // String hbase.rpc.timeout
+      27: ldc           #166                // int 60000
+      29: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      32: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      35: istore        7
+      37: aload_2
+      38: invokestatic  #167                // Method org/apache/hadoop/hbase/client/AsyncProcessTask.newBuilder:(Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      41: aload         4
+      43: invokevirtual #146                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setPool:(Ljava/util/concurrent/ExecutorService;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      46: aload         5
+      48: invokevirtual #147                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setTableName:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      51: aload_0
+      52: invokevirtual #148                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRowAccess:(Ljava/util/List;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      55: aload_1
+      56: invokevirtual #149                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setResults:([Ljava/lang/Object;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      59: iload         6
+      61: invokevirtual #151                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setOperationTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      64: iload         7
+      66: invokevirtual #150                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRpcTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      69: getstatic     #152                // Field org/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows.ALL:Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;
+      72: invokevirtual #153                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setSubmittedRows:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      75: invokevirtual #154                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.build:()Lorg/apache/hadoop/hbase/client/AsyncProcessTask;
+      78: astore        8
+      80: aload_3
+      81: invokeinterface #53,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getAsyncProcess:()Lorg/apache/hadoop/hbase/client/AsyncProcess;
+      86: aload         8
+      88: invokevirtual #155                // Method org/apache/hadoop/hbase/client/AsyncProcess.submit:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask;)Lorg/apache/hadoop/hbase/client/AsyncRequestFuture;
+      91: astore        9
+      93: aload         9
+      95: invokeinterface #156,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.waitUntilDone:()V
+     100: aload         9
+     102: invokeinterface #157,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.hasError:()Z
+     107: ifeq          118
+     110: aload         9
+     112: invokeinterface #158,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.getErrors:()Lorg/apache/hadoop/hbase/client/RetriesExhaustedWithDetailsException;
+     117: athrow
+     118: return
+
+  public void delete(org.apache.hadoop.hbase.client.Delete) throws java.io.IOException;
+    Code:
+       0: new           #168                // class org/apache/hadoop/hbase/client/HTable$2
+       3: dup
+       4: aload_0
+       5: aload_0
+       6: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       9: aload_0
+      10: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+      13: aload_1
+      14: invokevirtual #169                // Method org/apache/hadoop/hbase/client/Delete.getRow:()[B
+      17: aload_0
+      18: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      21: invokevirtual #121                // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      24: aload_1
+      25: invokevirtual #170                // Method org/apache/hadoop/hbase/client/Delete.getPriority:()I
+      28: aload_1
+      29: invokespecial #171                // Method org/apache/hadoop/hbase/client/HTable$2."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;ILorg/apache/hadoop/hbase/client/Delete;)V
+      32: astore_2
+      33: aload_0
+      34: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      37: aload_0
+      38: getfield      #48                 // Field writeRpcTimeoutMs:I
+      41: invokevirtual #124                // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.newCaller:(I)Lorg/apache/hadoop/hbase/client/RpcRetryingCaller;
+      44: aload_2
+      45: aload_0
+      46: getfield      #42                 // Field operationTimeoutMs:I
+      49: invokeinterface #125,  3          // InterfaceMethod org/apache/hadoop/hbase/client/RpcRetryingCaller.callWithRetries:(Lorg/apache/hadoop/hbase/client/RetryingCallable;I)Ljava/lang/Object;
+      54: pop
+      55: return
+
+  public void delete(java.util.List<org.apache.hadoop.hbase.client.Delete>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+       6: anewarray     #112                // class java/lang/Object
+       9: astore_2
+      10: aload_0
+      11: aload_1
+      12: aload_2
+      13: aload_0
+      14: getfield      #48                 // Field writeRpcTimeoutMs:I
+      17: invokevirtual #135                // Method batch:(Ljava/util/List;[Ljava/lang/Object;I)V
+      20: aload_2
+      21: arraylength
+      22: iconst_1
+      23: isub
+      24: istore_3
+      25: iload_3
+      26: iflt          52
+      29: aload_2
+      30: iload_3
+      31: aaload
+      32: instanceof    #126                // class org/apache/hadoop/hbase/client/Result
+      35: ifeq          46
+      38: aload_1
+      39: iload_3
+      40: invokeinterface #172,  2          // InterfaceMethod java/util/List.remove:(I)Ljava/lang/Object;
+      45: pop
+      46: iinc          3, -1
+      49: goto          25
+      52: goto          112
+      55: astore_3
+      56: new           #137                // class java/io/InterruptedIOException
+      59: dup
+      60: invokespecial #138                // Method java/io/InterruptedIOException."<init>":()V
+      63: aload_3
+      64: invokevirtual #139                // Method java/io/InterruptedIOException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+      67: checkcast     #137                // class java/io/InterruptedIOException
+      70: athrow
+      71: astore        4
+      73: aload_2
+      74: arraylength
+      75: iconst_1
+      76: isub
+      77: istore        5
+      79: iload         5
+      81: iflt          109
+      84: aload_2
+      85: iload         5
+      87: aaload
+      88: instanceof    #126                // class org/apache/hadoop/hbase/client/Result
+      91: ifeq          103
+      94: aload_1
+      95: iload         5
+      97: invokeinterface #172,  2          // InterfaceMethod java/util/List.remove:(I)Ljava/lang/Object;
+     102: pop
+     103: iinc          5, -1
+     106: goto          79
+     109: aload         4
+     111: athrow
+     112: return
+    Exception table:
+       from    to  target type
+          10    20    55   Class java/lang/InterruptedException
+          10    20    71   any
+          55    73    71   any
+
+  public void put(org.apache.hadoop.hbase.client.Put) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #4                  // Method validatePut:(Lorg/apache/hadoop/hbase/client/Put;)V
+       5: new           #173                // class org/apache/hadoop/hbase/client/HTable$3
+       8: dup
+       9: aload_0
+      10: aload_0
+      11: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      14: aload_0
+      15: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+      18: aload_1
+      19: invokevirtual #174                // Method org/apache/hadoop/hbase/client/Put.getRow:()[B
+      22: aload_0
+      23: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      26: invokevirtual #121                // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      29: aload_1
+      30: invokevirtual #175                // Method org/apache/hadoop/hbase/client/Put.getPriority:()I
+      33: aload_1
+      34: invokespecial #176                // Method org/apache/hadoop/hbase/client/HTable$3."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;ILorg/apache/hadoop/hbase/client/Put;)V
+      37: astore_2
+      38: aload_0
+      39: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      42: aload_0
+      43: getfield      #48                 // Field writeRpcTimeoutMs:I
+      46: invokevirtual #124                // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.newCaller:(I)Lorg/apache/hadoop/hbase/client/RpcRetryingCaller;
+      49: aload_2
+      50: aload_0
+      51: getfield      #42                 // Field operationTimeoutMs:I
+      54: invokeinterface #125,  3          // InterfaceMethod org/apache/hadoop/hbase/client/RpcRetryingCaller.callWithRetries:(Lorg/apache/hadoop/hbase/client/RetryingCallable;I)Ljava/lang/Object;
+      59: pop
+      60: return
+
+  public void put(java.util.List<org.apache.hadoop.hbase.client.Put>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokeinterface #140,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       6: astore_2
+       7: aload_2
+       8: invokeinterface #141,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      13: ifeq          34
+      16: aload_2
+      17: invokeinterface #142,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      22: checkcast     #177                // class org/apache/hadoop/hbase/client/Put
+      25: astore_3
+      26: aload_0
+      27: aload_3
+      28: invokespecial #4                  // Method validatePut:(Lorg/apache/hadoop/hbase/client/Put;)V
+      31: goto          7
+      34: aload_1
+      35: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+      40: anewarray     #112                // class java/lang/Object
+      43: astore_2
+      44: aload_0
+      45: aload_1
+      46: aload_2
+      47: aload_0
+      48: getfield      #48                 // Field writeRpcTimeoutMs:I
+      51: invokevirtual #135                // Method batch:(Ljava/util/List;[Ljava/lang/Object;I)V
+      54: goto          73
+      57: astore_3
+      58: new           #137                // class java/io/InterruptedIOException
+      61: dup
+      62: invokespecial #138                // Method java/io/InterruptedIOException."<init>":()V
+      65: aload_3
+      66: invokevirtual #139                // Method java/io/InterruptedIOException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+      69: checkcast     #137                // class java/io/InterruptedIOException
+      72: athrow
+      73: return
+    Exception table:
+       from    to  target type
+          44    54    57   Class java/lang/InterruptedException
+
+  public void mutateRow(org.apache.hadoop.hbase.client.RowMutations) throws java.io.IOException;
+    Code:
+       0: new           #178                // class org/apache/hadoop/hbase/client/HTable$4
+       3: dup
+       4: aload_0
+       5: aload_0
+       6: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       9: aload_0
+      10: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+      13: aload_1
+      14: invokevirtual #179                // Method org/apache/hadoop/hbase/client/RowMutations.getRow:()[B
+      17: aload_0
+      18: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      21: invokevirtual #121                // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      24: aload_0
+      25: getfield      #48                 // Field writeRpcTimeoutMs:I
+      28: new           #180                // class org/apache/hadoop/hbase/client/RetryingTimeTracker
+      31: dup
+      32: invokespecial #181                // Method org/apache/hadoop/hbase/client/RetryingTimeTracker."<init>":()V
+      35: invokevirtual #182                // Method org/apache/hadoop/hbase/client/RetryingTimeTracker.start:()Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      38: aload_1
+      39: invokevirtual #183                // Method org/apache/hadoop/hbase/client/RowMutations.getMaxPriority:()I
+      42: aload_1
+      43: invokespecial #184                // Method org/apache/hadoop/hbase/client/HTable$4."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;ILorg/apache/hadoop/hbase/client/RetryingTimeTracker;ILorg/apache/hadoop/hbase/client/RowMutations;)V
+      46: astore_2
+      47: invokestatic  #145                // Method org/apache/hadoop/hbase/client/AsyncProcessTask.newBuilder:()Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      50: aload_0
+      51: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      54: invokevirtual #146                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setPool:(Ljava/util/concurrent/ExecutorService;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      57: aload_0
+      58: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      61: invokevirtual #147                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setTableName:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      64: aload_1
+      65: invokevirtual #185                // Method org/apache/hadoop/hbase/client/RowMutations.getMutations:()Ljava/util/List;
+      68: invokevirtual #148                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRowAccess:(Ljava/util/List;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      71: aload_2
+      72: invokevirtual #186                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setCallable:(Lorg/apache/hadoop/hbase/client/CancellableRegionServerCallable;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      75: aload_0
+      76: getfield      #48                 // Field writeRpcTimeoutMs:I
+      79: invokevirtual #150                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRpcTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      82: aload_0
+      83: getfield      #42                 // Field operationTimeoutMs:I
+      86: invokevirtual #151                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setOperationTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      89: getstatic     #152                // Field org/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows.ALL:Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;
+      92: invokevirtual #153                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setSubmittedRows:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+      95: invokevirtual #154                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.build:()Lorg/apache/hadoop/hbase/client/AsyncProcessTask;
+      98: astore_3
+      99: aload_0
+     100: getfield      #54                 // Field multiAp:Lorg/apache/hadoop/hbase/client/AsyncProcess;
+     103: aload_3
+     104: invokevirtual #155                // Method org/apache/hadoop/hbase/client/AsyncProcess.submit:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask;)Lorg/apache/hadoop/hbase/client/AsyncRequestFuture;
+     107: astore        4
+     109: aload         4
+     111: invokeinterface #156,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.waitUntilDone:()V
+     116: aload         4
+     118: invokeinterface #157,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.hasError:()Z
+     123: ifeq          134
+     126: aload         4
+     128: invokeinterface #158,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.getErrors:()Lorg/apache/hadoop/hbase/client/RetriesExhaustedWithDetailsException;
+     133: athrow
+     134: return
+
+  public org.apache.hadoop.hbase.client.Result append(org.apache.hadoop.hbase.client.Append) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokestatic  #187                // Method org/apache/hadoop/hbase/client/ConnectionUtils.checkHasFamilies:(Lorg/apache/hadoop/hbase/client/Mutation;)V
+       4: new           #188                // class org/apache/hadoop/hbase/client/HTable$5
+       7: dup
+       8: aload_0
+       9: aload_0
+      10: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      13: aload_0
+      14: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+      17: aload_1
+      18: invokevirtual #189                // Method org/apache/hadoop/hbase/client/Append.getRow:()[B
+      21: aload_0
+      22: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      25: invokevirtual #121                // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      28: aload_1
+      29: invokevirtual #190                // Method org/apache/hadoop/hbase/client/Append.getPriority:()I
+      32: aload_1
+      33: invokespecial #191                // Method org/apache/hadoop/hbase/client/HTable$5."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hadoop/hbase/ipc/HBaseRpcController;ILorg/apache/hadoop/hbase/client/Append;)V
+      36: astore_2
+      37: aload_0
+      38: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      41: aload_0
+      42: getfield      #48                 // Field writeRpcTimeoutMs:I
+      45: invokevirtual #124                // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.newCaller:(I)Lorg/apache/hadoop/hbase/client/RpcRetryingCaller;
+      48: aload_2
+      49: aload_0
+      50: getfield      #42                 // Field operationTimeoutMs:I
+      53: invokeinterface #125,  3          // InterfaceMethod org/apache/hadoop/hbase/client/RpcRetryingCaller.callWithRetries:(Lorg/apache/hadoop/hbase/client/RetryingCallable;I)Ljava/lang/Object;
+      58: checkcast     #126                // class org/apache/hadoop/hbase/client/Result
+      61: areturn
+
+  public org.apache.hadoop.hbase.client.Result increment(org.apache.hadoop.hbase.client.Increment) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokestatic  #187                // Method org/apache/hadoop/hbase/client/ConnectionUtils.checkHasFamilies:(Lorg/apache/hadoop/hbase/client/Mutation;)V
+       4: new           #192                // class org/apache/hadoop/hbase/client/HTable$6
+       7: dup
+       8: aload_0
+       9: aload_0
+      10: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      13: aload_0
+      14: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+      17: aload_1
+      18: invokevirtual #193                // Method org/apache/hadoop/hbase/client/Increment.getRow:()[B
+      21: aload_0
+      22: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      25: invokevirtual #121                // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      28: aload_1
+      29: invokevirtual #194                // Method org/apache/hadoop/hbase/client/Increment.getPriority:()I
+      32: aload_1
+      33: invokespecial #195                // Method org/apache/hadoop/hbase/client/HTable$6."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hadoop/hbase/ipc/HBaseRpcController;ILorg/apache/hadoop/hbase/client/Increment;)V
+      36: astore_2
+      37: aload_0
+      38: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      41: aload_0
+      42: getfield      #48                 // Field writeRpcTimeoutMs:I
+      45: invokevirtual #124                // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.newCaller:(I)Lorg/apache/hadoop/hbase/client/RpcRetryingCaller;
+      48: aload_2
+      49: aload_0
+      50: getfield      #42                 // Field operationTimeoutMs:I
+      53: invokeinterface #125,  3          // InterfaceMethod org/apache/hadoop/hbase/client/RpcRetryingCaller.callWithRetries:(Lorg/apache/hadoop/hbase/client/RetryingCallable;I)Ljava/lang/Object;
+      58: checkcast     #126                // class org/apache/hadoop/hbase/client/Result
+      61: areturn
+
+  public long incrementColumnValue(byte[], byte[], byte[], long) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: lload         4
+       6: getstatic     #196                // Field org/apache/hadoop/hbase/client/Durability.SYNC_WAL:Lorg/apache/hadoop/hbase/client/Durability;
+       9: invokevirtual #197                // Method incrementColumnValue:([B[B[BJLorg/apache/hadoop/hbase/client/Durability;)J
+      12: lreturn
+
+  public long incrementColumnValue(byte[], byte[], byte[], long, org.apache.hadoop.hbase.client.Durability) throws java.io.IOException;
+    Code:
+       0: aconst_null
+       1: astore        7
+       3: aload_1
+       4: ifnonnull     21
+       7: new           #198                // class java/lang/NullPointerException
+      10: dup
+      11: ldc           #199                // String row is null
+      13: invokespecial #200                // Method java/lang/NullPointerException."<init>":(Ljava/lang/String;)V
+      16: astore        7
+      18: goto          36
+      21: aload_2
+      22: ifnonnull     36
+      25: new           #198                // class java/lang/NullPointerException
+      28: dup
+      29: ldc           #201                // String family is null
+      31: invokespecial #200                // Method java/lang/NullPointerException."<init>":(Ljava/lang/String;)V
+      34: astore        7
+      36: aload         7
+      38: ifnull        53
+      41: new           #202                // class java/io/IOException
+      44: dup
+      45: ldc           #203                // String Invalid arguments to incrementColumnValue
+      47: aload         7
+      49: invokespecial #204                // Method java/io/IOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      52: athrow
+      53: new           #205                // class org/apache/hadoop/hbase/client/HTable$7
+      56: dup
+      57: aload_0
+      58: aload_0
+      59: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      62: aload_0
+      63: invokevirtual #95                 // Method getName:()Lorg/apache/hadoop/hbase/TableName;
+      66: aload_1
+      67: aload_0
+      68: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      71: invokevirtual #121                // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      74: iconst_m1
+      75: aload_1
+      76: aload_2
+      77: aload_3
+      78: lload         4
+      80: aload         6
+      82: invokespecial #206                // Method org/apache/hadoop/hbase/client/HTable$7."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hadoop/hbase/ipc/HBaseRpcController;I[B[B[BJLorg/apache/hadoop/hbase/client/Durability;)V
+      85: astore        8
+      87: aload_0
+      88: getfield      #36                 // Field rpcCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      91: aload_0
+      92: getfield      #48                 // Field writeRpcTimeoutMs:I
+      95: invokevirtual #124                // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.newCaller:(I)Lorg/apache/hadoop/hbase/client/RpcRetryingCaller;
+      98: aload         8
+     100: aload_0
+     101: getfield      #42                 // Field operationTimeoutMs:I
+     104: invokeinterface #125,  3          // InterfaceMethod org/apache/hadoop/hbase/client/RpcRetryingCaller.callWithRetries:(Lorg/apache/hadoop/hbase/client/RetryingCallable;I)Ljava/lang/Object;
+     109: checkcast     #207                // class java/lang/Long
+     112: invokevirtual #208                // Method java/lang/Long.longValue:()J
+     115: lreturn
+
+  public boolean checkAndPut(byte[], byte[], byte[], byte[], org.apache.hadoop.hbase.client.Put) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: getstatic     #209                // Field org/apache/hadoop/hbase/CompareOperator.EQUAL:Lorg/apache/hadoop/hbase/CompareOperator;
+       7: invokevirtual #210                // Method org/apache/hadoop/hbase/CompareOperator.name:()Ljava/lang/String;
+      10: aload         4
+      12: aconst_null
+      13: aload         5
+      15: invokespecial #3                  // Method doCheckAndPut:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/Put;)Z
+      18: ireturn
+
+  public boolean checkAndPut(byte[], byte[], byte[], org.apache.hadoop.hbase.CompareOperator, byte[], org.apache.hadoop.hbase.client.Put) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: invokevirtual #210                // Method org/apache/hadoop/hbase/CompareOperator.name:()Ljava/lang/String;
+       9: aload         5
+      11: aconst_null
+      12: aload         6
+      14: invokespecial #3                  // Method doCheckAndPut:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/Put;)Z
+      17: ireturn
+
+  public boolean checkAndDelete(byte[], byte[], byte[], byte[], org.apache.hadoop.hbase.client.Delete) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: getstatic     #209                // Field org/apache/hadoop/hbase/CompareOperator.EQUAL:Lorg/apache/hadoop/hbase/CompareOperator;
+       7: invokevirtual #210                // Method org/apache/hadoop/hbase/CompareOperator.name:()Ljava/lang/String;
+      10: aload         4
+      12: aconst_null
+      13: aload         5
+      15: invokespecial #2                  // Method doCheckAndDelete:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/Delete;)Z
+      18: ireturn
+
+  public boolean checkAndDelete(byte[], byte[], byte[], org.apache.hadoop.hbase.CompareOperator, byte[], org.apache.hadoop.hbase.client.Delete) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: invokevirtual #210                // Method org/apache/hadoop/hbase/CompareOperator.name:()Ljava/lang/String;
+       9: aload         5
+      11: aconst_null
+      12: aload         6
+      14: invokespecial #2                  // Method doCheckAndDelete:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/Delete;)Z
+      17: ireturn
+
+  public org.apache.hadoop.hbase.client.Table$CheckAndMutateBuilder checkAndMutate(byte[], byte[]);
+    Code:
+       0: new           #220                // class org/apache/hadoop/hbase/client/HTable$CheckAndMutateBuilderImpl
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: invokespecial #221                // Method org/apache/hadoop/hbase/client/HTable$CheckAndMutateBuilderImpl."<init>":(Lorg/apache/hadoop/hbase/client/HTable;[B[B)V
+      10: areturn
+
+  public boolean checkAndMutate(byte[], byte[], byte[], org.apache.hadoop.hbase.CompareOperator, byte[], org.apache.hadoop.hbase.client.RowMutations) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: invokevirtual #210                // Method org/apache/hadoop/hbase/CompareOperator.name:()Ljava/lang/String;
+       9: aload         5
+      11: aconst_null
+      12: aload         6
+      14: invokespecial #1                  // Method doCheckAndMutate:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/RowMutations;)Z
+      17: ireturn
+
+  public boolean exists(org.apache.hadoop.hbase.client.Get) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: invokespecial #109                // Method get:(Lorg/apache/hadoop/hbase/client/Get;Z)Lorg/apache/hadoop/hbase/client/Result;
+       6: astore_2
+       7: getstatic     #225                // Field $assertionsDisabled:Z
+      10: ifne          28
+      13: aload_2
+      14: invokevirtual #224                // Method org/apache/hadoop/hbase/client/Result.getExists:()Ljava/lang/Boolean;
+      17: ifnonnull     28
+      20: new           #226                // class java/lang/AssertionError
+      23: dup
+      24: invokespecial #227                // Method java/lang/AssertionError."<init>":()V
+      27: athrow
+      28: aload_2
+      29: invokevirtual #224                // Method org/apache/hadoop/hbase/client/Result.getExists:()Ljava/lang/Boolean;
+      32: invokevirtual #98                 // Method java/lang/Boolean.booleanValue:()Z
+      35: ireturn
+
+  public boolean[] exists(java.util.List<org.apache.hadoop.hbase.client.Get>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokeinterface #228,  1          // InterfaceMethod java/util/List.isEmpty:()Z
+       6: ifeq          13
+       9: iconst_0
+      10: newarray       boolean
+      12: areturn
+      13: aload_1
+      14: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+      19: iconst_1
+      20: if_icmpne     44
+      23: iconst_1
+      24: newarray       boolean
+      26: dup
+      27: iconst_0
+      28: aload_0
+      29: aload_1
+      30: iconst_0
+      31: invokeinterface #133,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      36: checkcast     #114                // class org/apache/hadoop/hbase/client/Get
+      39: invokevirtual #229                // Method exists:(Lorg/apache/hadoop/hbase/client/Get;)Z
+      42: bastore
+      43: areturn
+      44: new           #74                 // class java/util/ArrayList
+      47: dup
+      48: aload_1
+      49: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+      54: invokespecial #230                // Method java/util/ArrayList."<init>":(I)V
+      57: astore_2
+      58: aload_1
+      59: invokeinterface #140,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      64: astore_3
+      65: aload_3
+      66: invokeinterface #141,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      71: ifeq          113
+      74: aload_3
+      75: invokeinterface #142,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      80: checkcast     #114                // class org/apache/hadoop/hbase/client/Get
+      83: astore        4
+      85: new           #114                // class org/apache/hadoop/hbase/client/Get
+      88: dup
+      89: aload         4
+      91: invokespecial #231                // Method org/apache/hadoop/hbase/client/Get."<init>":(Lorg/apache/hadoop/hbase/client/Get;)V
+      94: astore        5
+      96: aload         5
+      98: iconst_1
+      99: invokevirtual #115                // Method org/apache/hadoop/hbase/client/Get.setCheckExistenceOnly:(Z)Lorg/apache/hadoop/hbase/client/Get;
+     102: pop
+     103: aload_2
+     104: aload         5
+     106: invokevirtual #232                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+     109: pop
+     110: goto          65
+     113: aload_2
+     114: invokevirtual #233                // Method java/util/ArrayList.size:()I
+     117: anewarray     #112                // class java/lang/Object
+     120: astore_3
+     121: aload_0
+     122: aload_2
+     123: aload_3
+     124: aload_0
+     125: getfield      #46                 // Field readRpcTimeoutMs:I
+     128: invokevirtual #135                // Method batch:(Ljava/util/List;[Ljava/lang/Object;I)V
+     131: goto          152
+     134: astore        4
+     136: new           #137                // class java/io/InterruptedIOException
+     139: dup
+     140: invokespecial #138                // Method java/io/InterruptedIOException."<init>":()V
+     143: aload         4
+     145: invokevirtual #139                // Method java/io/InterruptedIOException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+     148: checkcast     #137                // class java/io/InterruptedIOException
+     151: athrow
+     152: aload_3
+     153: arraylength
+     154: newarray       boolean
+     156: astore        4
+     158: iconst_0
+     159: istore        5
+     161: aload_3
+     162: astore        6
+     164: aload         6
+     166: arraylength
+     167: istore        7
+     169: iconst_0
+     170: istore        8
+     172: iload         8
+     174: iload         7
+     176: if_icmpge     211
+     179: aload         6
+     181: iload         8
+     183: aaload
+     184: astore        9
+     186: aload         4
+     188: iload         5
+     190: iinc          5, 1
+     193: aload         9
+     195: checkcast     #126                // class org/apache/hadoop/hbase/client/Result
+     198: invokevirtual #224                // Method org/apache/hadoop/hbase/client/Result.getExists:()Ljava/lang/Boolean;
+     201: invokevirtual #98                 // Method java/lang/Boolean.booleanValue:()Z
+     204: bastore
+     205: iinc          8, 1
+     208: goto          172
+     211: aload         4
+     213: areturn
+    Exception table:
+       from    to  target type
+         121   131   134   Class java/lang/InterruptedException
+
+  public <R> void processBatchCallback(java.util.List<? extends org.apache.hadoop.hbase.client.Row>, java.lang.Object[], org.apache.hadoop.hbase.client.coprocessor.Batch$Callback<R>) throws java.io.IOException, java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: invokevirtual #234                // Method batchCallback:(Ljava/util/List;[Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;)V
+       7: return
+
+  public void close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field closed:Z
+       4: ifeq          8
+       7: return
+       8: aload_0
+       9: getfield      #34                 // Field cleanupPoolOnClose:Z
+      12: ifeq          70
+      15: aload_0
+      16: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      19: invokeinterface #235,  1          // InterfaceMethod java/util/concurrent/ExecutorService.shutdown:()V
+      24: iconst_0
+      25: istore_1
+      26: aload_0
+      27: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      30: ldc2_w        #11                 // long 60l
+      33: getstatic     #15                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      36: invokeinterface #236,  4          // InterfaceMethod java/util/concurrent/ExecutorService.awaitTermination:(JLjava/util/concurrent/TimeUnit;)Z
+      41: istore_1
+      42: iload_1
+      43: ifeq          26
+      46: goto          70
+      49: astore_1
+      50: aload_0
+      51: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      54: invokeinterface #237,  1          // InterfaceMethod java/util/concurrent/ExecutorService.shutdownNow:()Ljava/util/List;
+      59: pop
+      60: getstatic     #238                // Field LOG:Lorg/slf4j/Logger;
+      63: ldc           #239                // String waitForTermination interrupted
+      65: invokeinterface #240,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      70: aload_0
+      71: iconst_1
+      72: putfield      #23                 // Field closed:Z
+      75: return
+    Exception table:
+       from    to  target type
+          24    46    49   Class java/lang/InterruptedException
+
+  java.util.concurrent.ExecutorService getPool();
+    Code:
+       0: aload_0
+       1: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+       4: areturn
+
+  public void clearRegionCache();
+    Code:
+       0: aload_0
+       1: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       4: invokeinterface #243,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.clearRegionLocationCache:()V
+       9: return
+
+  public org.apache.hadoop.hbase.ipc.CoprocessorRpcChannel coprocessorService(byte[]);
+    Code:
+       0: new           #244                // class org/apache/hadoop/hbase/client/RegionCoprocessorRpcChannel
+       3: dup
+       4: aload_0
+       5: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       8: aload_0
+       9: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      12: aload_1
+      13: invokespecial #245                // Method org/apache/hadoop/hbase/client/RegionCoprocessorRpcChannel."<init>":(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/TableName;[B)V
+      16: areturn
+
+  public <T extends com.google.protobuf.Service, R> java.util.Map<byte[], R> coprocessorService(java.lang.Class<T>, byte[], byte[], org.apache.hadoop.hbase.client.coprocessor.Batch$Call<T, R>) throws com.google.protobuf.ServiceException, java.lang.Throwable;
+    Code:
+       0: new           #246                // class java/util/TreeMap
+       3: dup
+       4: getstatic     #247                // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+       7: invokespecial #248                // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+      10: invokestatic  #249                // Method java/util/Collections.synchronizedMap:(Ljava/util/Map;)Ljava/util/Map;
+      13: astore        5
+      15: aload_0
+      16: aload_1
+      17: aload_2
+      18: aload_3
+      19: aload         4
+      21: new           #250                // class org/apache/hadoop/hbase/client/HTable$11
+      24: dup
+      25: aload_0
+      26: aload         5
+      28: invokespecial #251                // Method org/apache/hadoop/hbase/client/HTable$11."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Ljava/util/Map;)V
+      31: invokevirtual #252                // Method coprocessorService:(Ljava/lang/Class;[B[BLorg/apache/hadoop/hbase/client/coprocessor/Batch$Call;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;)V
+      34: aload         5
+      36: areturn
+
+  public <T extends com.google.protobuf.Service, R> void coprocessorService(java.lang.Class<T>, byte[], byte[], org.apache.hadoop.hbase.client.coprocessor.Batch$Call<T, R>, org.apache.hadoop.hbase.client.coprocessor.Batch$Callback<R>) throws com.google.protobuf.ServiceException, java.lang.Throwable;
+    Code:
+       0: aload_0
+       1: aload_2
+       2: aload_3
+       3: invokespecial #253                // Method getStartKeysInRange:([B[B)Ljava/util/List;
+       6: astore        6
+       8: new           #246                // class java/util/TreeMap
+      11: dup
+      12: getstatic     #247                // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+      15: invokespecial #248                // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+      18: astore        7
+      20: aload         6
+      22: invokeinterface #140,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      27: astore        8
+      29: aload         8
+      31: invokeinterface #141,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      36: ifeq          113
+      39: aload         8
+      41: invokeinterface #142,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      46: checkcast     #254                // class "[B"
+      49: astore        9
+      51: new           #244                // class org/apache/hadoop/hbase/client/RegionCoprocessorRpcChannel
+      54: dup
+      55: aload_0
+      56: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      59: aload_0
+      60: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      63: aload         9
+      65: invokespecial #245                // Method org/apache/hadoop/hbase/client/RegionCoprocessorRpcChannel."<init>":(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/TableName;[B)V
+      68: astore        10
+      70: aload_0
+      71: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      74: new           #255                // class org/apache/hadoop/hbase/client/HTable$12
+      77: dup
+      78: aload_0
+      79: aload_1
+      80: aload         10
+      82: aload         4
+      84: aload         5
+      86: aload         9
+      88: invokespecial #256                // Method org/apache/hadoop/hbase/client/HTable$12."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Ljava/lang/Class;Lorg/apache/hadoop/hbase/client/RegionCoprocessorRpcChannel;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Call;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;[B)V
+      91: invokeinterface #257,  2          // InterfaceMethod java/util/concurrent/ExecutorService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+      96: astore        11
+      98: aload         7
+     100: aload         9
+     102: aload         11
+     104: invokeinterface #258,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     109: pop
+     110: goto          29
+     113: aload         7
+     115: invokeinterface #259,  1          // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+     120: invokeinterface #260,  1          // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     125: astore        8
+     127: aload         8
+     129: invokeinterface #141,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     134: ifeq          294
+     137: aload         8
+     139: invokeinterface #142,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     144: checkcast     #261                // class java/util/Map$Entry
+     147: astore        9
+     149: aload         9
+     151: invokeinterface #262,  1          // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     156: checkcast     #263                // class java/util/concurrent/Future
+     159: invokeinterface #264,  1          // InterfaceMethod java/util/concurrent/Future.get:()Ljava/lang/Object;
+     164: pop
+     165: goto          291
+     168: astore        10
+     170: getstatic     #238                // Field LOG:Lorg/slf4j/Logger;
+     173: new           #66                 // class java/lang/StringBuilder
+     176: dup
+     177: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+     180: ldc_w         #266                // String Error calling coprocessor service
+     183: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     186: aload_1
+     187: invokevirtual #267                // Method java/lang/Class.getName:()Ljava/lang/String;
+     190: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     193: ldc_w         #268                // String  for row
+     196: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     199: aload         9
+     201: invokeinterface #269,  1          // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     206: checkcast     #254                // class "[B"
+     209: invokestatic  #70                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+     212: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     215: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     218: aload         10
+     220: invokeinterface #270,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     225: aload         10
+     227: invokevirtual #271                // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+     230: athrow
+     231: astore        10
+     233: new           #137                // class java/io/InterruptedIOException
+     236: dup
+     237: new           #66                 // class java/lang/StringBuilder
+     240: dup
+     241: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+     244: ldc_w         #272                // String Interrupted calling coprocessor service
+     247: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     250: aload_1
+     251: invokevirtual #267                // Method java/lang/Class.getName:()Ljava/lang/String;
+     254: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     257: ldc_w         #268                // String  for row
+     260: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     263: aload         9
+     265: invokeinterface #269,  1          // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     270: checkcast     #254                // class "[B"
+     273: invokestatic  #70                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+     276: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     279: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     282: invokespecial #273                // Method java/io/InterruptedIOException."<init>":(Ljava/lang/String;)V
+     285: aload         10
+     287: invokevirtual #139                // Method java/io/InterruptedIOException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+     290: athrow
+     291: goto          127
+     294: return
+    Exception table:
+       from    to  target type
+         149   165   168   Class java/util/concurrent/ExecutionException
+         149   165   231   Class java/lang/InterruptedException
+
+  public long getRpcTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #44                 // Field rpcTimeoutMs:I
+       5: i2l
+       6: getstatic     #278                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+       9: invokevirtual #279                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      12: lreturn
+
+  public int getRpcTimeout();
+    Code:
+       0: aload_0
+       1: getfield      #44                 // Field rpcTimeoutMs:I
+       4: ireturn
+
+  public void setRpcTimeout(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokevirtual #280                // Method setReadRpcTimeout:(I)V
+       5: aload_0
+       6: iload_1
+       7: invokevirtual #281                // Method setWriteRpcTimeout:(I)V
+      10: return
+
+  public long getReadRpcTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #46                 // Field readRpcTimeoutMs:I
+       5: i2l
+       6: getstatic     #278                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+       9: invokevirtual #279                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      12: lreturn
+
+  public int getReadRpcTimeout();
+    Code:
+       0: aload_0
+       1: getfield      #46                 // Field readRpcTimeoutMs:I
+       4: ireturn
+
+  public void setReadRpcTimeout(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #46                 // Field readRpcTimeoutMs:I
+       5: return
+
+  public long getWriteRpcTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #48                 // Field writeRpcTimeoutMs:I
+       5: i2l
+       6: getstatic     #278                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+       9: invokevirtual #279                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      12: lreturn
+
+  public int getWriteRpcTimeout();
+    Code:
+       0: aload_0
+       1: getfield      #48                 // Field writeRpcTimeoutMs:I
+       4: ireturn
+
+  public void setWriteRpcTimeout(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #48                 // Field writeRpcTimeoutMs:I
+       5: return
+
+  public long getOperationTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #42                 // Field operationTimeoutMs:I
+       5: i2l
+       6: getstatic     #278                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+       9: invokevirtual #279                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      12: lreturn
+
+  public int getOperationTimeout();
+    Code:
+       0: aload_0
+       1: getfield      #42                 // Field operationTimeoutMs:I
+       4: ireturn
+
+  public void setOperationTimeout(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #42                 // Field operationTimeoutMs:I
+       5: return
+
+  public java.lang.String toString();
+    Code:
+       0: new           #66                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+       7: aload_0
+       8: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      11: invokevirtual #282                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      14: ldc_w         #283                // String ;
+      17: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      20: aload_0
+      21: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      24: invokevirtual #282                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      27: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      30: areturn
+
+  public <R extends com.google.protobuf.Message> java.util.Map<byte[], R> batchCoprocessorService(com.google.protobuf.Descriptors$MethodDescriptor, com.google.protobuf.Message, byte[], byte[], R) throws com.google.protobuf.ServiceException, java.lang.Throwable;
+    Code:
+       0: new           #246                // class java/util/TreeMap
+       3: dup
+       4: getstatic     #247                // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+       7: invokespecial #248                // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+      10: invokestatic  #249                // Method java/util/Collections.synchronizedMap:(Ljava/util/Map;)Ljava/util/Map;
+      13: astore        6
+      15: aload_0
+      16: aload_1
+      17: aload_2
+      18: aload_3
+      19: aload         4
+      21: aload         5
+      23: new           #284                // class org/apache/hadoop/hbase/client/HTable$13
+      26: dup
+      27: aload_0
+      28: aload         6
+      30: invokespecial #285                // Method org/apache/hadoop/hbase/client/HTable$13."<init>":(Lorg/apache/hadoop/hbase/client/HTable;Ljava/util/Map;)V
+      33: invokevirtual #286                // Method batchCoprocessorService:(Lcom/google/protobuf/Descriptors$MethodDescriptor;Lcom/google/protobuf/Message;[B[BLcom/google/protobuf/Message;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;)V
+      36: aload         6
+      38: areturn
+
+  public <R extends com.google.protobuf.Message> void batchCoprocessorService(com.google.protobuf.Descriptors$MethodDescriptor, com.google.protobuf.Message, byte[], byte[], R, org.apache.hadoop.hbase.client.coprocessor.Batch$Callback<R>) throws com.google.protobuf.ServiceException, java.lang.Throwable;
+    Code:
+       0: aload_3
+       1: ifnonnull     8
+       4: getstatic     #274                // Field org/apache/hadoop/hbase/HConstants.EMPTY_START_ROW:[B
+       7: astore_3
+       8: aload         4
+      10: ifnonnull     18
+      13: getstatic     #62                 // Field org/apache/hadoop/hbase/HConstants.EMPTY_END_ROW:[B
+      16: astore        4
+      18: aload_0
+      19: aload_3
+      20: aload         4
+      22: iconst_1
+      23: invokespecial #275                // Method getKeysAndRegionsInRange:([B[BZ)Lorg/apache/hadoop/hbase/util/Pair;
+      26: astore        7
+      28: aload         7
+      30: invokevirtual #276                // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+      33: checkcast     #277                // class java/util/List
+      36: astore        8
+      38: aload         7
+      40: invokevirtual #287                // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+      43: checkcast     #277                // class java/util/List
+      46: astore        9
+      48: aload         8
+      50: invokeinterface #228,  1          // InterfaceMethod java/util/List.isEmpty:()Z
+      55: ifeq          104
+      58: getstatic     #238                // Field LOG:Lorg/slf4j/Logger;
+      61: new           #66                 // class java/lang/StringBuilder
+      64: dup
+      65: invokespecial #67                 // Method java/lang/StringBuilder."<init>":()V
+      68: ldc_w         #288                // String No regions were selected by key range start=
+      71: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      74: aload_3
+      75: invokestatic  #70                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+      78: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: ldc_w         #289                // String , end=
+      84: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: aload         4
+      89: invokestatic  #70                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+      92: invokevirtual #69                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      95: invokevirtual #72                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      98: invokeinterface #290,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     103: return
+     104: new           #74                 // class java/util/ArrayList
+     107: dup
+     108: aload         8
+     110: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+     115: invokespecial #230                // Method java/util/ArrayList."<init>":(I)V
+     118: astore        10
+     120: new           #246                // class java/util/TreeMap
+     123: dup
+     124: getstatic     #247                // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+     127: invokespecial #248                // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+     130: astore        11
+     132: iconst_0
+     133: istore        12
+     135: iload         12
+     137: aload         8
+     139: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+     144: if_icmpge     224
+     147: aload         8
+     149: iload         12
+     151: invokeinterface #133,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     156: checkcast     #254                // class "[B"
+     159: astore        13
+     161: aload         9
+     163: iload         12
+     165: invokeinterface #133,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     170: checkcast     #291                // class org/apache/hadoop/hbase/HRegionLocation
+     173: invokevirtual #79                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegionInfo:()Lorg/apache/hadoop/hbase/HRegionInfo;
+     176: invokevirtual #292                // Method org/apache/hadoop/hbase/HRegionInfo.getRegionName:()[B
+     179: astore        14
+     181: new           #293                // class org/apache/hadoop/hbase/client/RegionCoprocessorServiceExec
+     184: dup
+     185: aload         14
+     187: aload         13
+     189: aload_1
+     190: aload_2
+     191: invokespecial #294                // Method org/apache/hadoop/hbase/client/RegionCoprocessorServiceExec."<init>":([B[BLcom/google/protobuf/Descriptors$MethodDescriptor;Lcom/google/protobuf/Message;)V
+     194: astore        15
+     196: aload         10
+     198: aload         15
+     200: invokeinterface #78,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     205: pop
+     206: aload         11
+     208: aload         13
+     210: aload         15
+     212: invokeinterface #258,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     217: pop
+     218: iinc          12, 1
+     221: goto          135
+     224: new           #74                 // class java/util/ArrayList
+     227: dup
+     228: invokespecial #75                 // Method java/util/ArrayList."<init>":()V
+     231: astore        12
+     233: new           #74                 // class java/util/ArrayList
+     236: dup
+     237: invokespecial #75                 // Method java/util/ArrayList."<init>":()V
+     240: astore        13
+     242: new           #74                 // class java/util/ArrayList
+     245: dup
+     246: invokespecial #75                 // Method java/util/ArrayList."<init>":()V
+     249: astore        14
+     251: aload         10
+     253: invokeinterface #132,  1          // InterfaceMethod java/util/List.size:()I
+     258: anewarray     #112                // class java/lang/Object
+     261: astore        15
+     263: new           #295                // class org/apache/hadoop/hbase/client/AsyncProcess
+     266: dup
+     267: aload_0
+     268: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     271: aload_0
+     272: getfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+     275: aload_0
+     276: getfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+     279: aload_0
+     280: getfield      #27                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     283: invokeinterface #296,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getStatisticsTracker:()Lorg/apache/hadoop/hbase/client/ServerStatisticTracker;
+     288: invokestatic  #297                // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.instantiate:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/ServerStatisticTracker;)Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+     291: aload_0
+     292: getfield      #29                 // Field configuration:Lorg/apache/hadoop/conf/Configuration;
+     295: invokestatic  #37                 // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     298: invokespecial #298                // Method org/apache/hadoop/hbase/client/AsyncProcess."<init>":(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;)V
+     301: astore        16
+     303: aload_1
+     304: aload         5
+     306: aload         6
+     308: aload         12
+     310: aload         13
+     312: aload         11
+     314: aload         14
+     316: invokedynamic #299,  0            // InvokeDynamic #0:update:(Lcom/google/protobuf/Descriptors$MethodDescriptor;Lcom/google/protobuf/Message;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;Ljava/util/List;Ljava/util/List;Ljava/util/Map;Ljava/util/List;)Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;
+     321: astore        17
+     323: aload         17
+     325: invokestatic  #167                // Method org/apache/hadoop/hbase/client/AsyncProcessTask.newBuilder:(Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     328: aload_0
+     329: getfield      #33                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     332: invokevirtual #146                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setPool:(Ljava/util/concurrent/ExecutorService;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     335: aload_0
+     336: getfield      #40                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+     339: invokevirtual #147                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setTableName:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     342: aload         10
+     344: invokevirtual #148                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRowAccess:(Ljava/util/List;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     347: aload         15
+     349: invokevirtual #149                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setResults:([Ljava/lang/Object;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     352: aload_0
+     353: getfield      #46                 // Field readRpcTimeoutMs:I
+     356: invokevirtual #150                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setRpcTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     359: aload_0
+     360: getfield      #42                 // Field operationTimeoutMs:I
+     363: invokevirtual #151                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setOperationTimeout:(I)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     366: getstatic     #152                // Field org/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows.ALL:Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;
+     369: invokevirtual #153                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.setSubmittedRows:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask$SubmittedRows;)Lorg/apache/hadoop/hbase/client/AsyncProcessTask$Builder;
+     372: invokevirtual #154                // Method org/apache/hadoop/hbase/client/AsyncProcessTask$Builder.build:()Lorg/apache/hadoop/hbase/client/AsyncProcessTask;
+     375: astore        18
+     377: aload         16
+     379: aload         18
+     381: invokevirtual #155                // Method org/apache/hadoop/hbase/client/AsyncProcess.submit:(Lorg/apache/hadoop/hbase/client/AsyncProcessTask;)Lorg/apache/hadoop/hbase/client/AsyncRequestFuture;
+     384: astore        19
+     386: aload         19
+     388: invokeinterface #156,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.waitUntilDone:()V
+     393: aload         19
+     395: invokeinterface #157,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.hasError:()Z
+     400: ifeq          411
+     403: aload         19
+     405: invokeinterface #158,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRequestFuture.getErrors:()Lorg/apache/hadoop/hbase/client/RetriesExhaustedWithDetailsException;
+     410: athrow
+     411: aload         12
+     413: invokeinterface #228,  1          // InterfaceMethod java/util/List.isEmpty:()Z
+     418: ifne          435
+     421: new           #300                // class org/apache/hadoop/hbase/client/RetriesExhaustedWithDetailsException
+     424: dup
+     425: aload         12
+     427: aload         13
+     429: aload         14
+     431: invokespecial #301                // Method org/apache/hadoop/hbase/client/RetriesExhaustedWithDetailsException."<init>":(Ljava/util/List;Ljava/util/List;Ljava/util/List;)V
+     434: athrow
+     435: return
+
+  public org.apache.hadoop.hbase.client.RegionLocator getRegionLocator();
+    Code:
+       0: aload_0
+       1: getfield      #57                 // Field locator:Lorg/apache/hadoop/hbase/client/HRegionLocator;
+       4: areturn
+
+  static void access$000(org.apache.hadoop.hbase.client.HTable, org.apache.hadoop.hbase.client.Put) throws java.lang.IllegalArgumentException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #4                  // Method validatePut:(Lorg/apache/hadoop/hbase/client/Put;)V
+       5: return
+
+  static boolean access$100(org.apache.hadoop.hbase.client.HTable, byte[], byte[], byte[], java.lang.String, byte[], org.apache.hadoop.hbase.io.TimeRange, org.apache.hadoop.hbase.client.Put) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: aload         7
+      12: invokespecial #3                  // Method doCheckAndPut:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/Put;)Z
+      15: ireturn
+
+  static boolean access$200(org.apache.hadoop.hbase.client.HTable, byte[], byte[], byte[], java.lang.String, byte[], org.apache.hadoop.hbase.io.TimeRange, org.apache.hadoop.hbase.client.Delete) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: aload         7
+      12: invokespecial #2                  // Method doCheckAndDelete:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/Delete;)Z
+      15: ireturn
+
+  static boolean access$300(org.apache.hadoop.hbase.client.HTable, byte[], byte[], byte[], java.lang.String, byte[], org.apache.hadoop.hbase.io.TimeRange, org.apache.hadoop.hbase.client.RowMutations) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: aload         7
+      12: invokespecial #1                  // Method doCheckAndMutate:([B[B[BLjava/lang/String;[BLorg/apache/hadoop/hbase/io/TimeRange;Lorg/apache/hadoop/hbase/client/RowMutations;)Z
+      15: ireturn
+
+  static {};
+    Code:
+       0: ldc_w         #320                // class org/apache/hadoop/hbase/client/HTable
+       3: invokevirtual #321                // Method java/lang/Class.desiredAssertionStatus:()Z
+       6: ifne          13
+       9: iconst_1
+      10: goto          14
+      13: iconst_0
+      14: putstatic     #225                // Field $assertionsDisabled:Z
+      17: ldc_w         #320                // class org/apache/hadoop/hbase/client/HTable
+      20: invokestatic  #322                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      23: putstatic     #238                // Field LOG:Lorg/slf4j/Logger;
+      26: getstatic     #118                // Field org/apache/hadoop/hbase/client/Consistency.STRONG:Lorg/apache/hadoop/hbase/client/Consistency;
+      29: putstatic     #116                // Field DEFAULT_CONSISTENCY:Lorg/apache/hadoop/hbase/client/Consistency;
+      32: return
+}

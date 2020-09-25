@@ -1,0 +1,191 @@
+Compiled from "TestMasterBalanceThrottling.java"
+public class org.apache.hadoop.hbase.master.TestMasterBalanceThrottling {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.apache.hadoop.hbase.master.TestMasterBalanceThrottling();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public void setupConfiguration();
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: ldc           #5                  // String hbase.master.loadbalancer.class
+       8: ldc           #6                  // String org.apache.hadoop.hbase.master.balancer.SimpleLoadBalancer
+      10: invokevirtual #7                  // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      13: return
+
+  public void shutdown() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: ldc           #8                  // String hbase.balancer.max.balancing
+       8: ldc           #9                  // int 300000
+      10: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      13: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      16: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      19: ldc           #11                 // String hbase.master.balancer.maxRitPercent
+      21: dconst_1
+      22: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setDouble:(Ljava/lang/String;D)V
+      25: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      28: invokevirtual #13                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+      31: return
+
+  public void testThrottlingByBalanceInterval() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: iconst_2
+       4: invokevirtual #14                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       7: pop
+       8: aload_0
+       9: ldc           #15                 // String testNoThrottling
+      11: invokespecial #16                 // Method createTable:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      14: astore_1
+      15: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      18: invokevirtual #17                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      21: invokevirtual #18                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      24: astore_2
+      25: aload_0
+      26: aload_2
+      27: aload_1
+      28: invokespecial #19                 // Method unbalance:(Lorg/apache/hadoop/hbase/master/HMaster;Lorg/apache/hadoop/hbase/TableName;)V
+      31: new           #20                 // class java/util/concurrent/atomic/AtomicInteger
+      34: dup
+      35: iconst_0
+      36: invokespecial #21                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      39: astore_3
+      40: new           #22                 // class java/util/concurrent/atomic/AtomicBoolean
+      43: dup
+      44: iconst_0
+      45: invokespecial #23                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      48: astore        4
+      50: aload_0
+      51: aload_2
+      52: aload_3
+      53: aload         4
+      55: invokespecial #24                 // Method startBalancerChecker:(Lorg/apache/hadoop/hbase/master/HMaster;Ljava/util/concurrent/atomic/AtomicInteger;Ljava/util/concurrent/atomic/AtomicBoolean;)Ljava/lang/Thread;
+      58: astore        5
+      60: aload_2
+      61: invokevirtual #25                 // Method org/apache/hadoop/hbase/master/HMaster.balance:()Z
+      64: pop
+      65: aload         4
+      67: iconst_1
+      68: invokevirtual #26                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+      71: aload         5
+      73: invokevirtual #27                 // Method java/lang/Thread.interrupt:()V
+      76: aload         5
+      78: invokevirtual #28                 // Method java/lang/Thread.join:()V
+      81: new           #29                 // class java/lang/StringBuilder
+      84: dup
+      85: invokespecial #30                 // Method java/lang/StringBuilder."<init>":()V
+      88: ldc           #31                 // String max regions in transition:
+      90: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      93: aload_3
+      94: invokevirtual #33                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      97: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     100: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     103: aload_3
+     104: invokevirtual #33                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+     107: iconst_1
+     108: if_icmpne     115
+     111: iconst_1
+     112: goto          116
+     115: iconst_0
+     116: invokestatic  #36                 // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     119: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     122: aload_1
+     123: invokevirtual #37                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.deleteTable:(Lorg/apache/hadoop/hbase/TableName;)V
+     126: return
+
+  public void testThrottlingByMaxRitPercent() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: ldc           #8                  // String hbase.balancer.max.balancing
+       8: sipush        500
+      11: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      14: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      17: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      20: ldc           #11                 // String hbase.master.balancer.maxRitPercent
+      22: ldc2_w        #38                 // double 0.05d
+      25: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setDouble:(Ljava/lang/String;D)V
+      28: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      31: iconst_2
+      32: invokevirtual #14                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      35: pop
+      36: aload_0
+      37: ldc           #40                 // String testThrottlingByMaxRitPercent
+      39: invokespecial #16                 // Method createTable:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      42: astore_1
+      43: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      46: invokevirtual #17                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      49: invokevirtual #18                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      52: astore_2
+      53: aload_0
+      54: aload_2
+      55: aload_1
+      56: invokespecial #19                 // Method unbalance:(Lorg/apache/hadoop/hbase/master/HMaster;Lorg/apache/hadoop/hbase/TableName;)V
+      59: new           #20                 // class java/util/concurrent/atomic/AtomicInteger
+      62: dup
+      63: iconst_0
+      64: invokespecial #21                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      67: astore_3
+      68: new           #22                 // class java/util/concurrent/atomic/AtomicBoolean
+      71: dup
+      72: iconst_0
+      73: invokespecial #23                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      76: astore        4
+      78: aload_0
+      79: aload_2
+      80: aload_3
+      81: aload         4
+      83: invokespecial #24                 // Method startBalancerChecker:(Lorg/apache/hadoop/hbase/master/HMaster;Ljava/util/concurrent/atomic/AtomicInteger;Ljava/util/concurrent/atomic/AtomicBoolean;)Ljava/lang/Thread;
+      86: astore        5
+      88: aload_2
+      89: invokevirtual #25                 // Method org/apache/hadoop/hbase/master/HMaster.balance:()Z
+      92: pop
+      93: aload         4
+      95: iconst_1
+      96: invokevirtual #26                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+      99: aload         5
+     101: invokevirtual #27                 // Method java/lang/Thread.interrupt:()V
+     104: aload         5
+     106: invokevirtual #28                 // Method java/lang/Thread.join:()V
+     109: new           #29                 // class java/lang/StringBuilder
+     112: dup
+     113: invokespecial #30                 // Method java/lang/StringBuilder."<init>":()V
+     116: ldc           #31                 // String max regions in transition:
+     118: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     121: aload_3
+     122: invokevirtual #33                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+     125: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     128: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     131: aload_3
+     132: invokevirtual #33                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+     135: iconst_5
+     136: if_icmpne     143
+     139: iconst_1
+     140: goto          144
+     143: iconst_0
+     144: invokestatic  #36                 // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     147: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     150: aload_1
+     151: invokevirtual #37                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.deleteTable:(Lorg/apache/hadoop/hbase/TableName;)V
+     154: return
+
+  static {};
+    Code:
+       0: ldc           #69                 // class org/apache/hadoop/hbase/master/TestMasterBalanceThrottling
+       2: invokestatic  #70                 // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #71                 // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: new           #72                 // class org/apache/hadoop/hbase/HBaseTestingUtility
+      11: dup
+      12: invokespecial #73                 // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      15: putstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      18: ldc           #74                 // String fam
+      20: invokestatic  #67                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: putstatic     #43                 // Field FAMILYNAME:[B
+      26: return
+}

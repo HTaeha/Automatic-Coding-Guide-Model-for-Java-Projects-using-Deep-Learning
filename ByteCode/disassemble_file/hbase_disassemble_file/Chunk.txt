@@ -1,0 +1,248 @@
+Compiled from "Chunk.java"
+public abstract class org.apache.hadoop.hbase.regionserver.Chunk {
+  protected java.nio.ByteBuffer data;
+
+  protected static final int UNINITIALIZED;
+
+  protected static final int OOM;
+
+  protected java.util.concurrent.atomic.AtomicInteger nextFreeOffset;
+
+  protected java.util.concurrent.atomic.AtomicInteger allocCount;
+
+  protected final int size;
+
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.regionserver.Chunk(int, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: iconst_0
+       4: invokespecial #1                  // Method "<init>":(IIZ)V
+       7: return
+
+  public org.apache.hadoop.hbase.regionserver.Chunk(int, int, boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #3                  // class java/util/concurrent/atomic/AtomicInteger
+       8: dup
+       9: iconst_m1
+      10: invokespecial #5                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      13: putfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+      16: aload_0
+      17: new           #3                  // class java/util/concurrent/atomic/AtomicInteger
+      20: dup
+      21: invokespecial #7                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":()V
+      24: putfield      #8                  // Field allocCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      27: aload_0
+      28: iload_1
+      29: putfield      #9                  // Field size:I
+      32: aload_0
+      33: iload_2
+      34: putfield      #10                 // Field id:I
+      37: aload_0
+      38: iload_3
+      39: putfield      #11                 // Field fromPool:Z
+      42: return
+
+  int getId();
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field id:I
+       4: ireturn
+
+  boolean isFromPool();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field fromPool:Z
+       4: ireturn
+
+  boolean isJumbo();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field size:I
+       4: invokestatic  #12                 // Method org/apache/hadoop/hbase/regionserver/ChunkCreator.getInstance:()Lorg/apache/hadoop/hbase/regionserver/ChunkCreator;
+       7: invokevirtual #13                 // Method org/apache/hadoop/hbase/regionserver/ChunkCreator.getChunkSize:()I
+      10: if_icmple     17
+      13: iconst_1
+      14: goto          18
+      17: iconst_0
+      18: ireturn
+
+  boolean isIndexChunk();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field size:I
+       4: invokestatic  #12                 // Method org/apache/hadoop/hbase/regionserver/ChunkCreator.getInstance:()Lorg/apache/hadoop/hbase/regionserver/ChunkCreator;
+       7: getstatic     #14                 // Field org/apache/hadoop/hbase/regionserver/ChunkCreator$ChunkType.INDEX_CHUNK:Lorg/apache/hadoop/hbase/regionserver/ChunkCreator$ChunkType;
+      10: invokevirtual #15                 // Method org/apache/hadoop/hbase/regionserver/ChunkCreator.getChunkSize:(Lorg/apache/hadoop/hbase/regionserver/ChunkCreator$ChunkType;)I
+      13: if_icmpne     20
+      16: iconst_1
+      17: goto          21
+      20: iconst_0
+      21: ireturn
+
+  public void init();
+    Code:
+       0: getstatic     #16                 // Field $assertionsDisabled:Z
+       3: ifne          25
+       6: aload_0
+       7: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+      10: invokevirtual #17                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      13: iconst_m1
+      14: if_icmpeq     25
+      17: new           #18                 // class java/lang/AssertionError
+      20: dup
+      21: invokespecial #19                 // Method java/lang/AssertionError."<init>":()V
+      24: athrow
+      25: aload_0
+      26: invokevirtual #20                 // Method allocateDataBuffer:()V
+      29: goto          64
+      32: astore_1
+      33: aload_0
+      34: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+      37: iconst_m1
+      38: bipush        -2
+      40: invokevirtual #22                 // Method java/util/concurrent/atomic/AtomicInteger.compareAndSet:(II)Z
+      43: istore_2
+      44: getstatic     #16                 // Field $assertionsDisabled:Z
+      47: ifne          62
+      50: iload_2
+      51: ifne          62
+      54: new           #18                 // class java/lang/AssertionError
+      57: dup
+      58: invokespecial #19                 // Method java/lang/AssertionError."<init>":()V
+      61: athrow
+      62: aload_1
+      63: athrow
+      64: aload_0
+      65: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+      68: iconst_m1
+      69: iconst_4
+      70: invokevirtual #22                 // Method java/util/concurrent/atomic/AtomicInteger.compareAndSet:(II)Z
+      73: istore_1
+      74: iload_1
+      75: ldc           #24                 // String Multiple threads tried to init same chunk
+      77: invokestatic  #25                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkState:(ZLjava/lang/Object;)V
+      80: return
+    Exception table:
+       from    to  target type
+          25    29    32   Class java/lang/OutOfMemoryError
+
+  abstract void allocateDataBuffer();
+
+  void reset();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #17                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: iconst_m1
+       8: if_icmpeq     27
+      11: aload_0
+      12: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+      15: iconst_m1
+      16: invokevirtual #26                 // Method java/util/concurrent/atomic/AtomicInteger.set:(I)V
+      19: aload_0
+      20: getfield      #8                  // Field allocCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      23: iconst_0
+      24: invokevirtual #26                 // Method java/util/concurrent/atomic/AtomicInteger.set:(I)V
+      27: return
+
+  public int alloc(int);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #17                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: istore_2
+       8: iload_2
+       9: iconst_m1
+      10: if_icmpne     19
+      13: invokestatic  #27                 // Method java/lang/Thread.yield:()V
+      16: goto          0
+      19: iload_2
+      20: bipush        -2
+      22: if_icmpne     27
+      25: iconst_m1
+      26: ireturn
+      27: iload_2
+      28: iload_1
+      29: iadd
+      30: aload_0
+      31: getfield      #28                 // Field data:Ljava/nio/ByteBuffer;
+      34: invokevirtual #29                 // Method java/nio/ByteBuffer.capacity:()I
+      37: if_icmple     42
+      40: iconst_m1
+      41: ireturn
+      42: aload_0
+      43: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+      46: iload_2
+      47: iload_2
+      48: iload_1
+      49: iadd
+      50: invokevirtual #22                 // Method java/util/concurrent/atomic/AtomicInteger.compareAndSet:(II)Z
+      53: ifeq          66
+      56: aload_0
+      57: getfield      #8                  // Field allocCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      60: invokevirtual #30                 // Method java/util/concurrent/atomic/AtomicInteger.incrementAndGet:()I
+      63: pop
+      64: iload_2
+      65: ireturn
+      66: goto          0
+
+  java.nio.ByteBuffer getData();
+    Code:
+       0: aload_0
+       1: getfield      #28                 // Field data:Ljava/nio/ByteBuffer;
+       4: areturn
+
+  public java.lang.String toString();
+    Code:
+       0: new           #31                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #33                 // String Chunk@
+       9: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: invokestatic  #35                 // Method java/lang/System.identityHashCode:(Ljava/lang/Object;)I
+      16: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      19: ldc           #37                 // String  allocs=
+      21: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: aload_0
+      25: getfield      #8                  // Field allocCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      28: invokevirtual #17                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      31: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      34: ldc           #38                 // String waste=
+      36: invokevirtual #34                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: aload_0
+      40: getfield      #28                 // Field data:Ljava/nio/ByteBuffer;
+      43: invokevirtual #29                 // Method java/nio/ByteBuffer.capacity:()I
+      46: aload_0
+      47: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+      50: invokevirtual #17                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      53: isub
+      54: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      57: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      60: areturn
+
+  int getNextFreeOffset();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field nextFreeOffset:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #17                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ireturn
+
+  static {};
+    Code:
+       0: ldc           #4                  // class org/apache/hadoop/hbase/regionserver/Chunk
+       2: invokevirtual #40                 // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #16                 // Field $assertionsDisabled:Z
+      16: return
+}

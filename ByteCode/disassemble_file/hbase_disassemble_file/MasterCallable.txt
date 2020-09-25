@@ -1,0 +1,121 @@
+Compiled from "MasterCallable.java"
+abstract class org.apache.hadoop.hbase.client.MasterCallable<V> implements org.apache.hadoop.hbase.client.RetryingCallable<V>, java.io.Closeable {
+  protected final org.apache.hadoop.hbase.client.ClusterConnection connection;
+
+  protected org.apache.hadoop.hbase.client.MasterKeepAliveConnection master;
+
+  org.apache.hadoop.hbase.client.MasterCallable(org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.hbase.ipc.RpcControllerFactory);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: checkcast     #2                  // class org/apache/hadoop/hbase/client/ClusterConnection
+       9: putfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      12: aload_0
+      13: aload_2
+      14: invokevirtual #4                  // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      17: putfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      20: return
+
+  public void prepare(boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       5: invokeinterface #6,  1            // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getMaster:()Lorg/apache/hadoop/hbase/client/MasterKeepAliveConnection;
+      10: putfield      #7                  // Field master:Lorg/apache/hadoop/hbase/client/MasterKeepAliveConnection;
+      13: return
+
+  public void close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field master:Lorg/apache/hadoop/hbase/client/MasterKeepAliveConnection;
+       4: ifnull        21
+       7: aload_0
+       8: getfield      #7                  // Field master:Lorg/apache/hadoop/hbase/client/MasterKeepAliveConnection;
+      11: invokeinterface #8,  1            // InterfaceMethod org/apache/hadoop/hbase/client/MasterKeepAliveConnection.close:()V
+      16: aload_0
+      17: aconst_null
+      18: putfield      #7                  // Field master:Lorg/apache/hadoop/hbase/client/MasterKeepAliveConnection;
+      21: return
+
+  public void throwable(java.lang.Throwable, boolean);
+    Code:
+       0: return
+
+  public java.lang.String getExceptionMessageAdditionalDetail();
+    Code:
+       0: ldc           #9                  // String
+       2: areturn
+
+  public long sleep(long, int);
+    Code:
+       0: lload_1
+       1: iload_3
+       2: invokestatic  #10                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.getPauseTime:(JI)J
+       5: lreturn
+
+  public V call(int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+       4: ifnull        26
+       7: aload_0
+       8: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      11: invokeinterface #11,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.reset:()V
+      16: aload_0
+      17: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      20: iload_1
+      21: invokeinterface #12,  2           // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.setCallTimeout:(I)V
+      26: aload_0
+      27: invokevirtual #13                 // Method rpcCall:()Ljava/lang/Object;
+      30: areturn
+      31: astore_2
+      32: aload_2
+      33: invokestatic  #15                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.handleRemoteException:(Ljava/lang/Exception;)Ljava/io/IOException;
+      36: athrow
+    Exception table:
+       from    to  target type
+           0    30    31   Class java/lang/Exception
+
+  protected abstract V rpcCall() throws java.lang.Exception;
+
+  org.apache.hadoop.hbase.ipc.HBaseRpcController getRpcController();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+       4: areturn
+
+  void setPriority(int);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+       4: ifnull        17
+       7: aload_0
+       8: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      11: iload_1
+      12: invokeinterface #16,  2           // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.setPriority:(I)V
+      17: return
+
+  void setPriority(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+       4: ifnull        17
+       7: aload_0
+       8: getfield      #5                  // Field rpcController:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      11: aload_1
+      12: invokeinterface #17,  2           // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.setPriority:(Lorg/apache/hadoop/hbase/TableName;)V
+      17: return
+
+  void setPriority(byte[]);
+    Code:
+       0: aload_1
+       1: invokestatic  #18                 // Method isMetaRegion:([B)Z
+       4: ifeq          14
+       7: aload_0
+       8: getstatic     #19                 // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      11: invokevirtual #20                 // Method setPriority:(Lorg/apache/hadoop/hbase/TableName;)V
+      14: return
+}

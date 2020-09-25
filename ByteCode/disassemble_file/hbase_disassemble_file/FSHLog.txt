@@ -1,0 +1,946 @@
+Compiled from "FSHLog.java"
+public class org.apache.hadoop.hbase.regionserver.wal.FSHLog extends org.apache.hadoop.hbase.regionserver.wal.AbstractFSWAL<org.apache.hadoop.hbase.wal.WALProvider$Writer> {
+  public static final long FIXED_OVERHEAD;
+
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.regionserver.wal.FSHLog(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, java.lang.String, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: ldc           #5                  // String oldWALs
+       6: aload         4
+       8: aconst_null
+       9: iconst_1
+      10: aconst_null
+      11: aconst_null
+      12: invokespecial #6                  // Method "<init>":(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/conf/Configuration;Ljava/util/List;ZLjava/lang/String;Ljava/lang/String;)V
+      15: return
+
+  public org.apache.hadoop.hbase.regionserver.wal.FSHLog(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, java.lang.String, java.lang.String, org.apache.hadoop.conf.Configuration, java.util.List<org.apache.hadoop.hbase.regionserver.wal.WALActionsListener>, boolean, java.lang.String, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: iload         7
+      12: aload         8
+      14: aload         9
+      16: invokespecial #7                  // Method org/apache/hadoop/hbase/regionserver/wal/AbstractFSWAL."<init>":(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/conf/Configuration;Ljava/util/List;ZLjava/lang/String;Ljava/lang/String;)V
+      19: aload_0
+      20: new           #8                  // class java/util/concurrent/atomic/AtomicInteger
+      23: dup
+      24: iconst_0
+      25: invokespecial #9                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      28: putfield      #10                 // Field consecutiveLogRolls:Ljava/util/concurrent/atomic/AtomicInteger;
+      31: aload_0
+      32: iconst_1
+      33: putfield      #11                 // Field lowReplicationRollEnabled:Z
+      36: aload_0
+      37: new           #8                  // class java/util/concurrent/atomic/AtomicInteger
+      40: dup
+      41: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":()V
+      44: putfield      #13                 // Field closeErrorCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      47: aload_0
+      48: aload         5
+      50: ldc           #14                 // String hbase.regionserver.hlog.tolerable.lowreplication
+      52: aload_1
+      53: aload_0
+      54: getfield      #15                 // Field walDir:Lorg/apache/hadoop/fs/Path;
+      57: invokestatic  #16                 // Method org/apache/hadoop/hbase/util/FSUtils.getDefaultReplication:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)S
+      60: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      63: putfield      #18                 // Field minTolerableReplication:I
+      66: aload_0
+      67: aload         5
+      69: ldc           #19                 // String hbase.regionserver.hlog.lowreplication.rolllimit
+      71: iconst_5
+      72: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      75: putfield      #20                 // Field lowReplicationRollLimit:I
+      78: aload_0
+      79: aload         5
+      81: ldc           #21                 // String hbase.regionserver.logroll.errors.tolerated
+      83: iconst_2
+      84: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      87: putfield      #22                 // Field closeErrorsTolerated:I
+      90: aload_0
+      91: aload         5
+      93: ldc           #24                 // String hbase.wal.hsync
+      95: iconst_0
+      96: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      99: putfield      #2                  // Field useHsync:Z
+     102: invokestatic  #26                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     105: invokevirtual #27                 // Method java/lang/Thread.getName:()Ljava/lang/String;
+     108: astore        10
+     110: aload_0
+     111: new           #28                 // class com/lmax/disruptor/dsl/Disruptor
+     114: dup
+     115: invokedynamic #29,  0             // InvokeDynamic #0:newInstance:()Lcom/lmax/disruptor/EventFactory;
+     120: aload_0
+     121: invokevirtual #30                 // Method getPreallocatedEventCount:()I
+     124: new           #31                 // class java/lang/StringBuilder
+     127: dup
+     128: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     131: aload         10
+     133: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     136: ldc           #34                 // String .append
+     138: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     141: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     144: invokestatic  #36                 // Method org/apache/hadoop/hbase/util/Threads.getNamedThreadFactory:(Ljava/lang/String;)Ljava/util/concurrent/ThreadFactory;
+     147: getstatic     #37                 // Field com/lmax/disruptor/dsl/ProducerType.MULTI:Lcom/lmax/disruptor/dsl/ProducerType;
+     150: new           #38                 // class com/lmax/disruptor/BlockingWaitStrategy
+     153: dup
+     154: invokespecial #39                 // Method com/lmax/disruptor/BlockingWaitStrategy."<init>":()V
+     157: invokespecial #40                 // Method com/lmax/disruptor/dsl/Disruptor."<init>":(Lcom/lmax/disruptor/EventFactory;ILjava/util/concurrent/ThreadFactory;Lcom/lmax/disruptor/dsl/ProducerType;Lcom/lmax/disruptor/WaitStrategy;)V
+     160: putfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+     163: aload_0
+     164: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+     167: invokevirtual #42                 // Method com/lmax/disruptor/dsl/Disruptor.getRingBuffer:()Lcom/lmax/disruptor/RingBuffer;
+     170: invokevirtual #43                 // Method com/lmax/disruptor/RingBuffer.next:()J
+     173: pop2
+     174: aload         5
+     176: ldc           #44                 // String hbase.regionserver.handler.count
+     178: sipush        200
+     181: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     184: istore        11
+     186: aload_0
+     187: new           #45                 // class org/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler
+     190: dup
+     191: aload_0
+     192: aload         5
+     194: ldc           #46                 // String hbase.regionserver.hlog.syncer.count
+     196: iconst_5
+     197: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     200: iload         11
+     202: invokespecial #47                 // Method org/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler."<init>":(Lorg/apache/hadoop/hbase/regionserver/wal/FSHLog;II)V
+     205: putfield      #48                 // Field ringBufferEventHandler:Lorg/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler;
+     208: aload_0
+     209: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+     212: new           #49                 // class org/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferExceptionHandler
+     215: dup
+     216: invokespecial #50                 // Method org/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferExceptionHandler."<init>":()V
+     219: invokevirtual #51                 // Method com/lmax/disruptor/dsl/Disruptor.setDefaultExceptionHandler:(Lcom/lmax/disruptor/ExceptionHandler;)V
+     222: aload_0
+     223: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+     226: iconst_1
+     227: anewarray     #45                 // class org/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler
+     230: dup
+     231: iconst_0
+     232: aload_0
+     233: getfield      #48                 // Field ringBufferEventHandler:Lorg/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler;
+     236: aastore
+     237: invokevirtual #52                 // Method com/lmax/disruptor/dsl/Disruptor.handleEventsWith:([Lcom/lmax/disruptor/EventHandler;)Lcom/lmax/disruptor/dsl/EventHandlerGroup;
+     240: pop
+     241: aload_0
+     242: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+     245: invokevirtual #53                 // Method com/lmax/disruptor/dsl/Disruptor.start:()Lcom/lmax/disruptor/RingBuffer;
+     248: pop
+     249: return
+
+  java.io.OutputStream getOutputStream();
+    Code:
+       0: aload_0
+       1: getfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: astore_1
+       5: aload_1
+       6: ifnull        16
+       9: aload_1
+      10: invokevirtual #55                 // Method org/apache/hadoop/fs/FSDataOutputStream.getWrappedStream:()Ljava/io/OutputStream;
+      13: goto          17
+      16: aconst_null
+      17: areturn
+
+  protected org.apache.hadoop.hbase.wal.WALProvider$Writer createWriterInstance(org.apache.hadoop.fs.Path) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #62                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: aload_0
+       5: getfield      #63                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+       8: aload_1
+       9: iconst_0
+      10: aload_0
+      11: getfield      #64                 // Field blocksize:J
+      14: invokestatic  #65                 // Method org/apache/hadoop/hbase/wal/FSHLogProvider.createWriter:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;ZJ)Lorg/apache/hadoop/hbase/wal/FSHLogProvider$Writer;
+      17: astore_2
+      18: aload_2
+      19: instanceof    #66                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter
+      22: ifeq          33
+      25: aload_0
+      26: aload_2
+      27: checkcast     #66                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter
+      30: invokespecial #67                 // Method preemptiveSync:(Lorg/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter;)V
+      33: aload_2
+      34: areturn
+
+  protected void afterCreatingZigZagLatch();
+    Code:
+       0: return
+
+  protected void beforeWaitOnSafePoint();
+    Code:
+       0: return
+
+  protected void doAppend(org.apache.hadoop.hbase.wal.WALProvider$Writer, org.apache.hadoop.hbase.regionserver.wal.FSWALEntry) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: aload_2
+       2: invokeinterface #68,  2           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider$Writer.append:(Lorg/apache/hadoop/hbase/wal/WAL$Entry;)V
+       7: return
+
+  protected void doReplaceWriter(org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.wal.WALProvider$Writer) throws java.io.IOException;
+    Code:
+       0: aconst_null
+       1: astore        4
+       3: aconst_null
+       4: astore        5
+       6: ldc2_w        #69                 // long -1l
+       9: lstore        6
+      11: aload_0
+      12: getfield      #48                 // Field ringBufferEventHandler:Lorg/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler;
+      15: ifnull        33
+      18: aload_0
+      19: invokevirtual #71                 // Method getSequenceOnRingBuffer:()J
+      22: lstore        6
+      24: aload_0
+      25: getfield      #48                 // Field ringBufferEventHandler:Lorg/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler;
+      28: invokevirtual #72                 // Method org/apache/hadoop/hbase/regionserver/wal/FSHLog$RingBufferEventHandler.attainSafePoint:()Lorg/apache/hadoop/hbase/regionserver/wal/FSHLog$SafePointZigZagLatch;
+      31: astore        5
+      33: aload_0
+      34: invokevirtual #73                 // Method afterCreatingZigZagLatch:()V
+      37: aload         5
+      39: ifnull        84
+      42: getstatic     #74                 // Field $assertionsDisabled:Z
+      45: ifne          65
+      48: lload         6
+      50: lconst_0
+      51: lcmp
+      52: ifgt          65
+      55: new           #75                 // class java/lang/AssertionError
+      58: dup
+      59: ldc           #76                 // String Failed to get sequence from ring buffer
+      61: invokespecial #77                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+      64: athrow
+      65: ldc           #78                 // String awaiting safepoint
+      67: invokestatic  #79                 // Method org/apache/hadoop/hbase/trace/TraceUtil.addTimelineAnnotation:(Ljava/lang/String;)V
+      70: aload         5
+      72: aload_0
+      73: lload         6
+      75: iconst_0
+      76: invokevirtual #80                 // Method publishSyncOnRingBuffer:(JZ)Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;
+      79: invokevirtual #81                 // Method org/apache/hadoop/hbase/regionserver/wal/FSHLog$SafePointZigZagLatch.waitSafePoint:(Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;)Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;
+      82: astore        4
+      84: goto          130
+      87: astore        8
+      89: aload_0
+      90: invokevirtual #83                 // Method isUnflushedEntries:()Z
+      93: ifeq          99
+      96: aload         8
+      98: athrow
+      99: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     102: new           #31                 // class java/lang/StringBuilder
+     105: dup
+     106: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     109: ldc           #84                 // String Failed sync-before-close but no outstanding appends; closing WAL
+     111: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     114: aload         8
+     116: invokevirtual #85                 // Method org/apache/hadoop/hbase/regionserver/wal/FailedSyncBeforeLogCloseException.getMessage:()Ljava/lang/String;
+     119: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     122: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     125: invokeinterface #86,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     130: lconst_0
+     131: lstore        8
+     133: aload_0
+     134: getfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+     137: ifnull        275
+     140: aload_0
+     141: getfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+     144: checkcast     #88                 // class org/apache/hadoop/hbase/wal/WALProvider$Writer
+     147: invokeinterface #89,  1           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider$Writer.getLength:()J
+     152: lstore        8
+     154: ldc           #90                 // String closing writer
+     156: invokestatic  #79                 // Method org/apache/hadoop/hbase/trace/TraceUtil.addTimelineAnnotation:(Ljava/lang/String;)V
+     159: aload_0
+     160: getfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+     163: checkcast     #88                 // class org/apache/hadoop/hbase/wal/WALProvider$Writer
+     166: invokeinterface #91,  1           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider$Writer.close:()V
+     171: ldc           #92                 // String writer closed
+     173: invokestatic  #79                 // Method org/apache/hadoop/hbase/trace/TraceUtil.addTimelineAnnotation:(Ljava/lang/String;)V
+     176: aload_0
+     177: getfield      #13                 // Field closeErrorCount:Ljava/util/concurrent/atomic/AtomicInteger;
+     180: iconst_0
+     181: invokevirtual #93                 // Method java/util/concurrent/atomic/AtomicInteger.set:(I)V
+     184: goto          275
+     187: astore        10
+     189: aload_0
+     190: getfield      #13                 // Field closeErrorCount:Ljava/util/concurrent/atomic/AtomicInteger;
+     193: invokevirtual #94                 // Method java/util/concurrent/atomic/AtomicInteger.incrementAndGet:()I
+     196: istore        11
+     198: aload_0
+     199: invokevirtual #83                 // Method isUnflushedEntries:()Z
+     202: ifne          272
+     205: iload         11
+     207: aload_0
+     208: getfield      #22                 // Field closeErrorsTolerated:I
+     211: if_icmpgt     272
+     214: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     217: new           #31                 // class java/lang/StringBuilder
+     220: dup
+     221: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     224: ldc           #95                 // String Riding over failed WAL close of
+     226: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     229: aload_1
+     230: invokevirtual #96                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     233: ldc           #97                 // String , cause=\"
+     235: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     238: aload         10
+     240: invokevirtual #98                 // Method java/io/IOException.getMessage:()Ljava/lang/String;
+     243: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     246: ldc           #99                 // String \", errors=
+     248: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     251: iload         11
+     253: invokevirtual #100                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     256: ldc           #101                // String ; THIS FILE WAS NOT CLOSED BUT ALL EDITS SYNCED SO SHOULD BE OK
+     258: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     261: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     264: invokeinterface #86,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     269: goto          275
+     272: aload         10
+     274: athrow
+     275: aload_0
+     276: aload_1
+     277: aload_2
+     278: lload         8
+     280: invokevirtual #102                // Method logRollAndSetupWalProps:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;J)V
+     283: aload_0
+     284: aload_3
+     285: putfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+     288: aload_3
+     289: ifnull        313
+     292: aload_3
+     293: instanceof    #66                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter
+     296: ifeq          313
+     299: aload_0
+     300: aload_3
+     301: checkcast     #66                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter
+     304: invokevirtual #103                // Method org/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter.getStream:()Lorg/apache/hadoop/fs/FSDataOutputStream;
+     307: putfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+     310: goto          318
+     313: aload_0
+     314: aconst_null
+     315: putfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+     318: aload         5
+     320: ifnull        565
+     323: aload         5
+     325: invokevirtual #104                // Method org/apache/hadoop/hbase/regionserver/wal/FSHLog$SafePointZigZagLatch.releaseSafePoint:()V
+     328: aload         4
+     330: ifnull        565
+     333: aload_0
+     334: aload         4
+     336: invokevirtual #105                // Method blockOnSync:(Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;)V
+     339: goto          565
+     342: astore        8
+     344: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     347: invokeinterface #106,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     352: ifeq          367
+     355: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     358: ldc           #107                // String Stale sync exception
+     360: aload         8
+     362: invokeinterface #108,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     367: goto          565
+     370: astore        8
+     372: invokestatic  #26                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     375: invokevirtual #110                // Method java/lang/Thread.interrupt:()V
+     378: aload         5
+     380: ifnull        565
+     383: aload         5
+     385: invokevirtual #104                // Method org/apache/hadoop/hbase/regionserver/wal/FSHLog$SafePointZigZagLatch.releaseSafePoint:()V
+     388: aload         4
+     390: ifnull        565
+     393: aload_0
+     394: aload         4
+     396: invokevirtual #105                // Method blockOnSync:(Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;)V
+     399: goto          565
+     402: astore        8
+     404: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     407: invokeinterface #106,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     412: ifeq          427
+     415: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     418: ldc           #107                // String Stale sync exception
+     420: aload         8
+     422: invokeinterface #108,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     427: goto          565
+     430: astore        8
+     432: aload_0
+     433: invokevirtual #111                // Method getUnflushedEntriesCount:()J
+     436: lstore        9
+     438: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     441: new           #31                 // class java/lang/StringBuilder
+     444: dup
+     445: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     448: ldc           #112                // String Failed close of WAL writer
+     450: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     453: aload_1
+     454: invokevirtual #96                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     457: ldc           #113                // String , unflushedEntries=
+     459: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     462: lload         9
+     464: invokevirtual #114                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     467: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     470: aload         8
+     472: invokeinterface #115,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     477: new           #116                // class org/apache/hadoop/hbase/regionserver/wal/FailedLogCloseException
+     480: dup
+     481: new           #31                 // class java/lang/StringBuilder
+     484: dup
+     485: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     488: aload_1
+     489: invokevirtual #96                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     492: ldc           #113                // String , unflushedEntries=
+     494: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     497: lload         9
+     499: invokevirtual #114                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     502: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     505: aload         8
+     507: invokespecial #117                // Method org/apache/hadoop/hbase/regionserver/wal/FailedLogCloseException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     510: athrow
+     511: astore        12
+     513: aload         5
+     515: ifnull        562
+     518: aload         5
+     520: invokevirtual #104                // Method org/apache/hadoop/hbase/regionserver/wal/FSHLog$SafePointZigZagLatch.releaseSafePoint:()V
+     523: aload         4
+     525: ifnull        562
+     528: aload_0
+     529: aload         4
+     531: invokevirtual #105                // Method blockOnSync:(Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;)V
+     534: goto          562
+     537: astore        13
+     539: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     542: invokeinterface #106,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     547: ifeq          562
+     550: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     553: ldc           #107                // String Stale sync exception
+     555: aload         13
+     557: invokeinterface #108,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     562: aload         12
+     564: athrow
+     565: return
+    Exception table:
+       from    to  target type
+          37    84    87   Class org/apache/hadoop/hbase/regionserver/wal/FailedSyncBeforeLogCloseException
+         154   184   187   Class java/io/IOException
+         333   339   342   Class java/io/IOException
+          37   318   370   Class java/lang/InterruptedException
+         393   399   402   Class java/io/IOException
+          37   318   430   Class java/io/IOException
+          37   318   511   any
+         370   378   511   any
+         528   534   537   Class java/io/IOException
+         430   513   511   any
+
+  protected void doShutdown() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+       4: ifnull        81
+       7: aload_0
+       8: getfield      #62                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      11: ldc           #118                // String hbase.wal.disruptor.shutdown.timeout.ms
+      13: ldc2_w        #119                // long 60000l
+      16: invokevirtual #121                // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      19: lstore_1
+      20: aload_0
+      21: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+      24: lload_1
+      25: getstatic     #122                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      28: invokevirtual #123                // Method com/lmax/disruptor/dsl/Disruptor.shutdown:(JLjava/util/concurrent/TimeUnit;)V
+      31: goto          81
+      34: astore_3
+      35: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      38: new           #31                 // class java/lang/StringBuilder
+      41: dup
+      42: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+      45: ldc           #125                // String Timed out bringing down disruptor after
+      47: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: lload_1
+      51: invokevirtual #114                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      54: ldc           #126                // String ms; forcing halt (It is a problem if this is NOT an ABORT! -- DATALOSS!!!!)
+      56: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      62: invokeinterface #86,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      67: aload_0
+      68: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+      71: invokevirtual #127                // Method com/lmax/disruptor/dsl/Disruptor.halt:()V
+      74: aload_0
+      75: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+      78: invokevirtual #128                // Method com/lmax/disruptor/dsl/Disruptor.shutdown:()V
+      81: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      84: invokeinterface #129,  1          // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      89: ifeq          125
+      92: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      95: new           #31                 // class java/lang/StringBuilder
+      98: dup
+      99: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     102: ldc           #130                // String Closing WAL writer in
+     104: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     107: aload_0
+     108: getfield      #15                 // Field walDir:Lorg/apache/hadoop/fs/Path;
+     111: invokestatic  #131                // Method org/apache/hadoop/hbase/util/FSUtils.getPath:(Lorg/apache/hadoop/fs/Path;)Ljava/lang/String;
+     114: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     120: invokeinterface #132,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     125: aload_0
+     126: getfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+     129: ifnull        149
+     132: aload_0
+     133: getfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+     136: checkcast     #88                 // class org/apache/hadoop/hbase/wal/WALProvider$Writer
+     139: invokeinterface #91,  1           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider$Writer.close:()V
+     144: aload_0
+     145: aconst_null
+     146: putfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+     149: return
+    Exception table:
+       from    to  target type
+          20    31    34   Class com/lmax/disruptor/TimeoutException
+
+  public long append(org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.wal.WALKeyImpl, org.apache.hadoop.hbase.wal.WALEdit, boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: iload         4
+       6: aload_0
+       7: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+      10: invokevirtual #42                 // Method com/lmax/disruptor/dsl/Disruptor.getRingBuffer:()Lcom/lmax/disruptor/RingBuffer;
+      13: invokevirtual #133                // Method stampSequenceIdAndPublishToRingBuffer:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/wal/WALKeyImpl;Lorg/apache/hadoop/hbase/wal/WALEdit;ZLcom/lmax/disruptor/RingBuffer;)J
+      16: lreturn
+
+  protected boolean doCheckLogLowReplication();
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: invokevirtual #150                // Method getLogReplication:()I
+       6: istore_2
+       7: iload_2
+       8: ifeq          133
+      11: iload_2
+      12: aload_0
+      13: getfield      #18                 // Field minTolerableReplication:I
+      16: if_icmpge     133
+      19: aload_0
+      20: getfield      #11                 // Field lowReplicationRollEnabled:Z
+      23: ifeq          176
+      26: aload_0
+      27: getfield      #10                 // Field consecutiveLogRolls:Ljava/util/concurrent/atomic/AtomicInteger;
+      30: invokevirtual #151                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      33: aload_0
+      34: getfield      #20                 // Field lowReplicationRollLimit:I
+      37: if_icmpge     107
+      40: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      43: new           #31                 // class java/lang/StringBuilder
+      46: dup
+      47: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+      50: ldc           #152                // String HDFS pipeline error detected. Found
+      52: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      55: iload_2
+      56: invokevirtual #100                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      59: ldc           #153                // String  replicas but expecting no less than
+      61: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: aload_0
+      65: getfield      #18                 // Field minTolerableReplication:I
+      68: invokevirtual #100                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      71: ldc           #154                // String  replicas.  Requesting close of WAL. current pipeline:
+      73: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: aload_0
+      77: invokevirtual #139                // Method getPipeline:()[Lorg/apache/hadoop/hdfs/protocol/DatanodeInfo;
+      80: invokestatic  #140                // Method java/util/Arrays.toString:([Ljava/lang/Object;)Ljava/lang/String;
+      83: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      89: invokeinterface #86,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      94: iconst_1
+      95: istore_1
+      96: aload_0
+      97: getfield      #10                 // Field consecutiveLogRolls:Ljava/util/concurrent/atomic/AtomicInteger;
+     100: invokevirtual #155                // Method java/util/concurrent/atomic/AtomicInteger.getAndIncrement:()I
+     103: pop
+     104: goto          176
+     107: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     110: ldc           #156                // String Too many consecutive RollWriter requests, it's a sign of the total number of live datanodes is lower than the tolerable replicas.
+     112: invokeinterface #86,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     117: aload_0
+     118: getfield      #10                 // Field consecutiveLogRolls:Ljava/util/concurrent/atomic/AtomicInteger;
+     121: iconst_0
+     122: invokevirtual #93                 // Method java/util/concurrent/atomic/AtomicInteger.set:(I)V
+     125: aload_0
+     126: iconst_0
+     127: putfield      #11                 // Field lowReplicationRollEnabled:Z
+     130: goto          176
+     133: iload_2
+     134: aload_0
+     135: getfield      #18                 // Field minTolerableReplication:I
+     138: if_icmplt     176
+     141: aload_0
+     142: getfield      #11                 // Field lowReplicationRollEnabled:Z
+     145: ifne          176
+     148: aload_0
+     149: getfield      #157                // Field numEntries:Ljava/util/concurrent/atomic/AtomicInteger;
+     152: invokevirtual #151                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+     155: iconst_1
+     156: if_icmpgt     161
+     159: iload_1
+     160: ireturn
+     161: aload_0
+     162: iconst_1
+     163: putfield      #11                 // Field lowReplicationRollEnabled:Z
+     166: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     169: ldc           #158                // String LowReplication-Roller was enabled.
+     171: invokeinterface #159,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     176: goto          212
+     179: astore_2
+     180: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     183: new           #31                 // class java/lang/StringBuilder
+     186: dup
+     187: invokespecial #32                 // Method java/lang/StringBuilder."<init>":()V
+     190: ldc           #161                // String DFSOutputStream.getNumCurrentReplicas failed because of
+     192: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     195: aload_2
+     196: invokevirtual #96                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     199: ldc           #162                // String , continuing...
+     201: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     204: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     207: invokeinterface #86,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     212: iload_1
+     213: ireturn
+    Exception table:
+       from    to  target type
+           2   160   179   Class java/lang/Exception
+         161   176   179   Class java/lang/Exception
+
+  protected long getSequenceOnRingBuffer();
+    Code:
+       0: aload_0
+       1: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+       4: invokevirtual #42                 // Method com/lmax/disruptor/dsl/Disruptor.getRingBuffer:()Lcom/lmax/disruptor/RingBuffer;
+       7: invokevirtual #43                 // Method com/lmax/disruptor/RingBuffer.next:()J
+      10: lreturn
+
+  protected org.apache.hadoop.hbase.regionserver.wal.SyncFuture publishSyncOnRingBuffer(long, boolean);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: invokevirtual #163                // Method getSyncFuture:(J)Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;
+       5: iload_3
+       6: invokevirtual #164                // Method org/apache/hadoop/hbase/regionserver/wal/SyncFuture.setForceSync:(Z)Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;
+       9: astore        4
+      11: aload_0
+      12: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+      15: invokevirtual #42                 // Method com/lmax/disruptor/dsl/Disruptor.getRingBuffer:()Lcom/lmax/disruptor/RingBuffer;
+      18: lload_1
+      19: invokevirtual #165                // Method com/lmax/disruptor/RingBuffer.get:(J)Ljava/lang/Object;
+      22: checkcast     #166                // class org/apache/hadoop/hbase/regionserver/wal/RingBufferTruck
+      25: astore        5
+      27: aload         5
+      29: aload         4
+      31: invokevirtual #167                // Method org/apache/hadoop/hbase/regionserver/wal/RingBufferTruck.load:(Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;)V
+      34: aload_0
+      35: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+      38: invokevirtual #42                 // Method com/lmax/disruptor/dsl/Disruptor.getRingBuffer:()Lcom/lmax/disruptor/RingBuffer;
+      41: lload_1
+      42: invokevirtual #168                // Method com/lmax/disruptor/RingBuffer.publish:(J)V
+      45: goto          64
+      48: astore        6
+      50: aload_0
+      51: getfield      #41                 // Field disruptor:Lcom/lmax/disruptor/dsl/Disruptor;
+      54: invokevirtual #42                 // Method com/lmax/disruptor/dsl/Disruptor.getRingBuffer:()Lcom/lmax/disruptor/RingBuffer;
+      57: lload_1
+      58: invokevirtual #168                // Method com/lmax/disruptor/RingBuffer.publish:(J)V
+      61: aload         6
+      63: athrow
+      64: aload         4
+      66: areturn
+    Exception table:
+       from    to  target type
+          11    34    48   any
+          48    50    48   any
+
+  int getLogReplication();
+    Code:
+       0: aload_0
+       1: getfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: instanceof    #170                // class org/apache/hadoop/hdfs/client/HdfsDataOutputStream
+       7: ifeq          21
+      10: aload_0
+      11: getfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      14: checkcast     #170                // class org/apache/hadoop/hdfs/client/HdfsDataOutputStream
+      17: invokevirtual #171                // Method org/apache/hadoop/hdfs/client/HdfsDataOutputStream.getCurrentBlockReplication:()I
+      20: ireturn
+      21: goto          36
+      24: astore_1
+      25: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      28: ldc           #172                // String
+      30: aload_1
+      31: invokeinterface #173,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      36: iconst_0
+      37: ireturn
+    Exception table:
+       from    to  target type
+           0    20    24   Class java/io/IOException
+
+  public void sync() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #2                  // Field useHsync:Z
+       5: invokevirtual #174                // Method sync:(Z)V
+       8: return
+
+  public void sync(boolean) throws java.io.IOException;
+    Code:
+       0: ldc           #175                // String FSHLog.sync
+       2: invokestatic  #176                // Method org/apache/hadoop/hbase/trace/TraceUtil.createTrace:(Ljava/lang/String;)Lorg/apache/htrace/core/TraceScope;
+       5: astore_2
+       6: aconst_null
+       7: astore_3
+       8: aload_0
+       9: aload_2
+      10: iload_1
+      11: invokespecial #177                // Method publishSyncThenBlockOnCompletion:(Lorg/apache/htrace/core/TraceScope;Z)V
+      14: aload_2
+      15: ifnull        90
+      18: aload_3
+      19: ifnull        40
+      22: aload_2
+      23: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+      26: goto          90
+      29: astore        4
+      31: aload_3
+      32: aload         4
+      34: invokevirtual #180                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      37: goto          90
+      40: aload_2
+      41: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+      44: goto          90
+      47: astore        4
+      49: aload         4
+      51: astore_3
+      52: aload         4
+      54: athrow
+      55: astore        5
+      57: aload_2
+      58: ifnull        87
+      61: aload_3
+      62: ifnull        83
+      65: aload_2
+      66: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+      69: goto          87
+      72: astore        6
+      74: aload_3
+      75: aload         6
+      77: invokevirtual #180                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      80: goto          87
+      83: aload_2
+      84: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+      87: aload         5
+      89: athrow
+      90: return
+    Exception table:
+       from    to  target type
+          22    26    29   Class java/lang/Throwable
+           8    14    47   Class java/lang/Throwable
+           8    14    55   any
+          65    69    72   Class java/lang/Throwable
+          47    57    55   any
+
+  public void sync(long) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: lload_1
+       2: aload_0
+       3: getfield      #2                  // Field useHsync:Z
+       6: invokevirtual #181                // Method sync:(JZ)V
+       9: return
+
+  public void sync(long, boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #182                // Field highestSyncedTxid:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #183                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lload_1
+       8: lcmp
+       9: iflt          13
+      12: return
+      13: ldc           #175                // String FSHLog.sync
+      15: invokestatic  #176                // Method org/apache/hadoop/hbase/trace/TraceUtil.createTrace:(Ljava/lang/String;)Lorg/apache/htrace/core/TraceScope;
+      18: astore        4
+      20: aconst_null
+      21: astore        5
+      23: aload_0
+      24: aload         4
+      26: iload_3
+      27: invokespecial #177                // Method publishSyncThenBlockOnCompletion:(Lorg/apache/htrace/core/TraceScope;Z)V
+      30: aload         4
+      32: ifnull        117
+      35: aload         5
+      37: ifnull        60
+      40: aload         4
+      42: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+      45: goto          117
+      48: astore        6
+      50: aload         5
+      52: aload         6
+      54: invokevirtual #180                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      57: goto          117
+      60: aload         4
+      62: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+      65: goto          117
+      68: astore        6
+      70: aload         6
+      72: astore        5
+      74: aload         6
+      76: athrow
+      77: astore        7
+      79: aload         4
+      81: ifnull        114
+      84: aload         5
+      86: ifnull        109
+      89: aload         4
+      91: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+      94: goto          114
+      97: astore        8
+      99: aload         5
+     101: aload         8
+     103: invokevirtual #180                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     106: goto          114
+     109: aload         4
+     111: invokevirtual #178                // Method org/apache/htrace/core/TraceScope.close:()V
+     114: aload         7
+     116: athrow
+     117: return
+    Exception table:
+       from    to  target type
+          40    45    48   Class java/lang/Throwable
+          23    30    68   Class java/lang/Throwable
+          23    30    77   any
+          89    94    97   Class java/lang/Throwable
+          68    79    77   any
+
+  boolean isLowReplicationRollEnabled();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field lowReplicationRollEnabled:Z
+       4: ireturn
+
+  org.apache.hadoop.hdfs.protocol.DatanodeInfo[] getPipeline();
+    Code:
+       0: aload_0
+       1: getfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: ifnull        34
+       7: aload_0
+       8: getfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      11: invokevirtual #55                 // Method org/apache/hadoop/fs/FSDataOutputStream.getWrappedStream:()Ljava/io/OutputStream;
+      14: instanceof    #184                // class org/apache/hadoop/hdfs/DFSOutputStream
+      17: ifeq          34
+      20: aload_0
+      21: getfield      #54                 // Field hdfs_out:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      24: invokevirtual #55                 // Method org/apache/hadoop/fs/FSDataOutputStream.getWrappedStream:()Ljava/io/OutputStream;
+      27: checkcast     #184                // class org/apache/hadoop/hdfs/DFSOutputStream
+      30: invokevirtual #185                // Method org/apache/hadoop/hdfs/DFSOutputStream.getPipeline:()[Lorg/apache/hadoop/hdfs/protocol/DatanodeInfo;
+      33: areturn
+      34: iconst_0
+      35: anewarray     #186                // class org/apache/hadoop/hdfs/protocol/DatanodeInfo
+      38: areturn
+
+  org.apache.hadoop.hbase.wal.WALProvider$Writer getWriter();
+    Code:
+       0: aload_0
+       1: getfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+       4: checkcast     #88                 // class org/apache/hadoop/hbase/wal/WALProvider$Writer
+       7: areturn
+
+  void setWriter(org.apache.hadoop.hbase.wal.WALProvider$Writer);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #87                 // Field writer:Lorg/apache/hadoop/hbase/wal/WALProvider$WriterBase;
+       5: return
+
+  protected void doReplaceWriter(org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.wal.WALProvider$WriterBase) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: checkcast     #88                 // class org/apache/hadoop/hbase/wal/WALProvider$Writer
+       7: invokevirtual #187                // Method doReplaceWriter:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/wal/WALProvider$Writer;)V
+      10: return
+
+  protected org.apache.hadoop.hbase.wal.WALProvider$WriterBase createWriterInstance(org.apache.hadoop.fs.Path) throws java.io.IOException, org.apache.hadoop.hbase.util.CommonFSUtils$StreamLacksCapabilityException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #188                // Method createWriterInstance:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/wal/WALProvider$Writer;
+       5: areturn
+
+  protected void doAppend(org.apache.hadoop.hbase.wal.WALProvider$WriterBase, org.apache.hadoop.hbase.regionserver.wal.FSWALEntry) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #88                 // class org/apache/hadoop/hbase/wal/WALProvider$Writer
+       5: aload_2
+       6: invokevirtual #189                // Method doAppend:(Lorg/apache/hadoop/hbase/wal/WALProvider$Writer;Lorg/apache/hadoop/hbase/regionserver/wal/FSWALEntry;)V
+       9: return
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static boolean access$100(org.apache.hadoop.hbase.regionserver.wal.FSHLog);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field useHsync:Z
+       4: ireturn
+
+  static boolean access$200(org.apache.hadoop.hbase.regionserver.wal.FSHLog);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method checkLogRoll:()Z
+       4: ireturn
+
+  static {};
+    Code:
+       0: ldc           #190                // class org/apache/hadoop/hbase/regionserver/wal/FSHLog
+       2: invokevirtual #191                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #74                 // Field $assertionsDisabled:Z
+      16: ldc           #190                // class org/apache/hadoop/hbase/regionserver/wal/FSHLog
+      18: invokestatic  #192                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      21: putstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      24: getstatic     #193                // Field org/apache/hadoop/hbase/util/ClassSize.OBJECT:I
+      27: iconst_5
+      28: getstatic     #194                // Field org/apache/hadoop/hbase/util/ClassSize.REFERENCE:I
+      31: imul
+      32: iadd
+      33: iconst_2
+      34: getstatic     #195                // Field org/apache/hadoop/hbase/util/ClassSize.ATOMIC_INTEGER:I
+      37: imul
+      38: iadd
+      39: bipush        12
+      41: iadd
+      42: bipush        32
+      44: iadd
+      45: invokestatic  #197                // Method org/apache/hadoop/hbase/util/ClassSize.align:(I)I
+      48: i2l
+      49: putstatic     #198                // Field FIXED_OVERHEAD:J
+      52: return
+}

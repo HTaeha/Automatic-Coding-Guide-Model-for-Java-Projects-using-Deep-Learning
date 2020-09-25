@@ -1,0 +1,141 @@
+Compiled from "RemoteProcedureDispatcher.java"
+final class org.apache.hadoop.hbase.procedure2.RemoteProcedureDispatcher$TimeoutExecutorThread extends java.lang.Thread {
+  final org.apache.hadoop.hbase.procedure2.RemoteProcedureDispatcher this$0;
+
+  public org.apache.hadoop.hbase.procedure2.RemoteProcedureDispatcher$TimeoutExecutorThread(org.apache.hadoop.hbase.procedure2.RemoteProcedureDispatcher);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher;
+       5: aload_0
+       6: ldc           #2                  // String ProcedureDispatcherTimeoutThread
+       8: invokespecial #3                  // Method java/lang/Thread."<init>":(Ljava/lang/String;)V
+      11: aload_0
+      12: new           #4                  // class java/util/concurrent/DelayQueue
+      15: dup
+      16: invokespecial #5                  // Method java/util/concurrent/DelayQueue."<init>":()V
+      19: putfield      #6                  // Field queue:Ljava/util/concurrent/DelayQueue;
+      22: return
+
+  public void run();
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher;
+       4: invokestatic  #7                  // Method org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher.access$000:(Lorg/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher;)Ljava/util/concurrent/atomic/AtomicBoolean;
+       7: invokevirtual #8                  // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+      10: ifeq          78
+      13: aload_0
+      14: getfield      #6                  // Field queue:Ljava/util/concurrent/DelayQueue;
+      17: invokestatic  #9                  // Method org/apache/hadoop/hbase/procedure2/util/DelayedUtil.takeWithoutInterrupt:(Ljava/util/concurrent/DelayQueue;)Ljava/util/concurrent/Delayed;
+      20: checkcast     #10                 // class org/apache/hadoop/hbase/procedure2/util/DelayedUtil$DelayedWithTimeout
+      23: astore_1
+      24: aload_1
+      25: ifnull        0
+      28: aload_1
+      29: getstatic     #11                 // Field org/apache/hadoop/hbase/procedure2/util/DelayedUtil.DELAYED_POISON:Lorg/apache/hadoop/hbase/procedure2/util/DelayedUtil$DelayedWithTimeout;
+      32: if_acmpne     38
+      35: goto          0
+      38: aload_1
+      39: instanceof    #12                 // class org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher$DelayedTask
+      42: ifeq          68
+      45: aload_0
+      46: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher;
+      49: invokestatic  #13                 // Method org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher.access$100:(Lorg/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher;)Ljava/util/concurrent/ThreadPoolExecutor;
+      52: aload_1
+      53: checkcast     #12                 // class org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher$DelayedTask
+      56: invokevirtual #14                 // Method org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher$DelayedTask.getObject:()Ljava/lang/Object;
+      59: checkcast     #15                 // class java/lang/Runnable
+      62: invokevirtual #16                 // Method java/util/concurrent/ThreadPoolExecutor.execute:(Ljava/lang/Runnable;)V
+      65: goto          75
+      68: aload_1
+      69: checkcast     #17                 // class org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher$BufferNode
+      72: invokevirtual #18                 // Method org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher$BufferNode.dispatch:()V
+      75: goto          0
+      78: return
+
+  public void add(org.apache.hadoop.hbase.procedure2.util.DelayedUtil$DelayedWithTimeout);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field queue:Ljava/util/concurrent/DelayQueue;
+       4: aload_1
+       5: invokevirtual #19                 // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+       8: pop
+       9: return
+
+  public void remove(org.apache.hadoop.hbase.procedure2.util.DelayedUtil$DelayedWithTimeout);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field queue:Ljava/util/concurrent/DelayQueue;
+       4: aload_1
+       5: invokevirtual #20                 // Method java/util/concurrent/DelayQueue.remove:(Ljava/lang/Object;)Z
+       8: pop
+       9: return
+
+  public void sendStopSignal();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field queue:Ljava/util/concurrent/DelayQueue;
+       4: getstatic     #11                 // Field org/apache/hadoop/hbase/procedure2/util/DelayedUtil.DELAYED_POISON:Lorg/apache/hadoop/hbase/procedure2/util/DelayedUtil$DelayedWithTimeout;
+       7: invokevirtual #19                 // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      10: pop
+      11: return
+
+  public void awaitTermination();
+    Code:
+       0: invokestatic  #21                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+       3: lstore_1
+       4: iconst_0
+       5: istore_3
+       6: aload_0
+       7: invokevirtual #22                 // Method isAlive:()Z
+      10: ifeq          87
+      13: aload_0
+      14: invokevirtual #23                 // Method sendStopSignal:()V
+      17: aload_0
+      18: ldc2_w        #24                 // long 250l
+      21: invokevirtual #26                 // Method join:(J)V
+      24: iload_3
+      25: ifle          81
+      28: iload_3
+      29: bipush        8
+      31: irem
+      32: ifne          81
+      35: invokestatic  #27                 // Method org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher.access$200:()Lorg/slf4j/Logger;
+      38: new           #28                 // class java/lang/StringBuilder
+      41: dup
+      42: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      45: ldc           #30                 // String Waiting termination of thread
+      47: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: aload_0
+      51: invokevirtual #32                 // Method getName:()Ljava/lang/String;
+      54: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: ldc           #33                 // String ,
+      59: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      62: invokestatic  #21                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      65: lload_1
+      66: lsub
+      67: invokestatic  #34                 // Method org/apache/hadoop/hbase/procedure2/util/StringUtils.humanTimeDiff:(J)Ljava/lang/String;
+      70: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      73: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      76: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      81: iinc          3, 1
+      84: goto          6
+      87: goto          122
+      90: astore_1
+      91: invokestatic  #27                 // Method org/apache/hadoop/hbase/procedure2/RemoteProcedureDispatcher.access$200:()Lorg/slf4j/Logger;
+      94: new           #28                 // class java/lang/StringBuilder
+      97: dup
+      98: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     101: aload_0
+     102: invokevirtual #32                 // Method getName:()Ljava/lang/String;
+     105: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     108: ldc           #38                 // String  join wait got interrupted
+     110: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     113: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     116: aload_1
+     117: invokeinterface #39,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     122: return
+    Exception table:
+       from    to  target type
+           0    87    90   Class java/lang/InterruptedException
+}

@@ -1,0 +1,762 @@
+Using TensorFlow backend.
+WARNING:tensorflow:From /home/2014313303/.local/lib/python3.5/site-packages/tensorflow/python/framework/op_def_library.py:263: colocate_with (from tensorflow.python.framework.ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Colocations handled automatically by placer.
+WARNING:tensorflow:From /usr/local/lib/python3.5/dist-packages/keras/backend/tensorflow_backend.py:3368: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.
+merge_network_2_wordvec_model.py:538: UserWarning: Update your `Model` call to the Keras 2 API: `Model(outputs=Tensor("ou..., inputs=[<tf.Tenso...)`
+  model = Model(input=[input1, input2], output=output)
+WARNING:tensorflow:From /home/2014313303/.local/lib/python3.5/site-packages/tensorflow/python/ops/math_ops.py:3066: to_int32 (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.cast instead.
+2019-07-23 21:18:33.000725: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+2019-07-23 21:18:33.011467: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2099830000 Hz
+2019-07-23 21:18:33.014343: I tensorflow/compiler/xla/service/service.cc:150] XLA service 0x8d4c2e0 executing computations on platform Host. Devices:
+2019-07-23 21:18:33.014375: I tensorflow/compiler/xla/service/service.cc:158]   StreamExecutor device (0): <undefined>, <undefined>
+First data
+zero : 
+3694
+one : 
+1526
+
+Second data
+zero : 
+3694
+one : 
+1526
+
+hbase-AST
+
+Sentence length Average : 103
+
+Under 10 : 0
+Over 10, Under 200 : 4034
+Over 200, Under 400 : 662
+Over 400 : 0
+
+
+hbase-code
+
+Sentence length Average : 135
+
+Under 10 : 0
+Over 10, Under 200 : 3633
+Over 200, Under 400 : 1063
+Over 400 : 0
+
+
+Test_zero:  374
+Train_zero:  3318
+zero:  3692
+Test_one:  147
+Train_one:  1378
+one:  1525
+Count model parameter.
+Get a short summary of each layer dimensions and parameters.
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to                     
+==================================================================================================
+input_1 (InputLayer)            (None, 400, 200)     0                                            
+__________________________________________________________________________________________________
+input_2 (InputLayer)            (None, 400, 200)     0                                            
+__________________________________________________________________________________________________
+masking_1 (Masking)             (None, 400, 200)     0           input_1[0][0]                    
+__________________________________________________________________________________________________
+masking_2 (Masking)             (None, 400, 200)     0           input_2[0][0]                    
+__________________________________________________________________________________________________
+forwards_1 (LSTM)               (None, 256)          467968      masking_1[0][0]                  
+__________________________________________________________________________________________________
+backwords_1 (LSTM)              (None, 256)          467968      masking_1[0][0]                  
+__________________________________________________________________________________________________
+forwards_2 (LSTM)               (None, 256)          467968      masking_2[0][0]                  
+__________________________________________________________________________________________________
+backwards_2 (LSTM)              (None, 256)          467968      masking_2[0][0]                  
+__________________________________________________________________________________________________
+after_dp_forward_1 (Dropout)    (None, 256)          0           forwards_1[0][0]                 
+__________________________________________________________________________________________________
+after_dp_backward_1 (Dropout)   (None, 256)          0           backwords_1[0][0]                
+__________________________________________________________________________________________________
+after_dp_forward_2 (Dropout)    (None, 256)          0           forwards_2[0][0]                 
+__________________________________________________________________________________________________
+after_dp_backward_2 (Dropout)   (None, 256)          0           backwards_2[0][0]                
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, 512)          0           after_dp_forward_1[0][0]         
+                                                                 after_dp_backward_1[0][0]        
+__________________________________________________________________________________________________
+concatenate_2 (Concatenate)     (None, 512)          0           after_dp_forward_2[0][0]         
+                                                                 after_dp_backward_2[0][0]        
+__________________________________________________________________________________________________
+after_dp_1 (Dropout)            (None, 512)          0           concatenate_1[0][0]              
+__________________________________________________________________________________________________
+after_dp_2 (Dropout)            (None, 512)          0           concatenate_2[0][0]              
+__________________________________________________________________________________________________
+concatenate_3 (Concatenate)     (None, 1024)         0           after_dp_1[0][0]                 
+                                                                 after_dp_2[0][0]                 
+__________________________________________________________________________________________________
+output (Dense)                  (None, 2)            2050        concatenate_3[0][0]              
+==================================================================================================
+Total params: 1,873,922
+Trainable params: 1,873,922
+Non-trainable params: 0
+__________________________________________________________________________________________________
+1
+
+Epoch 1/1
+ - 163s - loss: 0.5513 - acc: 0.7410
+
+Test accuracy: 78.64406779661017
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  93
+
+choose_one :  202
+
+F1score :  0.8194842406876791
+
+AUC : 0.9303640375068947
+
+Confusion Matrix
+[[ 89  59]
+ [  4 143]]
+True label 0
+0.6013513513513513  
+0.39864864864864863  
+True label 1
+0.027210884353741496  
+0.9727891156462585  
+
+Train_result {'acc': [0.7410228509681571], 'loss': [0.5512594000710324]}
+Saved model to disk
+
+
+
+2
+
+Epoch 1/1
+ - 161s - loss: 0.4417 - acc: 0.7885
+
+Test accuracy: 78.64406779661017
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  127
+
+choose_one :  168
+
+F1score :  0.7999999999999999
+
+AUC : 0.9018201875344732
+
+Confusion Matrix
+[[106  42]
+ [ 21 126]]
+True label 0
+0.7162162162162162  
+0.28378378378378377  
+True label 1
+0.14285714285714285  
+0.8571428571428571  
+
+Train_result {'acc': [0.7885382662530304], 'loss': [0.4417377746879168]}
+Saved model to disk
+
+
+
+3
+
+Epoch 1/1
+ - 161s - loss: 0.4022 - acc: 0.8136
+
+Test accuracy: 84.7457627118644
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  133
+
+choose_one :  162
+
+F1score :  0.8543689320388349
+
+AUC : 0.9390053318624748
+
+Confusion Matrix
+[[118  30]
+ [ 15 132]]
+True label 0
+0.7972972972972973  
+0.20270270270270271  
+True label 1
+0.10204081632653061  
+0.8979591836734694  
+
+Train_result {'acc': [0.813565469735076], 'loss': [0.402222724336189]}
+Saved model to disk
+
+
+
+4
+
+Epoch 1/1
+ - 161s - loss: 0.3491 - acc: 0.8361
+
+Test accuracy: 87.79661016949153
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  154
+
+choose_one :  141
+
+F1score :  0.875
+
+AUC : 0.949301342158485
+
+Confusion Matrix
+[[133  15]
+ [ 21 126]]
+True label 0
+0.8986486486486487  
+0.10135135135135136  
+True label 1
+0.14285714285714285  
+0.8571428571428571  
+
+Train_result {'acc': [0.8360536815379035], 'loss': [0.34909691810499816]}
+Saved model to disk
+
+
+
+5
+
+Epoch 1/1
+ - 162s - loss: 0.3053 - acc: 0.8676
+
+Test accuracy: 87.45762711864407
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  161
+
+choose_one :  134
+
+F1score :  0.8683274021352313
+
+AUC : 0.9502206287920574
+
+Confusion Matrix
+[[136  12]
+ [ 25 122]]
+True label 0
+0.918918918918919  
+0.08108108108108109  
+True label 1
+0.17006802721088435  
+0.8299319727891157  
+
+Train_result {'acc': [0.8676097207325371], 'loss': [0.30533003062280056]}
+Saved model to disk
+
+
+
+6
+
+Epoch 1/1
+ - 152s - loss: 0.2940 - acc: 0.8738
+
+Test accuracy: 85.76271186440678
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  182
+
+choose_one :  113
+
+F1score :  0.8384615384615384
+
+AUC : 0.9585861371575658
+
+Confusion Matrix
+[[144   4]
+ [ 38 109]]
+True label 0
+0.972972972972973  
+0.02702702702702703  
+True label 1
+0.2585034013605442  
+0.7414965986394558  
+
+Train_result {'acc': [0.8737758433295628], 'loss': [0.2940170626667128]}
+Saved model to disk
+
+
+
+7
+
+Epoch 1/1
+ - 129s - loss: 0.2561 - acc: 0.8926
+
+Test accuracy: 87.79661016949153
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  140
+
+choose_one :  155
+
+F1score :  0.880794701986755
+
+AUC : 0.9510939510939511
+
+Confusion Matrix
+[[126  22]
+ [ 14 133]]
+True label 0
+0.8513513513513513  
+0.14864864864864866  
+True label 1
+0.09523809523809523  
+0.9047619047619048  
+
+Train_result {'acc': [0.8926369242145827], 'loss': [0.2560899990178728]}
+Saved model to disk
+
+
+
+8
+
+Epoch 1/1
+ - 123s - loss: 0.2312 - acc: 0.9006
+
+Test accuracy: 85.76271186440678
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  146
+
+choose_one :  149
+
+F1score :  0.8581081081081081
+
+AUC : 0.9458080529509102
+
+Confusion Matrix
+[[126  22]
+ [ 20 127]]
+True label 0
+0.8513513513513513  
+0.14864864864864866  
+True label 1
+0.1360544217687075  
+0.8639455782312925  
+
+Train_result {'acc': [0.900616612281322], 'loss': [0.23117751256036811]}
+Saved model to disk
+
+
+
+9
+
+Epoch 1/1
+ - 129s - loss: 0.1965 - acc: 0.9184
+
+Test accuracy: 87.11864406779661
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  146
+
+choose_one :  149
+
+F1score :  0.8716216216216215
+
+AUC : 0.9494851994851995
+
+Confusion Matrix
+[[128  20]
+ [ 18 129]]
+True label 0
+0.8648648648648649  
+0.13513513513513514  
+True label 1
+0.12244897959183673  
+0.8775510204081632  
+
+Train_result {'acc': [0.9183895538628944], 'loss': [0.19652045610312496]}
+Saved model to disk
+
+
+
+10
+
+Epoch 1/1
+ - 122s - loss: 0.1758 - acc: 0.9289
+
+Test accuracy: 88.47457627118645
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  170
+
+choose_one :  125
+
+F1score :  0.875
+
+AUC : 0.9591377091377091
+
+Confusion Matrix
+[[142   6]
+ [ 28 119]]
+True label 0
+0.9594594594594594  
+0.04054054054054054  
+True label 1
+0.19047619047619047  
+0.8095238095238095  
+
+Train_result {'acc': [0.9289082335872325], 'loss': [0.17579378346254862]}
+Saved model to disk
+
+
+
+11
+
+Epoch 1/1
+ - 136s - loss: 0.1499 - acc: 0.9373
+
+Test accuracy: 87.79661016949153
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  164
+
+choose_one :  131
+
+F1score :  0.8705035971223022
+
+AUC : 0.9580805295091009
+
+Confusion Matrix
+[[138  10]
+ [ 26 121]]
+True label 0
+0.9324324324324325  
+0.06756756756756757  
+True label 1
+0.17687074829931973  
+0.8231292517006803  
+
+Train_result {'acc': [0.9372506347479144], 'loss': [0.14993877463126512]}
+Saved model to disk
+
+
+
+12
+
+Epoch 1/1
+ - 127s - loss: 0.1226 - acc: 0.9521
+
+Test accuracy: 87.11864406779661
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  152
+
+choose_one :  143
+
+F1score :  0.8689655172413793
+
+AUC : 0.9531853281853282
+
+Confusion Matrix
+[[131  17]
+ [ 21 126]]
+True label 0
+0.8851351351351351  
+0.11486486486486487  
+True label 1
+0.14285714285714285  
+0.8571428571428571  
+
+Train_result {'acc': [0.9521218715995647], 'loss': [0.1226416774983202]}
+Saved model to disk
+
+
+
+13
+
+Epoch 1/1
+ - 122s - loss: 0.1010 - acc: 0.9590
+
+Test accuracy: 87.11864406779661
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  130
+
+choose_one :  165
+
+F1score :  0.8782051282051282
+
+AUC : 0.9483131090273947
+
+Confusion Matrix
+[[120  28]
+ [ 10 137]]
+True label 0
+0.8108108108108109  
+0.1891891891891892  
+True label 1
+0.06802721088435375  
+0.9319727891156463  
+
+Train_result {'acc': [0.9590134204060953], 'loss': [0.10101087458937073]}
+Saved model to disk
+
+
+
+14
+
+Epoch 1/1
+ - 137s - loss: 0.0804 - acc: 0.9710
+
+Test accuracy: 88.13559322033898
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  159
+
+choose_one :  136
+
+F1score :  0.8763250883392226
+
+AUC : 0.9521970950542379
+
+Confusion Matrix
+[[136  12]
+ [ 23 124]]
+True label 0
+0.918918918918919  
+0.08108108108108109  
+True label 1
+0.1564625850340136  
+0.8435374149659864  
+
+Train_result {'acc': [0.9709829524845847], 'loss': [0.08040960001602829]}
+Saved model to disk
+
+
+
+15
+
+Epoch 1/1
+ - 130s - loss: 0.0762 - acc: 0.9721
+
+Test accuracy: 90.16949152542372
+
+data size :  3052
+
+zero :  1527
+
+one :  1525
+
+train_zero :  1379
+
+train_one :  1378
+
+test_zero :  148
+
+test_one :  147
+
+choose_zero :  167
+
+choose_one :  128
+
+F1score :  0.8945454545454545
+
+AUC : 0.9519213090641663
+
+Confusion Matrix
+[[143   5]
+ [ 24 123]]
+True label 0
+0.9662162162162162  
+0.033783783783783786  
+True label 1
+0.16326530612244897  
+0.8367346938775511  
+
+Train_result {'acc': [0.9720710917664128], 'loss': [0.07616403442461248]}
+Saved model to disk
+
+
+

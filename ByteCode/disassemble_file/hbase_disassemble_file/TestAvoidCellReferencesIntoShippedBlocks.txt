@@ -1,0 +1,1001 @@
+Compiled from "TestAvoidCellReferencesIntoShippedBlocks.java"
+public class org.apache.hadoop.hbase.client.TestAvoidCellReferencesIntoShippedBlocks {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  protected static final org.apache.hadoop.hbase.HBaseTestingUtility TEST_UTIL;
+
+  static byte[][] ROWS;
+
+  protected static int SLAVES;
+
+  public org.junit.rules.TestName name;
+
+  public org.apache.hadoop.hbase.client.TestAvoidCellReferencesIntoShippedBlocks();
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #9                  // class java/util/concurrent/CountDownLatch
+       8: dup
+       9: iconst_1
+      10: invokespecial #10                 // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+      13: putfield      #1                  // Field latch:Ljava/util/concurrent/CountDownLatch;
+      16: aload_0
+      17: new           #11                 // class org/junit/rules/TestName
+      20: dup
+      21: invokespecial #12                 // Method org/junit/rules/TestName."<init>":()V
+      24: putfield      #13                 // Field name:Lorg/junit/rules/TestName;
+      27: return
+
+  public static void setUpBeforeClass() throws java.lang.Exception;
+    Code:
+       0: getstatic     #14                 // Field ROWS:[[B
+       3: iconst_0
+       4: getstatic     #15                 // Field ROW:[B
+       7: aastore
+       8: getstatic     #14                 // Field ROWS:[[B
+      11: iconst_1
+      12: getstatic     #16                 // Field ROW1:[B
+      15: aastore
+      16: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      19: invokevirtual #18                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      22: astore_0
+      23: aload_0
+      24: ldc           #20                 // String hbase.coprocessor.region.classes
+      26: iconst_1
+      27: anewarray     #21                 // class java/lang/String
+      30: dup
+      31: iconst_0
+      32: ldc           #22                 // class org/apache/hadoop/hbase/coprocessor/MultiRowMutationEndpoint
+      34: invokevirtual #23                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      37: aastore
+      38: invokevirtual #24                 // Method org/apache/hadoop/conf/Configuration.setStrings:(Ljava/lang/String;[Ljava/lang/String;)V
+      41: aload_0
+      42: ldc           #25                 // String hbase.table.sanity.checks
+      44: iconst_1
+      45: invokevirtual #26                 // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      48: aload_0
+      49: ldc           #27                 // String hbase.regionserver.handler.count
+      51: bipush        20
+      53: invokevirtual #28                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      56: aload_0
+      57: ldc           #29                 // String hbase.bucketcache.size
+      59: sipush        400
+      62: invokevirtual #28                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      65: aload_0
+      66: ldc           #31                 // String hbase.bucketcache.ioengine
+      68: iconst_1
+      69: anewarray     #21                 // class java/lang/String
+      72: dup
+      73: iconst_0
+      74: ldc           #32                 // String offheap
+      76: aastore
+      77: invokevirtual #24                 // Method org/apache/hadoop/conf/Configuration.setStrings:(Ljava/lang/String;[Ljava/lang/String;)V
+      80: aload_0
+      81: ldc           #33                 // String hbase.hstore.compactionThreshold
+      83: bipush        7
+      85: invokevirtual #28                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      88: aload_0
+      89: ldc           #34                 // String hfile.block.cache.size
+      91: ldc           #35                 // float 0.2f
+      93: invokevirtual #36                 // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      96: aload_0
+      97: ldc           #37                 // String hbase.regionserver.global.memstore.size
+      99: ldc           #38                 // float 0.1f
+     101: invokevirtual #36                 // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+     104: aload_0
+     105: ldc           #39                 // String hbase.client.retries.number
+     107: iconst_0
+     108: invokevirtual #28                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     111: aload_0
+     112: ldc           #40                 // String hbase.client.scanner.timeout.period
+     114: ldc           #41                 // int 500000
+     116: invokevirtual #28                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     119: getstatic     #42                 // Field FAMILIES_1:[[B
+     122: iconst_0
+     123: getstatic     #43                 // Field FAMILY:[B
+     126: aastore
+     127: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     130: getstatic     #44                 // Field SLAVES:I
+     133: invokevirtual #45                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     136: pop
+     137: new           #9                  // class java/util/concurrent/CountDownLatch
+     140: dup
+     141: iconst_1
+     142: invokespecial #10                 // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+     145: putstatic     #4                  // Field compactReadLatch:Ljava/util/concurrent/CountDownLatch;
+     148: return
+
+  public static void tearDownAfterClass() throws java.lang.Exception;
+    Code:
+       0: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #46                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+       6: return
+
+  public void testHBase16372InCompactionWritePath() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field name:Lorg/junit/rules/TestName;
+       4: invokevirtual #47                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+       7: invokestatic  #48                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      10: astore_1
+      11: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      14: aload_1
+      15: getstatic     #42                 // Field FAMILIES_1:[[B
+      18: iconst_1
+      19: sipush        1024
+      22: ldc           #49                 // class org/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks$CompactorRegionObserver
+      24: invokevirtual #23                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      27: invokevirtual #50                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.createTable:(Lorg/apache/hadoop/hbase/TableName;[[BIILjava/lang/String;)Lorg/apache/hadoop/hbase/client/Table;
+      30: astore_2
+      31: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      34: invokevirtual #51                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      37: aload_1
+      38: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getRegionLocator:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/RegionLocator;
+      43: astore_3
+      44: aload_3
+      45: invokeinterface #53,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionLocator.getAllRegionLocations:()Ljava/util/List;
+      50: iconst_0
+      51: invokeinterface #54,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      56: checkcast     #55                 // class org/apache/hadoop/hbase/HRegionLocation
+      59: invokevirtual #56                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      62: invokeinterface #57,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      67: astore        4
+      69: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      72: aload_1
+      73: invokevirtual #58                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getRSForFirstRegionInTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      76: aload         4
+      78: invokevirtual #59                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegion:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/HRegion;
+      81: astore        5
+      83: aload         5
+      85: invokevirtual #60                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getStores:()Ljava/util/List;
+      88: invokeinterface #61,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      93: invokeinterface #62,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      98: checkcast     #63                 // class org/apache/hadoop/hbase/regionserver/HStore
+     101: astore        6
+     103: aload         6
+     105: invokevirtual #64                 // Method org/apache/hadoop/hbase/regionserver/HStore.getCacheConfig:()Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+     108: astore        7
+     110: aload         7
+     112: iconst_1
+     113: invokevirtual #65                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.setCacheDataOnWrite:(Z)V
+     116: aload         7
+     118: iconst_1
+     119: invokevirtual #66                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.setEvictOnClose:(Z)V
+     122: aload         7
+     124: invokevirtual #67                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.getBlockCache:()Ljava/util/Optional;
+     127: invokevirtual #68                 // Method java/util/Optional.get:()Ljava/lang/Object;
+     130: checkcast     #69                 // class org/apache/hadoop/hbase/io/hfile/BlockCache
+     133: astore        8
+     135: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     138: dup
+     139: getstatic     #15                 // Field ROW:[B
+     142: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     145: astore        9
+     147: aload         9
+     149: getstatic     #43                 // Field FAMILY:[B
+     152: getstatic     #72                 // Field QUALIFIER:[B
+     155: getstatic     #73                 // Field data:[B
+     158: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     161: pop
+     162: aload_2
+     163: aload         9
+     165: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     170: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     173: dup
+     174: getstatic     #15                 // Field ROW:[B
+     177: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     180: astore        9
+     182: aload         9
+     184: getstatic     #43                 // Field FAMILY:[B
+     187: getstatic     #76                 // Field QUALIFIER1:[B
+     190: getstatic     #73                 // Field data:[B
+     193: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     196: pop
+     197: aload_2
+     198: aload         9
+     200: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     205: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     208: dup
+     209: getstatic     #16                 // Field ROW1:[B
+     212: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     215: astore        9
+     217: aload         9
+     219: getstatic     #43                 // Field FAMILY:[B
+     222: getstatic     #72                 // Field QUALIFIER:[B
+     225: getstatic     #73                 // Field data:[B
+     228: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     231: pop
+     232: aload_2
+     233: aload         9
+     235: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     240: aload         5
+     242: iconst_1
+     243: invokevirtual #77                 // Method org/apache/hadoop/hbase/regionserver/HRegion.flush:(Z)Lorg/apache/hadoop/hbase/regionserver/HRegion$FlushResult;
+     246: pop
+     247: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     250: dup
+     251: getstatic     #16                 // Field ROW1:[B
+     254: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     257: astore        9
+     259: aload         9
+     261: getstatic     #43                 // Field FAMILY:[B
+     264: getstatic     #76                 // Field QUALIFIER1:[B
+     267: getstatic     #73                 // Field data:[B
+     270: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     273: pop
+     274: aload_2
+     275: aload         9
+     277: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     282: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     285: dup
+     286: getstatic     #3                  // Field ROW2:[B
+     289: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     292: astore        9
+     294: aload         9
+     296: getstatic     #43                 // Field FAMILY:[B
+     299: getstatic     #72                 // Field QUALIFIER:[B
+     302: getstatic     #73                 // Field data:[B
+     305: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     308: pop
+     309: aload_2
+     310: aload         9
+     312: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     317: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     320: dup
+     321: getstatic     #3                  // Field ROW2:[B
+     324: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     327: astore        9
+     329: aload         9
+     331: getstatic     #43                 // Field FAMILY:[B
+     334: getstatic     #76                 // Field QUALIFIER1:[B
+     337: getstatic     #73                 // Field data:[B
+     340: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     343: pop
+     344: aload_2
+     345: aload         9
+     347: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     352: aload         5
+     354: iconst_1
+     355: invokevirtual #77                 // Method org/apache/hadoop/hbase/regionserver/HRegion.flush:(Z)Lorg/apache/hadoop/hbase/regionserver/HRegion$FlushResult;
+     358: pop
+     359: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     362: dup
+     363: getstatic     #2                  // Field ROW3:[B
+     366: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     369: astore        9
+     371: aload         9
+     373: getstatic     #43                 // Field FAMILY:[B
+     376: getstatic     #72                 // Field QUALIFIER:[B
+     379: getstatic     #73                 // Field data:[B
+     382: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     385: pop
+     386: aload_2
+     387: aload         9
+     389: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     394: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     397: dup
+     398: getstatic     #2                  // Field ROW3:[B
+     401: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     404: astore        9
+     406: aload         9
+     408: getstatic     #43                 // Field FAMILY:[B
+     411: getstatic     #76                 // Field QUALIFIER1:[B
+     414: getstatic     #73                 // Field data:[B
+     417: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     420: pop
+     421: aload_2
+     422: aload         9
+     424: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     429: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     432: dup
+     433: getstatic     #6                  // Field ROW4:[B
+     436: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     439: astore        9
+     441: aload         9
+     443: getstatic     #43                 // Field FAMILY:[B
+     446: getstatic     #72                 // Field QUALIFIER:[B
+     449: getstatic     #73                 // Field data:[B
+     452: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     455: pop
+     456: aload_2
+     457: aload         9
+     459: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     464: aload         5
+     466: iconst_1
+     467: invokevirtual #77                 // Method org/apache/hadoop/hbase/regionserver/HRegion.flush:(Z)Lorg/apache/hadoop/hbase/regionserver/HRegion$FlushResult;
+     470: pop
+     471: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     474: dup
+     475: getstatic     #6                  // Field ROW4:[B
+     478: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     481: astore        9
+     483: aload         9
+     485: getstatic     #43                 // Field FAMILY:[B
+     488: getstatic     #76                 // Field QUALIFIER1:[B
+     491: getstatic     #73                 // Field data:[B
+     494: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     497: pop
+     498: aload_2
+     499: aload         9
+     501: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     506: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     509: dup
+     510: getstatic     #7                  // Field ROW5:[B
+     513: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     516: astore        9
+     518: aload         9
+     520: getstatic     #43                 // Field FAMILY:[B
+     523: getstatic     #72                 // Field QUALIFIER:[B
+     526: getstatic     #73                 // Field data:[B
+     529: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     532: pop
+     533: aload_2
+     534: aload         9
+     536: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     541: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     544: dup
+     545: getstatic     #7                  // Field ROW5:[B
+     548: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     551: astore        9
+     553: aload         9
+     555: getstatic     #43                 // Field FAMILY:[B
+     558: getstatic     #76                 // Field QUALIFIER1:[B
+     561: getstatic     #73                 // Field data:[B
+     564: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     567: pop
+     568: aload_2
+     569: aload         9
+     571: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     576: aload         5
+     578: iconst_1
+     579: invokevirtual #77                 // Method org/apache/hadoop/hbase/regionserver/HRegion.flush:(Z)Lorg/apache/hadoop/hbase/regionserver/HRegion$FlushResult;
+     582: pop
+     583: new           #78                 // class org/apache/hadoop/hbase/client/Scan
+     586: dup
+     587: invokespecial #79                 // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+     590: astore        10
+     592: aload         10
+     594: ldc2_w        #80                 // long 1000l
+     597: invokevirtual #82                 // Method org/apache/hadoop/hbase/client/Scan.setMaxResultSize:(J)Lorg/apache/hadoop/hbase/client/Scan;
+     600: pop
+     601: aload_2
+     602: aload         10
+     604: invokeinterface #83,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+     609: astore        12
+     611: aconst_null
+     612: astore        13
+     614: aload         12
+     616: invokestatic  #84                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.size:(Ljava/lang/Iterable;)I
+     619: istore        11
+     621: aload         12
+     623: ifnull        716
+     626: aload         13
+     628: ifnull        653
+     631: aload         12
+     633: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     638: goto          716
+     641: astore        14
+     643: aload         13
+     645: aload         14
+     647: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     650: goto          716
+     653: aload         12
+     655: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     660: goto          716
+     663: astore        14
+     665: aload         14
+     667: astore        13
+     669: aload         14
+     671: athrow
+     672: astore        15
+     674: aload         12
+     676: ifnull        713
+     679: aload         13
+     681: ifnull        706
+     684: aload         12
+     686: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     691: goto          713
+     694: astore        16
+     696: aload         13
+     698: aload         16
+     700: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     703: goto          713
+     706: aload         12
+     708: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     713: aload         15
+     715: athrow
+     716: ldc           #88                 // String Count all the rows
+     718: ldc2_w        #89                 // long 6l
+     721: iload         11
+     723: i2l
+     724: invokestatic  #91                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+     727: new           #92                 // class org/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks$ScannerThread
+     730: dup
+     731: aload_2
+     732: aload         8
+     734: invokespecial #93                 // Method org/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks$ScannerThread."<init>":(Lorg/apache/hadoop/hbase/client/Table;Lorg/apache/hadoop/hbase/io/hfile/BlockCache;)V
+     737: astore        12
+     739: aload         12
+     741: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks$ScannerThread.start:()V
+     744: aload         5
+     746: iconst_1
+     747: invokevirtual #95                 // Method org/apache/hadoop/hbase/regionserver/HRegion.compact:(Z)V
+     750: new           #78                 // class org/apache/hadoop/hbase/client/Scan
+     753: dup
+     754: invokespecial #79                 // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+     757: astore        10
+     759: aload         10
+     761: ldc2_w        #80                 // long 1000l
+     764: invokevirtual #82                 // Method org/apache/hadoop/hbase/client/Scan.setMaxResultSize:(J)Lorg/apache/hadoop/hbase/client/Scan;
+     767: pop
+     768: aload_2
+     769: aload         10
+     771: invokeinterface #83,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+     776: astore        13
+     778: aconst_null
+     779: astore        14
+     781: aload         13
+     783: invokestatic  #84                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.size:(Ljava/lang/Iterable;)I
+     786: istore        11
+     788: aload         13
+     790: ifnull        883
+     793: aload         14
+     795: ifnull        820
+     798: aload         13
+     800: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     805: goto          883
+     808: astore        15
+     810: aload         14
+     812: aload         15
+     814: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     817: goto          883
+     820: aload         13
+     822: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     827: goto          883
+     830: astore        15
+     832: aload         15
+     834: astore        14
+     836: aload         15
+     838: athrow
+     839: astore        17
+     841: aload         13
+     843: ifnull        880
+     846: aload         14
+     848: ifnull        873
+     851: aload         13
+     853: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     858: goto          880
+     861: astore        18
+     863: aload         14
+     865: aload         18
+     867: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     870: goto          880
+     873: aload         13
+     875: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     880: aload         17
+     882: athrow
+     883: ldc           #88                 // String Count all the rows
+     885: ldc2_w        #89                 // long 6l
+     888: iload         11
+     890: i2l
+     891: invokestatic  #91                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+     894: aload_2
+     895: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     900: goto          914
+     903: astore        19
+     905: aload_2
+     906: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     911: aload         19
+     913: athrow
+     914: return
+    Exception table:
+       from    to  target type
+         631   638   641   Class java/lang/Throwable
+         614   621   663   Class java/lang/Throwable
+         614   621   672   any
+         684   691   694   Class java/lang/Throwable
+         663   674   672   any
+         798   805   808   Class java/lang/Throwable
+         781   788   830   Class java/lang/Throwable
+         781   788   839   any
+         851   858   861   Class java/lang/Throwable
+         830   841   839   any
+          31   894   903   any
+         903   905   903   any
+
+  public void testHBASE16372InReadPath() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field name:Lorg/junit/rules/TestName;
+       4: invokevirtual #47                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+       7: invokestatic  #48                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      10: astore_1
+      11: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      14: aload_1
+      15: getstatic     #42                 // Field FAMILIES_1:[[B
+      18: iconst_1
+      19: sipush        1024
+      22: aconst_null
+      23: invokevirtual #50                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.createTable:(Lorg/apache/hadoop/hbase/TableName;[[BIILjava/lang/String;)Lorg/apache/hadoop/hbase/client/Table;
+      26: astore_2
+      27: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      30: invokevirtual #51                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      33: aload_1
+      34: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getRegionLocator:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/RegionLocator;
+      39: astore_3
+      40: aload_3
+      41: invokeinterface #53,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionLocator.getAllRegionLocations:()Ljava/util/List;
+      46: iconst_0
+      47: invokeinterface #54,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      52: checkcast     #55                 // class org/apache/hadoop/hbase/HRegionLocation
+      55: invokevirtual #56                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      58: invokeinterface #57,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      63: astore        4
+      65: getstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      68: aload_1
+      69: invokevirtual #58                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getRSForFirstRegionInTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      72: aload         4
+      74: invokevirtual #59                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegion:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/HRegion;
+      77: astore        5
+      79: aload         5
+      81: invokevirtual #60                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getStores:()Ljava/util/List;
+      84: invokeinterface #61,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      89: invokeinterface #62,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      94: checkcast     #63                 // class org/apache/hadoop/hbase/regionserver/HStore
+      97: astore        6
+      99: aload         6
+     101: invokevirtual #64                 // Method org/apache/hadoop/hbase/regionserver/HStore.getCacheConfig:()Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+     104: astore        7
+     106: aload         7
+     108: iconst_1
+     109: invokevirtual #65                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.setCacheDataOnWrite:(Z)V
+     112: aload         7
+     114: iconst_1
+     115: invokevirtual #66                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.setEvictOnClose:(Z)V
+     118: aload         7
+     120: invokevirtual #67                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.getBlockCache:()Ljava/util/Optional;
+     123: invokevirtual #68                 // Method java/util/Optional.get:()Ljava/lang/Object;
+     126: checkcast     #69                 // class org/apache/hadoop/hbase/io/hfile/BlockCache
+     129: astore        8
+     131: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     134: dup
+     135: getstatic     #15                 // Field ROW:[B
+     138: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     141: astore        9
+     143: aload         9
+     145: getstatic     #43                 // Field FAMILY:[B
+     148: getstatic     #72                 // Field QUALIFIER:[B
+     151: getstatic     #73                 // Field data:[B
+     154: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     157: pop
+     158: aload_2
+     159: aload         9
+     161: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     166: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     169: dup
+     170: getstatic     #15                 // Field ROW:[B
+     173: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     176: astore        9
+     178: aload         9
+     180: getstatic     #43                 // Field FAMILY:[B
+     183: getstatic     #76                 // Field QUALIFIER1:[B
+     186: getstatic     #73                 // Field data:[B
+     189: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     192: pop
+     193: aload_2
+     194: aload         9
+     196: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     201: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     204: dup
+     205: getstatic     #16                 // Field ROW1:[B
+     208: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     211: astore        9
+     213: aload         9
+     215: getstatic     #43                 // Field FAMILY:[B
+     218: getstatic     #72                 // Field QUALIFIER:[B
+     221: getstatic     #73                 // Field data:[B
+     224: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     227: pop
+     228: aload_2
+     229: aload         9
+     231: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     236: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     239: dup
+     240: getstatic     #16                 // Field ROW1:[B
+     243: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     246: astore        9
+     248: aload         9
+     250: getstatic     #43                 // Field FAMILY:[B
+     253: getstatic     #76                 // Field QUALIFIER1:[B
+     256: getstatic     #73                 // Field data:[B
+     259: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     262: pop
+     263: aload_2
+     264: aload         9
+     266: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     271: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     274: dup
+     275: getstatic     #3                  // Field ROW2:[B
+     278: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     281: astore        9
+     283: aload         9
+     285: getstatic     #43                 // Field FAMILY:[B
+     288: getstatic     #72                 // Field QUALIFIER:[B
+     291: getstatic     #73                 // Field data:[B
+     294: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     297: pop
+     298: aload_2
+     299: aload         9
+     301: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     306: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     309: dup
+     310: getstatic     #3                  // Field ROW2:[B
+     313: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     316: astore        9
+     318: aload         9
+     320: getstatic     #43                 // Field FAMILY:[B
+     323: getstatic     #76                 // Field QUALIFIER1:[B
+     326: getstatic     #73                 // Field data:[B
+     329: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     332: pop
+     333: aload_2
+     334: aload         9
+     336: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     341: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     344: dup
+     345: getstatic     #2                  // Field ROW3:[B
+     348: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     351: astore        9
+     353: aload         9
+     355: getstatic     #43                 // Field FAMILY:[B
+     358: getstatic     #72                 // Field QUALIFIER:[B
+     361: getstatic     #73                 // Field data:[B
+     364: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     367: pop
+     368: aload_2
+     369: aload         9
+     371: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     376: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     379: dup
+     380: getstatic     #2                  // Field ROW3:[B
+     383: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     386: astore        9
+     388: aload         9
+     390: getstatic     #43                 // Field FAMILY:[B
+     393: getstatic     #76                 // Field QUALIFIER1:[B
+     396: getstatic     #73                 // Field data:[B
+     399: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     402: pop
+     403: aload_2
+     404: aload         9
+     406: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     411: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     414: dup
+     415: getstatic     #6                  // Field ROW4:[B
+     418: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     421: astore        9
+     423: aload         9
+     425: getstatic     #43                 // Field FAMILY:[B
+     428: getstatic     #72                 // Field QUALIFIER:[B
+     431: getstatic     #73                 // Field data:[B
+     434: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     437: pop
+     438: aload_2
+     439: aload         9
+     441: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     446: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     449: dup
+     450: getstatic     #6                  // Field ROW4:[B
+     453: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     456: astore        9
+     458: aload         9
+     460: getstatic     #43                 // Field FAMILY:[B
+     463: getstatic     #76                 // Field QUALIFIER1:[B
+     466: getstatic     #73                 // Field data:[B
+     469: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     472: pop
+     473: aload_2
+     474: aload         9
+     476: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     481: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     484: dup
+     485: getstatic     #7                  // Field ROW5:[B
+     488: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     491: astore        9
+     493: aload         9
+     495: getstatic     #43                 // Field FAMILY:[B
+     498: getstatic     #72                 // Field QUALIFIER:[B
+     501: getstatic     #73                 // Field data:[B
+     504: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     507: pop
+     508: aload_2
+     509: aload         9
+     511: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     516: new           #70                 // class org/apache/hadoop/hbase/client/Put
+     519: dup
+     520: getstatic     #7                  // Field ROW5:[B
+     523: invokespecial #71                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     526: astore        9
+     528: aload         9
+     530: getstatic     #43                 // Field FAMILY:[B
+     533: getstatic     #76                 // Field QUALIFIER1:[B
+     536: getstatic     #73                 // Field data:[B
+     539: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     542: pop
+     543: aload_2
+     544: aload         9
+     546: invokeinterface #75,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     551: aload         5
+     553: iconst_1
+     554: invokevirtual #77                 // Method org/apache/hadoop/hbase/regionserver/HRegion.flush:(Z)Lorg/apache/hadoop/hbase/regionserver/HRegion$FlushResult;
+     557: pop
+     558: new           #78                 // class org/apache/hadoop/hbase/client/Scan
+     561: dup
+     562: invokespecial #79                 // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+     565: astore        10
+     567: aload         10
+     569: ldc2_w        #80                 // long 1000l
+     572: invokevirtual #82                 // Method org/apache/hadoop/hbase/client/Scan.setMaxResultSize:(J)Lorg/apache/hadoop/hbase/client/Scan;
+     575: pop
+     576: aload_2
+     577: aload         10
+     579: invokeinterface #83,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+     584: astore        12
+     586: aconst_null
+     587: astore        13
+     589: aload         12
+     591: invokestatic  #84                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.size:(Ljava/lang/Iterable;)I
+     594: istore        11
+     596: aload         12
+     598: ifnull        691
+     601: aload         13
+     603: ifnull        628
+     606: aload         12
+     608: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     613: goto          691
+     616: astore        14
+     618: aload         13
+     620: aload         14
+     622: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     625: goto          691
+     628: aload         12
+     630: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     635: goto          691
+     638: astore        14
+     640: aload         14
+     642: astore        13
+     644: aload         14
+     646: athrow
+     647: astore        15
+     649: aload         12
+     651: ifnull        688
+     654: aload         13
+     656: ifnull        681
+     659: aload         12
+     661: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     666: goto          688
+     669: astore        16
+     671: aload         13
+     673: aload         16
+     675: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     678: goto          688
+     681: aload         12
+     683: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     688: aload         15
+     690: athrow
+     691: ldc           #88                 // String Count all the rows
+     693: ldc2_w        #89                 // long 6l
+     696: iload         11
+     698: i2l
+     699: invokestatic  #91                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+     702: new           #78                 // class org/apache/hadoop/hbase/client/Scan
+     705: dup
+     706: invokespecial #79                 // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+     709: astore        10
+     711: aload         10
+     713: iconst_1
+     714: invokevirtual #97                 // Method org/apache/hadoop/hbase/client/Scan.setCaching:(I)Lorg/apache/hadoop/hbase/client/Scan;
+     717: pop
+     718: aload         10
+     720: getstatic     #16                 // Field ROW1:[B
+     723: invokevirtual #98                 // Method org/apache/hadoop/hbase/client/Scan.withStartRow:([B)Lorg/apache/hadoop/hbase/client/Scan;
+     726: pop
+     727: aload         10
+     729: iconst_1
+     730: invokevirtual #99                 // Method org/apache/hadoop/hbase/client/Scan.setAllowPartialResults:(Z)Lorg/apache/hadoop/hbase/client/Scan;
+     733: pop
+     734: aload         10
+     736: ldc2_w        #80                 // long 1000l
+     739: invokevirtual #82                 // Method org/apache/hadoop/hbase/client/Scan.setMaxResultSize:(J)Lorg/apache/hadoop/hbase/client/Scan;
+     742: pop
+     743: aload_2
+     744: aload         10
+     746: invokeinterface #83,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+     751: astore        12
+     753: aconst_null
+     754: astore        13
+     756: new           #100                // class org/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks$1
+     759: dup
+     760: aload_0
+     761: aload         8
+     763: aload_2
+     764: invokespecial #101                // Method org/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks$1."<init>":(Lorg/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks;Lorg/apache/hadoop/hbase/io/hfile/BlockCache;Lorg/apache/hadoop/hbase/client/Table;)V
+     767: astore        14
+     769: iconst_0
+     770: istore        11
+     772: aload         12
+     774: invokeinterface #102,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.next:()Lorg/apache/hadoop/hbase/client/Result;
+     779: ifnull        806
+     782: iinc          11, 1
+     785: iload         11
+     787: iconst_2
+     788: if_icmpne     772
+     791: aload         14
+     793: invokevirtual #103                // Method java/lang/Thread.start:()V
+     796: aload_0
+     797: getfield      #1                  // Field latch:Ljava/util/concurrent/CountDownLatch;
+     800: invokevirtual #104                // Method java/util/concurrent/CountDownLatch.await:()V
+     803: goto          772
+     806: aload         12
+     808: ifnull        901
+     811: aload         13
+     813: ifnull        838
+     816: aload         12
+     818: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     823: goto          901
+     826: astore        14
+     828: aload         13
+     830: aload         14
+     832: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     835: goto          901
+     838: aload         12
+     840: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     845: goto          901
+     848: astore        14
+     850: aload         14
+     852: astore        13
+     854: aload         14
+     856: athrow
+     857: astore        17
+     859: aload         12
+     861: ifnull        898
+     864: aload         13
+     866: ifnull        891
+     869: aload         12
+     871: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     876: goto          898
+     879: astore        18
+     881: aload         13
+     883: aload         18
+     885: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     888: goto          898
+     891: aload         12
+     893: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     898: aload         17
+     900: athrow
+     901: ldc           #105                // String Count should give all rows
+     903: ldc2_w        #106                // long 10l
+     906: iload         11
+     908: i2l
+     909: invokestatic  #91                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+     912: aload_2
+     913: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     918: goto          932
+     921: astore        19
+     923: aload_2
+     924: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     929: aload         19
+     931: athrow
+     932: return
+    Exception table:
+       from    to  target type
+         606   613   616   Class java/lang/Throwable
+         589   596   638   Class java/lang/Throwable
+         589   596   647   any
+         659   666   669   Class java/lang/Throwable
+         638   649   647   any
+         816   823   826   Class java/lang/Throwable
+         756   806   848   Class java/lang/Throwable
+         756   806   857   any
+         869   876   879   Class java/lang/Throwable
+         848   859   857   any
+          27   912   921   any
+         921   923   921   any
+
+  static byte[] access$000();
+    Code:
+       0: getstatic     #7                  // Field ROW5:[B
+       3: areturn
+
+  static byte[] access$100();
+    Code:
+       0: getstatic     #6                  // Field ROW4:[B
+       3: areturn
+
+  static java.util.concurrent.atomic.AtomicBoolean access$200();
+    Code:
+       0: getstatic     #5                  // Field doScan:Ljava/util/concurrent/atomic/AtomicBoolean;
+       3: areturn
+
+  static java.util.concurrent.CountDownLatch access$300();
+    Code:
+       0: getstatic     #4                  // Field compactReadLatch:Ljava/util/concurrent/CountDownLatch;
+       3: areturn
+
+  static byte[] access$400();
+    Code:
+       0: getstatic     #3                  // Field ROW2:[B
+       3: areturn
+
+  static byte[] access$500();
+    Code:
+       0: getstatic     #2                  // Field ROW3:[B
+       3: areturn
+
+  static java.util.concurrent.CountDownLatch access$600(org.apache.hadoop.hbase.client.TestAvoidCellReferencesIntoShippedBlocks);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field latch:Ljava/util/concurrent/CountDownLatch;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #108                // class org/apache/hadoop/hbase/client/TestAvoidCellReferencesIntoShippedBlocks
+       2: invokestatic  #109                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #110                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: new           #111                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      11: dup
+      12: invokespecial #112                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      15: putstatic     #17                 // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      18: iconst_2
+      19: anewarray     #113                // class "[B"
+      22: putstatic     #14                 // Field ROWS:[[B
+      25: ldc           #114                // String testRow
+      27: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      30: putstatic     #15                 // Field ROW:[B
+      33: ldc           #116                // String testRow1
+      35: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      38: putstatic     #16                 // Field ROW1:[B
+      41: ldc           #117                // String testRow2
+      43: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      46: putstatic     #3                  // Field ROW2:[B
+      49: ldc           #118                // String testRow3
+      51: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      54: putstatic     #2                  // Field ROW3:[B
+      57: ldc           #119                // String testRow4
+      59: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      62: putstatic     #6                  // Field ROW4:[B
+      65: ldc           #120                // String testRow5
+      67: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      70: putstatic     #7                  // Field ROW5:[B
+      73: ldc           #121                // String testFamily
+      75: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      78: putstatic     #43                 // Field FAMILY:[B
+      81: iconst_1
+      82: iconst_0
+      83: multianewarray #122,  2           // class "[[B"
+      87: putstatic     #42                 // Field FAMILIES_1:[[B
+      90: ldc           #123                // String testQualifier
+      92: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      95: putstatic     #72                 // Field QUALIFIER:[B
+      98: ldc           #124                // String testQualifier1
+     100: invokestatic  #115                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     103: putstatic     #76                 // Field QUALIFIER1:[B
+     106: sipush        1000
+     109: newarray       byte
+     111: putstatic     #73                 // Field data:[B
+     114: iconst_1
+     115: putstatic     #44                 // Field SLAVES:I
+     118: new           #9                  // class java/util/concurrent/CountDownLatch
+     121: dup
+     122: iconst_1
+     123: invokespecial #10                 // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+     126: putstatic     #4                  // Field compactReadLatch:Ljava/util/concurrent/CountDownLatch;
+     129: new           #125                // class java/util/concurrent/atomic/AtomicBoolean
+     132: dup
+     133: iconst_0
+     134: invokespecial #126                // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+     137: putstatic     #5                  // Field doScan:Ljava/util/concurrent/atomic/AtomicBoolean;
+     140: return
+}

@@ -1,0 +1,1236 @@
+Compiled from "SimpleLoadBalancer.java"
+public class org.apache.hadoop.hbase.master.balancer.SimpleLoadBalancer extends org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer {
+  public org.apache.hadoop.hbase.master.balancer.SimpleLoadBalancer();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/apache/hadoop/hbase/master/balancer/RegionInfoComparator
+       8: dup
+       9: invokespecial #3                  // Method org/apache/hadoop/hbase/master/balancer/RegionInfoComparator."<init>":()V
+      12: putfield      #4                  // Field riComparator:Lorg/apache/hadoop/hbase/master/balancer/RegionInfoComparator;
+      15: aload_0
+      16: new           #5                  // class org/apache/hadoop/hbase/master/RegionPlan$RegionPlanComparator
+      19: dup
+      20: invokespecial #6                  // Method org/apache/hadoop/hbase/master/RegionPlan$RegionPlanComparator."<init>":()V
+      23: putfield      #7                  // Field rpComparator:Lorg/apache/hadoop/hbase/master/RegionPlan$RegionPlanComparator;
+      26: return
+
+  public void setClusterLoad(java.util.Map<org.apache.hadoop.hbase.TableName, java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>>);
+    Code:
+       0: aload_0
+       1: new           #8                  // class java/util/ArrayList
+       4: dup
+       5: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+       8: putfield      #10                 // Field serverLoadList:Ljava/util/List;
+      11: fconst_0
+      12: fstore_2
+      13: aload_1
+      14: invokeinterface #11,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      19: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      24: astore_3
+      25: aload_3
+      26: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      31: ifeq          179
+      34: aload_3
+      35: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      40: checkcast     #15                 // class java/util/Map$Entry
+      43: astore        4
+      45: aload         4
+      47: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      52: checkcast     #17                 // class java/util/Map
+      55: invokeinterface #11,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      60: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      65: astore        5
+      67: aload         5
+      69: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      74: ifeq          176
+      77: aload         5
+      79: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      84: checkcast     #15                 // class java/util/Map$Entry
+      87: astore        6
+      89: aload         6
+      91: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      96: checkcast     #19                 // class org/apache/hadoop/hbase/ServerName
+      99: aload_0
+     100: getfield      #20                 // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+     103: invokevirtual #21                 // Method org/apache/hadoop/hbase/ServerName.equals:(Ljava/lang/Object;)Z
+     106: ifeq          112
+     109: goto          67
+     112: aload_0
+     113: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     116: new           #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     119: dup
+     120: aload         6
+     122: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     127: checkcast     #19                 // class org/apache/hadoop/hbase/ServerName
+     130: aload         6
+     132: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     137: checkcast     #23                 // class java/util/List
+     140: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     145: invokespecial #25                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad."<init>":(Lorg/apache/hadoop/hbase/ServerName;I)V
+     148: invokeinterface #26,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     153: pop
+     154: fload_2
+     155: aload         6
+     157: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     162: checkcast     #23                 // class java/util/List
+     165: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     170: i2f
+     171: fadd
+     172: fstore_2
+     173: goto          67
+     176: goto          25
+     179: aload_0
+     180: fload_2
+     181: aload_0
+     182: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     185: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     190: i2f
+     191: fdiv
+     192: putfield      #27                 // Field avgLoadOverall:F
+     195: return
+
+  public void onConfigurationChange(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: getfield      #28                 // Field slop:F
+       4: fstore_2
+       5: aload_0
+       6: getfield      #29                 // Field overallSlop:F
+       9: fstore_3
+      10: aload_0
+      11: aload_1
+      12: invokespecial #30                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.setConf:(Lorg/apache/hadoop/conf/Configuration;)V
+      15: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+      18: new           #32                 // class java/lang/StringBuilder
+      21: dup
+      22: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+      25: ldc           #34                 // String Update configuration of SimpleLoadBalancer, previous slop is
+      27: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      30: fload_2
+      31: invokevirtual #36                 // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+      34: ldc           #37                 // String , current slop is
+      36: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: aload_0
+      40: getfield      #28                 // Field slop:F
+      43: invokevirtual #36                 // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+      46: ldc           #38                 // String previous overallSlop is
+      48: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: fload_3
+      52: invokevirtual #36                 // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+      55: ldc           #39                 // String , current overallSlop is
+      57: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: fload_3
+      61: invokevirtual #36                 // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+      64: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      67: invokeinterface #41,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      72: return
+
+  public java.util.List<org.apache.hadoop.hbase.master.RegionPlan> balanceCluster(java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #56                 // Method balanceMasterRegions:(Ljava/util/Map;)Ljava/util/List;
+       5: astore_2
+       6: aload_2
+       7: ifnonnull     24
+      10: aload_1
+      11: ifnull        24
+      14: aload_1
+      15: invokeinterface #57,  1           // InterfaceMethod java/util/Map.size:()I
+      20: iconst_1
+      21: if_icmpgt     26
+      24: aload_2
+      25: areturn
+      26: aload_0
+      27: getfield      #20                 // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+      30: ifnull        78
+      33: aload_1
+      34: aload_0
+      35: getfield      #20                 // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+      38: invokeinterface #58,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      43: ifeq          78
+      46: aload_1
+      47: invokeinterface #57,  1           // InterfaceMethod java/util/Map.size:()I
+      52: iconst_2
+      53: if_icmpgt     58
+      56: aconst_null
+      57: areturn
+      58: new           #59                 // class java/util/HashMap
+      61: dup
+      62: aload_1
+      63: invokespecial #60                 // Method java/util/HashMap."<init>":(Ljava/util/Map;)V
+      66: astore_1
+      67: aload_1
+      68: aload_0
+      69: getfield      #20                 // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+      72: invokeinterface #61,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      77: pop
+      78: invokestatic  #62                 // Method java/lang/System.currentTimeMillis:()J
+      81: lstore_3
+      82: new           #63                 // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster
+      85: dup
+      86: aload_1
+      87: aconst_null
+      88: aload_0
+      89: getfield      #64                 // Field regionFinder:Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;
+      92: aload_0
+      93: getfield      #65                 // Field rackManager:Lorg/apache/hadoop/hbase/master/RackManager;
+      96: invokespecial #66                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster."<init>":(Ljava/util/Map;Ljava/util/Map;Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;Lorg/apache/hadoop/hbase/master/RackManager;)V
+      99: astore        5
+     101: aload_0
+     102: aload         5
+     104: invokevirtual #67                 // Method needsBalance:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)Z
+     107: ifne          119
+     110: aload_0
+     111: invokespecial #68                 // Method overallNeedsBalance:()Z
+     114: ifne          119
+     117: aconst_null
+     118: areturn
+     119: new           #69                 // class org/apache/hadoop/hbase/master/balancer/ClusterLoadState
+     122: dup
+     123: aload_1
+     124: invokespecial #70                 // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState."<init>":(Ljava/util/Map;)V
+     127: astore        6
+     129: aload         6
+     131: invokevirtual #71                 // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState.getNumServers:()I
+     134: istore        7
+     136: aload         6
+     138: invokevirtual #72                 // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState.getServersByLoad:()Ljava/util/NavigableMap;
+     141: astore        8
+     143: aload         6
+     145: invokevirtual #73                 // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState.getNumRegions:()I
+     148: istore        9
+     150: aload         6
+     152: invokevirtual #74                 // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState.getLoadAverage:()F
+     155: fstore        10
+     157: fload         10
+     159: f2d
+     160: invokestatic  #47                 // Method java/lang/Math.ceil:(D)D
+     163: d2i
+     164: istore        11
+     166: fload         10
+     168: f2i
+     169: istore        12
+     171: new           #32                 // class java/lang/StringBuilder
+     174: dup
+     175: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     178: astore        13
+     180: aload         13
+     182: ldc           #75                 // String Balance parameter: numRegions=
+     184: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     187: iload         9
+     189: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     192: ldc           #77                 // String , numServers=
+     194: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     197: iload         7
+     199: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     202: ldc           #78                 // String , max=
+     204: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     207: iload         11
+     209: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     212: ldc           #79                 // String , min=
+     214: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     217: iload         12
+     219: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     222: pop
+     223: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+     226: aload         13
+     228: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     231: invokeinterface #80,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     236: aload_0
+     237: getfield      #7                  // Field rpComparator:Lorg/apache/hadoop/hbase/master/RegionPlan$RegionPlanComparator;
+     240: invokestatic  #81                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.orderedBy:(Ljava/util/Comparator;)Lorg/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue$Builder;
+     243: invokevirtual #82                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue$Builder.create:()Lorg/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue;
+     246: astore        14
+     248: new           #8                  // class java/util/ArrayList
+     251: dup
+     252: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+     255: astore_2
+     256: iconst_0
+     257: istore        15
+     259: iconst_0
+     260: istore        16
+     262: new           #83                 // class java/util/TreeMap
+     265: dup
+     266: invokespecial #84                 // Method java/util/TreeMap."<init>":()V
+     269: astore        17
+     271: aload         8
+     273: invokeinterface #85,  1           // InterfaceMethod java/util/NavigableMap.descendingMap:()Ljava/util/NavigableMap;
+     278: invokeinterface #86,  1           // InterfaceMethod java/util/NavigableMap.entrySet:()Ljava/util/Set;
+     283: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     288: astore        18
+     290: aload         18
+     292: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     297: ifeq          576
+     300: aload         18
+     302: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     307: checkcast     #15                 // class java/util/Map$Entry
+     310: astore        19
+     312: aload         19
+     314: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     319: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     322: astore        20
+     324: aload         20
+     326: invokevirtual #44                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getLoad:()I
+     329: istore        21
+     331: iload         21
+     333: iload         11
+     335: if_icmpgt     373
+     338: aload         17
+     340: aload         20
+     342: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     345: new           #87                 // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo
+     348: dup
+     349: iconst_0
+     350: iconst_0
+     351: aload         19
+     353: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     358: checkcast     #23                 // class java/util/List
+     361: invokespecial #88                 // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo."<init>":(IILjava/util/List;)V
+     364: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     369: pop
+     370: goto          290
+     373: iinc          15, 1
+     376: aload         19
+     378: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     383: checkcast     #23                 // class java/util/List
+     386: astore        22
+     388: iload         21
+     390: iload         11
+     392: isub
+     393: aload         22
+     395: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     400: invokestatic  #52                 // Method java/lang/Math.min:(II)I
+     403: istore        23
+     405: aload         22
+     407: aload_0
+     408: getfield      #4                  // Field riComparator:Lorg/apache/hadoop/hbase/master/balancer/RegionInfoComparator;
+     411: invokestatic  #90                 // Method java/util/Collections.sort:(Ljava/util/List;Ljava/util/Comparator;)V
+     414: iconst_0
+     415: istore        24
+     417: iconst_0
+     418: istore        25
+     420: iload         25
+     422: iload         23
+     424: if_icmpgt     537
+     427: aload         22
+     429: iload         25
+     431: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     436: checkcast     #91                 // class org/apache/hadoop/hbase/client/RegionInfo
+     439: astore        26
+     441: iload         16
+     443: ifeq          470
+     446: aload         22
+     448: aload         22
+     450: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     455: iconst_1
+     456: isub
+     457: iload         25
+     459: isub
+     460: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     465: checkcast     #91                 // class org/apache/hadoop/hbase/client/RegionInfo
+     468: astore        26
+     470: iinc          25, 1
+     473: aload_0
+     474: aload         26
+     476: invokevirtual #92                 // Method shouldBeOnMaster:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Z
+     479: ifeq          500
+     482: aload_0
+     483: getfield      #20                 // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+     486: aload         20
+     488: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     491: invokevirtual #21                 // Method org/apache/hadoop/hbase/ServerName.equals:(Ljava/lang/Object;)Z
+     494: ifeq          500
+     497: goto          420
+     500: aload         14
+     502: new           #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+     505: dup
+     506: aload         26
+     508: aload         20
+     510: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     513: aconst_null
+     514: invokespecial #94                 // Method org/apache/hadoop/hbase/master/RegionPlan."<init>":(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/ServerName;)V
+     517: invokevirtual #95                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.add:(Ljava/lang/Object;)Z
+     520: pop
+     521: iinc          24, 1
+     524: iload         24
+     526: iload         23
+     528: if_icmplt     534
+     531: goto          537
+     534: goto          420
+     537: aload         17
+     539: aload         20
+     541: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     544: new           #87                 // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo
+     547: dup
+     548: iload         23
+     550: iconst_m1
+     551: iload         24
+     553: imul
+     554: aload         19
+     556: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     561: checkcast     #23                 // class java/util/List
+     564: invokespecial #88                 // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo."<init>":(IILjava/util/List;)V
+     567: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     572: pop
+     573: goto          290
+     576: aload         14
+     578: invokevirtual #96                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.size:()I
+     581: istore        18
+     583: iconst_0
+     584: istore        19
+     586: iconst_0
+     587: istore        16
+     589: new           #59                 // class java/util/HashMap
+     592: dup
+     593: invokespecial #97                 // Method java/util/HashMap."<init>":()V
+     596: astore        20
+     598: iload         9
+     600: iload         12
+     602: isub
+     603: istore        21
+     605: aload         8
+     607: invokeinterface #86,  1           // InterfaceMethod java/util/NavigableMap.entrySet:()Ljava/util/Set;
+     612: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     617: astore        22
+     619: aload         22
+     621: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     626: ifeq          717
+     629: aload         22
+     631: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     636: checkcast     #15                 // class java/util/Map$Entry
+     639: astore        23
+     641: iload         21
+     643: ifne          649
+     646: goto          717
+     649: aload         23
+     651: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     656: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     659: invokevirtual #44                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getLoad:()I
+     662: istore        24
+     664: iload         24
+     666: iload         12
+     668: if_icmplt     674
+     671: goto          619
+     674: iload         12
+     676: iload         24
+     678: isub
+     679: istore        25
+     681: iload         21
+     683: iload         25
+     685: isub
+     686: istore        21
+     688: aload         20
+     690: aload         23
+     692: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     697: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     700: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     703: iload         25
+     705: invokestatic  #98                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     708: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     713: pop
+     714: goto          619
+     717: aload         20
+     719: invokeinterface #57,  1           // InterfaceMethod java/util/Map.size:()I
+     724: istore        22
+     726: iconst_1
+     727: istore        23
+     729: aload         20
+     731: invokeinterface #99,  1           // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+     736: iload         22
+     738: anewarray     #19                 // class org/apache/hadoop/hbase/ServerName
+     741: invokeinterface #100,  2          // InterfaceMethod java/util/Set.toArray:([Ljava/lang/Object;)[Ljava/lang/Object;
+     746: invokestatic  #101                // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+     749: astore        24
+     751: aload         24
+     753: getstatic     #102                // Field RANDOM:Ljava/util/Random;
+     756: invokestatic  #103                // Method java/util/Collections.shuffle:(Ljava/util/List;Ljava/util/Random;)V
+     759: aload         14
+     761: invokevirtual #96                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.size:()I
+     764: ifle          940
+     767: iconst_0
+     768: istore        25
+     770: iload         23
+     772: ifle          779
+     775: iconst_0
+     776: goto          788
+     779: aload         20
+     781: invokeinterface #57,  1           // InterfaceMethod java/util/Map.size:()I
+     786: iconst_1
+     787: isub
+     788: istore        26
+     790: iload         26
+     792: iflt          924
+     795: iload         26
+     797: aload         20
+     799: invokeinterface #57,  1           // InterfaceMethod java/util/Map.size:()I
+     804: if_icmpge     924
+     807: aload         14
+     809: invokevirtual #104                // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.isEmpty:()Z
+     812: ifeq          818
+     815: goto          924
+     818: aload         24
+     820: iload         26
+     822: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     827: checkcast     #19                 // class org/apache/hadoop/hbase/ServerName
+     830: astore        27
+     832: aload         20
+     834: aload         27
+     836: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     841: checkcast     #48                 // class java/lang/Integer
+     844: invokevirtual #106                // Method java/lang/Integer.intValue:()I
+     847: istore        28
+     849: iload         28
+     851: ifne          857
+     854: goto          914
+     857: aload_0
+     858: aload         14
+     860: iload         16
+     862: aload         27
+     864: aload_2
+     865: invokespecial #107                // Method addRegionPlan:(Lorg/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue;ZLorg/apache/hadoop/hbase/ServerName;Ljava/util/List;)V
+     868: aload         20
+     870: aload         27
+     872: iload         28
+     874: iconst_1
+     875: isub
+     876: invokestatic  #98                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     879: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     884: pop
+     885: iinc          25, 1
+     888: aload         17
+     890: aload         27
+     892: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     897: checkcast     #87                 // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo
+     900: astore        29
+     902: aload         29
+     904: aload         29
+     906: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+     909: iconst_1
+     910: iadd
+     911: invokevirtual #109                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.setNumRegionsAdded:(I)V
+     914: iload         26
+     916: iload         23
+     918: iadd
+     919: istore        26
+     921: goto          790
+     924: iload         25
+     926: ifne          932
+     929: goto          940
+     932: iload         23
+     934: ineg
+     935: istore        23
+     937: goto          759
+     940: aload         20
+     942: invokeinterface #110,  1          // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+     947: invokeinterface #111,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+     952: astore        25
+     954: aload         25
+     956: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     961: ifeq          989
+     964: aload         25
+     966: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     971: checkcast     #48                 // class java/lang/Integer
+     974: astore        26
+     976: iload         19
+     978: aload         26
+     980: invokevirtual #106                // Method java/lang/Integer.intValue:()I
+     983: iadd
+     984: istore        19
+     986: goto          954
+     989: iload         19
+     991: ifeq          1204
+     994: aload         8
+     996: invokeinterface #85,  1           // InterfaceMethod java/util/NavigableMap.descendingMap:()Ljava/util/NavigableMap;
+    1001: invokeinterface #86,  1           // InterfaceMethod java/util/NavigableMap.entrySet:()Ljava/util/Set;
+    1006: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+    1011: astore        25
+    1013: aload         25
+    1015: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1020: ifeq          1204
+    1023: aload         25
+    1025: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1030: checkcast     #15                 // class java/util/Map$Entry
+    1033: astore        26
+    1035: aload         17
+    1037: aload         26
+    1039: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1044: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+    1047: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+    1050: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+    1055: checkcast     #87                 // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo
+    1058: astore        27
+    1060: aload         27
+    1062: ifnonnull     1069
+    1065: iconst_0
+    1066: goto          1074
+    1069: aload         27
+    1071: invokevirtual #112                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNextRegionForUnload:()I
+    1074: istore        28
+    1076: iload         28
+    1078: aload         26
+    1080: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1085: checkcast     #23                 // class java/util/List
+    1088: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+    1093: if_icmplt     1099
+    1096: goto          1204
+    1099: aload         26
+    1101: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1106: checkcast     #23                 // class java/util/List
+    1109: iload         28
+    1111: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+    1116: checkcast     #91                 // class org/apache/hadoop/hbase/client/RegionInfo
+    1119: astore        29
+    1121: aload         29
+    1123: invokeinterface #113,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isMetaRegion:()Z
+    1128: ifeq          1134
+    1131: goto          1013
+    1134: aload         14
+    1136: new           #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+    1139: dup
+    1140: aload         29
+    1142: aload         26
+    1144: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1149: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+    1152: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+    1155: aconst_null
+    1156: invokespecial #94                 // Method org/apache/hadoop/hbase/master/RegionPlan."<init>":(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/ServerName;)V
+    1159: invokevirtual #95                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.add:(Ljava/lang/Object;)Z
+    1162: pop
+    1163: aload         27
+    1165: aload         27
+    1167: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+    1170: iconst_1
+    1171: isub
+    1172: invokevirtual #109                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.setNumRegionsAdded:(I)V
+    1175: aload         27
+    1177: aload         27
+    1179: invokevirtual #112                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNextRegionForUnload:()I
+    1182: iconst_1
+    1183: iadd
+    1184: invokevirtual #114                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.setNextRegionForUnload:(I)V
+    1187: iinc          18, 1
+    1190: iinc          19, -1
+    1193: iload         19
+    1195: ifne          1201
+    1198: goto          1204
+    1201: goto          1013
+    1204: aload         8
+    1206: invokeinterface #86,  1           // InterfaceMethod java/util/NavigableMap.entrySet:()Ljava/util/Set;
+    1211: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+    1216: astore        25
+    1218: aload         25
+    1220: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1225: ifeq          1372
+    1228: aload         25
+    1230: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1235: checkcast     #15                 // class java/util/Map$Entry
+    1238: astore        26
+    1240: aload         26
+    1242: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1247: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+    1250: invokevirtual #44                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getLoad:()I
+    1253: istore        27
+    1255: iload         27
+    1257: iload         12
+    1259: if_icmplt     1265
+    1262: goto          1372
+    1265: aload         17
+    1267: aload         26
+    1269: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1274: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+    1277: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+    1280: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+    1285: checkcast     #87                 // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo
+    1288: astore        28
+    1290: aload         28
+    1292: ifnull        1305
+    1295: iload         27
+    1297: aload         28
+    1299: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+    1302: iadd
+    1303: istore        27
+    1305: iload         27
+    1307: iload         12
+    1309: if_icmplt     1315
+    1312: goto          1218
+    1315: iload         12
+    1317: iload         27
+    1319: isub
+    1320: istore        29
+    1322: iconst_0
+    1323: istore        30
+    1325: iload         30
+    1327: iload         29
+    1329: if_icmpge     1369
+    1332: iconst_0
+    1333: aload         14
+    1335: invokevirtual #96                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.size:()I
+    1338: if_icmpge     1369
+    1341: aload_0
+    1342: aload         14
+    1344: iload         16
+    1346: aload         26
+    1348: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1353: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+    1356: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+    1359: aload_2
+    1360: invokespecial #107                // Method addRegionPlan:(Lorg/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue;ZLorg/apache/hadoop/hbase/ServerName;Ljava/util/List;)V
+    1363: iinc          30, 1
+    1366: goto          1325
+    1369: goto          1218
+    1372: iload         12
+    1374: iload         11
+    1376: if_icmpeq     1394
+    1379: aload_0
+    1380: aload_2
+    1381: aload         17
+    1383: iload         16
+    1385: aload         14
+    1387: iload         11
+    1389: iload         12
+    1391: invokevirtual #115                // Method balanceOverall:(Ljava/util/List;Ljava/util/Map;ZLorg/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue;II)V
+    1394: invokestatic  #62                 // Method java/lang/System.currentTimeMillis:()J
+    1397: lstore        25
+    1399: aload         14
+    1401: invokevirtual #104                // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.isEmpty:()Z
+    1404: ifeq          1412
+    1407: iload         19
+    1409: ifeq          1612
+    1412: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+    1415: new           #32                 // class java/lang/StringBuilder
+    1418: dup
+    1419: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+    1422: ldc           #116                // String regionsToMove=
+    1424: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1427: iload         18
+    1429: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1432: ldc           #77                 // String , numServers=
+    1434: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1437: iload         7
+    1439: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1442: ldc           #117                // String , serversOverloaded=
+    1444: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1447: iload         15
+    1449: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1452: ldc           #118                // String , serversUnderloaded=
+    1454: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1457: iload         22
+    1459: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1462: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1465: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+    1470: new           #32                 // class java/lang/StringBuilder
+    1473: dup
+    1474: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+    1477: astore        27
+    1479: aload_1
+    1480: invokeinterface #11,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+    1485: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+    1490: astore        28
+    1492: aload         28
+    1494: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1499: ifeq          1581
+    1502: aload         28
+    1504: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1509: checkcast     #15                 // class java/util/Map$Entry
+    1512: astore        29
+    1514: aload         27
+    1516: invokevirtual #120                // Method java/lang/StringBuilder.length:()I
+    1519: ifle          1530
+    1522: aload         27
+    1524: ldc           #121                // String ,
+    1526: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1529: pop
+    1530: aload         27
+    1532: aload         29
+    1534: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1539: checkcast     #19                 // class org/apache/hadoop/hbase/ServerName
+    1542: invokevirtual #122                // Method org/apache/hadoop/hbase/ServerName.toString:()Ljava/lang/String;
+    1545: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1548: pop
+    1549: aload         27
+    1551: ldc           #123                // String
+    1553: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1556: pop
+    1557: aload         27
+    1559: aload         29
+    1561: invokeinterface #16,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1566: checkcast     #23                 // class java/util/List
+    1569: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+    1574: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1577: pop
+    1578: goto          1492
+    1581: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+    1584: new           #32                 // class java/lang/StringBuilder
+    1587: dup
+    1588: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+    1591: ldc           #124                // String Input
+    1593: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1596: aload         27
+    1598: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1601: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1604: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1607: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+    1612: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+    1615: new           #32                 // class java/lang/StringBuilder
+    1618: dup
+    1619: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+    1622: ldc           #125                // String Done. Calculated a load balance in
+    1624: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1627: lload         25
+    1629: lload_3
+    1630: lsub
+    1631: invokevirtual #126                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+    1634: ldc           #127                // String ms. Moving
+    1636: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1639: iload         18
+    1641: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1644: ldc           #128                // String  regions off of
+    1646: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1649: iload         15
+    1651: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1654: ldc           #129                // String  overloaded servers onto
+    1656: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1659: iload         22
+    1661: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1664: ldc           #130                // String  less loaded servers
+    1666: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1669: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1672: invokeinterface #41,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+    1677: aload_2
+    1678: areturn
+
+  public void balanceOverall(java.util.List<org.apache.hadoop.hbase.master.RegionPlan>, java.util.Map<org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.master.balancer.SimpleLoadBalancer$BalanceInfo>, boolean, org.apache.hbase.thirdparty.com.google.common.collect.MinMaxPriorityQueue<org.apache.hadoop.hbase.master.RegionPlan>, int, int);
+    Code:
+       0: new           #59                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #97                 // Method java/util/HashMap."<init>":()V
+       7: astore        7
+       9: iconst_0
+      10: istore        8
+      12: iload         8
+      14: aload_1
+      15: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+      20: if_icmpge     106
+      23: aload         7
+      25: aload_1
+      26: iload         8
+      28: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      33: checkcast     #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+      36: invokevirtual #131                // Method org/apache/hadoop/hbase/master/RegionPlan.getDestination:()Lorg/apache/hadoop/hbase/ServerName;
+      39: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      44: checkcast     #23                 // class java/util/List
+      47: astore        9
+      49: aload         9
+      51: ifnonnull     87
+      54: new           #8                  // class java/util/ArrayList
+      57: dup
+      58: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+      61: astore        9
+      63: aload         7
+      65: aload_1
+      66: iload         8
+      68: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      73: checkcast     #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+      76: invokevirtual #131                // Method org/apache/hadoop/hbase/master/RegionPlan.getDestination:()Lorg/apache/hadoop/hbase/ServerName;
+      79: aload         9
+      81: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      86: pop
+      87: aload         9
+      89: iload         8
+      91: invokestatic  #98                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      94: invokeinterface #26,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      99: pop
+     100: iinc          8, 1
+     103: goto          12
+     106: iconst_0
+     107: istore        8
+     109: iload         8
+     111: aload_0
+     112: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     115: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     120: if_icmpge     467
+     123: aload_0
+     124: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     127: iload         8
+     129: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     134: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     137: astore        9
+     139: aload_2
+     140: aload         9
+     142: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     145: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     150: checkcast     #87                 // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo
+     153: astore        10
+     155: aload         10
+     157: ifnonnull     163
+     160: goto          461
+     163: aload_0
+     164: aload_0
+     165: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     168: iload         8
+     170: aload         10
+     172: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+     175: invokespecial #132                // Method setLoad:(Ljava/util/List;II)V
+     178: aload         10
+     180: invokevirtual #133                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getHriList:()Ljava/util/List;
+     183: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     188: aload         10
+     190: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+     193: iadd
+     194: iload         5
+     196: if_icmpne     331
+     199: aload         10
+     201: invokevirtual #133                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getHriList:()Ljava/util/List;
+     204: invokeinterface #134,  1          // InterfaceMethod java/util/List.isEmpty:()Z
+     209: ifeq          251
+     212: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+     215: new           #32                 // class java/lang/StringBuilder
+     218: dup
+     219: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     222: ldc           #135                // String During balanceOverall, we found
+     224: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     227: aload         9
+     229: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     232: invokevirtual #136                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     235: ldc           #137                // String  has no RegionInfo, no operation needed
+     237: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     240: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     243: invokeinterface #80,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     248: goto          461
+     251: aload         10
+     253: invokevirtual #112                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNextRegionForUnload:()I
+     256: aload         10
+     258: invokevirtual #133                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getHriList:()Ljava/util/List;
+     261: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     266: if_icmplt     272
+     269: goto          461
+     272: aload         10
+     274: invokevirtual #133                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getHriList:()Ljava/util/List;
+     277: aload         10
+     279: invokevirtual #112                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNextRegionForUnload:()I
+     282: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     287: checkcast     #91                 // class org/apache/hadoop/hbase/client/RegionInfo
+     290: astore        11
+     292: new           #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+     295: dup
+     296: aload         11
+     298: aload         9
+     300: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     303: aconst_null
+     304: invokespecial #94                 // Method org/apache/hadoop/hbase/master/RegionPlan."<init>":(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/ServerName;)V
+     307: astore        12
+     309: aload         4
+     311: aload         12
+     313: invokevirtual #95                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.add:(Ljava/lang/Object;)Z
+     316: pop
+     317: aload_0
+     318: aload_0
+     319: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     322: iload         8
+     324: iconst_m1
+     325: invokespecial #132                // Method setLoad:(Ljava/util/List;II)V
+     328: goto          461
+     331: aload         10
+     333: invokevirtual #133                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getHriList:()Ljava/util/List;
+     336: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     341: aload         10
+     343: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+     346: iadd
+     347: iload         5
+     349: if_icmpgt     373
+     352: aload         10
+     354: invokevirtual #133                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getHriList:()Ljava/util/List;
+     357: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     362: aload         10
+     364: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+     367: iadd
+     368: iload         6
+     370: if_icmpge     461
+     373: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+     376: new           #32                 // class java/lang/StringBuilder
+     379: dup
+     380: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     383: ldc           #138                // String Encounter incorrect region numbers after calculating move plan during balanceOverall, for this table,
+     385: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     388: aload         9
+     390: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     393: invokevirtual #136                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     396: ldc           #139                // String  originally has
+     398: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     401: aload         10
+     403: invokevirtual #133                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getHriList:()Ljava/util/List;
+     406: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     411: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     414: ldc           #140                // String  regions and
+     416: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     419: aload         10
+     421: invokevirtual #108                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$BalanceInfo.getNumRegionsAdded:()I
+     424: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     427: ldc           #141                // String  regions have been added. Yet, max =
+     429: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     432: iload         5
+     434: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     437: ldc           #142                // String , min =
+     439: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     442: iload         6
+     444: invokevirtual #76                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     447: ldc           #143                // String . Thus stop balance for this table
+     449: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     452: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     455: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     460: return
+     461: iinc          8, 1
+     464: goto          109
+     467: aload_0
+     468: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     471: new           #144                // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$1
+     474: dup
+     475: aload_0
+     476: invokespecial #145                // Method org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer$1."<init>":(Lorg/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer;)V
+     479: invokestatic  #90                 // Method java/util/Collections.sort:(Ljava/util/List;Ljava/util/Comparator;)V
+     482: aload         4
+     484: invokevirtual #96                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.size:()I
+     487: istore        8
+     489: new           #59                 // class java/util/HashMap
+     492: dup
+     493: invokespecial #97                 // Method java/util/HashMap."<init>":()V
+     496: astore        9
+     498: iconst_0
+     499: istore        10
+     501: iload         10
+     503: aload_0
+     504: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     507: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     512: if_icmpge     569
+     515: aload         9
+     517: aload_0
+     518: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     521: iload         10
+     523: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     528: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     531: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     534: new           #146                // class org/apache/hadoop/hbase/util/Pair
+     537: dup
+     538: aload_0
+     539: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     542: iload         10
+     544: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     549: iload         10
+     551: invokestatic  #98                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     554: invokespecial #147                // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+     557: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     562: pop
+     563: iinc          10, 1
+     566: goto          501
+     569: new           #8                  // class java/util/ArrayList
+     572: dup
+     573: invokespecial #9                  // Method java/util/ArrayList."<init>":()V
+     576: astore        11
+     578: new           #59                 // class java/util/HashMap
+     581: dup
+     582: invokespecial #97                 // Method java/util/HashMap."<init>":()V
+     585: astore        12
+     587: aload         4
+     589: invokevirtual #148                // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.iterator:()Ljava/util/Iterator;
+     592: astore        13
+     594: aload         13
+     596: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     601: ifeq          772
+     604: aload         13
+     606: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     611: checkcast     #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+     614: astore        14
+     616: aload         9
+     618: aload         14
+     620: invokevirtual #149                // Method org/apache/hadoop/hbase/master/RegionPlan.getSource:()Lorg/apache/hadoop/hbase/ServerName;
+     623: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     628: checkcast     #146                // class org/apache/hadoop/hbase/util/Pair
+     631: astore        10
+     633: aload         12
+     635: aload         14
+     637: invokevirtual #149                // Method org/apache/hadoop/hbase/master/RegionPlan.getSource:()Lorg/apache/hadoop/hbase/ServerName;
+     640: invokeinterface #58,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     645: ifne          665
+     648: aload         12
+     650: aload         14
+     652: invokevirtual #149                // Method org/apache/hadoop/hbase/master/RegionPlan.getSource:()Lorg/apache/hadoop/hbase/ServerName;
+     655: iconst_0
+     656: invokestatic  #98                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     659: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     664: pop
+     665: aload         12
+     667: aload         14
+     669: invokevirtual #149                // Method org/apache/hadoop/hbase/master/RegionPlan.getSource:()Lorg/apache/hadoop/hbase/ServerName;
+     672: aload         12
+     674: aload         14
+     676: invokevirtual #149                // Method org/apache/hadoop/hbase/master/RegionPlan.getSource:()Lorg/apache/hadoop/hbase/ServerName;
+     679: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     684: checkcast     #48                 // class java/lang/Integer
+     687: invokevirtual #106                // Method java/lang/Integer.intValue:()I
+     690: iconst_1
+     691: iadd
+     692: invokestatic  #98                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     695: invokeinterface #89,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     700: pop
+     701: aload         10
+     703: invokevirtual #150                // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+     706: checkcast     #48                 // class java/lang/Integer
+     709: invokevirtual #106                // Method java/lang/Integer.intValue:()I
+     712: iload         8
+     714: if_icmpge     769
+     717: aload         12
+     719: aload         14
+     721: invokevirtual #149                // Method org/apache/hadoop/hbase/master/RegionPlan.getSource:()Lorg/apache/hadoop/hbase/ServerName;
+     724: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     729: checkcast     #48                 // class java/lang/Integer
+     732: invokevirtual #106                // Method java/lang/Integer.intValue:()I
+     735: iconst_1
+     736: if_icmpne     769
+     739: aload         11
+     741: aload         14
+     743: invokeinterface #26,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     748: pop
+     749: aload_0
+     750: aload_0
+     751: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     754: aload         10
+     756: invokevirtual #150                // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+     759: checkcast     #48                 // class java/lang/Integer
+     762: invokevirtual #106                // Method java/lang/Integer.intValue:()I
+     765: iconst_1
+     766: invokespecial #132                // Method setLoad:(Ljava/util/List;II)V
+     769: goto          594
+     772: aload         11
+     774: invokeinterface #50,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     779: astore        13
+     781: aload         13
+     783: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     788: ifeq          814
+     791: aload         13
+     793: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     798: checkcast     #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+     801: astore        14
+     803: aload         4
+     805: aload         14
+     807: invokevirtual #151                // Method org/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue.remove:(Ljava/lang/Object;)Z
+     810: pop
+     811: goto          781
+     814: iconst_0
+     815: istore        13
+     817: iload         13
+     819: iload         8
+     821: if_icmpge     1029
+     824: aload         12
+     826: aload_0
+     827: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     830: iload         13
+     832: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     837: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     840: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     843: invokeinterface #58,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     848: ifeq          854
+     851: goto          1023
+     854: aload_0
+     855: aload         4
+     857: iload_3
+     858: aload_0
+     859: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     862: iload         13
+     864: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     869: checkcast     #22                 // class org/apache/hadoop/hbase/master/balancer/ServerAndLoad
+     872: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/balancer/ServerAndLoad.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     875: aload_1
+     876: invokespecial #107                // Method addRegionPlan:(Lorg/apache/hbase/thirdparty/com/google/common/collect/MinMaxPriorityQueue;ZLorg/apache/hadoop/hbase/ServerName;Ljava/util/List;)V
+     879: aload_0
+     880: aload_0
+     881: getfield      #10                 // Field serverLoadList:Ljava/util/List;
+     884: iload         13
+     886: iconst_1
+     887: invokespecial #132                // Method setLoad:(Ljava/util/List;II)V
+     890: aload         7
+     892: aload_1
+     893: aload_1
+     894: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     899: iconst_1
+     900: isub
+     901: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     906: checkcast     #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+     909: invokevirtual #149                // Method org/apache/hadoop/hbase/master/RegionPlan.getSource:()Lorg/apache/hadoop/hbase/ServerName;
+     912: invokeinterface #105,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     917: checkcast     #23                 // class java/util/List
+     920: astore        14
+     922: aload         14
+     924: ifnull        1023
+     927: aload         14
+     929: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     934: ifeq          1023
+     937: aload_1
+     938: aload         14
+     940: aload         14
+     942: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     947: iconst_1
+     948: isub
+     949: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     954: checkcast     #48                 // class java/lang/Integer
+     957: invokevirtual #106                // Method java/lang/Integer.intValue:()I
+     960: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     965: checkcast     #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+     968: aload_1
+     969: aload_1
+     970: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+     975: iconst_1
+     976: isub
+     977: invokeinterface #42,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     982: checkcast     #93                 // class org/apache/hadoop/hbase/master/RegionPlan
+     985: invokevirtual #131                // Method org/apache/hadoop/hbase/master/RegionPlan.getDestination:()Lorg/apache/hadoop/hbase/ServerName;
+     988: invokevirtual #152                // Method org/apache/hadoop/hbase/master/RegionPlan.setDestination:(Lorg/apache/hadoop/hbase/ServerName;)V
+     991: aload         14
+     993: aload         14
+     995: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+    1000: iconst_1
+    1001: isub
+    1002: invokeinterface #153,  2          // InterfaceMethod java/util/List.remove:(I)Ljava/lang/Object;
+    1007: pop
+    1008: aload_1
+    1009: aload_1
+    1010: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+    1015: iconst_1
+    1016: isub
+    1017: invokeinterface #153,  2          // InterfaceMethod java/util/List.remove:(I)Ljava/lang/Object;
+    1022: pop
+    1023: iinc          13, 1
+    1026: goto          817
+    1029: return
+
+  public java.util.List<org.apache.hadoop.hbase.master.RegionPlan> balanceCluster(org.apache.hadoop.hbase.TableName, java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>) throws org.apache.hadoop.hbase.HBaseIOException;
+    Code:
+       0: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+       3: new           #32                 // class java/lang/StringBuilder
+       6: dup
+       7: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+      10: ldc           #156                // String Start Generate Balance plan for table:
+      12: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      15: aload_1
+      16: invokevirtual #136                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      19: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      22: invokeinterface #80,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      27: aload_0
+      28: aload_2
+      29: invokevirtual #157                // Method balanceCluster:(Ljava/util/Map;)Ljava/util/List;
+      32: areturn
+
+  static {};
+    Code:
+       0: ldc           #158                // class org/apache/hadoop/hbase/master/balancer/SimpleLoadBalancer
+       2: invokestatic  #159                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+       8: new           #160                // class java/util/Random
+      11: dup
+      12: invokestatic  #62                 // Method java/lang/System.currentTimeMillis:()J
+      15: invokespecial #161                // Method java/util/Random."<init>":(J)V
+      18: putstatic     #102                // Field RANDOM:Ljava/util/Random;
+      21: return
+}

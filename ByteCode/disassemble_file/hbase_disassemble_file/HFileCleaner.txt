@@ -1,0 +1,481 @@
+Compiled from "HFileCleaner.java"
+public class org.apache.hadoop.hbase.master.cleaner.HFileCleaner extends org.apache.hadoop.hbase.master.cleaner.CleanerChore<org.apache.hadoop.hbase.master.cleaner.BaseHFileCleanerDelegate> {
+  public static final java.lang.String MASTER_HFILE_CLEANER_PLUGINS;
+
+  public static final java.lang.String HFILE_DELETE_THROTTLE_THRESHOLD;
+
+  public static final int DEFAULT_HFILE_DELETE_THROTTLE_THRESHOLD;
+
+  public static final java.lang.String LARGE_HFILE_QUEUE_INIT_SIZE;
+
+  public static final int DEFAULT_LARGE_HFILE_QUEUE_INIT_SIZE;
+
+  public static final java.lang.String SMALL_HFILE_QUEUE_INIT_SIZE;
+
+  public static final int DEFAULT_SMALL_HFILE_QUEUE_INIT_SIZE;
+
+  public static final java.lang.String LARGE_HFILE_DELETE_THREAD_NUMBER;
+
+  public static final int DEFAULT_LARGE_HFILE_DELETE_THREAD_NUMBER;
+
+  public static final java.lang.String SMALL_HFILE_DELETE_THREAD_NUMBER;
+
+  public static final int DEFAULT_SMALL_HFILE_DELETE_THREAD_NUMBER;
+
+  public static final java.lang.String HFILE_DELETE_THREAD_TIMEOUT_MSEC;
+
+  static final long DEFAULT_HFILE_DELETE_THREAD_TIMEOUT_MSEC;
+
+  public static final java.lang.String HFILE_DELETE_THREAD_CHECK_INTERVAL_MSEC;
+
+  static final long DEFAULT_HFILE_DELETE_THREAD_CHECK_INTERVAL_MSEC;
+
+  org.apache.hadoop.hbase.util.StealJobQueue<org.apache.hadoop.hbase.master.cleaner.HFileCleaner$HFileDeleteTask> largeFileQueue;
+
+  java.util.concurrent.BlockingQueue<org.apache.hadoop.hbase.master.cleaner.HFileCleaner$HFileDeleteTask> smallFileQueue;
+
+  public org.apache.hadoop.hbase.master.cleaner.HFileCleaner(int, org.apache.hadoop.hbase.Stoppable, org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aconst_null
+       9: invokespecial #2                  // Method "<init>":(ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/util/Map;)V
+      12: return
+
+  public org.apache.hadoop.hbase.master.cleaner.HFileCleaner(int, org.apache.hadoop.hbase.Stoppable, org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, java.util.Map<java.lang.String, java.lang.Object>);
+    Code:
+       0: aload_0
+       1: ldc           #3                  // String HFileCleaner
+       3: iload_1
+       4: aload_2
+       5: aload_3
+       6: aload         4
+       8: aload         5
+      10: ldc           #5                  // String hbase.master.hfilecleaner.plugins
+      12: aload         6
+      14: invokespecial #6                  // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore."<init>":(Ljava/lang/String;ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/lang/String;Ljava/util/Map;)V
+      17: aload_0
+      18: new           #7                  // class java/util/ArrayList
+      21: dup
+      22: invokespecial #8                  // Method java/util/ArrayList."<init>":()V
+      25: putfield      #9                  // Field threads:Ljava/util/List;
+      28: aload_0
+      29: new           #10                 // class java/util/concurrent/atomic/AtomicLong
+      32: dup
+      33: invokespecial #11                 // Method java/util/concurrent/atomic/AtomicLong."<init>":()V
+      36: putfield      #12                 // Field deletedLargeFiles:Ljava/util/concurrent/atomic/AtomicLong;
+      39: aload_0
+      40: new           #10                 // class java/util/concurrent/atomic/AtomicLong
+      43: dup
+      44: invokespecial #11                 // Method java/util/concurrent/atomic/AtomicLong."<init>":()V
+      47: putfield      #13                 // Field deletedSmallFiles:Ljava/util/concurrent/atomic/AtomicLong;
+      50: aload_0
+      51: aload_3
+      52: ldc           #14                 // String hbase.regionserver.thread.hfilecleaner.throttle
+      54: ldc           #15                 // int 67108864
+      56: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      59: putfield      #17                 // Field throttlePoint:I
+      62: aload_0
+      63: aload_3
+      64: ldc           #18                 // String hbase.regionserver.hfilecleaner.large.queue.size
+      66: sipush        10240
+      69: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      72: putfield      #19                 // Field largeQueueInitSize:I
+      75: aload_0
+      76: aload_3
+      77: ldc           #20                 // String hbase.regionserver.hfilecleaner.small.queue.size
+      79: sipush        10240
+      82: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      85: putfield      #21                 // Field smallQueueInitSize:I
+      88: aload_0
+      89: new           #22                 // class org/apache/hadoop/hbase/util/StealJobQueue
+      92: dup
+      93: aload_0
+      94: getfield      #19                 // Field largeQueueInitSize:I
+      97: aload_0
+      98: getfield      #21                 // Field smallQueueInitSize:I
+     101: getstatic     #23                 // Field COMPARATOR:Ljava/util/Comparator;
+     104: invokespecial #24                 // Method org/apache/hadoop/hbase/util/StealJobQueue."<init>":(IILjava/util/Comparator;)V
+     107: putfield      #25                 // Field largeFileQueue:Lorg/apache/hadoop/hbase/util/StealJobQueue;
+     110: aload_0
+     111: aload_0
+     112: getfield      #25                 // Field largeFileQueue:Lorg/apache/hadoop/hbase/util/StealJobQueue;
+     115: invokevirtual #26                 // Method org/apache/hadoop/hbase/util/StealJobQueue.getStealFromQueue:()Ljava/util/concurrent/BlockingQueue;
+     118: putfield      #27                 // Field smallFileQueue:Ljava/util/concurrent/BlockingQueue;
+     121: aload_0
+     122: aload_3
+     123: ldc           #28                 // String hbase.regionserver.hfilecleaner.large.thread.count
+     125: iconst_1
+     126: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     129: putfield      #29                 // Field largeFileDeleteThreadNumber:I
+     132: aload_0
+     133: aload_3
+     134: ldc           #30                 // String hbase.regionserver.hfilecleaner.small.thread.count
+     136: iconst_1
+     137: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     140: putfield      #31                 // Field smallFileDeleteThreadNumber:I
+     143: aload_0
+     144: aload_3
+     145: ldc           #32                 // String hbase.regionserver.hfilecleaner.thread.timeout.msec
+     147: ldc2_w        #33                 // long 60000l
+     150: invokevirtual #35                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+     153: putfield      #36                 // Field cleanerThreadTimeoutMsec:J
+     156: aload_0
+     157: aload_3
+     158: ldc           #37                 // String hbase.regionserver.hfilecleaner.thread.check.interval.msec
+     160: ldc2_w        #38                 // long 1000l
+     163: invokevirtual #35                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+     166: putfield      #40                 // Field cleanerThreadCheckIntervalMsec:J
+     169: aload_0
+     170: invokespecial #41                 // Method startHFileDeleteThreads:()V
+     173: return
+
+  protected boolean validate(org.apache.hadoop.fs.Path);
+    Code:
+       0: aload_1
+       1: invokestatic  #42                 // Method org/apache/hadoop/hbase/io/HFileLink.isBackReferencesDir:(Lorg/apache/hadoop/fs/Path;)Z
+       4: ifne          17
+       7: aload_1
+       8: invokevirtual #43                 // Method org/apache/hadoop/fs/Path.getParent:()Lorg/apache/hadoop/fs/Path;
+      11: invokestatic  #42                 // Method org/apache/hadoop/hbase/io/HFileLink.isBackReferencesDir:(Lorg/apache/hadoop/fs/Path;)Z
+      14: ifeq          19
+      17: iconst_1
+      18: ireturn
+      19: aload_1
+      20: invokevirtual #44                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+      23: invokestatic  #45                 // Method org/apache/hadoop/hbase/regionserver/StoreFileInfo.validateStoreFileName:(Ljava/lang/String;)Z
+      26: ireturn
+
+  public java.util.List<org.apache.hadoop.hbase.master.cleaner.BaseHFileCleanerDelegate> getDelegatesForTesting();
+    Code:
+       0: aload_0
+       1: getfield      #46                 // Field cleanersChain:Ljava/util/List;
+       4: areturn
+
+  public int deleteFiles(java.lang.Iterable<org.apache.hadoop.fs.FileStatus>);
+    Code:
+       0: iconst_0
+       1: istore_2
+       2: new           #7                  // class java/util/ArrayList
+       5: dup
+       6: invokespecial #8                  // Method java/util/ArrayList."<init>":()V
+       9: astore_3
+      10: aload_1
+      11: invokeinterface #47,  1           // InterfaceMethod java/lang/Iterable.iterator:()Ljava/util/Iterator;
+      16: astore        4
+      18: aload         4
+      20: invokeinterface #48,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      25: ifeq          65
+      28: aload         4
+      30: invokeinterface #49,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #50                 // class org/apache/hadoop/fs/FileStatus
+      38: astore        5
+      40: aload_0
+      41: aload         5
+      43: invokespecial #51                 // Method deleteFile:(Lorg/apache/hadoop/fs/FileStatus;)Lorg/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask;
+      46: astore        6
+      48: aload         6
+      50: ifnull        62
+      53: aload_3
+      54: aload         6
+      56: invokeinterface #52,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      61: pop
+      62: goto          18
+      65: aload_3
+      66: invokeinterface #53,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      71: astore        4
+      73: aload         4
+      75: invokeinterface #48,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      80: ifeq          113
+      83: aload         4
+      85: invokeinterface #49,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      90: checkcast     #54                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask
+      93: astore        5
+      95: aload         5
+      97: aload_0
+      98: getfield      #40                 // Field cleanerThreadCheckIntervalMsec:J
+     101: invokevirtual #55                 // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask.getResult:(J)Z
+     104: ifeq          110
+     107: iinc          2, 1
+     110: goto          73
+     113: iload_2
+     114: ireturn
+
+  public synchronized void cleanup();
+    Code:
+       0: aload_0
+       1: invokespecial #64                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore.cleanup:()V
+       4: aload_0
+       5: invokespecial #65                 // Method stopHFileDeleteThreads:()V
+       8: return
+
+  protected void consumerLoop(java.util.concurrent.BlockingQueue<org.apache.hadoop.hbase.master.cleaner.HFileCleaner$HFileDeleteTask>);
+    Code:
+       0: aload_0
+       1: getfield      #68                 // Field running:Z
+       4: ifeq          138
+       7: aconst_null
+       8: astore_2
+       9: aload_1
+      10: invokeinterface #89,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.take:()Ljava/lang/Object;
+      15: checkcast     #54                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask
+      18: astore_2
+      19: goto          37
+      22: astore_3
+      23: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      26: ldc           #91                 // String Interrupted while trying to take a task from queue
+      28: aload_3
+      29: invokeinterface #92,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      34: goto          138
+      37: aload_2
+      38: ifnull        135
+      41: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      44: ldc           #93                 // String Removing {}
+      46: aload_2
+      47: getfield      #94                 // Field org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask.filePath:Lorg/apache/hadoop/fs/Path;
+      50: invokeinterface #95,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      55: aload_0
+      56: getfield      #96                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      59: aload_2
+      60: getfield      #94                 // Field org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask.filePath:Lorg/apache/hadoop/fs/Path;
+      63: iconst_0
+      64: invokevirtual #97                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+      67: istore_3
+      68: goto          91
+      71: astore        4
+      73: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      76: ldc           #99                 // String Failed to delete {}
+      78: aload_2
+      79: getfield      #94                 // Field org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask.filePath:Lorg/apache/hadoop/fs/Path;
+      82: aload         4
+      84: invokeinterface #100,  4          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      89: iconst_0
+      90: istore_3
+      91: aload_2
+      92: iload_3
+      93: invokevirtual #101                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask.setResult:(Z)V
+      96: iload_3
+      97: ifeq          135
+     100: aload_0
+     101: aload_2
+     102: getfield      #58                 // Field org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask.fileLength:J
+     105: aload_0
+     106: getfield      #17                 // Field throttlePoint:I
+     109: i2l
+     110: lcmp
+     111: iflt          118
+     114: iconst_1
+     115: goto          119
+     118: iconst_0
+     119: aload_1
+     120: aload_0
+     121: getfield      #25                 // Field largeFileQueue:Lorg/apache/hadoop/hbase/util/StealJobQueue;
+     124: if_acmpne     131
+     127: iconst_1
+     128: goto          132
+     131: iconst_0
+     132: invokespecial #102                // Method countDeletedFiles:(ZZ)V
+     135: goto          0
+     138: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     141: ldc           #103                // String Exit {}
+     143: invokestatic  #66                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     146: invokeinterface #84,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     151: goto          172
+     154: astore        5
+     156: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     159: ldc           #103                // String Exit {}
+     161: invokestatic  #66                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     164: invokeinterface #84,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     169: aload         5
+     171: athrow
+     172: return
+    Exception table:
+       from    to  target type
+           9    19    22   Class java/lang/InterruptedException
+          55    68    71   Class java/io/IOException
+           0   138   154   any
+         154   156   154   any
+
+  public java.util.List<java.lang.Thread> getCleanerThreads();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field threads:Ljava/util/List;
+       4: areturn
+
+  public long getNumOfDeletedLargeFiles();
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field deletedLargeFiles:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #104                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public long getNumOfDeletedSmallFiles();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field deletedSmallFiles:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #104                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public long getLargeQueueInitSize();
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field largeQueueInitSize:I
+       4: i2l
+       5: lreturn
+
+  public long getSmallQueueInitSize();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field smallQueueInitSize:I
+       4: i2l
+       5: lreturn
+
+  public long getThrottlePoint();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field throttlePoint:I
+       4: i2l
+       5: lreturn
+
+  long getCleanerThreadTimeoutMsec();
+    Code:
+       0: aload_0
+       1: getfield      #36                 // Field cleanerThreadTimeoutMsec:J
+       4: lreturn
+
+  long getCleanerThreadCheckIntervalMsec();
+    Code:
+       0: aload_0
+       1: getfield      #40                 // Field cleanerThreadCheckIntervalMsec:J
+       4: lreturn
+
+  public void onConfigurationChange(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #117                // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore.onConfigurationChange:(Lorg/apache/hadoop/conf/Configuration;)V
+       5: aload_0
+       6: aload_1
+       7: invokespecial #118                // Method checkAndUpdateConfigurations:(Lorg/apache/hadoop/conf/Configuration;)Z
+      10: ifne          24
+      13: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      16: ldc           #119                // String Update configuration triggered but nothing changed for this cleaner
+      18: invokeinterface #109,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      23: return
+      24: aload_0
+      25: invokespecial #65                 // Method stopHFileDeleteThreads:()V
+      28: new           #7                  // class java/util/ArrayList
+      31: dup
+      32: aload_0
+      33: getfield      #25                 // Field largeFileQueue:Lorg/apache/hadoop/hbase/util/StealJobQueue;
+      36: invokevirtual #120                // Method org/apache/hadoop/hbase/util/StealJobQueue.size:()I
+      39: aload_0
+      40: getfield      #27                 // Field smallFileQueue:Ljava/util/concurrent/BlockingQueue;
+      43: invokeinterface #121,  1          // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      48: iadd
+      49: invokespecial #122                // Method java/util/ArrayList."<init>":(I)V
+      52: astore_2
+      53: aload_2
+      54: aload_0
+      55: getfield      #25                 // Field largeFileQueue:Lorg/apache/hadoop/hbase/util/StealJobQueue;
+      58: invokeinterface #123,  2          // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+      63: pop
+      64: aload_2
+      65: aload_0
+      66: getfield      #27                 // Field smallFileQueue:Ljava/util/concurrent/BlockingQueue;
+      69: invokeinterface #123,  2          // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+      74: pop
+      75: aload_0
+      76: new           #22                 // class org/apache/hadoop/hbase/util/StealJobQueue
+      79: dup
+      80: aload_0
+      81: getfield      #19                 // Field largeQueueInitSize:I
+      84: aload_0
+      85: getfield      #21                 // Field smallQueueInitSize:I
+      88: getstatic     #23                 // Field COMPARATOR:Ljava/util/Comparator;
+      91: invokespecial #24                 // Method org/apache/hadoop/hbase/util/StealJobQueue."<init>":(IILjava/util/Comparator;)V
+      94: putfield      #25                 // Field largeFileQueue:Lorg/apache/hadoop/hbase/util/StealJobQueue;
+      97: aload_0
+      98: aload_0
+      99: getfield      #25                 // Field largeFileQueue:Lorg/apache/hadoop/hbase/util/StealJobQueue;
+     102: invokevirtual #26                 // Method org/apache/hadoop/hbase/util/StealJobQueue.getStealFromQueue:()Ljava/util/concurrent/BlockingQueue;
+     105: putfield      #27                 // Field smallFileQueue:Ljava/util/concurrent/BlockingQueue;
+     108: aload_0
+     109: getfield      #9                  // Field threads:Ljava/util/List;
+     112: invokeinterface #124,  1          // InterfaceMethod java/util/List.clear:()V
+     117: aload_0
+     118: invokespecial #41                 // Method startHFileDeleteThreads:()V
+     121: aload_2
+     122: invokeinterface #53,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     127: astore_3
+     128: aload_3
+     129: invokeinterface #48,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     134: ifeq          158
+     137: aload_3
+     138: invokeinterface #49,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     143: checkcast     #54                 // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask
+     146: astore        4
+     148: aload_0
+     149: aload         4
+     151: invokespecial #57                 // Method dispatch:(Lorg/apache/hadoop/hbase/master/cleaner/HFileCleaner$HFileDeleteTask;)Z
+     154: pop
+     155: goto          128
+     158: return
+
+  public synchronized void cancel(boolean);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokespecial #132                // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore.cancel:(Z)V
+       5: aload_0
+       6: getfield      #9                  // Field threads:Ljava/util/List;
+       9: invokeinterface #53,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      14: astore_2
+      15: aload_2
+      16: invokeinterface #48,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      21: ifeq          41
+      24: aload_2
+      25: invokeinterface #49,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      30: checkcast     #115                // class java/lang/Thread
+      33: astore_3
+      34: aload_3
+      35: invokevirtual #116                // Method java/lang/Thread.interrupt:()V
+      38: goto          15
+      41: return
+
+  public void init(java.util.Map<java.lang.String, java.lang.Object>);
+    Code:
+       0: aload_1
+       1: ifnull        30
+       4: aload_1
+       5: ldc           #134                // String master
+       7: invokeinterface #135,  2          // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      12: ifeq          30
+      15: aload_0
+      16: aload_1
+      17: ldc           #134                // String master
+      19: invokeinterface #136,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      24: checkcast     #137                // class org/apache/hadoop/hbase/master/MasterServices
+      27: putfield      #138                // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      30: return
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #4                  // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner
+       2: invokestatic  #139                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: new           #140                // class org/apache/hadoop/hbase/master/cleaner/HFileCleaner$3
+      11: dup
+      12: invokespecial #141                // Method org/apache/hadoop/hbase/master/cleaner/HFileCleaner$3."<init>":()V
+      15: putstatic     #23                 // Field COMPARATOR:Ljava/util/Comparator;
+      18: return
+}

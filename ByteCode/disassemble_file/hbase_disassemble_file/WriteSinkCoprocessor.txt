@@ -1,0 +1,84 @@
+Compiled from "WriteSinkCoprocessor.java"
+public class org.apache.hadoop.hbase.tool.WriteSinkCoprocessor implements org.apache.hadoop.hbase.coprocessor.RegionCoprocessor,org.apache.hadoop.hbase.coprocessor.RegionObserver {
+  public org.apache.hadoop.hbase.tool.WriteSinkCoprocessor();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/atomic/AtomicLong
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/atomic/AtomicLong."<init>":()V
+      12: putfield      #4                  // Field ops:Ljava/util/concurrent/atomic/AtomicLong;
+      15: return
+
+  public java.util.Optional<org.apache.hadoop.hbase.coprocessor.RegionObserver> getRegionObserver();
+    Code:
+       0: aload_0
+       1: invokestatic  #5                  // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+       4: areturn
+
+  public void preOpen(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokeinterface #6,  1            // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+       7: checkcast     #7                  // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      10: invokeinterface #8,  1            // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+      15: invokeinterface #9,  1            // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      20: invokeinterface #10,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+      25: putfield      #11                 // Field regionName:Ljava/lang/String;
+      28: return
+
+  public void preBatchMutate(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.MiniBatchOperationInProgress<org.apache.hadoop.hbase.client.Mutation>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field ops:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #12                 // Method java/util/concurrent/atomic/AtomicLong.incrementAndGet:()J
+       7: ldc2_w        #13                 // long 20000l
+      10: lrem
+      11: lconst_0
+      12: lcmp
+      13: ifne          61
+      16: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+      19: new           #16                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #17                 // Method java/lang/StringBuilder."<init>":()V
+      26: ldc           #18                 // String Wrote
+      28: invokevirtual #19                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: aload_0
+      32: getfield      #4                  // Field ops:Ljava/util/concurrent/atomic/AtomicLong;
+      35: invokevirtual #20                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      38: invokevirtual #21                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      41: ldc           #22                 // String  times in region
+      43: invokevirtual #19                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_0
+      47: getfield      #11                 // Field regionName:Ljava/lang/String;
+      50: invokevirtual #19                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      56: invokeinterface #24,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      61: iconst_0
+      62: istore_3
+      63: iload_3
+      64: aload_2
+      65: invokevirtual #25                 // Method org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.size:()I
+      68: if_icmpge     92
+      71: aload_2
+      72: iload_3
+      73: new           #26                 // class org/apache/hadoop/hbase/regionserver/OperationStatus
+      76: dup
+      77: getstatic     #27                 // Field org/apache/hadoop/hbase/HConstants$OperationStatusCode.SUCCESS:Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+      80: invokespecial #28                 // Method org/apache/hadoop/hbase/regionserver/OperationStatus."<init>":(Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;)V
+      83: invokevirtual #29                 // Method org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.setOperationStatus:(ILorg/apache/hadoop/hbase/regionserver/OperationStatus;)V
+      86: iinc          3, 1
+      89: goto          63
+      92: aload_1
+      93: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.bypass:()V
+      98: return
+
+  static {};
+    Code:
+       0: ldc           #31                 // class org/apache/hadoop/hbase/tool/WriteSinkCoprocessor
+       2: invokestatic  #32                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

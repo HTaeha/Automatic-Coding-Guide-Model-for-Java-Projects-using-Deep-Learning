@@ -1,0 +1,198 @@
+Compiled from "JvmPauseMonitor.java"
+public class org.apache.hadoop.hbase.util.JvmPauseMonitor {
+  public static final java.lang.String WARN_THRESHOLD_KEY;
+
+  public static final java.lang.String INFO_THRESHOLD_KEY;
+
+  public org.apache.hadoop.hbase.util.JvmPauseMonitor(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aconst_null
+       3: invokespecial #7                  // Method "<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;)V
+       6: return
+
+  public org.apache.hadoop.hbase.util.JvmPauseMonitor(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.metrics.JvmPauseMonitorSource);
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_1
+       6: putfield      #5                  // Field shouldRun:Z
+       9: aload_0
+      10: aload_1
+      11: ldc           #10                 // String jvm.pause.warn-threshold.ms
+      13: ldc2_w        #11                 // long 10000l
+      16: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      19: putfield      #3                  // Field warnThresholdMs:J
+      22: aload_0
+      23: aload_1
+      24: ldc           #14                 // String jvm.pause.info-threshold.ms
+      26: ldc2_w        #15                 // long 1000l
+      29: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      32: putfield      #4                  // Field infoThresholdMs:J
+      35: aload_0
+      36: aload_2
+      37: putfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+      40: return
+
+  public void start();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field monitorThread:Ljava/lang/Thread;
+       4: ifnonnull     11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ldc           #19                 // String Already started
+      14: invokestatic  #20                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkState:(ZLjava/lang/Object;)V
+      17: aload_0
+      18: new           #21                 // class java/lang/Thread
+      21: dup
+      22: new           #22                 // class org/apache/hadoop/hbase/util/JvmPauseMonitor$Monitor
+      25: dup
+      26: aload_0
+      27: aconst_null
+      28: invokespecial #23                 // Method org/apache/hadoop/hbase/util/JvmPauseMonitor$Monitor."<init>":(Lorg/apache/hadoop/hbase/util/JvmPauseMonitor;Lorg/apache/hadoop/hbase/util/JvmPauseMonitor$1;)V
+      31: ldc           #24                 // String JvmPauseMonitor
+      33: invokespecial #25                 // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;Ljava/lang/String;)V
+      36: putfield      #18                 // Field monitorThread:Ljava/lang/Thread;
+      39: aload_0
+      40: getfield      #18                 // Field monitorThread:Ljava/lang/Thread;
+      43: iconst_1
+      44: invokevirtual #26                 // Method java/lang/Thread.setDaemon:(Z)V
+      47: aload_0
+      48: getfield      #18                 // Field monitorThread:Ljava/lang/Thread;
+      51: invokevirtual #27                 // Method java/lang/Thread.start:()V
+      54: return
+
+  public void stop();
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #5                  // Field shouldRun:Z
+       5: aload_0
+       6: getfield      #18                 // Field monitorThread:Ljava/lang/Thread;
+       9: invokevirtual #28                 // Method java/lang/Thread.interrupt:()V
+      12: aload_0
+      13: getfield      #18                 // Field monitorThread:Ljava/lang/Thread;
+      16: invokevirtual #29                 // Method java/lang/Thread.join:()V
+      19: goto          29
+      22: astore_1
+      23: invokestatic  #31                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      26: invokevirtual #28                 // Method java/lang/Thread.interrupt:()V
+      29: return
+    Exception table:
+       from    to  target type
+          12    19    22   Class java/lang/InterruptedException
+
+  public void updateMetrics(long, boolean);
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+       4: ifnull        66
+       7: lload_1
+       8: aload_0
+       9: getfield      #3                  // Field warnThresholdMs:J
+      12: lcmp
+      13: ifle          29
+      16: aload_0
+      17: getfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+      20: iconst_1
+      21: invokeinterface #54,  2           // InterfaceMethod org/apache/hadoop/hbase/metrics/JvmPauseMonitorSource.incWarnThresholdExceeded:(I)V
+      26: goto          39
+      29: aload_0
+      30: getfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+      33: iconst_1
+      34: invokeinterface #55,  2           // InterfaceMethod org/apache/hadoop/hbase/metrics/JvmPauseMonitorSource.incInfoThresholdExceeded:(I)V
+      39: iload_3
+      40: ifeq          56
+      43: aload_0
+      44: getfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+      47: lload_1
+      48: invokeinterface #56,  3           // InterfaceMethod org/apache/hadoop/hbase/metrics/JvmPauseMonitorSource.updatePauseTimeWithGc:(J)V
+      53: goto          66
+      56: aload_0
+      57: getfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+      60: lload_1
+      61: invokeinterface #57,  3           // InterfaceMethod org/apache/hadoop/hbase/metrics/JvmPauseMonitorSource.updatePauseTimeWithoutGc:(J)V
+      66: return
+
+  public org.apache.hadoop.hbase.metrics.JvmPauseMonitorSource getMetricsSource();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+       4: areturn
+
+  public void setMetricsSource(org.apache.hadoop.hbase.metrics.JvmPauseMonitorSource);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #17                 // Field metricsSource:Lorg/apache/hadoop/hbase/metrics/JvmPauseMonitorSource;
+       5: return
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    Code:
+       0: new           #9                  // class org/apache/hadoop/hbase/util/JvmPauseMonitor
+       3: dup
+       4: new           #58                 // class org/apache/hadoop/conf/Configuration
+       7: dup
+       8: invokespecial #59                 // Method org/apache/hadoop/conf/Configuration."<init>":()V
+      11: invokespecial #60                 // Method "<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+      14: invokevirtual #61                 // Method start:()V
+      17: invokestatic  #62                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:()Ljava/util/ArrayList;
+      20: astore_1
+      21: iconst_0
+      22: istore_2
+      23: aload_1
+      24: iload_2
+      25: iinc          2, 1
+      28: invokestatic  #63                 // Method java/lang/String.valueOf:(I)Ljava/lang/String;
+      31: invokeinterface #64,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      36: pop
+      37: goto          23
+
+  static java.util.Map access$200(org.apache.hadoop.hbase.util.JvmPauseMonitor);
+    Code:
+       0: aload_0
+       1: invokespecial #6                  // Method getGcTimes:()Ljava/util/Map;
+       4: areturn
+
+  static boolean access$300(org.apache.hadoop.hbase.util.JvmPauseMonitor);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field shouldRun:Z
+       4: ireturn
+
+  static long access$400(org.apache.hadoop.hbase.util.JvmPauseMonitor);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field infoThresholdMs:J
+       4: lreturn
+
+  static long access$700(org.apache.hadoop.hbase.util.JvmPauseMonitor);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field warnThresholdMs:J
+       4: lreturn
+
+  static java.lang.String access$800(org.apache.hadoop.hbase.util.JvmPauseMonitor, long, java.util.List);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: aload_3
+       3: invokespecial #2                  // Method formatMessage:(JLjava/util/List;)Ljava/lang/String;
+       6: areturn
+
+  static org.slf4j.Logger access$900();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #9                  // class org/apache/hadoop/hbase/util/JvmPauseMonitor
+       2: invokestatic  #65                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

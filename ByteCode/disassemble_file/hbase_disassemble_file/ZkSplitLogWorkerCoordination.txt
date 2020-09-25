@@ -1,0 +1,900 @@
+Compiled from "ZkSplitLogWorkerCoordination.java"
+public class org.apache.hadoop.hbase.coordination.ZkSplitLogWorkerCoordination extends org.apache.hadoop.hbase.zookeeper.ZKListener implements org.apache.hadoop.hbase.coordination.SplitLogWorkerCoordination {
+  protected final java.util.concurrent.atomic.AtomicInteger tasksInProgress;
+
+  public org.apache.hadoop.hbase.coordination.ZkSplitLogWorkerCoordination(org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.zookeeper.ZKWatcher);
+    Code:
+       0: aload_0
+       1: aload_2
+       2: invokespecial #5                  // Method org/apache/hadoop/hbase/zookeeper/ZKListener."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;)V
+       5: aload_0
+       6: new           #6                  // class java/util/concurrent/atomic/AtomicInteger
+       9: dup
+      10: iconst_0
+      11: invokespecial #7                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      14: putfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+      17: aload_0
+      18: aconst_null
+      19: putfield      #9                  // Field currentTask:Ljava/lang/String;
+      22: aload_0
+      23: iconst_0
+      24: putfield      #10                 // Field shouldStop:Z
+      27: aload_0
+      28: new           #11                 // class java/lang/Object
+      31: dup
+      32: invokespecial #12                 // Method java/lang/Object."<init>":()V
+      35: putfield      #13                 // Field grabTaskLock:Ljava/lang/Object;
+      38: aload_0
+      39: iconst_0
+      40: putfield      #14                 // Field workerInGrabTask:Z
+      43: aload_0
+      44: aconst_null
+      45: putfield      #3                  // Field server:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      48: aload_0
+      49: new           #6                  // class java/util/concurrent/atomic/AtomicInteger
+      52: dup
+      53: iconst_0
+      54: invokespecial #7                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      57: putfield      #15                 // Field tasksInProgress:Ljava/util/concurrent/atomic/AtomicInteger;
+      60: aload_0
+      61: iconst_0
+      62: putfield      #16                 // Field maxConcurrentTasks:I
+      65: aload_0
+      66: aload_1
+      67: putfield      #17                 // Field serverName:Lorg/apache/hadoop/hbase/ServerName;
+      70: return
+
+  public void nodeChildrenChanged(java.lang.String);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       5: invokevirtual #18                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+       8: getfield      #19                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.splitLogZNode:Ljava/lang/String;
+      11: invokevirtual #20                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      14: ifeq          87
+      17: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      20: invokeinterface #21,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      25: ifeq          55
+      28: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      31: new           #22                 // class java/lang/StringBuilder
+      34: dup
+      35: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      38: ldc           #24                 // String tasks arrived or departed on
+      40: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: aload_1
+      44: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      47: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      50: invokeinterface #27,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      55: aload_0
+      56: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+      59: dup
+      60: astore_2
+      61: monitorenter
+      62: aload_0
+      63: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+      66: invokevirtual #28                 // Method java/util/concurrent/atomic/AtomicInteger.incrementAndGet:()I
+      69: pop
+      70: aload_0
+      71: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+      74: invokevirtual #29                 // Method java/lang/Object.notify:()V
+      77: aload_2
+      78: monitorexit
+      79: goto          87
+      82: astore_3
+      83: aload_2
+      84: monitorexit
+      85: aload_3
+      86: athrow
+      87: return
+    Exception table:
+       from    to  target type
+          62    79    82   any
+          82    85    82   any
+
+  public void nodeDataChanged(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field grabTaskLock:Ljava/lang/Object;
+       4: dup
+       5: astore_2
+       6: monitorenter
+       7: aload_0
+       8: getfield      #14                 // Field workerInGrabTask:Z
+      11: ifeq          35
+      14: aload_0
+      15: getfield      #9                  // Field currentTask:Ljava/lang/String;
+      18: astore_3
+      19: aload_3
+      20: ifnull        35
+      23: aload_3
+      24: aload_1
+      25: invokevirtual #20                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      28: ifeq          35
+      31: aload_0
+      32: invokevirtual #30                 // Method getDataSetWatchAsync:()V
+      35: aload_2
+      36: monitorexit
+      37: goto          47
+      40: astore        4
+      42: aload_2
+      43: monitorexit
+      44: aload         4
+      46: athrow
+      47: return
+    Exception table:
+       from    to  target type
+           7    37    40   any
+          40    44    40   any
+
+  public void init(org.apache.hadoop.hbase.regionserver.RegionServerServices, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.regionserver.SplitLogWorker$TaskExecutor, org.apache.hadoop.hbase.regionserver.SplitLogWorker);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #3                  // Field server:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+       5: aload_0
+       6: aload         4
+       8: putfield      #31                 // Field worker:Lorg/apache/hadoop/hbase/regionserver/SplitLogWorker;
+      11: aload_0
+      12: aload_3
+      13: putfield      #32                 // Field splitTaskExecutor:Lorg/apache/hadoop/hbase/regionserver/SplitLogWorker$TaskExecutor;
+      16: aload_0
+      17: aload_2
+      18: ldc           #33                 // String hbase.regionserver.wal.max.splitters
+      20: iconst_2
+      21: invokevirtual #34                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      24: putfield      #16                 // Field maxConcurrentTasks:I
+      27: aload_0
+      28: aload_2
+      29: ldc           #35                 // String hbase.splitlog.report.period
+      31: aload_2
+      32: ldc           #36                 // String hbase.splitlog.manager.timeout
+      34: ldc           #38                 // int 120000
+      36: invokevirtual #34                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      39: iconst_3
+      40: idiv
+      41: invokevirtual #34                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      44: putfield      #39                 // Field reportPeriod:I
+      47: return
+
+  void getDataSetWatchFailure(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field grabTaskLock:Ljava/lang/Object;
+       4: dup
+       5: astore_2
+       6: monitorenter
+       7: aload_0
+       8: getfield      #14                 // Field workerInGrabTask:Z
+      11: ifeq          68
+      14: aload_0
+      15: getfield      #9                  // Field currentTask:Ljava/lang/String;
+      18: astore_3
+      19: aload_3
+      20: ifnull        68
+      23: aload_3
+      24: aload_1
+      25: invokevirtual #20                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      28: ifeq          68
+      31: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      34: new           #22                 // class java/lang/StringBuilder
+      37: dup
+      38: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      41: ldc           #40                 // String retrying data watch on
+      43: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_1
+      47: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      53: invokeinterface #41,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      58: getstatic     #42                 // Field org/apache/hadoop/hbase/SplitLogCounters.tot_wkr_get_data_retry:Ljava/util/concurrent/atomic/LongAdder;
+      61: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+      64: aload_0
+      65: invokevirtual #30                 // Method getDataSetWatchAsync:()V
+      68: aload_2
+      69: monitorexit
+      70: goto          80
+      73: astore        4
+      75: aload_2
+      76: monitorexit
+      77: aload         4
+      79: athrow
+      80: return
+    Exception table:
+       from    to  target type
+           7    70    73   any
+          73    77    73   any
+
+  public void getDataSetWatchAsync();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: invokevirtual #44                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getRecoverableZooKeeper:()Lorg/apache/hadoop/hbase/zookeeper/RecoverableZooKeeper;
+       7: invokevirtual #45                 // Method org/apache/hadoop/hbase/zookeeper/RecoverableZooKeeper.getZooKeeper:()Lorg/apache/zookeeper/ZooKeeper;
+      10: aload_0
+      11: getfield      #9                  // Field currentTask:Ljava/lang/String;
+      14: aload_0
+      15: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      18: new           #46                 // class org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$GetDataAsyncCallback
+      21: dup
+      22: aload_0
+      23: invokespecial #47                 // Method org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$GetDataAsyncCallback."<init>":(Lorg/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination;)V
+      26: aconst_null
+      27: invokevirtual #48                 // Method org/apache/zookeeper/ZooKeeper.getData:(Ljava/lang/String;Lorg/apache/zookeeper/Watcher;Lorg/apache/zookeeper/AsyncCallback$DataCallback;Ljava/lang/Object;)V
+      30: getstatic     #49                 // Field org/apache/hadoop/hbase/SplitLogCounters.tot_wkr_get_data_queued:Ljava/util/concurrent/atomic/LongAdder;
+      33: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+      36: return
+
+  void getDataSetWatchSuccess(java.lang.String, byte[]);
+    Code:
+       0: aload_2
+       1: invokestatic  #50                 // Method org/apache/hadoop/hbase/SplitLogTask.parseFrom:([B)Lorg/apache/hadoop/hbase/SplitLogTask;
+       4: astore_3
+       5: goto          23
+       8: astore        4
+      10: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      13: ldc           #52                 // String Failed parse
+      15: aload         4
+      17: invokeinterface #53,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      22: return
+      23: aload_0
+      24: getfield      #13                 // Field grabTaskLock:Ljava/lang/Object;
+      27: dup
+      28: astore        4
+      30: monitorenter
+      31: aload_0
+      32: getfield      #14                 // Field workerInGrabTask:Z
+      35: ifeq          161
+      38: aload_0
+      39: getfield      #9                  // Field currentTask:Ljava/lang/String;
+      42: astore        5
+      44: aload         5
+      46: ifnull        161
+      49: aload         5
+      51: aload_1
+      52: invokevirtual #20                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      55: ifeq          161
+      58: aload_3
+      59: aload_0
+      60: getfield      #17                 // Field serverName:Lorg/apache/hadoop/hbase/ServerName;
+      63: invokevirtual #54                 // Method org/apache/hadoop/hbase/SplitLogTask.isOwned:(Lorg/apache/hadoop/hbase/ServerName;)Z
+      66: ifne          161
+      69: aload_3
+      70: aload_0
+      71: getfield      #17                 // Field serverName:Lorg/apache/hadoop/hbase/ServerName;
+      74: invokevirtual #55                 // Method org/apache/hadoop/hbase/SplitLogTask.isDone:(Lorg/apache/hadoop/hbase/ServerName;)Z
+      77: ifne          161
+      80: aload_3
+      81: aload_0
+      82: getfield      #17                 // Field serverName:Lorg/apache/hadoop/hbase/ServerName;
+      85: invokevirtual #56                 // Method org/apache/hadoop/hbase/SplitLogTask.isErr:(Lorg/apache/hadoop/hbase/ServerName;)Z
+      88: ifne          161
+      91: aload_3
+      92: aload_0
+      93: getfield      #17                 // Field serverName:Lorg/apache/hadoop/hbase/ServerName;
+      96: invokevirtual #57                 // Method org/apache/hadoop/hbase/SplitLogTask.isResigned:(Lorg/apache/hadoop/hbase/ServerName;)Z
+      99: ifne          161
+     102: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     105: new           #22                 // class java/lang/StringBuilder
+     108: dup
+     109: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     112: ldc           #58                 // String task
+     114: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: aload         5
+     119: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     122: ldc           #59                 // String  preempted from
+     124: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     127: aload_0
+     128: getfield      #17                 // Field serverName:Lorg/apache/hadoop/hbase/ServerName;
+     131: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     134: ldc           #61                 // String , current task state and owner=
+     136: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     139: aload_3
+     140: invokevirtual #62                 // Method org/apache/hadoop/hbase/SplitLogTask.toString:()Ljava/lang/String;
+     143: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     146: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     149: invokeinterface #41,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     154: aload_0
+     155: getfield      #31                 // Field worker:Lorg/apache/hadoop/hbase/regionserver/SplitLogWorker;
+     158: invokevirtual #63                 // Method org/apache/hadoop/hbase/regionserver/SplitLogWorker.stopTask:()V
+     161: aload         4
+     163: monitorexit
+     164: goto          175
+     167: astore        6
+     169: aload         4
+     171: monitorexit
+     172: aload         6
+     174: athrow
+     175: return
+    Exception table:
+       from    to  target type
+           0     5     8   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+          31   164   167   any
+         167   172   167   any
+
+  void submitTask(java.lang.String, int, int);
+    Code:
+       0: new           #84                 // class org/apache/commons/lang3/mutable/MutableInt
+       3: dup
+       4: iload_2
+       5: invokespecial #85                 // Method org/apache/commons/lang3/mutable/MutableInt."<init>":(I)V
+       8: astore        4
+      10: new           #101                // class org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$1
+      13: dup
+      14: aload_0
+      15: iload_3
+      16: aload_1
+      17: aload         4
+      19: invokespecial #102                // Method org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$1."<init>":(Lorg/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination;ILjava/lang/String;Lorg/apache/commons/lang3/mutable/MutableInt;)V
+      22: astore        5
+      24: new           #81                 // class org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$ZkSplitTaskDetails
+      27: dup
+      28: invokespecial #82                 // Method org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$ZkSplitTaskDetails."<init>":()V
+      31: astore        6
+      33: aload         6
+      35: aload_1
+      36: invokevirtual #83                 // Method org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$ZkSplitTaskDetails.setTaskNode:(Ljava/lang/String;)V
+      39: aload         6
+      41: aload         4
+      43: invokevirtual #86                 // Method org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$ZkSplitTaskDetails.setCurTaskZKVersion:(Lorg/apache/commons/lang3/mutable/MutableInt;)V
+      46: new           #103                // class org/apache/hadoop/hbase/regionserver/handler/WALSplitterHandler
+      49: dup
+      50: aload_0
+      51: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      54: aload_0
+      55: aload         6
+      57: aload         5
+      59: aload_0
+      60: getfield      #15                 // Field tasksInProgress:Ljava/util/concurrent/atomic/AtomicInteger;
+      63: aload_0
+      64: getfield      #32                 // Field splitTaskExecutor:Lorg/apache/hadoop/hbase/regionserver/SplitLogWorker$TaskExecutor;
+      67: invokespecial #104                // Method org/apache/hadoop/hbase/regionserver/handler/WALSplitterHandler."<init>":(Lorg/apache/hadoop/hbase/Server;Lorg/apache/hadoop/hbase/coordination/SplitLogWorkerCoordination;Lorg/apache/hadoop/hbase/coordination/SplitLogWorkerCoordination$SplitTaskDetails;Lorg/apache/hadoop/hbase/util/CancelableProgressable;Ljava/util/concurrent/atomic/AtomicInteger;Lorg/apache/hadoop/hbase/regionserver/SplitLogWorker$TaskExecutor;)V
+      70: astore        7
+      72: aload_0
+      73: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      76: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getExecutorService:()Lorg/apache/hadoop/hbase/executor/ExecutorService;
+      81: aload         7
+      83: invokevirtual #106                // Method org/apache/hadoop/hbase/executor/ExecutorService.submit:(Lorg/apache/hadoop/hbase/executor/EventHandler;)V
+      86: return
+
+  protected static int attemptToOwnTask(boolean, org.apache.hadoop.hbase.zookeeper.ZKWatcher, org.apache.hadoop.hbase.ServerName, java.lang.String, int);
+    Code:
+       0: iconst_m1
+       1: istore        5
+       3: new           #116                // class org/apache/hadoop/hbase/SplitLogTask$Owned
+       6: dup
+       7: aload_2
+       8: invokespecial #117                // Method org/apache/hadoop/hbase/SplitLogTask$Owned."<init>":(Lorg/apache/hadoop/hbase/ServerName;)V
+      11: astore        6
+      13: aload_1
+      14: invokevirtual #44                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getRecoverableZooKeeper:()Lorg/apache/hadoop/hbase/zookeeper/RecoverableZooKeeper;
+      17: aload_3
+      18: aload         6
+      20: invokevirtual #118                // Method org/apache/hadoop/hbase/SplitLogTask.toByteArray:()[B
+      23: iload         4
+      25: invokevirtual #119                // Method org/apache/hadoop/hbase/zookeeper/RecoverableZooKeeper.setData:(Ljava/lang/String;[BI)Lorg/apache/zookeeper/data/Stat;
+      28: astore        7
+      30: aload         7
+      32: ifnonnull     70
+      35: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      38: new           #22                 // class java/lang/StringBuilder
+      41: dup
+      42: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      45: ldc           #120                // String zk.setData() returned null for path
+      47: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: aload_3
+      51: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      54: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      57: invokeinterface #121,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      62: getstatic     #122                // Field org/apache/hadoop/hbase/SplitLogCounters.tot_wkr_task_heartbeat_failed:Ljava/util/concurrent/atomic/LongAdder;
+      65: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+      68: iconst_m1
+      69: ireturn
+      70: aload         7
+      72: invokevirtual #76                 // Method org/apache/zookeeper/data/Stat.getVersion:()I
+      75: istore        5
+      77: getstatic     #123                // Field org/apache/hadoop/hbase/SplitLogCounters.tot_wkr_task_heartbeat:Ljava/util/concurrent/atomic/LongAdder;
+      80: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+      83: iload         5
+      85: ireturn
+      86: astore        6
+      88: iload_0
+      89: ifne          213
+      92: aload         6
+      94: invokevirtual #124                // Method org/apache/zookeeper/KeeperException.code:()Lorg/apache/zookeeper/KeeperException$Code;
+      97: getstatic     #125                // Field org/apache/zookeeper/KeeperException$Code.NONODE:Lorg/apache/zookeeper/KeeperException$Code;
+     100: invokevirtual #126                // Method org/apache/zookeeper/KeeperException$Code.equals:(Ljava/lang/Object;)Z
+     103: ifeq          138
+     106: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     109: new           #22                 // class java/lang/StringBuilder
+     112: dup
+     113: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     116: ldc           #127                // String NONODE failed to assert ownership for
+     118: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     121: aload_3
+     122: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     125: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     128: aload         6
+     130: invokeinterface #53,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     135: goto          213
+     138: aload         6
+     140: invokevirtual #124                // Method org/apache/zookeeper/KeeperException.code:()Lorg/apache/zookeeper/KeeperException$Code;
+     143: getstatic     #128                // Field org/apache/zookeeper/KeeperException$Code.BADVERSION:Lorg/apache/zookeeper/KeeperException$Code;
+     146: invokevirtual #126                // Method org/apache/zookeeper/KeeperException$Code.equals:(Ljava/lang/Object;)Z
+     149: ifeq          184
+     152: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     155: new           #22                 // class java/lang/StringBuilder
+     158: dup
+     159: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     162: ldc           #129                // String BADVERSION failed to assert ownership for
+     164: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     167: aload_3
+     168: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     171: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     174: aload         6
+     176: invokeinterface #53,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     181: goto          213
+     184: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     187: new           #22                 // class java/lang/StringBuilder
+     190: dup
+     191: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     194: ldc           #130                // String failed to assert ownership for
+     196: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     199: aload_3
+     200: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     203: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     206: aload         6
+     208: invokeinterface #53,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     213: goto          264
+     216: astore        6
+     218: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     221: new           #22                 // class java/lang/StringBuilder
+     224: dup
+     225: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     228: ldc           #131                // String Interrupted while trying to assert ownership of
+     230: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     233: aload_3
+     234: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     237: ldc           #132                // String
+     239: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     242: aload         6
+     244: invokestatic  #133                // Method org/apache/hadoop/util/StringUtils.stringifyException:(Ljava/lang/Throwable;)Ljava/lang/String;
+     247: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     250: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     253: invokeinterface #121,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     258: invokestatic  #99                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     261: invokevirtual #100                // Method java/lang/Thread.interrupt:()V
+     264: getstatic     #122                // Field org/apache/hadoop/hbase/SplitLogCounters.tot_wkr_task_heartbeat_failed:Ljava/util/concurrent/atomic/LongAdder;
+     267: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+     270: iconst_m1
+     271: ireturn
+    Exception table:
+       from    to  target type
+           3    69    86   Class org/apache/zookeeper/KeeperException
+          70    85    86   Class org/apache/zookeeper/KeeperException
+           3    69   216   Class java/lang/InterruptedException
+          70    85   216   Class java/lang/InterruptedException
+
+  public void taskLoop() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field shouldStop:Z
+       4: ifne          400
+       7: aload_0
+       8: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+      11: invokevirtual #114                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      14: istore_1
+      15: aload_0
+      16: invokespecial #134                // Method getTaskList:()Ljava/util/List;
+      19: astore_2
+      20: aload_2
+      21: ifnonnull     66
+      24: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      27: new           #22                 // class java/lang/StringBuilder
+      30: dup
+      31: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      34: ldc           #135                // String Could not get tasks, did someone remove
+      36: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: aload_0
+      40: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      43: invokevirtual #18                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      46: getfield      #19                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.splitLogZNode:Ljava/lang/String;
+      49: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      52: ldc           #136                // String  ... worker thread exiting.
+      54: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      60: invokeinterface #121,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      65: return
+      66: aload_2
+      67: invokestatic  #137                // Method java/util/Collections.shuffle:(Ljava/util/List;)V
+      70: iconst_0
+      71: istore_3
+      72: iconst_0
+      73: istore        4
+      75: iload         4
+      77: aload_2
+      78: invokeinterface #109,  1          // InterfaceMethod java/util/List.size:()I
+      83: if_icmpge     115
+      86: aload_2
+      87: iload         4
+      89: invokeinterface #138,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      94: checkcast     #139                // class java/lang/String
+      97: invokestatic  #140                // Method org/apache/hadoop/hbase/wal/AbstractFSWALProvider.isMetaFile:(Ljava/lang/String;)Z
+     100: ifeq          109
+     103: iload         4
+     105: istore_3
+     106: goto          115
+     109: iinc          4, 1
+     112: goto          75
+     115: aload_2
+     116: invokeinterface #109,  1          // InterfaceMethod java/util/List.size:()I
+     121: istore        4
+     123: aload_0
+     124: iload         4
+     126: invokespecial #141                // Method getNumExpectedTasksPerRS:(I)I
+     129: istore        5
+     131: iconst_0
+     132: istore        6
+     134: iconst_0
+     135: istore        7
+     137: iload         7
+     139: iload         4
+     141: if_icmpge     327
+     144: aload_0
+     145: getfield      #10                 // Field shouldStop:Z
+     148: ifne          313
+     151: aload_0
+     152: iload         5
+     154: invokespecial #142                // Method areSplittersAvailable:(I)Z
+     157: ifeq          249
+     160: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     163: new           #22                 // class java/lang/StringBuilder
+     166: dup
+     167: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     170: ldc           #143                // String Current region server
+     172: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     175: aload_0
+     176: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     179: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     184: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     187: ldc           #144                // String  is ready to take more tasks, will get task list and try grab tasks again.
+     189: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     192: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     195: invokeinterface #145,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     200: iload         7
+     202: iload_3
+     203: iadd
+     204: aload_2
+     205: invokeinterface #109,  1          // InterfaceMethod java/util/List.size:()I
+     210: irem
+     211: istore        8
+     213: iload         6
+     215: aload_0
+     216: aload_0
+     217: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     220: invokevirtual #18                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+     223: getfield      #19                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.splitLogZNode:Ljava/lang/String;
+     226: aload_2
+     227: iload         8
+     229: invokeinterface #138,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     234: checkcast     #139                // class java/lang/String
+     237: invokestatic  #146                // Method org/apache/hadoop/hbase/zookeeper/ZNodePaths.joinZNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+     240: invokespecial #147                // Method grabTask:(Ljava/lang/String;)Z
+     243: ior
+     244: istore        6
+     246: goto          313
+     249: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     252: new           #22                 // class java/lang/StringBuilder
+     255: dup
+     256: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     259: ldc           #143                // String Current region server
+     261: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     264: aload_0
+     265: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     268: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     273: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     276: ldc           #148                // String  has
+     278: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     281: aload_0
+     282: getfield      #15                 // Field tasksInProgress:Ljava/util/concurrent/atomic/AtomicInteger;
+     285: invokevirtual #114                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+     288: invokevirtual #149                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     291: ldc           #150                // String  tasks in progress and can't take more.
+     293: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     296: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     299: invokeinterface #145,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     304: ldc2_w        #151                // long 100l
+     307: invokestatic  #96                 // Method java/lang/Thread.sleep:(J)V
+     310: goto          144
+     313: aload_0
+     314: getfield      #10                 // Field shouldStop:Z
+     317: ifeq          321
+     320: return
+     321: iinc          7, 1
+     324: goto          137
+     327: iload         6
+     329: ifne          345
+     332: aload_0
+     333: getfield      #10                 // Field shouldStop:Z
+     336: ifne          345
+     339: ldc2_w        #153                // long 1000l
+     342: invokestatic  #96                 // Method java/lang/Thread.sleep:(J)V
+     345: getstatic     #155                // Field org/apache/hadoop/hbase/SplitLogCounters.tot_wkr_task_grabing:Ljava/util/concurrent/atomic/LongAdder;
+     348: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+     351: aload_0
+     352: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+     355: dup
+     356: astore        7
+     358: monitorenter
+     359: iload_1
+     360: aload_0
+     361: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+     364: invokevirtual #114                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+     367: if_icmpne     383
+     370: aload_0
+     371: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+     374: ldc2_w        #156                // long 5000l
+     377: invokevirtual #158                // Method java/lang/Object.wait:(J)V
+     380: goto          359
+     383: aload         7
+     385: monitorexit
+     386: goto          397
+     389: astore        9
+     391: aload         7
+     393: monitorexit
+     394: aload         9
+     396: athrow
+     397: goto          0
+     400: return
+    Exception table:
+       from    to  target type
+         359   386   389   any
+         389   394   389   any
+
+  public void markCorrupted(org.apache.hadoop.fs.Path, java.lang.String, org.apache.hadoop.fs.FileSystem);
+    Code:
+       0: aload_1
+       1: aload_2
+       2: aload_3
+       3: invokestatic  #165                // Method org/apache/hadoop/hbase/zookeeper/ZKSplitLog.markCorrupted:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;Lorg/apache/hadoop/fs/FileSystem;)V
+       6: return
+
+  public boolean isReady() throws java.lang.InterruptedException;
+    Code:
+       0: iconst_m1
+       1: istore_1
+       2: aload_0
+       3: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       6: aload_0
+       7: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      10: invokevirtual #18                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      13: getfield      #19                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.splitLogZNode:Ljava/lang/String;
+      16: invokestatic  #166                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.checkExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)I
+      19: istore_1
+      20: goto          66
+      23: astore_2
+      24: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      27: new           #22                 // class java/lang/StringBuilder
+      30: dup
+      31: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      34: ldc           #167                // String Exception when checking for
+      36: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: aload_0
+      40: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      43: invokevirtual #18                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      46: getfield      #19                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.splitLogZNode:Ljava/lang/String;
+      49: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      52: ldc           #168                // String  ... retrying
+      54: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      60: aload_2
+      61: invokeinterface #53,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      66: iload_1
+      67: iconst_m1
+      68: if_icmpne     113
+      71: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      74: new           #22                 // class java/lang/StringBuilder
+      77: dup
+      78: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      81: aload_0
+      82: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      85: invokevirtual #18                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      88: getfield      #19                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.splitLogZNode:Ljava/lang/String;
+      91: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      94: ldc           #169                // String  znode does not exist, waiting for master to create
+      96: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      99: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     102: invokeinterface #41,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     107: ldc2_w        #153                // long 1000l
+     110: invokestatic  #96                 // Method java/lang/Thread.sleep:(J)V
+     113: iload_1
+     114: iconst_m1
+     115: if_icmpeq     122
+     118: iconst_1
+     119: goto          123
+     122: iconst_0
+     123: ireturn
+    Exception table:
+       from    to  target type
+           2    20    23   Class org/apache/zookeeper/KeeperException
+
+  public int getTaskReadySeq();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field taskReadySeq:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #114                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ireturn
+
+  public void registerListener();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: invokevirtual #170                // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.registerListener:(Lorg/apache/hadoop/hbase/zookeeper/ZKListener;)V
+       8: return
+
+  public void removeListener();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: invokevirtual #171                // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.unregisterListener:(Lorg/apache/hadoop/hbase/zookeeper/ZKListener;)V
+       8: return
+
+  public void stopProcessingTasks();
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #10                 // Field shouldStop:Z
+       5: return
+
+  public boolean isStop();
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field shouldStop:Z
+       4: ireturn
+
+  public void endTask(org.apache.hadoop.hbase.SplitLogTask, java.util.concurrent.atomic.LongAdder, org.apache.hadoop.hbase.coordination.SplitLogWorkerCoordination$SplitTaskDetails);
+    Code:
+       0: aload_3
+       1: checkcast     #81                 // class org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$ZkSplitTaskDetails
+       4: astore        4
+       6: aload         4
+       8: invokevirtual #172                // Method org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$ZkSplitTaskDetails.getTaskNode:()Ljava/lang/String;
+      11: astore        5
+      13: aload         4
+      15: invokevirtual #173                // Method org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination$ZkSplitTaskDetails.getCurTaskZKVersion:()Lorg/apache/commons/lang3/mutable/MutableInt;
+      18: invokevirtual #174                // Method org/apache/commons/lang3/mutable/MutableInt.intValue:()I
+      21: istore        6
+      23: aload_0
+      24: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      27: aload         5
+      29: aload_1
+      30: invokevirtual #118                // Method org/apache/hadoop/hbase/SplitLogTask.toByteArray:()[B
+      33: iload         6
+      35: invokestatic  #175                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.setData:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;[BI)Z
+      38: ifeq          83
+      41: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      44: new           #22                 // class java/lang/StringBuilder
+      47: dup
+      48: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      51: ldc           #176                // String successfully transitioned task
+      53: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: aload         5
+      58: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: ldc           #177                // String  to final state
+      63: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: aload_1
+      67: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      70: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      73: invokeinterface #41,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      78: aload_2
+      79: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+      82: return
+      83: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      86: new           #22                 // class java/lang/StringBuilder
+      89: dup
+      90: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      93: ldc           #178                // String failed to transistion task
+      95: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      98: aload         5
+     100: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     103: ldc           #179                // String  to end state
+     105: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     108: aload_1
+     109: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     112: ldc           #180                // String  because of version mismatch
+     114: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     120: invokeinterface #121,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     125: goto          270
+     128: astore        7
+     130: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     133: new           #22                 // class java/lang/StringBuilder
+     136: dup
+     137: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     140: ldc           #182                // String transisition task
+     142: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     145: aload         5
+     147: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     150: ldc           #183                // String  to
+     152: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     155: aload_1
+     156: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     159: ldc           #184                // String  failed because of version mismatch
+     161: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     164: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     167: aload         7
+     169: invokeinterface #53,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     174: goto          270
+     177: astore        7
+     179: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     182: getstatic     #186                // Field org/apache/hadoop/hbase/log/HBaseMarkers.FATAL:Lorg/slf4j/Marker;
+     185: new           #22                 // class java/lang/StringBuilder
+     188: dup
+     189: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     192: ldc           #187                // String logic error - end task
+     194: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     197: aload         5
+     199: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     202: ldc           #132                // String
+     204: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     207: aload_1
+     208: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     211: ldc           #188                // String  failed because task doesn't exist
+     213: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     216: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     219: aload         7
+     221: invokeinterface #189,  4          // InterfaceMethod org/slf4j/Logger.error:(Lorg/slf4j/Marker;Ljava/lang/String;Ljava/lang/Throwable;)V
+     226: goto          270
+     229: astore        7
+     231: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     234: new           #22                 // class java/lang/StringBuilder
+     237: dup
+     238: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     241: ldc           #190                // String failed to end task,
+     243: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     246: aload         5
+     248: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     251: ldc           #132                // String
+     253: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     256: aload_1
+     257: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     260: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     263: aload         7
+     265: invokeinterface #53,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     270: getstatic     #191                // Field org/apache/hadoop/hbase/SplitLogCounters.tot_wkr_final_transition_failed:Ljava/util/concurrent/atomic/LongAdder;
+     273: invokevirtual #43                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+     276: return
+    Exception table:
+       from    to  target type
+          23    82   128   Class org/apache/zookeeper/KeeperException$BadVersionException
+          83   125   128   Class org/apache/zookeeper/KeeperException$BadVersionException
+          23    82   177   Class org/apache/zookeeper/KeeperException$NoNodeException
+          83   125   177   Class org/apache/zookeeper/KeeperException$NoNodeException
+          23    82   229   Class org/apache/zookeeper/KeeperException
+          83   125   229   Class org/apache/zookeeper/KeeperException
+
+  static org.apache.hadoop.hbase.zookeeper.ZKWatcher access$000(org.apache.hadoop.hbase.coordination.ZkSplitLogWorkerCoordination);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: areturn
+
+  static org.apache.hadoop.hbase.regionserver.RegionServerServices access$100(org.apache.hadoop.hbase.coordination.ZkSplitLogWorkerCoordination);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+       4: areturn
+
+  static org.slf4j.Logger access$200();
+    Code:
+       0: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #115                // class org/apache/hadoop/hbase/coordination/ZkSplitLogWorkerCoordination
+       2: invokestatic  #192                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

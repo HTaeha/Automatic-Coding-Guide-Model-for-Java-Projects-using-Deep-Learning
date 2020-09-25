@@ -1,0 +1,468 @@
+Compiled from "AsyncConnectionImpl.java"
+class org.apache.hadoop.hbase.client.AsyncConnectionImpl implements org.apache.hadoop.hbase.client.AsyncConnection {
+  static final org.apache.hbase.thirdparty.io.netty.util.HashedWheelTimer RETRY_TIMER;
+
+  final org.apache.hadoop.hbase.client.AsyncConnectionConfiguration connConf;
+
+  final org.apache.hadoop.hbase.client.AsyncRegistry registry;
+
+  final org.apache.hadoop.hbase.ipc.RpcControllerFactory rpcControllerFactory;
+
+  final org.apache.hadoop.hbase.client.AsyncRpcRetryingCallerFactory callerFactory;
+
+  public org.apache.hadoop.hbase.client.AsyncConnectionImpl(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.AsyncRegistry, java.lang.String, org.apache.hadoop.hbase.security.User);
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #8                  // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #9                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #10                 // Field rsStubs:Ljava/util/concurrent/ConcurrentMap;
+      15: aload_0
+      16: new           #8                  // class java/util/concurrent/ConcurrentHashMap
+      19: dup
+      20: invokespecial #9                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      23: putfield      #11                 // Field adminSubs:Ljava/util/concurrent/ConcurrentMap;
+      26: aload_0
+      27: new           #12                 // class java/util/concurrent/atomic/AtomicReference
+      30: dup
+      31: invokespecial #13                 // Method java/util/concurrent/atomic/AtomicReference."<init>":()V
+      34: putfield      #14                 // Field masterStub:Ljava/util/concurrent/atomic/AtomicReference;
+      37: aload_0
+      38: new           #12                 // class java/util/concurrent/atomic/AtomicReference
+      41: dup
+      42: invokespecial #13                 // Method java/util/concurrent/atomic/AtomicReference."<init>":()V
+      45: putfield      #15                 // Field masterStubMakeFuture:Ljava/util/concurrent/atomic/AtomicReference;
+      48: aload_0
+      49: iconst_0
+      50: putfield      #16                 // Field closed:Z
+      53: aload_0
+      54: aload_1
+      55: putfield      #17                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      58: aload_0
+      59: aload         4
+      61: putfield      #18                 // Field user:Lorg/apache/hadoop/hbase/security/User;
+      64: aload         4
+      66: invokevirtual #19                 // Method org/apache/hadoop/hbase/security/User.isLoginFromKeytab:()Z
+      69: ifeq          81
+      72: aload_0
+      73: aload         4
+      75: invokevirtual #20                 // Method org/apache/hadoop/hbase/security/User.getUGI:()Lorg/apache/hadoop/security/UserGroupInformation;
+      78: invokespecial #21                 // Method spawnRenewalChore:(Lorg/apache/hadoop/security/UserGroupInformation;)V
+      81: aload_0
+      82: new           #22                 // class org/apache/hadoop/hbase/client/AsyncConnectionConfiguration
+      85: dup
+      86: aload_1
+      87: invokespecial #23                 // Method org/apache/hadoop/hbase/client/AsyncConnectionConfiguration."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+      90: putfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+      93: aload_0
+      94: aload_2
+      95: putfield      #25                 // Field registry:Lorg/apache/hadoop/hbase/client/AsyncRegistry;
+      98: aload_1
+      99: ldc           #26                 // String hbase.client.metrics.enable
+     101: iconst_0
+     102: invokevirtual #27                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     105: ifeq          139
+     108: aload_0
+     109: new           #4                  // class org/apache/hadoop/hbase/client/MetricsConnection
+     112: dup
+     113: aload_0
+     114: invokevirtual #28                 // Method java/lang/Object.toString:()Ljava/lang/String;
+     117: invokedynamic #29,  0             // InvokeDynamic #0:get:()Ljava/util/function/Supplier;
+     122: invokedynamic #30,  0             // InvokeDynamic #1:get:()Ljava/util/function/Supplier;
+     127: invokespecial #31                 // Method org/apache/hadoop/hbase/client/MetricsConnection."<init>":(Ljava/lang/String;Ljava/util/function/Supplier;Ljava/util/function/Supplier;)V
+     130: invokestatic  #32                 // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+     133: putfield      #33                 // Field metrics:Ljava/util/Optional;
+     136: goto          146
+     139: aload_0
+     140: invokestatic  #34                 // Method java/util/Optional.empty:()Ljava/util/Optional;
+     143: putfield      #33                 // Field metrics:Ljava/util/Optional;
+     146: aload_0
+     147: aload_1
+     148: aload_3
+     149: aload_0
+     150: getfield      #33                 // Field metrics:Ljava/util/Optional;
+     153: aconst_null
+     154: invokevirtual #35                 // Method java/util/Optional.orElse:(Ljava/lang/Object;)Ljava/lang/Object;
+     157: checkcast     #4                  // class org/apache/hadoop/hbase/client/MetricsConnection
+     160: invokestatic  #36                 // Method org/apache/hadoop/hbase/ipc/RpcClientFactory.createClient:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection;)Lorg/apache/hadoop/hbase/ipc/RpcClient;
+     163: putfield      #5                  // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/RpcClient;
+     166: aload_0
+     167: aload_1
+     168: invokestatic  #37                 // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     171: putfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     174: aload_0
+     175: aload_1
+     176: ldc           #40                 // String hbase.resolve.hostnames.on.failure
+     178: iconst_1
+     179: invokevirtual #27                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     182: putfield      #41                 // Field hostnameCanChange:Z
+     185: aload_0
+     186: ldc2_w        #43                 // long 2147483647l
+     189: getstatic     #45                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+     192: aload_0
+     193: getfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+     196: invokevirtual #46                 // Method org/apache/hadoop/hbase/client/AsyncConnectionConfiguration.getRpcTimeoutNs:()J
+     199: invokevirtual #47                 // Method java/util/concurrent/TimeUnit.toMillis:(J)J
+     202: invokestatic  #48                 // Method java/lang/Math.min:(JJ)J
+     205: l2i
+     206: putfield      #49                 // Field rpcTimeout:I
+     209: aload_0
+     210: new           #50                 // class org/apache/hadoop/hbase/client/AsyncRegionLocator
+     213: dup
+     214: aload_0
+     215: getstatic     #51                 // Field RETRY_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+     218: invokespecial #52                 // Method org/apache/hadoop/hbase/client/AsyncRegionLocator."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;)V
+     221: putfield      #6                  // Field locator:Lorg/apache/hadoop/hbase/client/AsyncRegionLocator;
+     224: aload_0
+     225: new           #53                 // class org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory
+     228: dup
+     229: aload_0
+     230: getstatic     #51                 // Field RETRY_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+     233: invokespecial #54                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hbase/thirdparty/io/netty/util/Timer;)V
+     236: putfield      #55                 // Field callerFactory:Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory;
+     239: aload_1
+     240: ldc           #56                 // String hbase.client.nonces.enabled
+     242: iconst_1
+     243: invokevirtual #27                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     246: ifeq          259
+     249: aload_0
+     250: invokestatic  #57                 // Method org/apache/hadoop/hbase/client/PerClientRandomNonceGenerator.get:()Lorg/apache/hadoop/hbase/client/PerClientRandomNonceGenerator;
+     253: putfield      #58                 // Field nonceGenerator:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+     256: goto          266
+     259: aload_0
+     260: getstatic     #59                 // Field org/apache/hadoop/hbase/client/ConnectionUtils.NO_NONCE_GENERATOR:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+     263: putfield      #58                 // Field nonceGenerator:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+     266: aload_0
+     267: aload_1
+     268: invokestatic  #60                 // Method org/apache/hadoop/hbase/client/ServerStatisticTracker.create:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/ServerStatisticTracker;
+     271: invokestatic  #61                 // Method java/util/Optional.ofNullable:(Ljava/lang/Object;)Ljava/util/Optional;
+     274: putfield      #62                 // Field stats:Ljava/util/Optional;
+     277: aload_0
+     278: aload_1
+     279: invokestatic  #63                 // Method org/apache/hadoop/hbase/client/backoff/ClientBackoffPolicyFactory.create:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/backoff/ClientBackoffPolicy;
+     282: putfield      #64                 // Field backoffPolicy:Lorg/apache/hadoop/hbase/client/backoff/ClientBackoffPolicy;
+     285: aconst_null
+     286: astore        5
+     288: aload_1
+     289: ldc           #65                 // String hbase.status.published
+     291: iconst_0
+     292: invokevirtual #27                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     295: ifeq          370
+     298: aload_1
+     299: ldc           #66                 // String hbase.status.listener.class
+     301: getstatic     #67                 // Field org/apache/hadoop/hbase/client/ClusterStatusListener.DEFAULT_STATUS_LISTENER_CLASS:Ljava/lang/Class;
+     304: ldc           #68                 // class org/apache/hadoop/hbase/client/ClusterStatusListener$Listener
+     306: invokevirtual #69                 // Method org/apache/hadoop/conf/Configuration.getClass:(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Class;)Ljava/lang/Class;
+     309: astore        6
+     311: aload         6
+     313: ifnonnull     333
+     316: getstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+     319: ldc           #71                 // String {} is true, but {} is not set
+     321: ldc           #65                 // String hbase.status.published
+     323: ldc           #66                 // String hbase.status.listener.class
+     325: invokeinterface #72,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     330: goto          370
+     333: new           #1                  // class org/apache/hadoop/hbase/client/ClusterStatusListener
+     336: dup
+     337: new           #73                 // class org/apache/hadoop/hbase/client/AsyncConnectionImpl$1
+     340: dup
+     341: aload_0
+     342: invokespecial #74                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl$1."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;)V
+     345: aload_1
+     346: aload         6
+     348: invokespecial #75                 // Method org/apache/hadoop/hbase/client/ClusterStatusListener."<init>":(Lorg/apache/hadoop/hbase/client/ClusterStatusListener$DeadServerHandler;Lorg/apache/hadoop/conf/Configuration;Ljava/lang/Class;)V
+     351: astore        5
+     353: goto          370
+     356: astore        7
+     358: getstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+     361: ldc           #77                 // String Failed to create ClusterStatusListener, not a critical problem, ignoring...
+     363: aload         7
+     365: invokeinterface #78,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     370: aload_0
+     371: aload         5
+     373: putfield      #79                 // Field clusterStatusListener:Lorg/apache/hadoop/hbase/client/ClusterStatusListener;
+     376: return
+    Exception table:
+       from    to  target type
+         333   353   356   Class java/io/IOException
+
+  public org.apache.hadoop.conf.Configuration getConfiguration();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: areturn
+
+  public void close();
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field closed:Z
+       4: ifeq          8
+       7: return
+       8: aload_0
+       9: getfield      #79                 // Field clusterStatusListener:Lorg/apache/hadoop/hbase/client/ClusterStatusListener;
+      12: invokestatic  #86                 // Method org/apache/commons/io/IOUtils.closeQuietly:(Ljava/io/Closeable;)V
+      15: aload_0
+      16: getfield      #5                  // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/RpcClient;
+      19: invokestatic  #86                 // Method org/apache/commons/io/IOUtils.closeQuietly:(Ljava/io/Closeable;)V
+      22: aload_0
+      23: getfield      #25                 // Field registry:Lorg/apache/hadoop/hbase/client/AsyncRegistry;
+      26: invokestatic  #86                 // Method org/apache/commons/io/IOUtils.closeQuietly:(Ljava/io/Closeable;)V
+      29: aload_0
+      30: getfield      #83                 // Field authService:Lorg/apache/hadoop/hbase/ChoreService;
+      33: ifnull        43
+      36: aload_0
+      37: getfield      #83                 // Field authService:Lorg/apache/hadoop/hbase/ChoreService;
+      40: invokevirtual #87                 // Method org/apache/hadoop/hbase/ChoreService.shutdown:()V
+      43: aload_0
+      44: getfield      #33                 // Field metrics:Ljava/util/Optional;
+      47: invokedynamic #88,  0             // InvokeDynamic #2:accept:()Ljava/util/function/Consumer;
+      52: invokevirtual #89                 // Method java/util/Optional.ifPresent:(Ljava/util/function/Consumer;)V
+      55: aload_0
+      56: iconst_1
+      57: putfield      #16                 // Field closed:Z
+      60: return
+
+  public boolean isClosed();
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field closed:Z
+       4: ireturn
+
+  public org.apache.hadoop.hbase.client.AsyncTableRegionLocator getRegionLocator(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: new           #90                 // class org/apache/hadoop/hbase/client/AsyncTableRegionLocatorImpl
+       3: dup
+       4: aload_1
+       5: aload_0
+       6: invokespecial #91                 // Method org/apache/hadoop/hbase/client/AsyncTableRegionLocatorImpl."<init>":(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;)V
+       9: areturn
+
+  org.apache.hadoop.hbase.client.AsyncRegionLocator getLocator();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field locator:Lorg/apache/hadoop/hbase/client/AsyncRegionLocator;
+       4: areturn
+
+  public org.apache.hadoop.hbase.client.NonceGenerator getNonceGenerator();
+    Code:
+       0: aload_0
+       1: getfield      #58                 // Field nonceGenerator:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       4: areturn
+
+  org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$ClientService$Interface getRegionServerStub(org.apache.hadoop.hbase.ServerName) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field rsStubs:Ljava/util/concurrent/ConcurrentMap;
+       4: ldc           #94                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$Interface
+       6: invokevirtual #95                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+       9: aload_1
+      10: aload_0
+      11: getfield      #41                 // Field hostnameCanChange:Z
+      14: invokestatic  #96                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.getStubKey:(Ljava/lang/String;Lorg/apache/hadoop/hbase/ServerName;Z)Ljava/lang/String;
+      17: aload_0
+      18: aload_1
+      19: invokedynamic #97,  0             // InvokeDynamic #3:get:(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/util/ConcurrentMapUtils$IOExceptionSupplier;
+      24: invokestatic  #98                 // Method org/apache/hadoop/hbase/util/ConcurrentMapUtils.computeIfAbsentEx:(Ljava/util/concurrent/ConcurrentMap;Ljava/lang/Object;Lorg/apache/hadoop/hbase/util/ConcurrentMapUtils$IOExceptionSupplier;)Ljava/lang/Object;
+      27: checkcast     #94                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$Interface
+      30: areturn
+
+  org.apache.hadoop.hbase.shaded.protobuf.generated.AdminProtos$AdminService$Interface getAdminStub(org.apache.hadoop.hbase.ServerName) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field adminSubs:Ljava/util/concurrent/ConcurrentMap;
+       4: ldc           #101                // class org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$Interface
+       6: invokevirtual #95                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+       9: aload_1
+      10: aload_0
+      11: getfield      #41                 // Field hostnameCanChange:Z
+      14: invokestatic  #96                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.getStubKey:(Ljava/lang/String;Lorg/apache/hadoop/hbase/ServerName;Z)Ljava/lang/String;
+      17: aload_0
+      18: aload_1
+      19: invokedynamic #102,  0            // InvokeDynamic #4:get:(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/util/ConcurrentMapUtils$IOExceptionSupplier;
+      24: invokestatic  #98                 // Method org/apache/hadoop/hbase/util/ConcurrentMapUtils.computeIfAbsentEx:(Ljava/util/concurrent/ConcurrentMap;Ljava/lang/Object;Lorg/apache/hadoop/hbase/util/ConcurrentMapUtils$IOExceptionSupplier;)Ljava/lang/Object;
+      27: checkcast     #101                // class org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$Interface
+      30: areturn
+
+  java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.shaded.protobuf.generated.MasterProtos$MasterService$Interface> getMasterStub();
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field masterStub:Ljava/util/concurrent/atomic/AtomicReference;
+       4: aload_0
+       5: getfield      #15                 // Field masterStubMakeFuture:Ljava/util/concurrent/atomic/AtomicReference;
+       8: iconst_0
+       9: aload_0
+      10: invokedynamic #103,  0            // InvokeDynamic #5:get:(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;)Ljava/util/function/Supplier;
+      15: invokedynamic #104,  0            // InvokeDynamic #6:test:()Ljava/util/function/Predicate;
+      20: ldc           #105                // String master stub
+      22: invokestatic  #106                // Method org/apache/hadoop/hbase/client/ConnectionUtils.getOrFetch:(Ljava/util/concurrent/atomic/AtomicReference;Ljava/util/concurrent/atomic/AtomicReference;ZLjava/util/function/Supplier;Ljava/util/function/Predicate;Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
+      25: areturn
+
+  void clearMasterStubCache(org.apache.hadoop.hbase.shaded.protobuf.generated.MasterProtos$MasterService$Interface);
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field masterStub:Ljava/util/concurrent/atomic/AtomicReference;
+       4: aload_1
+       5: aconst_null
+       6: invokevirtual #107                // Method java/util/concurrent/atomic/AtomicReference.compareAndSet:(Ljava/lang/Object;Ljava/lang/Object;)Z
+       9: pop
+      10: return
+
+  java.util.Optional<org.apache.hadoop.hbase.client.ServerStatisticTracker> getStatisticsTracker();
+    Code:
+       0: aload_0
+       1: getfield      #62                 // Field stats:Ljava/util/Optional;
+       4: areturn
+
+  org.apache.hadoop.hbase.client.backoff.ClientBackoffPolicy getBackoffPolicy();
+    Code:
+       0: aload_0
+       1: getfield      #64                 // Field backoffPolicy:Lorg/apache/hadoop/hbase/client/backoff/ClientBackoffPolicy;
+       4: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncTableBuilder<org.apache.hadoop.hbase.client.AdvancedScanResultConsumer> getTableBuilder(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: new           #108                // class org/apache/hadoop/hbase/client/AsyncConnectionImpl$2
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: aload_0
+       7: getfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+      10: invokespecial #109                // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl$2."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;)V
+      13: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncTableBuilder<org.apache.hadoop.hbase.client.ScanResultConsumer> getTableBuilder(org.apache.hadoop.hbase.TableName, java.util.concurrent.ExecutorService);
+    Code:
+       0: new           #110                // class org/apache/hadoop/hbase/client/AsyncConnectionImpl$3
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: aload_0
+       7: getfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+      10: aload_2
+      11: invokespecial #111                // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl$3."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;Ljava/util/concurrent/ExecutorService;)V
+      14: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncAdminBuilder getAdminBuilder();
+    Code:
+       0: new           #112                // class org/apache/hadoop/hbase/client/AsyncConnectionImpl$4
+       3: dup
+       4: aload_0
+       5: aload_0
+       6: getfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+       9: invokespecial #113                // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl$4."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;)V
+      12: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncAdminBuilder getAdminBuilder(java.util.concurrent.ExecutorService);
+    Code:
+       0: new           #114                // class org/apache/hadoop/hbase/client/AsyncConnectionImpl$5
+       3: dup
+       4: aload_0
+       5: aload_0
+       6: getfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+       9: aload_1
+      10: invokespecial #115                // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl$5."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;Ljava/util/concurrent/ExecutorService;)V
+      13: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncBufferedMutatorBuilder getBufferedMutatorBuilder(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: new           #116                // class org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilderImpl
+       3: dup
+       4: aload_0
+       5: getfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #117                // Method getTableBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTableBuilder;
+      13: getstatic     #51                 // Field RETRY_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+      16: invokespecial #118                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilderImpl."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;Lorg/apache/hadoop/hbase/client/AsyncTableBuilder;Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;)V
+      19: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncBufferedMutatorBuilder getBufferedMutatorBuilder(org.apache.hadoop.hbase.TableName, java.util.concurrent.ExecutorService);
+    Code:
+       0: new           #116                // class org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilderImpl
+       3: dup
+       4: aload_0
+       5: getfield      #24                 // Field connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+       8: aload_0
+       9: aload_1
+      10: aload_2
+      11: invokevirtual #119                // Method getTableBuilder:(Lorg/apache/hadoop/hbase/TableName;Ljava/util/concurrent/ExecutorService;)Lorg/apache/hadoop/hbase/client/AsyncTableBuilder;
+      14: getstatic     #51                 // Field RETRY_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+      17: invokespecial #118                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilderImpl."<init>":(Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;Lorg/apache/hadoop/hbase/client/AsyncTableBuilder;Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;)V
+      20: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.Hbck> getHbck();
+    Code:
+       0: new           #120                // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #121                // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getfield      #25                 // Field registry:Lorg/apache/hadoop/hbase/client/AsyncRegistry;
+      12: invokeinterface #122,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRegistry.getMasterAddress:()Ljava/util/concurrent/CompletableFuture;
+      17: aload_0
+      18: aload_1
+      19: invokedynamic #123,  0            // InvokeDynamic #7:accept:(Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      24: invokestatic  #124                // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      27: aload_1
+      28: areturn
+
+  public org.apache.hadoop.hbase.client.Hbck getHbck(org.apache.hadoop.hbase.ServerName) throws java.io.IOException;
+    Code:
+       0: new           #125                // class org/apache/hadoop/hbase/client/HBaseHbck
+       3: dup
+       4: aload_0
+       5: getfield      #5                  // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/RpcClient;
+       8: aload_1
+       9: aload_0
+      10: getfield      #18                 // Field user:Lorg/apache/hadoop/hbase/security/User;
+      13: aload_0
+      14: getfield      #49                 // Field rpcTimeout:I
+      17: invokeinterface #126,  4          // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcClient.createBlockingRpcChannel:(Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/security/User;I)Lorg/apache/hbase/thirdparty/com/google/protobuf/BlockingRpcChannel;
+      22: invokestatic  #127                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$HbckService.newBlockingStub:(Lorg/apache/hbase/thirdparty/com/google/protobuf/BlockingRpcChannel;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$HbckService$BlockingInterface;
+      25: aload_0
+      26: getfield      #38                 // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      29: invokespecial #128                // Method org/apache/hadoop/hbase/client/HBaseHbck."<init>":(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$HbckService$BlockingInterface;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;)V
+      32: areturn
+
+  public void clearRegionLocationCache();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field locator:Lorg/apache/hadoop/hbase/client/AsyncRegionLocator;
+       4: invokevirtual #129                // Method org/apache/hadoop/hbase/client/AsyncRegionLocator.clearCache:()V
+       7: return
+
+  java.util.Optional<org.apache.hadoop.hbase.client.MetricsConnection> getConnectionMetrics();
+    Code:
+       0: aload_0
+       1: getfield      #33                 // Field metrics:Ljava/util/Optional;
+       4: areturn
+
+  static org.apache.hadoop.hbase.client.AsyncRegionLocator access$000(org.apache.hadoop.hbase.client.AsyncConnectionImpl);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field locator:Lorg/apache/hadoop/hbase/client/AsyncRegionLocator;
+       4: areturn
+
+  static org.apache.hadoop.hbase.ipc.RpcClient access$100(org.apache.hadoop.hbase.client.AsyncConnectionImpl);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/RpcClient;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #39                 // class org/apache/hadoop/hbase/client/AsyncConnectionImpl
+       2: invokestatic  #142                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+       8: new           #143                // class org/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer
+      11: dup
+      12: ldc           #144                // String Async-Client-Retry-Timer
+      14: invokestatic  #145                // Method org/apache/hadoop/hbase/util/Threads.newDaemonThreadFactory:(Ljava/lang/String;)Ljava/util/concurrent/ThreadFactory;
+      17: ldc2_w        #146                // long 10l
+      20: getstatic     #148                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      23: invokespecial #149                // Method org/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer."<init>":(Ljava/util/concurrent/ThreadFactory;JLjava/util/concurrent/TimeUnit;)V
+      26: putstatic     #51                 // Field RETRY_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+      29: return
+}

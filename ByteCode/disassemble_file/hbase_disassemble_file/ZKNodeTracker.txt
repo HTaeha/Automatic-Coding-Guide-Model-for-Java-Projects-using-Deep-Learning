@@ -1,0 +1,414 @@
+Compiled from "ZKNodeTracker.java"
+public abstract class org.apache.hadoop.hbase.zookeeper.ZKNodeTracker extends org.apache.hadoop.hbase.zookeeper.ZKListener {
+  protected static final org.slf4j.Logger LOG;
+
+  protected final java.lang.String node;
+
+  protected final org.apache.hadoop.hbase.Abortable abortable;
+
+  public org.apache.hadoop.hbase.zookeeper.ZKNodeTracker(org.apache.hadoop.hbase.zookeeper.ZKWatcher, java.lang.String, org.apache.hadoop.hbase.Abortable);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method org/apache/hadoop/hbase/zookeeper/ZKListener."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;)V
+       5: aload_0
+       6: iconst_0
+       7: putfield      #2                  // Field stopped:Z
+      10: aload_0
+      11: aload_2
+      12: putfield      #3                  // Field node:Ljava/lang/String;
+      15: aload_0
+      16: aload_3
+      17: putfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      20: aload_0
+      21: aconst_null
+      22: putfield      #5                  // Field data:[B
+      25: return
+
+  public synchronized void start();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: invokevirtual #7                  // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.registerListener:(Lorg/apache/hadoop/hbase/zookeeper/ZKListener;)V
+       8: aload_0
+       9: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      12: aload_0
+      13: getfield      #3                  // Field node:Ljava/lang/String;
+      16: invokestatic  #8                  // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.watchAndCheckExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)Z
+      19: ifeq          80
+      22: aload_0
+      23: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      26: aload_0
+      27: getfield      #3                  // Field node:Ljava/lang/String;
+      30: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataAndWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+      33: astore_1
+      34: aload_1
+      35: ifnull        46
+      38: aload_0
+      39: aload_1
+      40: putfield      #5                  // Field data:[B
+      43: goto          80
+      46: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+      49: new           #11                 // class java/lang/StringBuilder
+      52: dup
+      53: invokespecial #12                 // Method java/lang/StringBuilder."<init>":()V
+      56: ldc           #13                 // String Try starting again because there is no data from
+      58: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: aload_0
+      62: getfield      #3                  // Field node:Ljava/lang/String;
+      65: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      68: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      71: invokeinterface #16,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      76: aload_0
+      77: invokevirtual #17                 // Method start:()V
+      80: goto          96
+      83: astore_1
+      84: aload_0
+      85: getfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      88: ldc           #19                 // String Unexpected exception during initialization, aborting
+      90: aload_1
+      91: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/Abortable.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      96: return
+    Exception table:
+       from    to  target type
+           8    80    83   Class org/apache/zookeeper/KeeperException
+
+  public synchronized void stop();
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #2                  // Field stopped:Z
+       5: aload_0
+       6: invokevirtual #21                 // Method java/lang/Object.notifyAll:()V
+       9: return
+
+  public synchronized byte[] blockUntilAvailable() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: lconst_0
+       2: iconst_0
+       3: invokevirtual #22                 // Method blockUntilAvailable:(JZ)[B
+       6: areturn
+
+  public synchronized byte[] blockUntilAvailable(long, boolean) throws java.lang.InterruptedException;
+    Code:
+       0: lload_1
+       1: lconst_0
+       2: lcmp
+       3: ifge          14
+       6: new           #23                 // class java/lang/IllegalArgumentException
+       9: dup
+      10: invokespecial #24                 // Method java/lang/IllegalArgumentException."<init>":()V
+      13: athrow
+      14: lload_1
+      15: lconst_0
+      16: lcmp
+      17: ifne          24
+      20: iconst_1
+      21: goto          25
+      24: iconst_0
+      25: istore        4
+      27: invokestatic  #25                 // Method java/lang/System.currentTimeMillis:()J
+      30: lstore        5
+      32: lload_1
+      33: lstore        7
+      35: iload_3
+      36: ifeq          84
+      39: aload_0
+      40: aload_0
+      41: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      44: aload_0
+      45: getfield      #3                  // Field node:Ljava/lang/String;
+      48: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataAndWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+      51: putfield      #5                  // Field data:[B
+      54: goto          84
+      57: astore        9
+      59: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+      62: ldc           #26                 // String Unexpected exception handling blockUntilAvailable
+      64: aload         9
+      66: invokeinterface #27,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      71: aload_0
+      72: getfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      75: ldc           #26                 // String Unexpected exception handling blockUntilAvailable
+      77: aload         9
+      79: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/Abortable.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      84: iload_3
+      85: ifeq          95
+      88: aload_0
+      89: getfield      #5                  // Field data:[B
+      92: ifnull        99
+      95: iconst_1
+      96: goto          100
+      99: iconst_0
+     100: istore        9
+     102: aload_0
+     103: getfield      #2                  // Field stopped:Z
+     106: ifne          302
+     109: iload         4
+     111: ifne          121
+     114: lload         7
+     116: lconst_0
+     117: lcmp
+     118: ifle          302
+     121: aload_0
+     122: getfield      #5                  // Field data:[B
+     125: ifnonnull     302
+     128: iload         9
+     130: ifne          282
+     133: aload_0
+     134: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     137: aload_0
+     138: getfield      #3                  // Field node:Ljava/lang/String;
+     141: invokestatic  #28                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.checkExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)I
+     144: iconst_m1
+     145: if_icmpeq     152
+     148: iconst_1
+     149: goto          153
+     152: iconst_0
+     153: istore        9
+     155: goto          197
+     158: astore        10
+     160: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     163: new           #11                 // class java/lang/StringBuilder
+     166: dup
+     167: invokespecial #12                 // Method java/lang/StringBuilder."<init>":()V
+     170: ldc           #29                 // String Got exception while trying to check existence in  ZooKeeper of the node:
+     172: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     175: aload_0
+     176: getfield      #3                  // Field node:Ljava/lang/String;
+     179: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     182: ldc           #30                 // String , retrying if timeout not reached
+     184: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     187: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     190: aload         10
+     192: invokeinterface #27,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     197: iload         9
+     199: ifeq          282
+     202: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     205: new           #11                 // class java/lang/StringBuilder
+     208: dup
+     209: invokespecial #12                 // Method java/lang/StringBuilder."<init>":()V
+     212: ldc           #31                 // String Node
+     214: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     217: aload_0
+     218: getfield      #3                  // Field node:Ljava/lang/String;
+     221: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     224: ldc           #32                 // String  now exists, resetting a watcher
+     226: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     229: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     232: invokeinterface #16,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     237: aload_0
+     238: aload_0
+     239: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     242: aload_0
+     243: getfield      #3                  // Field node:Ljava/lang/String;
+     246: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataAndWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+     249: putfield      #5                  // Field data:[B
+     252: goto          282
+     255: astore        10
+     257: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     260: ldc           #26                 // String Unexpected exception handling blockUntilAvailable
+     262: aload         10
+     264: invokeinterface #27,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     269: aload_0
+     270: getfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+     273: ldc           #26                 // String Unexpected exception handling blockUntilAvailable
+     275: aload         10
+     277: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/Abortable.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     282: aload_0
+     283: ldc2_w        #33                 // long 100l
+     286: invokevirtual #35                 // Method java/lang/Object.wait:(J)V
+     289: lload_1
+     290: invokestatic  #25                 // Method java/lang/System.currentTimeMillis:()J
+     293: lload         5
+     295: lsub
+     296: lsub
+     297: lstore        7
+     299: goto          102
+     302: aload_0
+     303: getfield      #5                  // Field data:[B
+     306: areturn
+    Exception table:
+       from    to  target type
+          39    54    57   Class org/apache/zookeeper/KeeperException
+         133   155   158   Class org/apache/zookeeper/KeeperException
+         237   252   255   Class org/apache/zookeeper/KeeperException
+
+  public synchronized byte[] getData(boolean);
+    Code:
+       0: iload_1
+       1: ifeq          35
+       4: aload_0
+       5: aload_0
+       6: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       9: aload_0
+      10: getfield      #3                  // Field node:Ljava/lang/String;
+      13: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataAndWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+      16: putfield      #5                  // Field data:[B
+      19: goto          35
+      22: astore_2
+      23: aload_0
+      24: getfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      27: ldc           #36                 // String Unexpected exception handling getData
+      29: aload_2
+      30: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/Abortable.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      35: aload_0
+      36: getfield      #5                  // Field data:[B
+      39: areturn
+    Exception table:
+       from    to  target type
+           4    19    22   Class org/apache/zookeeper/KeeperException
+
+  public java.lang.String getNode();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field node:Ljava/lang/String;
+       4: areturn
+
+  public synchronized void nodeCreated(java.lang.String);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #3                  // Field node:Ljava/lang/String;
+       5: invokevirtual #37                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       8: ifne          12
+      11: return
+      12: aload_0
+      13: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      16: aload_0
+      17: getfield      #3                  // Field node:Ljava/lang/String;
+      20: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataAndWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+      23: astore_2
+      24: aload_2
+      25: ifnull        40
+      28: aload_0
+      29: aload_2
+      30: putfield      #5                  // Field data:[B
+      33: aload_0
+      34: invokevirtual #21                 // Method java/lang/Object.notifyAll:()V
+      37: goto          45
+      40: aload_0
+      41: aload_1
+      42: invokevirtual #38                 // Method nodeDeleted:(Ljava/lang/String;)V
+      45: goto          61
+      48: astore_2
+      49: aload_0
+      50: getfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      53: ldc           #39                 // String Unexpected exception handling nodeCreated event
+      55: aload_2
+      56: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/Abortable.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      61: return
+    Exception table:
+       from    to  target type
+          12    45    48   Class org/apache/zookeeper/KeeperException
+
+  public synchronized void nodeDeleted(java.lang.String);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #3                  // Field node:Ljava/lang/String;
+       5: invokevirtual #37                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       8: ifeq          54
+      11: aload_0
+      12: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      15: aload_0
+      16: getfield      #3                  // Field node:Ljava/lang/String;
+      19: invokestatic  #8                  // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.watchAndCheckExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)Z
+      22: ifeq          33
+      25: aload_0
+      26: aload_1
+      27: invokevirtual #40                 // Method nodeCreated:(Ljava/lang/String;)V
+      30: goto          38
+      33: aload_0
+      34: aconst_null
+      35: putfield      #5                  // Field data:[B
+      38: goto          54
+      41: astore_2
+      42: aload_0
+      43: getfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      46: ldc           #41                 // String Unexpected exception handling nodeDeleted event
+      48: aload_2
+      49: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/Abortable.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      54: return
+    Exception table:
+       from    to  target type
+          11    38    41   Class org/apache/zookeeper/KeeperException
+
+  public synchronized void nodeDataChanged(java.lang.String);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #3                  // Field node:Ljava/lang/String;
+       5: invokevirtual #37                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       8: ifeq          16
+      11: aload_0
+      12: aload_1
+      13: invokevirtual #40                 // Method nodeCreated:(Ljava/lang/String;)V
+      16: return
+
+  public boolean checkIfBaseNodeAvailable();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       8: invokevirtual #42                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      11: getfield      #43                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.baseZNode:Ljava/lang/String;
+      14: invokestatic  #28                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.checkExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)I
+      17: iconst_m1
+      18: if_icmpne     23
+      21: iconst_0
+      22: ireturn
+      23: goto          70
+      26: astore_1
+      27: aload_0
+      28: getfield      #4                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      31: new           #11                 // class java/lang/StringBuilder
+      34: dup
+      35: invokespecial #12                 // Method java/lang/StringBuilder."<init>":()V
+      38: ldc           #44                 // String Exception while checking if basenode (
+      40: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: aload_0
+      44: getfield      #6                  // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      47: invokevirtual #42                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      50: getfield      #43                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.baseZNode:Ljava/lang/String;
+      53: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: ldc           #45                 // String ) exists in ZooKeeper.
+      58: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      64: aload_1
+      65: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/Abortable.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      70: iconst_1
+      71: ireturn
+    Exception table:
+       from    to  target type
+           0    22    26   Class org/apache/zookeeper/KeeperException
+
+  public java.lang.String toString();
+    Code:
+       0: new           #11                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #12                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #46                 // String ZKNodeTracker{node='
+       9: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: getfield      #3                  // Field node:Ljava/lang/String;
+      16: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: ldc           #47                 // String , stopped=
+      21: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: aload_0
+      25: getfield      #2                  // Field stopped:Z
+      28: invokevirtual #48                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      31: bipush        125
+      33: invokevirtual #49                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      36: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      39: areturn
+
+  static {};
+    Code:
+       0: ldc           #50                 // class org/apache/hadoop/hbase/zookeeper/ZKNodeTracker
+       2: invokestatic  #51                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

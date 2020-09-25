@@ -1,0 +1,735 @@
+Compiled from "SyncReplicationTestBase.java"
+public class org.apache.hadoop.hbase.replication.SyncReplicationTestBase {
+  protected static final org.apache.hadoop.hbase.HBaseZKTestingUtility ZK_UTIL;
+
+  protected static final org.apache.hadoop.hbase.HBaseTestingUtility UTIL1;
+
+  protected static final org.apache.hadoop.hbase.HBaseTestingUtility UTIL2;
+
+  protected static org.apache.hadoop.hbase.TableName TABLE_NAME;
+
+  protected static byte[] CF;
+
+  protected static byte[] CQ;
+
+  protected static java.lang.String PEER_ID;
+
+  protected static org.apache.hadoop.fs.Path REMOTE_WAL_DIR1;
+
+  protected static org.apache.hadoop.fs.Path REMOTE_WAL_DIR2;
+
+  public org.apache.hadoop.hbase.replication.SyncReplicationTestBase();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  protected static void initTestingUtility(org.apache.hadoop.hbase.HBaseTestingUtility, java.lang.String);
+    Code:
+       0: aload_0
+       1: getstatic     #2                  // Field ZK_UTIL:Lorg/apache/hadoop/hbase/HBaseZKTestingUtility;
+       4: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseZKTestingUtility.getZkCluster:()Lorg/apache/hadoop/hbase/zookeeper/MiniZooKeeperCluster;
+       7: invokevirtual #4                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.setZkCluster:(Lorg/apache/hadoop/hbase/zookeeper/MiniZooKeeperCluster;)V
+      10: aload_0
+      11: invokevirtual #5                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      14: astore_2
+      15: aload_2
+      16: ldc           #7                  // String zookeeper.znode.parent
+      18: aload_1
+      19: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      22: aload_2
+      23: ldc           #9                  // String replication.source.size.capacity
+      25: ldc           #10                 // int 102400
+      27: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      30: aload_2
+      31: ldc           #12                 // String replication.source.sleepforretries
+      33: ldc2_w        #13                 // long 100l
+      36: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+      39: aload_2
+      40: ldc           #16                 // String hbase.regionserver.maxlogs
+      42: bipush        10
+      44: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      47: aload_2
+      48: ldc           #17                 // String hbase.master.logcleaner.ttl
+      50: ldc2_w        #18                 // long 10l
+      53: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+      56: aload_2
+      57: ldc           #20                 // String zookeeper.recovery.retry
+      59: iconst_1
+      60: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      63: aload_2
+      64: ldc           #21                 // String zookeeper.recovery.retry.intervalmill
+      66: bipush        10
+      68: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      71: aload_2
+      72: ldc           #22                 // String hbase.server.thread.wakefrequency
+      74: ldc2_w        #13                 // long 100l
+      77: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+      80: aload_2
+      81: ldc           #23                 // String replication.stats.thread.period.seconds
+      83: iconst_5
+      84: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      87: aload_2
+      88: ldc           #24                 // String hbase.tests.use.shortcircuit.reads
+      90: iconst_0
+      91: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      94: aload_2
+      95: ldc           #26                 // String replication.sleep.before.failover
+      97: ldc2_w        #27                 // long 2000l
+     100: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.setLong:(Ljava/lang/String;J)V
+     103: aload_2
+     104: ldc           #29                 // String replication.source.maxretriesmultiplier
+     106: bipush        10
+     108: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+     111: aload_2
+     112: ldc           #30                 // String replication.source.ratio
+     114: fconst_1
+     115: invokevirtual #31                 // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+     118: aload_2
+     119: ldc           #32                 // String replication.source.eof.autorecovery
+     121: iconst_1
+     122: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+     125: return
+
+  public static void setUp() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field ZK_UTIL:Lorg/apache/hadoop/hbase/HBaseZKTestingUtility;
+       3: invokevirtual #33                 // Method org/apache/hadoop/hbase/HBaseZKTestingUtility.startMiniZKCluster:()Lorg/apache/hadoop/hbase/zookeeper/MiniZooKeeperCluster;
+       6: pop
+       7: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      10: ldc           #35                 // String /cluster1
+      12: invokestatic  #36                 // Method initTestingUtility:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;Ljava/lang/String;)V
+      15: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      18: ldc           #38                 // String /cluster2
+      20: invokestatic  #36                 // Method initTestingUtility:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;Ljava/lang/String;)V
+      23: invokestatic  #39                 // Method org/apache/hadoop/hbase/StartMiniClusterOption.builder:()Lorg/apache/hadoop/hbase/StartMiniClusterOption$Builder;
+      26: iconst_2
+      27: invokevirtual #40                 // Method org/apache/hadoop/hbase/StartMiniClusterOption$Builder.numMasters:(I)Lorg/apache/hadoop/hbase/StartMiniClusterOption$Builder;
+      30: iconst_3
+      31: invokevirtual #41                 // Method org/apache/hadoop/hbase/StartMiniClusterOption$Builder.numRegionServers:(I)Lorg/apache/hadoop/hbase/StartMiniClusterOption$Builder;
+      34: iconst_3
+      35: invokevirtual #42                 // Method org/apache/hadoop/hbase/StartMiniClusterOption$Builder.numDataNodes:(I)Lorg/apache/hadoop/hbase/StartMiniClusterOption$Builder;
+      38: invokevirtual #43                 // Method org/apache/hadoop/hbase/StartMiniClusterOption$Builder.build:()Lorg/apache/hadoop/hbase/StartMiniClusterOption;
+      41: astore_0
+      42: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      45: aload_0
+      46: invokevirtual #44                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(Lorg/apache/hadoop/hbase/StartMiniClusterOption;)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      49: pop
+      50: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      53: aload_0
+      54: invokevirtual #44                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(Lorg/apache/hadoop/hbase/StartMiniClusterOption;)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      57: pop
+      58: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      61: invokestatic  #46                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.newBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/TableDescriptorBuilder;
+      64: getstatic     #47                 // Field CF:[B
+      67: invokestatic  #48                 // Method org/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder.newBuilder:([B)Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder;
+      70: iconst_1
+      71: invokevirtual #49                 // Method org/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder.setScope:(I)Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder;
+      74: invokevirtual #50                 // Method org/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder.build:()Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;
+      77: invokevirtual #51                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.setColumnFamily:(Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;)Lorg/apache/hadoop/hbase/client/TableDescriptorBuilder;
+      80: invokevirtual #52                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.build:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      83: astore_1
+      84: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      87: invokevirtual #53                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      90: aload_1
+      91: invokeinterface #54,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.createTable:(Lorg/apache/hadoop/hbase/client/TableDescriptor;)V
+      96: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      99: invokevirtual #53                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     102: aload_1
+     103: invokeinterface #54,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.createTable:(Lorg/apache/hadoop/hbase/client/TableDescriptor;)V
+     108: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     111: invokevirtual #55                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+     114: astore_2
+     115: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     118: invokevirtual #55                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+     121: astore_3
+     122: new           #56                 // class org/apache/hadoop/fs/Path
+     125: dup
+     126: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     129: invokevirtual #57                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     132: invokevirtual #58                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+     135: invokevirtual #59                 // Method org/apache/hadoop/hbase/master/HMaster.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+     138: invokevirtual #60                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getWALRootDir:()Lorg/apache/hadoop/fs/Path;
+     141: ldc           #61                 // String remoteWALs
+     143: invokespecial #62                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     146: aload_2
+     147: invokevirtual #63                 // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+     150: aload_2
+     151: invokevirtual #64                 // Method org/apache/hadoop/fs/FileSystem.getWorkingDirectory:()Lorg/apache/hadoop/fs/Path;
+     154: invokevirtual #65                 // Method org/apache/hadoop/fs/Path.makeQualified:(Ljava/net/URI;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+     157: putstatic     #66                 // Field REMOTE_WAL_DIR1:Lorg/apache/hadoop/fs/Path;
+     160: new           #56                 // class org/apache/hadoop/fs/Path
+     163: dup
+     164: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     167: invokevirtual #57                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     170: invokevirtual #58                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+     173: invokevirtual #59                 // Method org/apache/hadoop/hbase/master/HMaster.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+     176: invokevirtual #60                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getWALRootDir:()Lorg/apache/hadoop/fs/Path;
+     179: ldc           #61                 // String remoteWALs
+     181: invokespecial #62                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     184: aload_3
+     185: invokevirtual #63                 // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+     188: aload_3
+     189: invokevirtual #64                 // Method org/apache/hadoop/fs/FileSystem.getWorkingDirectory:()Lorg/apache/hadoop/fs/Path;
+     192: invokevirtual #65                 // Method org/apache/hadoop/fs/Path.makeQualified:(Ljava/net/URI;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+     195: putstatic     #67                 // Field REMOTE_WAL_DIR2:Lorg/apache/hadoop/fs/Path;
+     198: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     201: invokevirtual #53                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     204: getstatic     #68                 // Field PEER_ID:Ljava/lang/String;
+     207: invokestatic  #69                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.newBuilder:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     210: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     213: invokevirtual #70                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getClusterKey:()Ljava/lang/String;
+     216: invokeinterface #71,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setClusterKey:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     221: iconst_0
+     222: invokeinterface #72,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setReplicateAllUserTables:(Z)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     227: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     230: new           #73                 // class java/util/ArrayList
+     233: dup
+     234: invokespecial #74                 // Method java/util/ArrayList."<init>":()V
+     237: invokestatic  #75                 // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.of:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+     240: invokeinterface #76,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setTableCFsMap:(Ljava/util/Map;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     245: getstatic     #67                 // Field REMOTE_WAL_DIR2:Lorg/apache/hadoop/fs/Path;
+     248: invokevirtual #77                 // Method org/apache/hadoop/fs/Path.toUri:()Ljava/net/URI;
+     251: invokevirtual #78                 // Method java/net/URI.toString:()Ljava/lang/String;
+     254: invokeinterface #79,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setRemoteWALDir:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     259: invokeinterface #80,  1           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.build:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+     264: invokeinterface #81,  3           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.addReplicationPeer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)V
+     269: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     272: invokevirtual #53                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     275: getstatic     #68                 // Field PEER_ID:Ljava/lang/String;
+     278: invokestatic  #69                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.newBuilder:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     281: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     284: invokevirtual #70                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getClusterKey:()Ljava/lang/String;
+     287: invokeinterface #71,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setClusterKey:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     292: iconst_0
+     293: invokeinterface #72,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setReplicateAllUserTables:(Z)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     298: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     301: new           #73                 // class java/util/ArrayList
+     304: dup
+     305: invokespecial #74                 // Method java/util/ArrayList."<init>":()V
+     308: invokestatic  #75                 // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.of:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+     311: invokeinterface #76,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setTableCFsMap:(Ljava/util/Map;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     316: getstatic     #66                 // Field REMOTE_WAL_DIR1:Lorg/apache/hadoop/fs/Path;
+     319: invokevirtual #77                 // Method org/apache/hadoop/fs/Path.toUri:()Ljava/net/URI;
+     322: invokevirtual #78                 // Method java/net/URI.toString:()Ljava/lang/String;
+     325: invokeinterface #79,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.setRemoteWALDir:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+     330: invokeinterface #80,  1           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.build:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+     335: invokeinterface #81,  3           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.addReplicationPeer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)V
+     340: return
+
+  public static void tearDown() throws java.lang.Exception;
+    Code:
+       0: getstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokestatic  #91                 // Method shutdown:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;)V
+       6: getstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       9: invokestatic  #91                 // Method shutdown:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;)V
+      12: getstatic     #2                  // Field ZK_UTIL:Lorg/apache/hadoop/hbase/HBaseZKTestingUtility;
+      15: invokevirtual #92                 // Method org/apache/hadoop/hbase/HBaseZKTestingUtility.shutdownMiniZKCluster:()V
+      18: return
+
+  protected final void write(org.apache.hadoop.hbase.HBaseTestingUtility, int, int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #93                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+       4: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokeinterface #94,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      12: astore        4
+      14: aconst_null
+      15: astore        5
+      17: iload_2
+      18: istore        6
+      20: iload         6
+      22: iload_3
+      23: if_icmpge     65
+      26: aload         4
+      28: new           #95                 // class org/apache/hadoop/hbase/client/Put
+      31: dup
+      32: iload         6
+      34: invokestatic  #96                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      37: invokespecial #97                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      40: getstatic     #47                 // Field CF:[B
+      43: getstatic     #98                 // Field CQ:[B
+      46: iload         6
+      48: invokestatic  #96                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      51: invokevirtual #99                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      54: invokeinterface #100,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+      59: iinc          6, 1
+      62: goto          20
+      65: aload         4
+      67: ifnull        160
+      70: aload         5
+      72: ifnull        97
+      75: aload         4
+      77: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      82: goto          160
+      85: astore        6
+      87: aload         5
+      89: aload         6
+      91: invokevirtual #103                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      94: goto          160
+      97: aload         4
+      99: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     104: goto          160
+     107: astore        6
+     109: aload         6
+     111: astore        5
+     113: aload         6
+     115: athrow
+     116: astore        7
+     118: aload         4
+     120: ifnull        157
+     123: aload         5
+     125: ifnull        150
+     128: aload         4
+     130: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     135: goto          157
+     138: astore        8
+     140: aload         5
+     142: aload         8
+     144: invokevirtual #103                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     147: goto          157
+     150: aload         4
+     152: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     157: aload         7
+     159: athrow
+     160: return
+    Exception table:
+       from    to  target type
+          75    82    85   Class java/lang/Throwable
+          17    65   107   Class java/lang/Throwable
+          17    65   116   any
+         128   135   138   Class java/lang/Throwable
+         107   118   116   any
+
+  protected final void verify(org.apache.hadoop.hbase.HBaseTestingUtility, int, int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #93                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+       4: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokeinterface #94,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      12: astore        4
+      14: aconst_null
+      15: astore        5
+      17: iload_2
+      18: istore        6
+      20: iload         6
+      22: iload_3
+      23: if_icmpge     70
+      26: iload         6
+      28: i2l
+      29: aload         4
+      31: new           #104                // class org/apache/hadoop/hbase/client/Get
+      34: dup
+      35: iload         6
+      37: invokestatic  #96                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      40: invokespecial #105                // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+      43: invokeinterface #106,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.get:(Lorg/apache/hadoop/hbase/client/Get;)Lorg/apache/hadoop/hbase/client/Result;
+      48: getstatic     #47                 // Field CF:[B
+      51: getstatic     #98                 // Field CQ:[B
+      54: invokevirtual #107                // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+      57: invokestatic  #108                // Method org/apache/hadoop/hbase/util/Bytes.toInt:([B)I
+      60: i2l
+      61: invokestatic  #109                // Method org/junit/Assert.assertEquals:(JJ)V
+      64: iinc          6, 1
+      67: goto          20
+      70: aload         4
+      72: ifnull        165
+      75: aload         5
+      77: ifnull        102
+      80: aload         4
+      82: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      87: goto          165
+      90: astore        6
+      92: aload         5
+      94: aload         6
+      96: invokevirtual #103                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      99: goto          165
+     102: aload         4
+     104: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     109: goto          165
+     112: astore        6
+     114: aload         6
+     116: astore        5
+     118: aload         6
+     120: athrow
+     121: astore        7
+     123: aload         4
+     125: ifnull        162
+     128: aload         5
+     130: ifnull        155
+     133: aload         4
+     135: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     140: goto          162
+     143: astore        8
+     145: aload         5
+     147: aload         8
+     149: invokevirtual #103                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     152: goto          162
+     155: aload         4
+     157: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     162: aload         7
+     164: athrow
+     165: return
+    Exception table:
+       from    to  target type
+          80    87    90   Class java/lang/Throwable
+          17    70   112   Class java/lang/Throwable
+          17    70   121   any
+         133   140   143   Class java/lang/Throwable
+         112   123   121   any
+
+  protected final void verifyThroughRegion(org.apache.hadoop.hbase.HBaseTestingUtility, int, int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #57                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       4: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokevirtual #110                // Method org/apache/hadoop/hbase/MiniHBaseCluster.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      10: iconst_0
+      11: invokeinterface #111,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      16: checkcast     #112                // class org/apache/hadoop/hbase/regionserver/HRegion
+      19: astore        4
+      21: iload_2
+      22: istore        5
+      24: iload         5
+      26: iload_3
+      27: if_icmpge     72
+      30: iload         5
+      32: i2l
+      33: aload         4
+      35: new           #104                // class org/apache/hadoop/hbase/client/Get
+      38: dup
+      39: iload         5
+      41: invokestatic  #96                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      44: invokespecial #105                // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+      47: invokevirtual #113                // Method org/apache/hadoop/hbase/regionserver/HRegion.get:(Lorg/apache/hadoop/hbase/client/Get;)Lorg/apache/hadoop/hbase/client/Result;
+      50: getstatic     #47                 // Field CF:[B
+      53: getstatic     #98                 // Field CQ:[B
+      56: invokevirtual #107                // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+      59: invokestatic  #108                // Method org/apache/hadoop/hbase/util/Bytes.toInt:([B)I
+      62: i2l
+      63: invokestatic  #109                // Method org/junit/Assert.assertEquals:(JJ)V
+      66: iinc          5, 1
+      69: goto          24
+      72: return
+
+  protected final void verifyNotReplicatedThroughRegion(org.apache.hadoop.hbase.HBaseTestingUtility, int, int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #57                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       4: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokevirtual #110                // Method org/apache/hadoop/hbase/MiniHBaseCluster.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      10: iconst_0
+      11: invokeinterface #111,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      16: checkcast     #112                // class org/apache/hadoop/hbase/regionserver/HRegion
+      19: astore        4
+      21: iload_2
+      22: istore        5
+      24: iload         5
+      26: iload_3
+      27: if_icmpge     59
+      30: aload         4
+      32: new           #104                // class org/apache/hadoop/hbase/client/Get
+      35: dup
+      36: iload         5
+      38: invokestatic  #96                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      41: invokespecial #105                // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+      44: invokevirtual #113                // Method org/apache/hadoop/hbase/regionserver/HRegion.get:(Lorg/apache/hadoop/hbase/client/Get;)Lorg/apache/hadoop/hbase/client/Result;
+      47: invokevirtual #114                // Method org/apache/hadoop/hbase/client/Result.isEmpty:()Z
+      50: invokestatic  #115                // Method org/junit/Assert.assertTrue:(Z)V
+      53: iinc          5, 1
+      56: goto          24
+      59: return
+
+  protected final void waitUntilReplicationDone(org.apache.hadoop.hbase.HBaseTestingUtility, int) throws java.lang.Exception;
+    Code:
+       0: aload_1
+       1: invokevirtual #57                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       4: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokevirtual #110                // Method org/apache/hadoop/hbase/MiniHBaseCluster.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      10: iconst_0
+      11: invokeinterface #111,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      16: checkcast     #112                // class org/apache/hadoop/hbase/regionserver/HRegion
+      19: astore_3
+      20: aload_1
+      21: ldc2_w        #116                // long 30000l
+      24: new           #118                // class org/apache/hadoop/hbase/replication/SyncReplicationTestBase$1
+      27: dup
+      28: aload_0
+      29: aload_3
+      30: iload_2
+      31: invokespecial #119                // Method org/apache/hadoop/hbase/replication/SyncReplicationTestBase$1."<init>":(Lorg/apache/hadoop/hbase/replication/SyncReplicationTestBase;Lorg/apache/hadoop/hbase/regionserver/HRegion;I)V
+      34: invokevirtual #120                // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitFor:(JLorg/apache/hadoop/hbase/Waiter$Predicate;)J
+      37: pop2
+      38: return
+
+  protected final void writeAndVerifyReplication(org.apache.hadoop.hbase.HBaseTestingUtility, org.apache.hadoop.hbase.HBaseTestingUtility, int, int) throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_3
+       3: iload         4
+       5: invokevirtual #121                // Method write:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;II)V
+       8: aload_0
+       9: aload_2
+      10: iload         4
+      12: invokevirtual #122                // Method waitUntilReplicationDone:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;I)V
+      15: aload_0
+      16: aload_2
+      17: iload_3
+      18: iload         4
+      20: invokevirtual #123                // Method verifyThroughRegion:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;II)V
+      23: return
+
+  protected final org.apache.hadoop.fs.Path getRemoteWALDir(org.apache.hadoop.hbase.master.MasterFileSystem, java.lang.String);
+    Code:
+       0: new           #56                 // class org/apache/hadoop/fs/Path
+       3: dup
+       4: aload_1
+       5: invokevirtual #60                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getWALRootDir:()Lorg/apache/hadoop/fs/Path;
+       8: ldc           #61                 // String remoteWALs
+      10: invokespecial #62                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      13: astore_3
+      14: aload_0
+      15: aload_3
+      16: aload_2
+      17: invokevirtual #125                // Method getRemoteWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      20: areturn
+
+  protected final org.apache.hadoop.fs.Path getRemoteWALDir(org.apache.hadoop.fs.Path, java.lang.String);
+    Code:
+       0: new           #56                 // class org/apache/hadoop/fs/Path
+       3: dup
+       4: aload_1
+       5: aload_2
+       6: invokespecial #62                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+       9: areturn
+
+  protected final org.apache.hadoop.fs.Path getReplayRemoteWALs(org.apache.hadoop.fs.Path, java.lang.String);
+    Code:
+       0: new           #56                 // class org/apache/hadoop/fs/Path
+       3: dup
+       4: aload_1
+       5: new           #126                // class java/lang/StringBuilder
+       8: dup
+       9: invokespecial #127                // Method java/lang/StringBuilder."<init>":()V
+      12: aload_2
+      13: invokevirtual #128                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      16: ldc           #129                // String -replay
+      18: invokevirtual #128                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      21: invokevirtual #130                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      24: invokespecial #62                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      27: areturn
+
+  protected final void verifyRemovedPeer(java.lang.String, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.HBaseTestingUtility) throws java.lang.Exception;
+    Code:
+       0: aload_3
+       1: invokevirtual #131                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getZooKeeperWatcher:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_3
+       5: invokevirtual #5                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       8: invokestatic  #132                // Method org/apache/hadoop/hbase/replication/ReplicationStorageFactory.getReplicationPeerStorage:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+      11: astore        4
+      13: aload         4
+      15: aload_1
+      16: invokeinterface #133,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.getPeerSyncReplicationState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      21: pop
+      22: ldc           #134                // String Should throw exception when get the sync replication state of a removed peer.
+      24: invokestatic  #135                // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+      27: goto          32
+      30: astore        5
+      32: aload         4
+      34: aload_1
+      35: invokeinterface #137,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.getPeerNewSyncReplicationState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      40: pop
+      41: ldc           #138                // String Should throw exception when get the new sync replication state of a removed peer
+      43: invokestatic  #135                // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+      46: goto          51
+      49: astore        5
+      51: aload_3
+      52: invokevirtual #55                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      55: astore        5
+      57: aconst_null
+      58: astore        6
+      60: aload         5
+      62: aload_0
+      63: aload_2
+      64: aload_1
+      65: invokevirtual #125                // Method getRemoteWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      68: invokevirtual #139                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      71: invokestatic  #140                // Method org/junit/Assert.assertFalse:(Z)V
+      74: aload         5
+      76: aload_0
+      77: aload_2
+      78: aload_1
+      79: invokevirtual #141                // Method getReplayRemoteWALs:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      82: invokevirtual #139                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      85: invokestatic  #140                // Method org/junit/Assert.assertFalse:(Z)V
+      88: aload         5
+      90: ifnull        175
+      93: aload         6
+      95: ifnull        118
+      98: aload         5
+     100: invokevirtual #142                // Method org/apache/hadoop/fs/FileSystem.close:()V
+     103: goto          175
+     106: astore        7
+     108: aload         6
+     110: aload         7
+     112: invokevirtual #103                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     115: goto          175
+     118: aload         5
+     120: invokevirtual #142                // Method org/apache/hadoop/fs/FileSystem.close:()V
+     123: goto          175
+     126: astore        7
+     128: aload         7
+     130: astore        6
+     132: aload         7
+     134: athrow
+     135: astore        8
+     137: aload         5
+     139: ifnull        172
+     142: aload         6
+     144: ifnull        167
+     147: aload         5
+     149: invokevirtual #142                // Method org/apache/hadoop/fs/FileSystem.close:()V
+     152: goto          172
+     155: astore        9
+     157: aload         6
+     159: aload         9
+     161: invokevirtual #103                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     164: goto          172
+     167: aload         5
+     169: invokevirtual #142                // Method org/apache/hadoop/fs/FileSystem.close:()V
+     172: aload         8
+     174: athrow
+     175: return
+    Exception table:
+       from    to  target type
+          13    27    30   Class org/apache/hadoop/hbase/replication/ReplicationException
+          32    46    49   Class org/apache/hadoop/hbase/replication/ReplicationException
+          98   103   106   Class java/lang/Throwable
+          60    88   126   Class java/lang/Throwable
+          60    88   135   any
+         147   152   155   Class java/lang/Throwable
+         126   137   135   any
+
+  protected final void verifyReplicationRequestRejection(org.apache.hadoop.hbase.HBaseTestingUtility, boolean) throws java.lang.Exception;
+    Code:
+       0: aload_1
+       1: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       4: invokevirtual #143                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getRSForFirstRegionInTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       7: astore_3
+       8: aload_3
+       9: invokevirtual #144                // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getClusterConnection:()Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      12: astore        4
+      14: bipush        10
+      16: anewarray     #145                // class org/apache/hadoop/hbase/wal/WAL$Entry
+      19: astore        5
+      21: iconst_0
+      22: istore        6
+      24: iload         6
+      26: aload         5
+      28: arraylength
+      29: if_icmpge     71
+      32: aload         5
+      34: iload         6
+      36: new           #145                // class org/apache/hadoop/hbase/wal/WAL$Entry
+      39: dup
+      40: new           #146                // class org/apache/hadoop/hbase/wal/WALKeyImpl
+      43: dup
+      44: getstatic     #147                // Field org/apache/hadoop/hbase/HConstants.EMPTY_BYTE_ARRAY:[B
+      47: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      50: lconst_0
+      51: invokespecial #148                // Method org/apache/hadoop/hbase/wal/WALKeyImpl."<init>":([BLorg/apache/hadoop/hbase/TableName;J)V
+      54: new           #149                // class org/apache/hadoop/hbase/wal/WALEdit
+      57: dup
+      58: invokespecial #150                // Method org/apache/hadoop/hbase/wal/WALEdit."<init>":()V
+      61: invokespecial #151                // Method org/apache/hadoop/hbase/wal/WAL$Entry."<init>":(Lorg/apache/hadoop/hbase/wal/WALKeyImpl;Lorg/apache/hadoop/hbase/wal/WALEdit;)V
+      64: aastore
+      65: iinc          6, 1
+      68: goto          24
+      71: iload_2
+      72: ifne          97
+      75: aload         4
+      77: aload_3
+      78: invokevirtual #152                // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      81: invokeinterface #153,  2          // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getAdmin:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$BlockingInterface;
+      86: aload         5
+      88: aconst_null
+      89: aconst_null
+      90: aconst_null
+      91: invokestatic  #154                // Method org/apache/hadoop/hbase/protobuf/ReplicationProtbufUtil.replicateWALEntry:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$BlockingInterface;[Lorg/apache/hadoop/hbase/wal/WAL$Entry;Ljava/lang/String;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)V
+      94: goto          156
+      97: aload         4
+      99: aload_3
+     100: invokevirtual #152                // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     103: invokeinterface #153,  2          // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getAdmin:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$BlockingInterface;
+     108: aload         5
+     110: aconst_null
+     111: aconst_null
+     112: aconst_null
+     113: invokestatic  #154                // Method org/apache/hadoop/hbase/protobuf/ReplicationProtbufUtil.replicateWALEntry:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$BlockingInterface;[Lorg/apache/hadoop/hbase/wal/WAL$Entry;Ljava/lang/String;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)V
+     116: ldc           #155                // String Should throw IOException when sync-replication state is in A or DA
+     118: invokestatic  #135                // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     121: goto          156
+     124: astore        6
+     126: aload         6
+     128: invokevirtual #157                // Method org/apache/hadoop/hbase/DoNotRetryIOException.getMessage:()Ljava/lang/String;
+     131: ldc           #158                // String Reject to apply to sink cluster
+     133: invokevirtual #159                // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+     136: invokestatic  #115                // Method org/junit/Assert.assertTrue:(Z)V
+     139: aload         6
+     141: invokevirtual #157                // Method org/apache/hadoop/hbase/DoNotRetryIOException.getMessage:()Ljava/lang/String;
+     144: getstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     147: invokevirtual #160                // Method org/apache/hadoop/hbase/TableName.toString:()Ljava/lang/String;
+     150: invokevirtual #159                // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+     153: invokestatic  #115                // Method org/junit/Assert.assertTrue:(Z)V
+     156: return
+    Exception table:
+       from    to  target type
+          97   121   124   Class org/apache/hadoop/hbase/DoNotRetryIOException
+
+  protected final void waitUntilDeleted(org.apache.hadoop.hbase.HBaseTestingUtility, org.apache.hadoop.fs.Path) throws java.lang.Exception;
+    Code:
+       0: aload_1
+       1: invokevirtual #57                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       4: invokevirtual #58                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+       7: invokevirtual #59                 // Method org/apache/hadoop/hbase/master/HMaster.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      10: astore_3
+      11: aload_1
+      12: ldc2_w        #116                // long 30000l
+      15: new           #161                // class org/apache/hadoop/hbase/replication/SyncReplicationTestBase$2
+      18: dup
+      19: aload_0
+      20: aload_3
+      21: aload_2
+      22: invokespecial #162                // Method org/apache/hadoop/hbase/replication/SyncReplicationTestBase$2."<init>":(Lorg/apache/hadoop/hbase/replication/SyncReplicationTestBase;Lorg/apache/hadoop/hbase/master/MasterFileSystem;Lorg/apache/hadoop/fs/Path;)V
+      25: invokevirtual #120                // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitFor:(JLorg/apache/hadoop/hbase/Waiter$Predicate;)J
+      28: pop2
+      29: return
+
+  static {};
+    Code:
+       0: new           #163                // class org/apache/hadoop/hbase/HBaseZKTestingUtility
+       3: dup
+       4: invokespecial #164                // Method org/apache/hadoop/hbase/HBaseZKTestingUtility."<init>":()V
+       7: putstatic     #2                  // Field ZK_UTIL:Lorg/apache/hadoop/hbase/HBaseZKTestingUtility;
+      10: new           #165                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      13: dup
+      14: invokespecial #166                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      17: putstatic     #34                 // Field UTIL1:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      20: new           #165                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      23: dup
+      24: invokespecial #166                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      27: putstatic     #37                 // Field UTIL2:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      30: ldc           #167                // String SyncRep
+      32: invokestatic  #168                // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      35: putstatic     #45                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      38: ldc           #169                // String cf
+      40: invokestatic  #170                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      43: putstatic     #47                 // Field CF:[B
+      46: ldc           #171                // String cq
+      48: invokestatic  #170                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      51: putstatic     #98                 // Field CQ:[B
+      54: ldc           #172                // String 1
+      56: putstatic     #68                 // Field PEER_ID:Ljava/lang/String;
+      59: return
+}

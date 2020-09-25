@@ -1,0 +1,210 @@
+Compiled from "StorefileRefresherChore.java"
+public class org.apache.hadoop.hbase.regionserver.StorefileRefresherChore extends org.apache.hadoop.hbase.ScheduledChore {
+  public static final java.lang.String REGIONSERVER_STOREFILE_REFRESH_PERIOD;
+
+  static final int DEFAULT_REGIONSERVER_STOREFILE_REFRESH_PERIOD;
+
+  public static final java.lang.String REGIONSERVER_META_STOREFILE_REFRESH_PERIOD;
+
+  public org.apache.hadoop.hbase.regionserver.StorefileRefresherChore(int, boolean, org.apache.hadoop.hbase.regionserver.HRegionServer, org.apache.hadoop.hbase.Stoppable);
+    Code:
+       0: aload_0
+       1: ldc           #1                  // String StorefileRefresherChore
+       3: aload         4
+       5: iload_1
+       6: invokespecial #2                  // Method org/apache/hadoop/hbase/ScheduledChore."<init>":(Ljava/lang/String;Lorg/apache/hadoop/hbase/Stoppable;I)V
+       9: aload_0
+      10: iconst_1
+      11: putfield      #3                  // Field onlyMetaRefresh:Z
+      14: aload_0
+      15: iload_1
+      16: putfield      #4                  // Field period:I
+      19: aload_0
+      20: aload_3
+      21: putfield      #5                  // Field regionServer:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      24: aload_0
+      25: aload_0
+      26: getfield      #5                  // Field regionServer:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      29: invokevirtual #6                  // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      32: ldc           #8                  // String hbase.master.hfilecleaner.ttl
+      34: ldc2_w        #9                  // long 300000l
+      37: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      40: putfield      #12                 // Field hfileTtl:J
+      43: aload_0
+      44: iload_2
+      45: putfield      #3                  // Field onlyMetaRefresh:Z
+      48: iload_1
+      49: i2l
+      50: aload_0
+      51: getfield      #12                 // Field hfileTtl:J
+      54: ldc2_w        #13                 // long 2l
+      57: ldiv
+      58: lcmp
+      59: ifle          72
+      62: new           #15                 // class java/lang/RuntimeException
+      65: dup
+      66: ldc           #17                 // String hbase.regionserver.storefile.refresh.period should be set smaller than half of hbase.master.hfilecleaner.ttl
+      68: invokespecial #18                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      71: athrow
+      72: aload_0
+      73: new           #19                 // class java/util/HashMap
+      76: dup
+      77: invokespecial #20                 // Method java/util/HashMap."<init>":()V
+      80: putfield      #21                 // Field lastRefreshTimes:Ljava/util/Map;
+      83: return
+
+  protected void chore();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field regionServer:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       4: invokevirtual #22                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getOnlineRegionsLocalContext:()Ljava/util/Collection;
+       7: invokeinterface #23,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      12: astore_1
+      13: aload_1
+      14: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      19: ifeq          257
+      22: aload_1
+      23: invokeinterface #25,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      28: checkcast     #26                 // class org/apache/hadoop/hbase/regionserver/Region
+      31: astore_2
+      32: aload_2
+      33: invokeinterface #27,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.isReadOnly:()Z
+      38: ifne          44
+      41: goto          13
+      44: aload_0
+      45: getfield      #3                  // Field onlyMetaRefresh:Z
+      48: ifeq          68
+      51: aload_2
+      52: invokeinterface #28,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      57: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isMetaRegion:()Z
+      62: ifne          68
+      65: goto          13
+      68: aload_2
+      69: invokeinterface #28,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      74: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      79: astore_3
+      80: invokestatic  #31                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      83: lstore        4
+      85: aload_0
+      86: getfield      #21                 // Field lastRefreshTimes:Ljava/util/Map;
+      89: aload_3
+      90: invokeinterface #32,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      95: ifne          114
+      98: aload_0
+      99: getfield      #21                 // Field lastRefreshTimes:Ljava/util/Map;
+     102: aload_3
+     103: lload         4
+     105: invokestatic  #33                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     108: invokeinterface #34,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     113: pop
+     114: aload_2
+     115: invokeinterface #35,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getStores:()Ljava/util/List;
+     120: invokeinterface #36,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     125: astore        6
+     127: aload         6
+     129: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     134: ifeq          159
+     137: aload         6
+     139: invokeinterface #25,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     144: checkcast     #37                 // class org/apache/hadoop/hbase/regionserver/Store
+     147: astore        7
+     149: aload         7
+     151: invokeinterface #38,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Store.refreshStoreFiles:()V
+     156: goto          127
+     159: goto          230
+     162: astore        6
+     164: getstatic     #40                 // Field LOG:Lorg/slf4j/Logger;
+     167: new           #41                 // class java/lang/StringBuilder
+     170: dup
+     171: invokespecial #42                 // Method java/lang/StringBuilder."<init>":()V
+     174: ldc           #43                 // String Exception while trying to refresh store files for region:
+     176: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     179: aload_2
+     180: invokeinterface #28,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     185: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     188: ldc           #46                 // String , exception:
+     190: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     193: aload         6
+     195: invokestatic  #47                 // Method org/apache/hadoop/util/StringUtils.stringifyException:(Ljava/lang/Throwable;)Ljava/lang/String;
+     198: invokevirtual #44                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     201: invokevirtual #48                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     204: invokeinterface #49,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     209: aload_0
+     210: aload_3
+     211: lload         4
+     213: invokevirtual #50                 // Method isRegionStale:(Ljava/lang/String;J)Z
+     216: ifeq          227
+     219: aload_2
+     220: checkcast     #51                 // class org/apache/hadoop/hbase/regionserver/HRegion
+     223: iconst_0
+     224: invokevirtual #52                 // Method org/apache/hadoop/hbase/regionserver/HRegion.setReadsEnabled:(Z)V
+     227: goto          13
+     230: aload_0
+     231: getfield      #21                 // Field lastRefreshTimes:Ljava/util/Map;
+     234: aload_3
+     235: lload         4
+     237: invokestatic  #33                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     240: invokeinterface #34,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     245: pop
+     246: aload_2
+     247: checkcast     #51                 // class org/apache/hadoop/hbase/regionserver/HRegion
+     250: iconst_1
+     251: invokevirtual #52                 // Method org/apache/hadoop/hbase/regionserver/HRegion.setReadsEnabled:(Z)V
+     254: goto          13
+     257: aload_0
+     258: getfield      #21                 // Field lastRefreshTimes:Ljava/util/Map;
+     261: invokeinterface #53,  1           // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+     266: invokeinterface #54,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     271: astore_1
+     272: aload_1
+     273: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     278: ifeq          311
+     281: aload_1
+     282: invokeinterface #25,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     287: checkcast     #55                 // class java/lang/String
+     290: astore_2
+     291: aload_0
+     292: getfield      #5                  // Field regionServer:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     295: aload_2
+     296: invokevirtual #56                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegion:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/HRegion;
+     299: ifnonnull     308
+     302: aload_1
+     303: invokeinterface #57,  1           // InterfaceMethod java/util/Iterator.remove:()V
+     308: goto          272
+     311: return
+    Exception table:
+       from    to  target type
+         114   159   162   Class java/io/IOException
+
+  protected boolean isRegionStale(java.lang.String, long);
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field lastRefreshTimes:Ljava/util/Map;
+       4: aload_1
+       5: invokeinterface #58,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #59                 // class java/lang/Long
+      13: invokevirtual #60                 // Method java/lang/Long.longValue:()J
+      16: lstore        4
+      18: lload_2
+      19: lload         4
+      21: lsub
+      22: aload_0
+      23: getfield      #12                 // Field hfileTtl:J
+      26: aload_0
+      27: getfield      #4                  // Field period:I
+      30: i2l
+      31: lsub
+      32: lcmp
+      33: ifle          40
+      36: iconst_1
+      37: goto          41
+      40: iconst_0
+      41: ireturn
+
+  static {};
+    Code:
+       0: ldc           #16                 // class org/apache/hadoop/hbase/regionserver/StorefileRefresherChore
+       2: invokestatic  #61                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #40                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

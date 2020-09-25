@@ -1,0 +1,2502 @@
+Compiled from "BaseLoadBalancer.java"
+public class org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster {
+  org.apache.hadoop.hbase.ServerName[] servers;
+
+  java.lang.String[] hosts;
+
+  java.lang.String[] racks;
+
+  boolean multiServersPerHost;
+
+  java.util.ArrayList<java.lang.String> tables;
+
+  org.apache.hadoop.hbase.client.RegionInfo[] regions;
+
+  java.util.Deque<org.apache.hadoop.hbase.master.balancer.BalancerRegionLoad>[] regionLoads;
+
+  int[][] regionLocations;
+
+  int[] serverIndexToHostIndex;
+
+  int[] serverIndexToRackIndex;
+
+  int[][] regionsPerServer;
+
+  int[][] regionsPerHost;
+
+  int[][] regionsPerRack;
+
+  int[][] primariesOfRegionsPerServer;
+
+  int[][] primariesOfRegionsPerHost;
+
+  int[][] primariesOfRegionsPerRack;
+
+  int[][] serversPerHost;
+
+  int[][] serversPerRack;
+
+  int[] regionIndexToServerIndex;
+
+  int[] initialRegionIndexToServerIndex;
+
+  int[] regionIndexToTableIndex;
+
+  int[][] numRegionsPerServerPerTable;
+
+  int[] numMaxRegionsPerTable;
+
+  int[] regionIndexToPrimaryIndex;
+
+  boolean hasRegionReplicas;
+
+  java.lang.Integer[] serverIndicesSortedByRegionCount;
+
+  java.lang.Integer[] serverIndicesSortedByLocality;
+
+  java.util.Map<java.lang.String, java.lang.Integer> serversToIndex;
+
+  java.util.Map<java.lang.String, java.lang.Integer> hostsToIndex;
+
+  java.util.Map<java.lang.String, java.lang.Integer> racksToIndex;
+
+  java.util.Map<java.lang.String, java.lang.Integer> tablesToIndex;
+
+  java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, java.lang.Integer> regionsToIndex;
+
+  float[] localityPerServer;
+
+  int numServers;
+
+  int numHosts;
+
+  int numRacks;
+
+  int numTables;
+
+  int numRegions;
+
+  int numMovedRegions;
+
+  java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>> clusterState;
+
+  protected final org.apache.hadoop.hbase.master.RackManager rackManager;
+
+  public static final org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster$Action NullAction;
+
+  static final boolean $assertionsDisabled;
+
+  protected org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster(java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>, java.util.Map<java.lang.String, java.util.Deque<org.apache.hadoop.hbase.master.balancer.BalancerRegionLoad>>, org.apache.hadoop.hbase.master.balancer.RegionLocationFinder, org.apache.hadoop.hbase.master.RackManager);
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: aload_1
+       3: aload_2
+       4: aload_3
+       5: aload         4
+       7: invokespecial #1                  // Method "<init>":(Ljava/util/Collection;Ljava/util/Map;Ljava/util/Map;Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;Lorg/apache/hadoop/hbase/master/RackManager;)V
+      10: return
+
+  protected org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster(java.util.Collection<org.apache.hadoop.hbase.client.RegionInfo>, java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>, java.util.Map<java.lang.String, java.util.Deque<org.apache.hadoop.hbase.master.balancer.BalancerRegionLoad>>, org.apache.hadoop.hbase.master.balancer.RegionLocationFinder, org.apache.hadoop.hbase.master.RackManager);
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #3                  // Field multiServersPerHost:Z
+       9: aload_0
+      10: iconst_0
+      11: putfield      #4                  // Field hasRegionReplicas:Z
+      14: aload_0
+      15: iconst_0
+      16: putfield      #5                  // Field numMovedRegions:I
+      19: aload_0
+      20: aload_0
+      21: invokedynamic #6,  0              // InvokeDynamic #0:applyAsInt:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)Ljava/util/function/ToIntFunction;
+      26: invokestatic  #7                  // InterfaceMethod java/util/Comparator.comparingInt:(Ljava/util/function/ToIntFunction;)Ljava/util/Comparator;
+      29: putfield      #8                  // Field numRegionsComparator:Ljava/util/Comparator;
+      32: aload_1
+      33: ifnonnull     40
+      36: invokestatic  #9                  // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.access$000:()Ljava/util/List;
+      39: astore_1
+      40: aload_0
+      41: new           #10                 // class java/util/HashMap
+      44: dup
+      45: invokespecial #11                 // Method java/util/HashMap."<init>":()V
+      48: putfield      #12                 // Field serversToIndex:Ljava/util/Map;
+      51: aload_0
+      52: new           #10                 // class java/util/HashMap
+      55: dup
+      56: invokespecial #11                 // Method java/util/HashMap."<init>":()V
+      59: putfield      #13                 // Field hostsToIndex:Ljava/util/Map;
+      62: aload_0
+      63: new           #10                 // class java/util/HashMap
+      66: dup
+      67: invokespecial #11                 // Method java/util/HashMap."<init>":()V
+      70: putfield      #14                 // Field racksToIndex:Ljava/util/Map;
+      73: aload_0
+      74: new           #10                 // class java/util/HashMap
+      77: dup
+      78: invokespecial #11                 // Method java/util/HashMap."<init>":()V
+      81: putfield      #15                 // Field tablesToIndex:Ljava/util/Map;
+      84: aload_0
+      85: new           #16                 // class java/util/ArrayList
+      88: dup
+      89: invokespecial #17                 // Method java/util/ArrayList."<init>":()V
+      92: putfield      #18                 // Field tables:Ljava/util/ArrayList;
+      95: aload_0
+      96: aload         5
+      98: ifnull        106
+     101: aload         5
+     103: goto          114
+     106: new           #19                 // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$DefaultRackManager
+     109: dup
+     110: aconst_null
+     111: invokespecial #20                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$DefaultRackManager."<init>":(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$1;)V
+     114: putfield      #21                 // Field rackManager:Lorg/apache/hadoop/hbase/master/RackManager;
+     117: aload_0
+     118: iconst_0
+     119: putfield      #22                 // Field numRegions:I
+     122: new           #16                 // class java/util/ArrayList
+     125: dup
+     126: invokespecial #17                 // Method java/util/ArrayList."<init>":()V
+     129: astore        6
+     131: new           #16                 // class java/util/ArrayList
+     134: dup
+     135: invokespecial #17                 // Method java/util/ArrayList."<init>":()V
+     138: astore        7
+     140: aload_0
+     141: aload_2
+     142: putfield      #23                 // Field clusterState:Ljava/util/Map;
+     145: aload_0
+     146: aload         4
+     148: putfield      #24                 // Field regionFinder:Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;
+     151: aload_2
+     152: invokeinterface #25,  1           // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+     157: invokeinterface #26,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     162: astore        8
+     164: aload         8
+     166: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     171: ifeq          534
+     174: aload         8
+     176: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     181: checkcast     #29                 // class org/apache/hadoop/hbase/ServerName
+     184: astore        9
+     186: aload         9
+     188: ifnonnull     245
+     191: invokestatic  #30                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.access$200:()Lorg/slf4j/Logger;
+     194: ldc           #31                 // String TODO: Enable TRACE on BaseLoadBalancer. Empty servername); skipping; unassigned regions?
+     196: invokeinterface #32,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     201: invokestatic  #30                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.access$200:()Lorg/slf4j/Logger;
+     204: invokeinterface #33,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     209: ifeq          164
+     212: invokestatic  #30                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.access$200:()Lorg/slf4j/Logger;
+     215: new           #34                 // class java/lang/StringBuilder
+     218: dup
+     219: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     222: ldc           #36                 // String EMPTY SERVERNAME
+     224: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     227: aload_2
+     228: invokevirtual #38                 // Method java/lang/Object.toString:()Ljava/lang/String;
+     231: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     234: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     237: invokeinterface #40,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     242: goto          164
+     245: aload_0
+     246: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+     249: aload         9
+     251: invokevirtual #41                 // Method org/apache/hadoop/hbase/ServerName.getAddress:()Lorg/apache/hadoop/hbase/net/Address;
+     254: invokevirtual #42                 // Method org/apache/hadoop/hbase/net/Address.toString:()Ljava/lang/String;
+     257: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     262: ifnonnull     294
+     265: aload_0
+     266: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+     269: aload         9
+     271: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+     274: aload_0
+     275: dup
+     276: getfield      #45                 // Field numServers:I
+     279: dup_x1
+     280: iconst_1
+     281: iadd
+     282: putfield      #45                 // Field numServers:I
+     285: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     288: invokeinterface #47,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     293: pop
+     294: aload_0
+     295: getfield      #13                 // Field hostsToIndex:Ljava/util/Map;
+     298: aload         9
+     300: invokevirtual #48                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+     303: invokeinterface #49,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     308: ifne          356
+     311: aload_0
+     312: getfield      #13                 // Field hostsToIndex:Ljava/util/Map;
+     315: aload         9
+     317: invokevirtual #48                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+     320: aload_0
+     321: dup
+     322: getfield      #50                 // Field numHosts:I
+     325: dup_x1
+     326: iconst_1
+     327: iadd
+     328: putfield      #50                 // Field numHosts:I
+     331: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     334: invokeinterface #47,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     339: pop
+     340: aload         6
+     342: new           #16                 // class java/util/ArrayList
+     345: dup
+     346: iconst_1
+     347: invokespecial #51                 // Method java/util/ArrayList."<init>":(I)V
+     350: invokeinterface #52,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     355: pop
+     356: aload_0
+     357: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+     360: aload         9
+     362: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+     365: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     370: checkcast     #53                 // class java/lang/Integer
+     373: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+     376: istore        10
+     378: aload_0
+     379: getfield      #13                 // Field hostsToIndex:Ljava/util/Map;
+     382: aload         9
+     384: invokevirtual #48                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+     387: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     392: checkcast     #53                 // class java/lang/Integer
+     395: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+     398: istore        11
+     400: aload         6
+     402: iload         11
+     404: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     409: checkcast     #56                 // class java/util/List
+     412: iload         10
+     414: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     417: invokeinterface #52,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     422: pop
+     423: aload_0
+     424: getfield      #21                 // Field rackManager:Lorg/apache/hadoop/hbase/master/RackManager;
+     427: aload         9
+     429: invokevirtual #57                 // Method org/apache/hadoop/hbase/master/RackManager.getRack:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/lang/String;
+     432: astore        12
+     434: aload_0
+     435: getfield      #14                 // Field racksToIndex:Ljava/util/Map;
+     438: aload         12
+     440: invokeinterface #49,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     445: ifne          489
+     448: aload_0
+     449: getfield      #14                 // Field racksToIndex:Ljava/util/Map;
+     452: aload         12
+     454: aload_0
+     455: dup
+     456: getfield      #58                 // Field numRacks:I
+     459: dup_x1
+     460: iconst_1
+     461: iadd
+     462: putfield      #58                 // Field numRacks:I
+     465: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     468: invokeinterface #47,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     473: pop
+     474: aload         7
+     476: new           #16                 // class java/util/ArrayList
+     479: dup
+     480: invokespecial #17                 // Method java/util/ArrayList."<init>":()V
+     483: invokeinterface #52,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     488: pop
+     489: aload_0
+     490: getfield      #14                 // Field racksToIndex:Ljava/util/Map;
+     493: aload         12
+     495: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     500: checkcast     #53                 // class java/lang/Integer
+     503: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+     506: istore        13
+     508: aload         7
+     510: iload         13
+     512: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     517: checkcast     #56                 // class java/util/List
+     520: iload         10
+     522: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     525: invokeinterface #52,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     530: pop
+     531: goto          164
+     534: aload_2
+     535: invokeinterface #59,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+     540: invokeinterface #26,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     545: astore        8
+     547: aload         8
+     549: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     554: ifeq          596
+     557: aload         8
+     559: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     564: checkcast     #60                 // class java/util/Map$Entry
+     567: astore        9
+     569: aload_0
+     570: dup
+     571: getfield      #22                 // Field numRegions:I
+     574: aload         9
+     576: invokeinterface #61,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     581: checkcast     #56                 // class java/util/List
+     584: invokeinterface #62,  1           // InterfaceMethod java/util/List.size:()I
+     589: iadd
+     590: putfield      #22                 // Field numRegions:I
+     593: goto          547
+     596: aload_0
+     597: dup
+     598: getfield      #22                 // Field numRegions:I
+     601: aload_1
+     602: invokeinterface #63,  1           // InterfaceMethod java/util/Collection.size:()I
+     607: iadd
+     608: putfield      #22                 // Field numRegions:I
+     611: aload_0
+     612: new           #10                 // class java/util/HashMap
+     615: dup
+     616: aload_0
+     617: getfield      #22                 // Field numRegions:I
+     620: invokespecial #64                 // Method java/util/HashMap."<init>":(I)V
+     623: putfield      #65                 // Field regionsToIndex:Ljava/util/Map;
+     626: aload_0
+     627: aload_0
+     628: getfield      #45                 // Field numServers:I
+     631: anewarray     #29                 // class org/apache/hadoop/hbase/ServerName
+     634: putfield      #66                 // Field servers:[Lorg/apache/hadoop/hbase/ServerName;
+     637: aload_0
+     638: aload_0
+     639: getfield      #50                 // Field numHosts:I
+     642: anewarray     #67                 // class "[I"
+     645: putfield      #68                 // Field serversPerHost:[[I
+     648: aload_0
+     649: aload_0
+     650: getfield      #58                 // Field numRacks:I
+     653: anewarray     #67                 // class "[I"
+     656: putfield      #69                 // Field serversPerRack:[[I
+     659: aload_0
+     660: aload_0
+     661: getfield      #22                 // Field numRegions:I
+     664: anewarray     #70                 // class org/apache/hadoop/hbase/client/RegionInfo
+     667: putfield      #71                 // Field regions:[Lorg/apache/hadoop/hbase/client/RegionInfo;
+     670: aload_0
+     671: aload_0
+     672: getfield      #22                 // Field numRegions:I
+     675: newarray       int
+     677: putfield      #72                 // Field regionIndexToServerIndex:[I
+     680: aload_0
+     681: aload_0
+     682: getfield      #22                 // Field numRegions:I
+     685: newarray       int
+     687: putfield      #73                 // Field initialRegionIndexToServerIndex:[I
+     690: aload_0
+     691: aload_0
+     692: getfield      #22                 // Field numRegions:I
+     695: newarray       int
+     697: putfield      #74                 // Field regionIndexToTableIndex:[I
+     700: aload_0
+     701: aload_0
+     702: getfield      #22                 // Field numRegions:I
+     705: newarray       int
+     707: putfield      #75                 // Field regionIndexToPrimaryIndex:[I
+     710: aload_0
+     711: aload_0
+     712: getfield      #22                 // Field numRegions:I
+     715: anewarray     #76                 // class java/util/Deque
+     718: putfield      #77                 // Field regionLoads:[Ljava/util/Deque;
+     721: aload_0
+     722: aload_0
+     723: getfield      #22                 // Field numRegions:I
+     726: anewarray     #67                 // class "[I"
+     729: putfield      #78                 // Field regionLocations:[[I
+     732: aload_0
+     733: aload_0
+     734: getfield      #45                 // Field numServers:I
+     737: anewarray     #53                 // class java/lang/Integer
+     740: putfield      #79                 // Field serverIndicesSortedByRegionCount:[Ljava/lang/Integer;
+     743: aload_0
+     744: aload_0
+     745: getfield      #45                 // Field numServers:I
+     748: anewarray     #53                 // class java/lang/Integer
+     751: putfield      #80                 // Field serverIndicesSortedByLocality:[Ljava/lang/Integer;
+     754: aload_0
+     755: aload_0
+     756: getfield      #45                 // Field numServers:I
+     759: newarray       float
+     761: putfield      #81                 // Field localityPerServer:[F
+     764: aload_0
+     765: aload_0
+     766: getfield      #45                 // Field numServers:I
+     769: newarray       int
+     771: putfield      #82                 // Field serverIndexToHostIndex:[I
+     774: aload_0
+     775: aload_0
+     776: getfield      #45                 // Field numServers:I
+     779: newarray       int
+     781: putfield      #83                 // Field serverIndexToRackIndex:[I
+     784: aload_0
+     785: aload_0
+     786: getfield      #45                 // Field numServers:I
+     789: anewarray     #67                 // class "[I"
+     792: putfield      #84                 // Field regionsPerServer:[[I
+     795: aload_0
+     796: aload_0
+     797: getfield      #50                 // Field numHosts:I
+     800: anewarray     #67                 // class "[I"
+     803: putfield      #85                 // Field regionsPerHost:[[I
+     806: aload_0
+     807: aload_0
+     808: getfield      #58                 // Field numRacks:I
+     811: anewarray     #67                 // class "[I"
+     814: putfield      #86                 // Field regionsPerRack:[[I
+     817: aload_0
+     818: aload_0
+     819: getfield      #45                 // Field numServers:I
+     822: anewarray     #67                 // class "[I"
+     825: putfield      #87                 // Field primariesOfRegionsPerServer:[[I
+     828: aload_0
+     829: aload_0
+     830: getfield      #50                 // Field numHosts:I
+     833: anewarray     #67                 // class "[I"
+     836: putfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     839: aload_0
+     840: aload_0
+     841: getfield      #58                 // Field numRacks:I
+     844: anewarray     #67                 // class "[I"
+     847: putfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     850: iconst_0
+     851: istore        8
+     853: iconst_0
+     854: istore        9
+     856: iconst_0
+     857: istore        10
+     859: aload_2
+     860: invokeinterface #59,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+     865: invokeinterface #26,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     870: astore        11
+     872: aload         11
+     874: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     879: ifeq          1138
+     882: aload         11
+     884: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     889: checkcast     #60                 // class java/util/Map$Entry
+     892: astore        12
+     894: aload         12
+     896: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     901: ifnonnull     940
+     904: invokestatic  #30                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.access$200:()Lorg/slf4j/Logger;
+     907: new           #34                 // class java/lang/StringBuilder
+     910: dup
+     911: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     914: ldc           #91                 // String SERVERNAME IS NULL, skipping
+     916: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     919: aload         12
+     921: invokeinterface #61,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     926: invokevirtual #92                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     929: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     932: invokeinterface #32,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     937: goto          872
+     940: aload_0
+     941: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+     944: aload         12
+     946: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     951: checkcast     #29                 // class org/apache/hadoop/hbase/ServerName
+     954: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+     957: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     962: checkcast     #53                 // class java/lang/Integer
+     965: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+     968: istore        13
+     970: aload_0
+     971: getfield      #66                 // Field servers:[Lorg/apache/hadoop/hbase/ServerName;
+     974: iload         13
+     976: aaload
+     977: ifnull        1007
+     980: aload_0
+     981: getfield      #66                 // Field servers:[Lorg/apache/hadoop/hbase/ServerName;
+     984: iload         13
+     986: aaload
+     987: invokevirtual #93                 // Method org/apache/hadoop/hbase/ServerName.getStartcode:()J
+     990: aload         12
+     992: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     997: checkcast     #29                 // class org/apache/hadoop/hbase/ServerName
+    1000: invokevirtual #93                 // Method org/apache/hadoop/hbase/ServerName.getStartcode:()J
+    1003: lcmp
+    1004: ifge          1024
+    1007: aload_0
+    1008: getfield      #66                 // Field servers:[Lorg/apache/hadoop/hbase/ServerName;
+    1011: iload         13
+    1013: aload         12
+    1015: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1020: checkcast     #29                 // class org/apache/hadoop/hbase/ServerName
+    1023: aastore
+    1024: aload_0
+    1025: getfield      #84                 // Field regionsPerServer:[[I
+    1028: iload         13
+    1030: aaload
+    1031: ifnull        1070
+    1034: aload_0
+    1035: getfield      #84                 // Field regionsPerServer:[[I
+    1038: iload         13
+    1040: aload         12
+    1042: invokeinterface #61,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1047: checkcast     #56                 // class java/util/List
+    1050: invokeinterface #62,  1           // InterfaceMethod java/util/List.size:()I
+    1055: aload_0
+    1056: getfield      #84                 // Field regionsPerServer:[[I
+    1059: iload         13
+    1061: aaload
+    1062: arraylength
+    1063: iadd
+    1064: newarray       int
+    1066: aastore
+    1067: goto          1094
+    1070: aload_0
+    1071: getfield      #84                 // Field regionsPerServer:[[I
+    1074: iload         13
+    1076: aload         12
+    1078: invokeinterface #61,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1083: checkcast     #56                 // class java/util/List
+    1086: invokeinterface #62,  1           // InterfaceMethod java/util/List.size:()I
+    1091: newarray       int
+    1093: aastore
+    1094: aload_0
+    1095: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+    1098: iload         13
+    1100: aload_0
+    1101: getfield      #84                 // Field regionsPerServer:[[I
+    1104: iload         13
+    1106: aaload
+    1107: arraylength
+    1108: newarray       int
+    1110: aastore
+    1111: aload_0
+    1112: getfield      #79                 // Field serverIndicesSortedByRegionCount:[Ljava/lang/Integer;
+    1115: iload         13
+    1117: iload         13
+    1119: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+    1122: aastore
+    1123: aload_0
+    1124: getfield      #80                 // Field serverIndicesSortedByLocality:[Ljava/lang/Integer;
+    1127: iload         13
+    1129: iload         13
+    1131: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+    1134: aastore
+    1135: goto          872
+    1138: aload_0
+    1139: aload_0
+    1140: getfield      #50                 // Field numHosts:I
+    1143: anewarray     #94                 // class java/lang/String
+    1146: putfield      #95                 // Field hosts:[Ljava/lang/String;
+    1149: aload_0
+    1150: getfield      #13                 // Field hostsToIndex:Ljava/util/Map;
+    1153: invokeinterface #59,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+    1158: invokeinterface #26,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+    1163: astore        11
+    1165: aload         11
+    1167: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1172: ifeq          1218
+    1175: aload         11
+    1177: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1182: checkcast     #60                 // class java/util/Map$Entry
+    1185: astore        12
+    1187: aload_0
+    1188: getfield      #95                 // Field hosts:[Ljava/lang/String;
+    1191: aload         12
+    1193: invokeinterface #61,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1198: checkcast     #53                 // class java/lang/Integer
+    1201: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    1204: aload         12
+    1206: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1211: checkcast     #94                 // class java/lang/String
+    1214: aastore
+    1215: goto          1165
+    1218: aload_0
+    1219: aload_0
+    1220: getfield      #58                 // Field numRacks:I
+    1223: anewarray     #94                 // class java/lang/String
+    1226: putfield      #96                 // Field racks:[Ljava/lang/String;
+    1229: aload_0
+    1230: getfield      #14                 // Field racksToIndex:Ljava/util/Map;
+    1233: invokeinterface #59,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+    1238: invokeinterface #26,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+    1243: astore        11
+    1245: aload         11
+    1247: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1252: ifeq          1298
+    1255: aload         11
+    1257: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1262: checkcast     #60                 // class java/util/Map$Entry
+    1265: astore        12
+    1267: aload_0
+    1268: getfield      #96                 // Field racks:[Ljava/lang/String;
+    1271: aload         12
+    1273: invokeinterface #61,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1278: checkcast     #53                 // class java/lang/Integer
+    1281: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    1284: aload         12
+    1286: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1291: checkcast     #94                 // class java/lang/String
+    1294: aastore
+    1295: goto          1245
+    1298: aload_2
+    1299: invokeinterface #59,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+    1304: invokeinterface #26,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+    1309: astore        11
+    1311: aload         11
+    1313: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1318: ifeq          1524
+    1321: aload         11
+    1323: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1328: checkcast     #60                 // class java/util/Map$Entry
+    1331: astore        12
+    1333: aload_0
+    1334: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+    1337: aload         12
+    1339: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1344: checkcast     #29                 // class org/apache/hadoop/hbase/ServerName
+    1347: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+    1350: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+    1355: checkcast     #53                 // class java/lang/Integer
+    1358: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    1361: istore        13
+    1363: iconst_0
+    1364: istore        10
+    1366: aload_0
+    1367: getfield      #13                 // Field hostsToIndex:Ljava/util/Map;
+    1370: aload         12
+    1372: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1377: checkcast     #29                 // class org/apache/hadoop/hbase/ServerName
+    1380: invokevirtual #48                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+    1383: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+    1388: checkcast     #53                 // class java/lang/Integer
+    1391: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    1394: istore        14
+    1396: aload_0
+    1397: getfield      #82                 // Field serverIndexToHostIndex:[I
+    1400: iload         13
+    1402: iload         14
+    1404: iastore
+    1405: aload_0
+    1406: getfield      #14                 // Field racksToIndex:Ljava/util/Map;
+    1409: aload_0
+    1410: getfield      #21                 // Field rackManager:Lorg/apache/hadoop/hbase/master/RackManager;
+    1413: aload         12
+    1415: invokeinterface #90,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1420: checkcast     #29                 // class org/apache/hadoop/hbase/ServerName
+    1423: invokevirtual #57                 // Method org/apache/hadoop/hbase/master/RackManager.getRack:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/lang/String;
+    1426: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+    1431: checkcast     #53                 // class java/lang/Integer
+    1434: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    1437: istore        15
+    1439: aload_0
+    1440: getfield      #83                 // Field serverIndexToRackIndex:[I
+    1443: iload         13
+    1445: iload         15
+    1447: iastore
+    1448: aload         12
+    1450: invokeinterface #61,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1455: checkcast     #56                 // class java/util/List
+    1458: invokeinterface #97,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+    1463: astore        16
+    1465: aload         16
+    1467: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1472: ifeq          1521
+    1475: aload         16
+    1477: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1482: checkcast     #70                 // class org/apache/hadoop/hbase/client/RegionInfo
+    1485: astore        17
+    1487: aload_0
+    1488: aload         17
+    1490: iload         9
+    1492: iload         13
+    1494: aload_3
+    1495: aload         4
+    1497: invokespecial #98                 // Method registerRegion:(Lorg/apache/hadoop/hbase/client/RegionInfo;IILjava/util/Map;Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;)V
+    1500: aload_0
+    1501: getfield      #84                 // Field regionsPerServer:[[I
+    1504: iload         13
+    1506: aaload
+    1507: iload         10
+    1509: iinc          10, 1
+    1512: iload         9
+    1514: iastore
+    1515: iinc          9, 1
+    1518: goto          1465
+    1521: goto          1311
+    1524: aload_1
+    1525: invokeinterface #99,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+    1530: astore        11
+    1532: aload         11
+    1534: invokeinterface #27,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1539: ifeq          1572
+    1542: aload         11
+    1544: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1549: checkcast     #70                 // class org/apache/hadoop/hbase/client/RegionInfo
+    1552: astore        12
+    1554: aload_0
+    1555: aload         12
+    1557: iload         9
+    1559: iconst_m1
+    1560: aload_3
+    1561: aload         4
+    1563: invokespecial #98                 // Method registerRegion:(Lorg/apache/hadoop/hbase/client/RegionInfo;IILjava/util/Map;Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;)V
+    1566: iinc          9, 1
+    1569: goto          1532
+    1572: iconst_0
+    1573: istore        11
+    1575: iload         11
+    1577: aload         6
+    1579: invokeinterface #62,  1           // InterfaceMethod java/util/List.size:()I
+    1584: if_icmpge     1693
+    1587: aload_0
+    1588: getfield      #68                 // Field serversPerHost:[[I
+    1591: iload         11
+    1593: aload         6
+    1595: iload         11
+    1597: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+    1602: checkcast     #56                 // class java/util/List
+    1605: invokeinterface #62,  1           // InterfaceMethod java/util/List.size:()I
+    1610: newarray       int
+    1612: aastore
+    1613: iconst_0
+    1614: istore        12
+    1616: iload         12
+    1618: aload_0
+    1619: getfield      #68                 // Field serversPerHost:[[I
+    1622: iload         11
+    1624: aaload
+    1625: arraylength
+    1626: if_icmpge     1670
+    1629: aload_0
+    1630: getfield      #68                 // Field serversPerHost:[[I
+    1633: iload         11
+    1635: aaload
+    1636: iload         12
+    1638: aload         6
+    1640: iload         11
+    1642: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+    1647: checkcast     #56                 // class java/util/List
+    1650: iload         12
+    1652: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+    1657: checkcast     #53                 // class java/lang/Integer
+    1660: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    1663: iastore
+    1664: iinc          12, 1
+    1667: goto          1616
+    1670: aload_0
+    1671: getfield      #68                 // Field serversPerHost:[[I
+    1674: iload         11
+    1676: aaload
+    1677: arraylength
+    1678: iconst_1
+    1679: if_icmple     1687
+    1682: aload_0
+    1683: iconst_1
+    1684: putfield      #3                  // Field multiServersPerHost:Z
+    1687: iinc          11, 1
+    1690: goto          1575
+    1693: iconst_0
+    1694: istore        11
+    1696: iload         11
+    1698: aload         7
+    1700: invokeinterface #62,  1           // InterfaceMethod java/util/List.size:()I
+    1705: if_icmpge     1797
+    1708: aload_0
+    1709: getfield      #69                 // Field serversPerRack:[[I
+    1712: iload         11
+    1714: aload         7
+    1716: iload         11
+    1718: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+    1723: checkcast     #56                 // class java/util/List
+    1726: invokeinterface #62,  1           // InterfaceMethod java/util/List.size:()I
+    1731: newarray       int
+    1733: aastore
+    1734: iconst_0
+    1735: istore        12
+    1737: iload         12
+    1739: aload_0
+    1740: getfield      #69                 // Field serversPerRack:[[I
+    1743: iload         11
+    1745: aaload
+    1746: arraylength
+    1747: if_icmpge     1791
+    1750: aload_0
+    1751: getfield      #69                 // Field serversPerRack:[[I
+    1754: iload         11
+    1756: aaload
+    1757: iload         12
+    1759: aload         7
+    1761: iload         11
+    1763: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+    1768: checkcast     #56                 // class java/util/List
+    1771: iload         12
+    1773: invokeinterface #55,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+    1778: checkcast     #53                 // class java/lang/Integer
+    1781: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    1784: iastore
+    1785: iinc          12, 1
+    1788: goto          1737
+    1791: iinc          11, 1
+    1794: goto          1696
+    1797: aload_0
+    1798: aload_0
+    1799: getfield      #18                 // Field tables:Ljava/util/ArrayList;
+    1802: invokevirtual #100                // Method java/util/ArrayList.size:()I
+    1805: putfield      #101                // Field numTables:I
+    1808: aload_0
+    1809: aload_0
+    1810: getfield      #45                 // Field numServers:I
+    1813: aload_0
+    1814: getfield      #101                // Field numTables:I
+    1817: multianewarray #102,  2           // class "[[I"
+    1821: putfield      #103                // Field numRegionsPerServerPerTable:[[I
+    1824: iconst_0
+    1825: istore        11
+    1827: iload         11
+    1829: aload_0
+    1830: getfield      #45                 // Field numServers:I
+    1833: if_icmpge     1871
+    1836: iconst_0
+    1837: istore        12
+    1839: iload         12
+    1841: aload_0
+    1842: getfield      #101                // Field numTables:I
+    1845: if_icmpge     1865
+    1848: aload_0
+    1849: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+    1852: iload         11
+    1854: aaload
+    1855: iload         12
+    1857: iconst_0
+    1858: iastore
+    1859: iinc          12, 1
+    1862: goto          1839
+    1865: iinc          11, 1
+    1868: goto          1827
+    1871: iconst_0
+    1872: istore        11
+    1874: iload         11
+    1876: aload_0
+    1877: getfield      #72                 // Field regionIndexToServerIndex:[I
+    1880: arraylength
+    1881: if_icmpge     1924
+    1884: aload_0
+    1885: getfield      #72                 // Field regionIndexToServerIndex:[I
+    1888: iload         11
+    1890: iaload
+    1891: iflt          1918
+    1894: aload_0
+    1895: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+    1898: aload_0
+    1899: getfield      #72                 // Field regionIndexToServerIndex:[I
+    1902: iload         11
+    1904: iaload
+    1905: aaload
+    1906: aload_0
+    1907: getfield      #74                 // Field regionIndexToTableIndex:[I
+    1910: iload         11
+    1912: iaload
+    1913: dup2
+    1914: iaload
+    1915: iconst_1
+    1916: iadd
+    1917: iastore
+    1918: iinc          11, 1
+    1921: goto          1874
+    1924: aload_0
+    1925: aload_0
+    1926: getfield      #101                // Field numTables:I
+    1929: newarray       int
+    1931: putfield      #104                // Field numMaxRegionsPerTable:[I
+    1934: aload_0
+    1935: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+    1938: astore        11
+    1940: aload         11
+    1942: arraylength
+    1943: istore        12
+    1945: iconst_0
+    1946: istore        13
+    1948: iload         13
+    1950: iload         12
+    1952: if_icmpge     2012
+    1955: aload         11
+    1957: iload         13
+    1959: aaload
+    1960: astore        14
+    1962: iconst_0
+    1963: istore        8
+    1965: iload         8
+    1967: aload         14
+    1969: arraylength
+    1970: if_icmpge     2006
+    1973: aload         14
+    1975: iload         8
+    1977: iaload
+    1978: aload_0
+    1979: getfield      #104                // Field numMaxRegionsPerTable:[I
+    1982: iload         8
+    1984: iaload
+    1985: if_icmple     2000
+    1988: aload_0
+    1989: getfield      #104                // Field numMaxRegionsPerTable:[I
+    1992: iload         8
+    1994: aload         14
+    1996: iload         8
+    1998: iaload
+    1999: iastore
+    2000: iinc          8, 1
+    2003: goto          1965
+    2006: iinc          13, 1
+    2009: goto          1948
+    2012: iconst_0
+    2013: istore        11
+    2015: iload         11
+    2017: aload_0
+    2018: getfield      #71                 // Field regions:[Lorg/apache/hadoop/hbase/client/RegionInfo;
+    2021: arraylength
+    2022: if_icmpge     2100
+    2025: aload_0
+    2026: getfield      #71                 // Field regions:[Lorg/apache/hadoop/hbase/client/RegionInfo;
+    2029: iload         11
+    2031: aaload
+    2032: astore        12
+    2034: aload         12
+    2036: invokestatic  #105                // Method org/apache/hadoop/hbase/client/RegionReplicaUtil.isDefaultReplica:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Z
+    2039: ifeq          2054
+    2042: aload_0
+    2043: getfield      #75                 // Field regionIndexToPrimaryIndex:[I
+    2046: iload         11
+    2048: iload         11
+    2050: iastore
+    2051: goto          2094
+    2054: aload_0
+    2055: iconst_1
+    2056: putfield      #4                  // Field hasRegionReplicas:Z
+    2059: aload         12
+    2061: invokestatic  #106                // Method org/apache/hadoop/hbase/client/RegionReplicaUtil.getRegionInfoForDefaultReplica:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+    2064: astore        13
+    2066: aload_0
+    2067: getfield      #75                 // Field regionIndexToPrimaryIndex:[I
+    2070: iload         11
+    2072: aload_0
+    2073: getfield      #65                 // Field regionsToIndex:Ljava/util/Map;
+    2076: aload         13
+    2078: iconst_m1
+    2079: invokestatic  #46                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+    2082: invokeinterface #107,  3          // InterfaceMethod java/util/Map.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+    2087: checkcast     #53                 // class java/lang/Integer
+    2090: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+    2093: iastore
+    2094: iinc          11, 1
+    2097: goto          2015
+    2100: iconst_0
+    2101: istore        11
+    2103: iload         11
+    2105: aload_0
+    2106: getfield      #84                 // Field regionsPerServer:[[I
+    2109: arraylength
+    2110: if_icmpge     2197
+    2113: aload_0
+    2114: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+    2117: iload         11
+    2119: aload_0
+    2120: getfield      #84                 // Field regionsPerServer:[[I
+    2123: iload         11
+    2125: aaload
+    2126: arraylength
+    2127: newarray       int
+    2129: aastore
+    2130: iconst_0
+    2131: istore        12
+    2133: iload         12
+    2135: aload_0
+    2136: getfield      #84                 // Field regionsPerServer:[[I
+    2139: iload         11
+    2141: aaload
+    2142: arraylength
+    2143: if_icmpge     2181
+    2146: aload_0
+    2147: getfield      #75                 // Field regionIndexToPrimaryIndex:[I
+    2150: aload_0
+    2151: getfield      #84                 // Field regionsPerServer:[[I
+    2154: iload         11
+    2156: aaload
+    2157: iload         12
+    2159: iaload
+    2160: iaload
+    2161: istore        13
+    2163: aload_0
+    2164: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+    2167: iload         11
+    2169: aaload
+    2170: iload         12
+    2172: iload         13
+    2174: iastore
+    2175: iinc          12, 1
+    2178: goto          2133
+    2181: aload_0
+    2182: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+    2185: iload         11
+    2187: aaload
+    2188: invokestatic  #108                // Method java/util/Arrays.sort:([I)V
+    2191: iinc          11, 1
+    2194: goto          2103
+    2197: aload_0
+    2198: getfield      #3                  // Field multiServersPerHost:Z
+    2201: ifeq          2431
+    2204: iconst_0
+    2205: istore        11
+    2207: iload         11
+    2209: aload_0
+    2210: getfield      #68                 // Field serversPerHost:[[I
+    2213: arraylength
+    2214: if_icmpge     2291
+    2217: iconst_0
+    2218: istore        12
+    2220: iconst_0
+    2221: istore        13
+    2223: iload         13
+    2225: aload_0
+    2226: getfield      #68                 // Field serversPerHost:[[I
+    2229: iload         11
+    2231: aaload
+    2232: arraylength
+    2233: if_icmpge     2263
+    2236: iload         12
+    2238: aload_0
+    2239: getfield      #84                 // Field regionsPerServer:[[I
+    2242: aload_0
+    2243: getfield      #68                 // Field serversPerHost:[[I
+    2246: iload         11
+    2248: aaload
+    2249: iload         13
+    2251: iaload
+    2252: aaload
+    2253: arraylength
+    2254: iadd
+    2255: istore        12
+    2257: iinc          13, 1
+    2260: goto          2223
+    2263: aload_0
+    2264: getfield      #85                 // Field regionsPerHost:[[I
+    2267: iload         11
+    2269: iload         12
+    2271: newarray       int
+    2273: aastore
+    2274: aload_0
+    2275: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+    2278: iload         11
+    2280: iload         12
+    2282: newarray       int
+    2284: aastore
+    2285: iinc          11, 1
+    2288: goto          2207
+    2291: iconst_0
+    2292: istore        11
+    2294: iload         11
+    2296: aload_0
+    2297: getfield      #68                 // Field serversPerHost:[[I
+    2300: arraylength
+    2301: if_icmpge     2431
+    2304: iconst_0
+    2305: istore        12
+    2307: iconst_0
+    2308: istore        13
+    2310: iload         13
+    2312: aload_0
+    2313: getfield      #68                 // Field serversPerHost:[[I
+    2316: iload         11
+    2318: aaload
+    2319: arraylength
+    2320: if_icmpge     2415
+    2323: iconst_0
+    2324: istore        14
+    2326: iload         14
+    2328: aload_0
+    2329: getfield      #84                 // Field regionsPerServer:[[I
+    2332: aload_0
+    2333: getfield      #68                 // Field serversPerHost:[[I
+    2336: iload         11
+    2338: aaload
+    2339: iload         13
+    2341: iaload
+    2342: aaload
+    2343: arraylength
+    2344: if_icmpge     2409
+    2347: aload_0
+    2348: getfield      #84                 // Field regionsPerServer:[[I
+    2351: aload_0
+    2352: getfield      #68                 // Field serversPerHost:[[I
+    2355: iload         11
+    2357: aaload
+    2358: iload         13
+    2360: iaload
+    2361: aaload
+    2362: iload         14
+    2364: iaload
+    2365: istore        15
+    2367: aload_0
+    2368: getfield      #85                 // Field regionsPerHost:[[I
+    2371: iload         11
+    2373: aaload
+    2374: iload         12
+    2376: iload         15
+    2378: iastore
+    2379: aload_0
+    2380: getfield      #75                 // Field regionIndexToPrimaryIndex:[I
+    2383: iload         15
+    2385: iaload
+    2386: istore        16
+    2388: aload_0
+    2389: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+    2392: iload         11
+    2394: aaload
+    2395: iload         12
+    2397: iload         16
+    2399: iastore
+    2400: iinc          12, 1
+    2403: iinc          14, 1
+    2406: goto          2326
+    2409: iinc          13, 1
+    2412: goto          2310
+    2415: aload_0
+    2416: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+    2419: iload         11
+    2421: aaload
+    2422: invokestatic  #108                // Method java/util/Arrays.sort:([I)V
+    2425: iinc          11, 1
+    2428: goto          2294
+    2431: aload_0
+    2432: getfield      #58                 // Field numRacks:I
+    2435: iconst_1
+    2436: if_icmple     2666
+    2439: iconst_0
+    2440: istore        11
+    2442: iload         11
+    2444: aload_0
+    2445: getfield      #69                 // Field serversPerRack:[[I
+    2448: arraylength
+    2449: if_icmpge     2526
+    2452: iconst_0
+    2453: istore        12
+    2455: iconst_0
+    2456: istore        13
+    2458: iload         13
+    2460: aload_0
+    2461: getfield      #69                 // Field serversPerRack:[[I
+    2464: iload         11
+    2466: aaload
+    2467: arraylength
+    2468: if_icmpge     2498
+    2471: iload         12
+    2473: aload_0
+    2474: getfield      #84                 // Field regionsPerServer:[[I
+    2477: aload_0
+    2478: getfield      #69                 // Field serversPerRack:[[I
+    2481: iload         11
+    2483: aaload
+    2484: iload         13
+    2486: iaload
+    2487: aaload
+    2488: arraylength
+    2489: iadd
+    2490: istore        12
+    2492: iinc          13, 1
+    2495: goto          2458
+    2498: aload_0
+    2499: getfield      #86                 // Field regionsPerRack:[[I
+    2502: iload         11
+    2504: iload         12
+    2506: newarray       int
+    2508: aastore
+    2509: aload_0
+    2510: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+    2513: iload         11
+    2515: iload         12
+    2517: newarray       int
+    2519: aastore
+    2520: iinc          11, 1
+    2523: goto          2442
+    2526: iconst_0
+    2527: istore        11
+    2529: iload         11
+    2531: aload_0
+    2532: getfield      #69                 // Field serversPerRack:[[I
+    2535: arraylength
+    2536: if_icmpge     2666
+    2539: iconst_0
+    2540: istore        12
+    2542: iconst_0
+    2543: istore        13
+    2545: iload         13
+    2547: aload_0
+    2548: getfield      #69                 // Field serversPerRack:[[I
+    2551: iload         11
+    2553: aaload
+    2554: arraylength
+    2555: if_icmpge     2650
+    2558: iconst_0
+    2559: istore        14
+    2561: iload         14
+    2563: aload_0
+    2564: getfield      #84                 // Field regionsPerServer:[[I
+    2567: aload_0
+    2568: getfield      #69                 // Field serversPerRack:[[I
+    2571: iload         11
+    2573: aaload
+    2574: iload         13
+    2576: iaload
+    2577: aaload
+    2578: arraylength
+    2579: if_icmpge     2644
+    2582: aload_0
+    2583: getfield      #84                 // Field regionsPerServer:[[I
+    2586: aload_0
+    2587: getfield      #69                 // Field serversPerRack:[[I
+    2590: iload         11
+    2592: aaload
+    2593: iload         13
+    2595: iaload
+    2596: aaload
+    2597: iload         14
+    2599: iaload
+    2600: istore        15
+    2602: aload_0
+    2603: getfield      #86                 // Field regionsPerRack:[[I
+    2606: iload         11
+    2608: aaload
+    2609: iload         12
+    2611: iload         15
+    2613: iastore
+    2614: aload_0
+    2615: getfield      #75                 // Field regionIndexToPrimaryIndex:[I
+    2618: iload         15
+    2620: iaload
+    2621: istore        16
+    2623: aload_0
+    2624: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+    2627: iload         11
+    2629: aaload
+    2630: iload         12
+    2632: iload         16
+    2634: iastore
+    2635: iinc          12, 1
+    2638: iinc          14, 1
+    2641: goto          2561
+    2644: iinc          13, 1
+    2647: goto          2545
+    2650: aload_0
+    2651: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+    2654: iload         11
+    2656: aaload
+    2657: invokestatic  #108                // Method java/util/Arrays.sort:([I)V
+    2660: iinc          11, 1
+    2663: goto          2529
+    2666: return
+
+  public boolean serverHasTooFewRegions(int);
+    Code:
+       0: aload_0
+       1: getfield      #22                 // Field numRegions:I
+       4: aload_0
+       5: getfield      #45                 // Field numServers:I
+       8: idiv
+       9: istore_2
+      10: aload_0
+      11: iload_1
+      12: invokevirtual #116                // Method getNumRegions:(I)I
+      15: istore_3
+      16: iload_3
+      17: iload_2
+      18: if_icmpge     25
+      21: iconst_1
+      22: goto          26
+      25: iconst_0
+      26: ireturn
+
+  public float[][] getOrComputeRackLocalities();
+    Code:
+       0: aload_0
+       1: getfield      #117                // Field rackLocalities:[[F
+       4: ifnull        14
+       7: aload_0
+       8: getfield      #118                // Field regionsToMostLocalEntities:[[I
+      11: ifnonnull     18
+      14: aload_0
+      15: invokespecial #119                // Method computeCachedLocalities:()V
+      18: aload_0
+      19: getfield      #117                // Field rackLocalities:[[F
+      22: areturn
+
+  public int[] getOrComputeRegionsToMostLocalEntities(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster$LocalityType);
+    Code:
+       0: aload_0
+       1: getfield      #117                // Field rackLocalities:[[F
+       4: ifnull        14
+       7: aload_0
+       8: getfield      #118                // Field regionsToMostLocalEntities:[[I
+      11: ifnonnull     18
+      14: aload_0
+      15: invokespecial #119                // Method computeCachedLocalities:()V
+      18: aload_0
+      19: getfield      #118                // Field regionsToMostLocalEntities:[[I
+      22: aload_1
+      23: invokevirtual #120                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$LocalityType.ordinal:()I
+      26: aaload
+      27: areturn
+
+  public float getOrComputeLocality(int, int, org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster$LocalityType);
+    Code:
+       0: getstatic     #121                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$1.$SwitchMap$org$apache$hadoop$hbase$master$balancer$BaseLoadBalancer$Cluster$LocalityType:[I
+       3: aload_3
+       4: invokevirtual #120                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$LocalityType.ordinal:()I
+       7: iaload
+       8: lookupswitch  { // 2
+                     1: 36
+                     2: 43
+               default: 52
+          }
+      36: aload_0
+      37: iload_1
+      38: iload_2
+      39: invokevirtual #122                // Method getLocalityOfRegion:(II)F
+      42: freturn
+      43: aload_0
+      44: invokevirtual #123                // Method getOrComputeRackLocalities:()[[F
+      47: iload_1
+      48: aaload
+      49: iload_2
+      50: faload
+      51: freturn
+      52: new           #124                // class java/lang/IllegalArgumentException
+      55: dup
+      56: new           #34                 // class java/lang/StringBuilder
+      59: dup
+      60: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+      63: ldc           #125                // String Unsupported LocalityType:
+      65: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      68: aload_3
+      69: invokevirtual #92                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      72: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      75: invokespecial #126                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      78: athrow
+
+  public double getOrComputeWeightedLocality(int, int, org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster$LocalityType);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokevirtual #127                // Method getRegionSizeMB:(I)I
+       5: i2f
+       6: aload_0
+       7: iload_1
+       8: iload_2
+       9: aload_3
+      10: invokevirtual #128                // Method getOrComputeLocality:(IILorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$LocalityType;)F
+      13: fmul
+      14: f2d
+      15: dreturn
+
+  public int getRegionSizeMB(int);
+    Code:
+       0: aload_0
+       1: getfield      #77                 // Field regionLoads:[Ljava/util/Deque;
+       4: iload_1
+       5: aaload
+       6: astore_2
+       7: aload_2
+       8: ifnonnull     13
+      11: iconst_0
+      12: ireturn
+      13: aload_0
+      14: getfield      #77                 // Field regionLoads:[Ljava/util/Deque;
+      17: iload_1
+      18: aaload
+      19: invokeinterface #129,  1          // InterfaceMethod java/util/Deque.getLast:()Ljava/lang/Object;
+      24: checkcast     #130                // class org/apache/hadoop/hbase/master/balancer/BalancerRegionLoad
+      27: invokevirtual #131                // Method org/apache/hadoop/hbase/master/balancer/BalancerRegionLoad.getStorefileSizeMB:()I
+      30: ireturn
+
+  public int getRackForRegion(int);
+    Code:
+       0: aload_0
+       1: getfield      #83                 // Field serverIndexToRackIndex:[I
+       4: aload_0
+       5: getfield      #72                 // Field regionIndexToServerIndex:[I
+       8: iload_1
+       9: iaload
+      10: iaload
+      11: ireturn
+
+  public void doAction(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster$Action);
+    Code:
+       0: getstatic     #136                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$1.$SwitchMap$org$apache$hadoop$hbase$master$balancer$BaseLoadBalancer$Cluster$Action$Type:[I
+       3: aload_1
+       4: getfield      #137                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action.type:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type;
+       7: invokevirtual #138                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type.ordinal:()I
+      10: iaload
+      11: tableswitch   { // 1 to 4
+                     1: 40
+                     2: 43
+                     3: 115
+                     4: 216
+               default: 356
+          }
+      40: goto          386
+      43: getstatic     #139                // Field $assertionsDisabled:Z
+      46: ifne          68
+      49: aload_1
+      50: instanceof    #140                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction
+      53: ifne          68
+      56: new           #141                // class java/lang/AssertionError
+      59: dup
+      60: aload_1
+      61: invokevirtual #142                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      64: invokespecial #143                // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+      67: athrow
+      68: aload_1
+      69: checkcast     #140                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction
+      72: astore_2
+      73: aload_0
+      74: getfield      #84                 // Field regionsPerServer:[[I
+      77: aload_2
+      78: getfield      #144                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction.server:I
+      81: aload_0
+      82: aload_0
+      83: getfield      #84                 // Field regionsPerServer:[[I
+      86: aload_2
+      87: getfield      #144                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction.server:I
+      90: aaload
+      91: aload_2
+      92: getfield      #145                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction.region:I
+      95: invokevirtual #146                // Method addRegion:([II)[I
+      98: aastore
+      99: aload_0
+     100: aload_2
+     101: getfield      #145                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction.region:I
+     104: iconst_m1
+     105: aload_2
+     106: getfield      #144                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction.server:I
+     109: invokevirtual #147                // Method regionMoved:(III)V
+     112: goto          386
+     115: getstatic     #139                // Field $assertionsDisabled:Z
+     118: ifne          140
+     121: aload_1
+     122: instanceof    #148                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction
+     125: ifne          140
+     128: new           #141                // class java/lang/AssertionError
+     131: dup
+     132: aload_1
+     133: invokevirtual #142                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     136: invokespecial #143                // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+     139: athrow
+     140: aload_1
+     141: checkcast     #148                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction
+     144: astore_3
+     145: aload_0
+     146: getfield      #84                 // Field regionsPerServer:[[I
+     149: aload_3
+     150: getfield      #149                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.fromServer:I
+     153: aload_0
+     154: aload_0
+     155: getfield      #84                 // Field regionsPerServer:[[I
+     158: aload_3
+     159: getfield      #149                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.fromServer:I
+     162: aaload
+     163: aload_3
+     164: getfield      #150                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.region:I
+     167: invokevirtual #151                // Method removeRegion:([II)[I
+     170: aastore
+     171: aload_0
+     172: getfield      #84                 // Field regionsPerServer:[[I
+     175: aload_3
+     176: getfield      #152                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.toServer:I
+     179: aload_0
+     180: aload_0
+     181: getfield      #84                 // Field regionsPerServer:[[I
+     184: aload_3
+     185: getfield      #152                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.toServer:I
+     188: aaload
+     189: aload_3
+     190: getfield      #150                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.region:I
+     193: invokevirtual #146                // Method addRegion:([II)[I
+     196: aastore
+     197: aload_0
+     198: aload_3
+     199: getfield      #150                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.region:I
+     202: aload_3
+     203: getfield      #149                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.fromServer:I
+     206: aload_3
+     207: getfield      #152                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$MoveRegionAction.toServer:I
+     210: invokevirtual #147                // Method regionMoved:(III)V
+     213: goto          386
+     216: getstatic     #139                // Field $assertionsDisabled:Z
+     219: ifne          241
+     222: aload_1
+     223: instanceof    #153                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction
+     226: ifne          241
+     229: new           #141                // class java/lang/AssertionError
+     232: dup
+     233: aload_1
+     234: invokevirtual #142                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     237: invokespecial #143                // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+     240: athrow
+     241: aload_1
+     242: checkcast     #153                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction
+     245: astore        4
+     247: aload_0
+     248: getfield      #84                 // Field regionsPerServer:[[I
+     251: aload         4
+     253: getfield      #154                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.fromServer:I
+     256: aload_0
+     257: aload_0
+     258: getfield      #84                 // Field regionsPerServer:[[I
+     261: aload         4
+     263: getfield      #154                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.fromServer:I
+     266: aaload
+     267: aload         4
+     269: getfield      #155                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.fromRegion:I
+     272: aload         4
+     274: getfield      #156                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.toRegion:I
+     277: invokevirtual #157                // Method replaceRegion:([III)[I
+     280: aastore
+     281: aload_0
+     282: getfield      #84                 // Field regionsPerServer:[[I
+     285: aload         4
+     287: getfield      #158                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.toServer:I
+     290: aload_0
+     291: aload_0
+     292: getfield      #84                 // Field regionsPerServer:[[I
+     295: aload         4
+     297: getfield      #158                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.toServer:I
+     300: aaload
+     301: aload         4
+     303: getfield      #156                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.toRegion:I
+     306: aload         4
+     308: getfield      #155                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.fromRegion:I
+     311: invokevirtual #157                // Method replaceRegion:([III)[I
+     314: aastore
+     315: aload_0
+     316: aload         4
+     318: getfield      #155                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.fromRegion:I
+     321: aload         4
+     323: getfield      #154                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.fromServer:I
+     326: aload         4
+     328: getfield      #158                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.toServer:I
+     331: invokevirtual #147                // Method regionMoved:(III)V
+     334: aload_0
+     335: aload         4
+     337: getfield      #156                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.toRegion:I
+     340: aload         4
+     342: getfield      #158                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.toServer:I
+     345: aload         4
+     347: getfield      #154                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$SwapRegionsAction.fromServer:I
+     350: invokevirtual #147                // Method regionMoved:(III)V
+     353: goto          386
+     356: new           #159                // class java/lang/RuntimeException
+     359: dup
+     360: new           #34                 // class java/lang/StringBuilder
+     363: dup
+     364: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     367: ldc           #160                // String Uknown action:
+     369: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     372: aload_1
+     373: getfield      #137                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action.type:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type;
+     376: invokevirtual #92                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     379: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     382: invokespecial #161                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     385: athrow
+     386: return
+
+  boolean wouldLowerAvailability(org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+       4: aload_2
+       5: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+       8: invokeinterface #49,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      13: ifne          18
+      16: iconst_0
+      17: ireturn
+      18: aload_0
+      19: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+      22: aload_2
+      23: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+      26: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      31: checkcast     #53                 // class java/lang/Integer
+      34: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+      37: istore_3
+      38: aload_0
+      39: getfield      #65                 // Field regionsToIndex:Ljava/util/Map;
+      42: aload_1
+      43: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      48: checkcast     #53                 // class java/lang/Integer
+      51: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+      54: istore        4
+      56: aload_0
+      57: getfield      #75                 // Field regionIndexToPrimaryIndex:[I
+      60: iload         4
+      62: iaload
+      63: istore        5
+      65: aload_0
+      66: aload_0
+      67: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+      70: iload_3
+      71: aaload
+      72: iload         5
+      74: invokevirtual #162                // Method contains:([II)Z
+      77: ifeq          125
+      80: iconst_0
+      81: istore        6
+      83: iload         6
+      85: aload_0
+      86: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+      89: arraylength
+      90: if_icmpge     123
+      93: iload         6
+      95: iload_3
+      96: if_icmpeq     117
+      99: aload_0
+     100: aload_0
+     101: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+     104: iload         6
+     106: aaload
+     107: iload         5
+     109: invokevirtual #162                // Method contains:([II)Z
+     112: ifne          117
+     115: iconst_1
+     116: ireturn
+     117: iinc          6, 1
+     120: goto          83
+     123: iconst_0
+     124: ireturn
+     125: aload_0
+     126: getfield      #3                  // Field multiServersPerHost:Z
+     129: ifeq          202
+     132: aload_0
+     133: getfield      #82                 // Field serverIndexToHostIndex:[I
+     136: iload_3
+     137: iaload
+     138: istore        6
+     140: aload_0
+     141: aload_0
+     142: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     145: iload         6
+     147: aaload
+     148: iload         5
+     150: invokevirtual #162                // Method contains:([II)Z
+     153: ifeq          202
+     156: iconst_0
+     157: istore        7
+     159: iload         7
+     161: aload_0
+     162: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     165: arraylength
+     166: if_icmpge     200
+     169: iload         7
+     171: iload         6
+     173: if_icmpeq     194
+     176: aload_0
+     177: aload_0
+     178: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     181: iload         7
+     183: aaload
+     184: iload         5
+     186: invokevirtual #162                // Method contains:([II)Z
+     189: ifne          194
+     192: iconst_1
+     193: ireturn
+     194: iinc          7, 1
+     197: goto          159
+     200: iconst_0
+     201: ireturn
+     202: aload_0
+     203: getfield      #58                 // Field numRacks:I
+     206: iconst_1
+     207: if_icmple     280
+     210: aload_0
+     211: getfield      #83                 // Field serverIndexToRackIndex:[I
+     214: iload_3
+     215: iaload
+     216: istore        6
+     218: aload_0
+     219: aload_0
+     220: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     223: iload         6
+     225: aaload
+     226: iload         5
+     228: invokevirtual #162                // Method contains:([II)Z
+     231: ifeq          280
+     234: iconst_0
+     235: istore        7
+     237: iload         7
+     239: aload_0
+     240: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     243: arraylength
+     244: if_icmpge     278
+     247: iload         7
+     249: iload         6
+     251: if_icmpeq     272
+     254: aload_0
+     255: aload_0
+     256: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     259: iload         7
+     261: aaload
+     262: iload         5
+     264: invokevirtual #162                // Method contains:([II)Z
+     267: ifne          272
+     270: iconst_1
+     271: ireturn
+     272: iinc          7, 1
+     275: goto          237
+     278: iconst_0
+     279: ireturn
+     280: iconst_0
+     281: ireturn
+
+  void doAssignRegion(org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+       4: aload_2
+       5: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+       8: invokeinterface #49,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      13: ifne          17
+      16: return
+      17: aload_0
+      18: getfield      #12                 // Field serversToIndex:Ljava/util/Map;
+      21: aload_2
+      22: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+      25: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      30: checkcast     #53                 // class java/lang/Integer
+      33: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+      36: istore_3
+      37: aload_0
+      38: getfield      #65                 // Field regionsToIndex:Ljava/util/Map;
+      41: aload_1
+      42: invokeinterface #43,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      47: checkcast     #53                 // class java/lang/Integer
+      50: invokevirtual #54                 // Method java/lang/Integer.intValue:()I
+      53: istore        4
+      55: aload_0
+      56: new           #140                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction
+      59: dup
+      60: iload         4
+      62: iload_3
+      63: invokespecial #163                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$AssignRegionAction."<init>":(II)V
+      66: invokevirtual #164                // Method doAction:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;)V
+      69: return
+
+  void regionMoved(int, int, int);
+    Code:
+       0: aload_0
+       1: getfield      #72                 // Field regionIndexToServerIndex:[I
+       4: iload_1
+       5: iload_3
+       6: iastore
+       7: aload_0
+       8: getfield      #73                 // Field initialRegionIndexToServerIndex:[I
+      11: iload_1
+      12: iaload
+      13: iload_3
+      14: if_icmpne     30
+      17: aload_0
+      18: dup
+      19: getfield      #5                  // Field numMovedRegions:I
+      22: iconst_1
+      23: isub
+      24: putfield      #5                  // Field numMovedRegions:I
+      27: goto          54
+      30: iload_2
+      31: iflt          54
+      34: aload_0
+      35: getfield      #73                 // Field initialRegionIndexToServerIndex:[I
+      38: iload_1
+      39: iaload
+      40: iload_2
+      41: if_icmpne     54
+      44: aload_0
+      45: dup
+      46: getfield      #5                  // Field numMovedRegions:I
+      49: iconst_1
+      50: iadd
+      51: putfield      #5                  // Field numMovedRegions:I
+      54: aload_0
+      55: getfield      #74                 // Field regionIndexToTableIndex:[I
+      58: iload_1
+      59: iaload
+      60: istore        4
+      62: iload_2
+      63: iflt          79
+      66: aload_0
+      67: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+      70: iload_2
+      71: aaload
+      72: iload         4
+      74: dup2
+      75: iaload
+      76: iconst_1
+      77: isub
+      78: iastore
+      79: aload_0
+      80: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+      83: iload_3
+      84: aaload
+      85: iload         4
+      87: dup2
+      88: iaload
+      89: iconst_1
+      90: iadd
+      91: iastore
+      92: aload_0
+      93: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+      96: iload_3
+      97: aaload
+      98: iload         4
+     100: iaload
+     101: aload_0
+     102: getfield      #104                // Field numMaxRegionsPerTable:[I
+     105: iload         4
+     107: iaload
+     108: if_icmple     130
+     111: aload_0
+     112: getfield      #104                // Field numMaxRegionsPerTable:[I
+     115: iload         4
+     117: aload_0
+     118: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+     121: iload_3
+     122: aaload
+     123: iload         4
+     125: iaload
+     126: iastore
+     127: goto          224
+     130: iload_2
+     131: iflt          224
+     134: aload_0
+     135: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+     138: iload_2
+     139: aaload
+     140: iload         4
+     142: iaload
+     143: iconst_1
+     144: iadd
+     145: aload_0
+     146: getfield      #104                // Field numMaxRegionsPerTable:[I
+     149: iload         4
+     151: iaload
+     152: if_icmpne     224
+     155: aload_0
+     156: getfield      #104                // Field numMaxRegionsPerTable:[I
+     159: iload         4
+     161: iconst_0
+     162: iastore
+     163: aload_0
+     164: getfield      #103                // Field numRegionsPerServerPerTable:[[I
+     167: astore        5
+     169: aload         5
+     171: arraylength
+     172: istore        6
+     174: iconst_0
+     175: istore        7
+     177: iload         7
+     179: iload         6
+     181: if_icmpge     224
+     184: aload         5
+     186: iload         7
+     188: aaload
+     189: astore        8
+     191: aload         8
+     193: iload         4
+     195: iaload
+     196: aload_0
+     197: getfield      #104                // Field numMaxRegionsPerTable:[I
+     200: iload         4
+     202: iaload
+     203: if_icmple     218
+     206: aload_0
+     207: getfield      #104                // Field numMaxRegionsPerTable:[I
+     210: iload         4
+     212: aload         8
+     214: iload         4
+     216: iaload
+     217: iastore
+     218: iinc          7, 1
+     221: goto          177
+     224: aload_0
+     225: getfield      #75                 // Field regionIndexToPrimaryIndex:[I
+     228: iload_1
+     229: iaload
+     230: istore        5
+     232: iload_2
+     233: iflt          254
+     236: aload_0
+     237: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+     240: iload_2
+     241: aload_0
+     242: aload_0
+     243: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+     246: iload_2
+     247: aaload
+     248: iload         5
+     250: invokevirtual #151                // Method removeRegion:([II)[I
+     253: aastore
+     254: aload_0
+     255: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+     258: iload_3
+     259: aload_0
+     260: aload_0
+     261: getfield      #87                 // Field primariesOfRegionsPerServer:[[I
+     264: iload_3
+     265: aaload
+     266: iload         5
+     268: invokevirtual #165                // Method addRegionSorted:([II)[I
+     271: aastore
+     272: aload_0
+     273: getfield      #3                  // Field multiServersPerHost:Z
+     276: ifeq          393
+     279: iload_2
+     280: iflt          292
+     283: aload_0
+     284: getfield      #82                 // Field serverIndexToHostIndex:[I
+     287: iload_2
+     288: iaload
+     289: goto          293
+     292: iconst_m1
+     293: istore        6
+     295: aload_0
+     296: getfield      #82                 // Field serverIndexToHostIndex:[I
+     299: iload_3
+     300: iaload
+     301: istore        7
+     303: iload         7
+     305: iload         6
+     307: if_icmpeq     393
+     310: aload_0
+     311: getfield      #85                 // Field regionsPerHost:[[I
+     314: iload         7
+     316: aload_0
+     317: aload_0
+     318: getfield      #85                 // Field regionsPerHost:[[I
+     321: iload         7
+     323: aaload
+     324: iload_1
+     325: invokevirtual #146                // Method addRegion:([II)[I
+     328: aastore
+     329: aload_0
+     330: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     333: iload         7
+     335: aload_0
+     336: aload_0
+     337: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     340: iload         7
+     342: aaload
+     343: iload         5
+     345: invokevirtual #165                // Method addRegionSorted:([II)[I
+     348: aastore
+     349: iload         6
+     351: iflt          393
+     354: aload_0
+     355: getfield      #85                 // Field regionsPerHost:[[I
+     358: iload         6
+     360: aload_0
+     361: aload_0
+     362: getfield      #85                 // Field regionsPerHost:[[I
+     365: iload         6
+     367: aaload
+     368: iload_1
+     369: invokevirtual #151                // Method removeRegion:([II)[I
+     372: aastore
+     373: aload_0
+     374: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     377: iload         6
+     379: aload_0
+     380: aload_0
+     381: getfield      #88                 // Field primariesOfRegionsPerHost:[[I
+     384: iload         6
+     386: aaload
+     387: iload         5
+     389: invokevirtual #151                // Method removeRegion:([II)[I
+     392: aastore
+     393: aload_0
+     394: getfield      #58                 // Field numRacks:I
+     397: iconst_1
+     398: if_icmple     515
+     401: iload_2
+     402: iflt          414
+     405: aload_0
+     406: getfield      #83                 // Field serverIndexToRackIndex:[I
+     409: iload_2
+     410: iaload
+     411: goto          415
+     414: iconst_m1
+     415: istore        6
+     417: aload_0
+     418: getfield      #83                 // Field serverIndexToRackIndex:[I
+     421: iload_3
+     422: iaload
+     423: istore        7
+     425: iload         7
+     427: iload         6
+     429: if_icmpeq     515
+     432: aload_0
+     433: getfield      #86                 // Field regionsPerRack:[[I
+     436: iload         7
+     438: aload_0
+     439: aload_0
+     440: getfield      #86                 // Field regionsPerRack:[[I
+     443: iload         7
+     445: aaload
+     446: iload_1
+     447: invokevirtual #146                // Method addRegion:([II)[I
+     450: aastore
+     451: aload_0
+     452: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     455: iload         7
+     457: aload_0
+     458: aload_0
+     459: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     462: iload         7
+     464: aaload
+     465: iload         5
+     467: invokevirtual #165                // Method addRegionSorted:([II)[I
+     470: aastore
+     471: iload         6
+     473: iflt          515
+     476: aload_0
+     477: getfield      #86                 // Field regionsPerRack:[[I
+     480: iload         6
+     482: aload_0
+     483: aload_0
+     484: getfield      #86                 // Field regionsPerRack:[[I
+     487: iload         6
+     489: aaload
+     490: iload_1
+     491: invokevirtual #151                // Method removeRegion:([II)[I
+     494: aastore
+     495: aload_0
+     496: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     499: iload         6
+     501: aload_0
+     502: aload_0
+     503: getfield      #89                 // Field primariesOfRegionsPerRack:[[I
+     506: iload         6
+     508: aaload
+     509: iload         5
+     511: invokevirtual #151                // Method removeRegion:([II)[I
+     514: aastore
+     515: return
+
+  int[] removeRegion(int[], int);
+    Code:
+       0: aload_1
+       1: arraylength
+       2: iconst_1
+       3: isub
+       4: newarray       int
+       6: astore_3
+       7: iconst_0
+       8: istore        4
+      10: iconst_0
+      11: istore        4
+      13: iload         4
+      15: aload_1
+      16: arraylength
+      17: if_icmpge     45
+      20: aload_1
+      21: iload         4
+      23: iaload
+      24: iload_2
+      25: if_icmpne     31
+      28: goto          45
+      31: aload_3
+      32: iload         4
+      34: aload_1
+      35: iload         4
+      37: iaload
+      38: iastore
+      39: iinc          4, 1
+      42: goto          13
+      45: aload_1
+      46: iload         4
+      48: iconst_1
+      49: iadd
+      50: aload_3
+      51: iload         4
+      53: aload_3
+      54: arraylength
+      55: iload         4
+      57: isub
+      58: invokestatic  #166                // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      61: aload_3
+      62: areturn
+
+  int[] addRegion(int[], int);
+    Code:
+       0: aload_1
+       1: arraylength
+       2: iconst_1
+       3: iadd
+       4: newarray       int
+       6: astore_3
+       7: aload_1
+       8: iconst_0
+       9: aload_3
+      10: iconst_0
+      11: aload_1
+      12: arraylength
+      13: invokestatic  #166                // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      16: aload_3
+      17: aload_3
+      18: arraylength
+      19: iconst_1
+      20: isub
+      21: iload_2
+      22: iastore
+      23: aload_3
+      24: areturn
+
+  int[] addRegionSorted(int[], int);
+    Code:
+       0: aload_1
+       1: arraylength
+       2: iconst_1
+       3: iadd
+       4: newarray       int
+       6: astore_3
+       7: iconst_0
+       8: istore        4
+      10: iconst_0
+      11: istore        4
+      13: iload         4
+      15: aload_1
+      16: arraylength
+      17: if_icmpge     37
+      20: aload_1
+      21: iload         4
+      23: iaload
+      24: iload_2
+      25: if_icmple     31
+      28: goto          37
+      31: iinc          4, 1
+      34: goto          13
+      37: aload_1
+      38: iconst_0
+      39: aload_3
+      40: iconst_0
+      41: iload         4
+      43: invokestatic  #166                // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      46: aload_1
+      47: iload         4
+      49: aload_3
+      50: iload         4
+      52: iconst_1
+      53: iadd
+      54: aload_1
+      55: arraylength
+      56: iload         4
+      58: isub
+      59: invokestatic  #166                // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      62: aload_3
+      63: iload         4
+      65: iload_2
+      66: iastore
+      67: aload_3
+      68: areturn
+
+  int[] replaceRegion(int[], int, int);
+    Code:
+       0: iconst_0
+       1: istore        4
+       3: iconst_0
+       4: istore        4
+       6: iload         4
+       8: aload_1
+       9: arraylength
+      10: if_icmpge     35
+      13: aload_1
+      14: iload         4
+      16: iaload
+      17: iload_2
+      18: if_icmpne     29
+      21: aload_1
+      22: iload         4
+      24: iload_3
+      25: iastore
+      26: goto          35
+      29: iinc          4, 1
+      32: goto          6
+      35: aload_1
+      36: areturn
+
+  void sortServersByRegionCount();
+    Code:
+       0: aload_0
+       1: getfield      #79                 // Field serverIndicesSortedByRegionCount:[Ljava/lang/Integer;
+       4: aload_0
+       5: getfield      #8                  // Field numRegionsComparator:Ljava/util/Comparator;
+       8: invokestatic  #167                // Method java/util/Arrays.sort:([Ljava/lang/Object;Ljava/util/Comparator;)V
+      11: return
+
+  int getNumRegions(int);
+    Code:
+       0: aload_0
+       1: getfield      #84                 // Field regionsPerServer:[[I
+       4: iload_1
+       5: aaload
+       6: arraylength
+       7: ireturn
+
+  boolean contains(int[], int);
+    Code:
+       0: aload_1
+       1: iload_2
+       2: invokestatic  #168                // Method java/util/Arrays.binarySearch:([II)I
+       5: iflt          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: ireturn
+
+  int getLowestLocalityRegionOnServer(int);
+    Code:
+       0: aload_0
+       1: getfield      #24                 // Field regionFinder:Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;
+       4: ifnull        213
+       7: fconst_1
+       8: fstore_2
+       9: iconst_m1
+      10: istore_3
+      11: aload_0
+      12: getfield      #84                 // Field regionsPerServer:[[I
+      15: iload_1
+      16: aaload
+      17: arraylength
+      18: ifne          23
+      21: iconst_m1
+      22: ireturn
+      23: iconst_0
+      24: istore        4
+      26: iload         4
+      28: aload_0
+      29: getfield      #84                 // Field regionsPerServer:[[I
+      32: iload_1
+      33: aaload
+      34: arraylength
+      35: if_icmpge     113
+      38: aload_0
+      39: getfield      #84                 // Field regionsPerServer:[[I
+      42: iload_1
+      43: aaload
+      44: iload         4
+      46: iaload
+      47: istore        5
+      49: aload_0
+      50: getfield      #24                 // Field regionFinder:Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;
+      53: aload_0
+      54: getfield      #71                 // Field regions:[Lorg/apache/hadoop/hbase/client/RegionInfo;
+      57: iload         5
+      59: aaload
+      60: invokevirtual #169                // Method org/apache/hadoop/hbase/master/balancer/RegionLocationFinder.getBlockDistribution:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/HDFSBlocksDistribution;
+      63: astore        6
+      65: aload         6
+      67: aload_0
+      68: getfield      #66                 // Field servers:[Lorg/apache/hadoop/hbase/ServerName;
+      71: iload_1
+      72: aaload
+      73: invokevirtual #48                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+      76: invokevirtual #170                // Method org/apache/hadoop/hbase/HDFSBlocksDistribution.getBlockLocalityIndex:(Ljava/lang/String;)F
+      79: fstore        7
+      81: aload         6
+      83: invokevirtual #171                // Method org/apache/hadoop/hbase/HDFSBlocksDistribution.getUniqueBlocksTotalWeight:()J
+      86: lconst_0
+      87: lcmp
+      88: ifne          94
+      91: goto          107
+      94: fload         7
+      96: fload_2
+      97: fcmpg
+      98: ifge          107
+     101: fload         7
+     103: fstore_2
+     104: iload         4
+     106: istore_3
+     107: iinc          4, 1
+     110: goto          26
+     113: iload_3
+     114: iconst_m1
+     115: if_icmpne     120
+     118: iconst_m1
+     119: ireturn
+     120: invokestatic  #30                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.access$200:()Lorg/slf4j/Logger;
+     123: invokeinterface #33,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     128: ifeq          204
+     131: invokestatic  #30                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.access$200:()Lorg/slf4j/Logger;
+     134: new           #34                 // class java/lang/StringBuilder
+     137: dup
+     138: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     141: ldc           #172                // String Lowest locality region is
+     143: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     146: aload_0
+     147: getfield      #71                 // Field regions:[Lorg/apache/hadoop/hbase/client/RegionInfo;
+     150: aload_0
+     151: getfield      #84                 // Field regionsPerServer:[[I
+     154: iload_1
+     155: aaload
+     156: iload_3
+     157: iaload
+     158: aaload
+     159: invokeinterface #113,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+     164: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     167: ldc           #173                // String  with locality
+     169: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     172: fload_2
+     173: invokevirtual #174                // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+     176: ldc           #175                // String  and its region server contains
+     178: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     181: aload_0
+     182: getfield      #84                 // Field regionsPerServer:[[I
+     185: iload_1
+     186: aaload
+     187: arraylength
+     188: invokevirtual #176                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     191: ldc           #177                // String  regions
+     193: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     196: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     199: invokeinterface #40,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     204: aload_0
+     205: getfield      #84                 // Field regionsPerServer:[[I
+     208: iload_1
+     209: aaload
+     210: iload_3
+     211: iaload
+     212: ireturn
+     213: iconst_m1
+     214: ireturn
+
+  float getLocalityOfRegion(int, int);
+    Code:
+       0: aload_0
+       1: getfield      #24                 // Field regionFinder:Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;
+       4: ifnull        35
+       7: aload_0
+       8: getfield      #24                 // Field regionFinder:Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;
+      11: aload_0
+      12: getfield      #71                 // Field regions:[Lorg/apache/hadoop/hbase/client/RegionInfo;
+      15: iload_1
+      16: aaload
+      17: invokevirtual #169                // Method org/apache/hadoop/hbase/master/balancer/RegionLocationFinder.getBlockDistribution:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/HDFSBlocksDistribution;
+      20: astore_3
+      21: aload_3
+      22: aload_0
+      23: getfield      #66                 // Field servers:[Lorg/apache/hadoop/hbase/ServerName;
+      26: iload_2
+      27: aaload
+      28: invokevirtual #48                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+      31: invokevirtual #170                // Method org/apache/hadoop/hbase/HDFSBlocksDistribution.getBlockLocalityIndex:(Ljava/lang/String;)F
+      34: freturn
+      35: fconst_0
+      36: freturn
+
+  protected void setNumRegions(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #22                 // Field numRegions:I
+       5: return
+
+  protected void setNumMovedRegions(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #5                  // Field numMovedRegions:I
+       5: return
+
+  public java.lang.String toString();
+    Code:
+       0: new           #34                 // class java/lang/StringBuilder
+       3: dup
+       4: ldc           #178                // String Cluster={servers=[
+       6: invokespecial #179                // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+       9: astore_1
+      10: aload_0
+      11: getfield      #66                 // Field servers:[Lorg/apache/hadoop/hbase/ServerName;
+      14: astore_2
+      15: aload_2
+      16: arraylength
+      17: istore_3
+      18: iconst_0
+      19: istore        4
+      21: iload         4
+      23: iload_3
+      24: if_icmpge     54
+      27: aload_2
+      28: iload         4
+      30: aaload
+      31: astore        5
+      33: aload_1
+      34: aload         5
+      36: invokevirtual #44                 // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+      39: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: ldc           #180                // String ,
+      44: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      47: pop
+      48: iinc          4, 1
+      51: goto          21
+      54: aload_1
+      55: ldc           #181                // String ], serverIndicesSortedByRegionCount=
+      57: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: aload_0
+      61: getfield      #79                 // Field serverIndicesSortedByRegionCount:[Ljava/lang/Integer;
+      64: invokestatic  #182                // Method java/util/Arrays.toString:([Ljava/lang/Object;)Ljava/lang/String;
+      67: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      70: ldc           #183                // String , regionsPerServer=
+      72: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: aload_0
+      76: getfield      #84                 // Field regionsPerServer:[[I
+      79: invokestatic  #184                // Method java/util/Arrays.deepToString:([Ljava/lang/Object;)Ljava/lang/String;
+      82: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      85: pop
+      86: aload_1
+      87: ldc           #185                // String , numMaxRegionsPerTable=
+      89: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      92: aload_0
+      93: getfield      #104                // Field numMaxRegionsPerTable:[I
+      96: invokestatic  #186                // Method java/util/Arrays.toString:([I)Ljava/lang/String;
+      99: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     102: ldc           #187                // String , numRegions=
+     104: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     107: aload_0
+     108: getfield      #22                 // Field numRegions:I
+     111: invokevirtual #176                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     114: ldc           #188                // String , numServers=
+     116: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     119: aload_0
+     120: getfield      #45                 // Field numServers:I
+     123: invokevirtual #176                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     126: ldc           #189                // String , numTables=
+     128: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     131: aload_0
+     132: getfield      #101                // Field numTables:I
+     135: invokevirtual #176                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     138: ldc           #190                // String , numMovedRegions=
+     140: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     143: aload_0
+     144: getfield      #5                  // Field numMovedRegions:I
+     147: invokevirtual #176                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     150: bipush        125
+     152: invokevirtual #191                // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+     155: pop
+     156: aload_1
+     157: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     160: areturn
+
+  static {};
+    Code:
+       0: ldc           #192                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer
+       2: invokevirtual #193                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #139                // Field $assertionsDisabled:Z
+      16: new           #194                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action
+      19: dup
+      20: getstatic     #195                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type.NULL:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type;
+      23: invokespecial #196                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action."<init>":(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type;)V
+      26: putstatic     #197                // Field NullAction:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;
+      29: return
+}

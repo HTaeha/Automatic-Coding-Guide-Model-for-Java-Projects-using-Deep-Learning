@@ -1,0 +1,273 @@
+Compiled from "ConnectionCache.java"
+public class org.apache.hadoop.hbase.util.ConnectionCache {
+  public org.apache.hadoop.hbase.util.ConnectionCache(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.security.UserProvider, int, int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #5                  // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #6                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #2                  // Field connections:Ljava/util/Map;
+      15: aload_0
+      16: new           #7                  // class org/apache/hadoop/hbase/util/KeyLocker
+      19: dup
+      20: invokespecial #8                  // Method org/apache/hadoop/hbase/util/KeyLocker."<init>":()V
+      23: putfield      #9                  // Field locker:Lorg/apache/hadoop/hbase/util/KeyLocker;
+      26: aload_0
+      27: new           #10                 // class org/apache/hadoop/hbase/util/ConnectionCache$1
+      30: dup
+      31: aload_0
+      32: invokespecial #11                 // Method org/apache/hadoop/hbase/util/ConnectionCache$1."<init>":(Lorg/apache/hadoop/hbase/util/ConnectionCache;)V
+      35: putfield      #12                 // Field effectiveUserNames:Ljava/lang/ThreadLocal;
+      38: new           #13                 // class org/apache/hadoop/hbase/util/ConnectionCache$2
+      41: dup
+      42: aload_0
+      43: invokespecial #14                 // Method org/apache/hadoop/hbase/util/ConnectionCache$2."<init>":(Lorg/apache/hadoop/hbase/util/ConnectionCache;)V
+      46: astore        5
+      48: aload_0
+      49: new           #15                 // class org/apache/hadoop/hbase/ChoreService
+      52: dup
+      53: ldc           #16                 // String ConnectionCache
+      55: invokespecial #17                 // Method org/apache/hadoop/hbase/ChoreService."<init>":(Ljava/lang/String;)V
+      58: putfield      #18                 // Field choreService:Lorg/apache/hadoop/hbase/ChoreService;
+      61: new           #19                 // class org/apache/hadoop/hbase/util/ConnectionCache$3
+      64: dup
+      65: aload_0
+      66: ldc           #20                 // String ConnectionCleaner
+      68: aload         5
+      70: iload_3
+      71: iload         4
+      73: invokespecial #21                 // Method org/apache/hadoop/hbase/util/ConnectionCache$3."<init>":(Lorg/apache/hadoop/hbase/util/ConnectionCache;Ljava/lang/String;Lorg/apache/hadoop/hbase/Stoppable;II)V
+      76: astore        6
+      78: aload_0
+      79: getfield      #18                 // Field choreService:Lorg/apache/hadoop/hbase/ChoreService;
+      82: aload         6
+      84: invokevirtual #22                 // Method org/apache/hadoop/hbase/ChoreService.scheduleChore:(Lorg/apache/hadoop/hbase/ScheduledChore;)Z
+      87: pop
+      88: aload_0
+      89: aload_2
+      90: invokevirtual #23                 // Method org/apache/hadoop/hbase/security/UserProvider.getCurrent:()Lorg/apache/hadoop/hbase/security/User;
+      93: invokevirtual #24                 // Method org/apache/hadoop/hbase/security/User.getUGI:()Lorg/apache/hadoop/security/UserGroupInformation;
+      96: putfield      #25                 // Field realUser:Lorg/apache/hadoop/security/UserGroupInformation;
+      99: aload_0
+     100: aload_0
+     101: getfield      #25                 // Field realUser:Lorg/apache/hadoop/security/UserGroupInformation;
+     104: invokevirtual #26                 // Method org/apache/hadoop/security/UserGroupInformation.getShortUserName:()Ljava/lang/String;
+     107: putfield      #3                  // Field realUserName:Ljava/lang/String;
+     110: aload_0
+     111: aload_2
+     112: putfield      #27                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+     115: aload_0
+     116: aload_1
+     117: putfield      #28                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     120: return
+
+  public void setEffectiveUser(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field effectiveUserNames:Ljava/lang/ThreadLocal;
+       4: aload_1
+       5: invokevirtual #29                 // Method java/lang/ThreadLocal.set:(Ljava/lang/Object;)V
+       8: return
+
+  public java.lang.String getEffectiveUser();
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field effectiveUserNames:Ljava/lang/ThreadLocal;
+       4: invokevirtual #30                 // Method java/lang/ThreadLocal.get:()Ljava/lang/Object;
+       7: checkcast     #31                 // class java/lang/String
+      10: areturn
+
+  public void shutdown();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field choreService:Lorg/apache/hadoop/hbase/ChoreService;
+       4: ifnull        14
+       7: aload_0
+       8: getfield      #18                 // Field choreService:Lorg/apache/hadoop/hbase/ChoreService;
+      11: invokevirtual #32                 // Method org/apache/hadoop/hbase/ChoreService.shutdown:()V
+      14: return
+
+  public org.apache.hadoop.hbase.client.Admin getAdmin() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #33                 // Method getCurrentConnection:()Lorg/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo;
+       4: astore_1
+       5: aload_1
+       6: getfield      #34                 // Field org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.admin:Lorg/apache/hadoop/hbase/client/Admin;
+       9: ifnonnull     62
+      12: aload_0
+      13: getfield      #9                  // Field locker:Lorg/apache/hadoop/hbase/util/KeyLocker;
+      16: aload_0
+      17: invokevirtual #35                 // Method getEffectiveUser:()Ljava/lang/String;
+      20: invokevirtual #36                 // Method org/apache/hadoop/hbase/util/KeyLocker.acquireLock:(Ljava/lang/Object;)Ljava/util/concurrent/locks/ReentrantLock;
+      23: astore_2
+      24: aload_1
+      25: getfield      #34                 // Field org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.admin:Lorg/apache/hadoop/hbase/client/Admin;
+      28: ifnonnull     44
+      31: aload_1
+      32: aload_1
+      33: getfield      #37                 // Field org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.connection:Lorg/apache/hadoop/hbase/client/Connection;
+      36: invokeinterface #38,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      41: putfield      #34                 // Field org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.admin:Lorg/apache/hadoop/hbase/client/Admin;
+      44: aload_2
+      45: invokeinterface #39,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      50: goto          62
+      53: astore_3
+      54: aload_2
+      55: invokeinterface #39,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      60: aload_3
+      61: athrow
+      62: aload_1
+      63: getfield      #34                 // Field org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.admin:Lorg/apache/hadoop/hbase/client/Admin;
+      66: areturn
+    Exception table:
+       from    to  target type
+          24    44    53   any
+
+  public org.apache.hadoop.hbase.client.Table getTable(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #33                 // Method getCurrentConnection:()Lorg/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo;
+       4: astore_2
+       5: aload_2
+       6: getfield      #37                 // Field org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.connection:Lorg/apache/hadoop/hbase/client/Connection;
+       9: aload_1
+      10: invokestatic  #40                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      13: invokeinterface #41,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      18: areturn
+
+  public org.apache.hadoop.hbase.client.RegionLocator getRegionLocator(byte[]) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #33                 // Method getCurrentConnection:()Lorg/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo;
+       4: getfield      #37                 // Field org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.connection:Lorg/apache/hadoop/hbase/client/Connection;
+       7: aload_1
+       8: invokestatic  #42                 // Method org/apache/hadoop/hbase/TableName.valueOf:([B)Lorg/apache/hadoop/hbase/TableName;
+      11: invokeinterface #43,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getRegionLocator:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/RegionLocator;
+      16: areturn
+
+  org.apache.hadoop.hbase.util.ConnectionCache$ConnectionInfo getCurrentConnection() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #35                 // Method getEffectiveUser:()Ljava/lang/String;
+       4: astore_1
+       5: aload_0
+       6: getfield      #2                  // Field connections:Ljava/util/Map;
+       9: aload_1
+      10: invokeinterface #44,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      15: checkcast     #45                 // class org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo
+      18: astore_2
+      19: aload_2
+      20: ifnull        30
+      23: aload_2
+      24: invokevirtual #46                 // Method org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.updateAccessTime:()Z
+      27: ifne          150
+      30: aload_0
+      31: getfield      #9                  // Field locker:Lorg/apache/hadoop/hbase/util/KeyLocker;
+      34: aload_1
+      35: invokevirtual #36                 // Method org/apache/hadoop/hbase/util/KeyLocker.acquireLock:(Ljava/lang/Object;)Ljava/util/concurrent/locks/ReentrantLock;
+      38: astore_3
+      39: aload_0
+      40: getfield      #2                  // Field connections:Ljava/util/Map;
+      43: aload_1
+      44: invokeinterface #44,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      49: checkcast     #45                 // class org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo
+      52: astore_2
+      53: aload_2
+      54: ifnonnull     130
+      57: aload_0
+      58: getfield      #25                 // Field realUser:Lorg/apache/hadoop/security/UserGroupInformation;
+      61: astore        4
+      63: aload_1
+      64: aload_0
+      65: getfield      #3                  // Field realUserName:Ljava/lang/String;
+      68: invokevirtual #47                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      71: ifne          84
+      74: aload_1
+      75: aload_0
+      76: getfield      #25                 // Field realUser:Lorg/apache/hadoop/security/UserGroupInformation;
+      79: invokestatic  #48                 // Method org/apache/hadoop/security/UserGroupInformation.createProxyUser:(Ljava/lang/String;Lorg/apache/hadoop/security/UserGroupInformation;)Lorg/apache/hadoop/security/UserGroupInformation;
+      82: astore        4
+      84: aload_0
+      85: getfield      #27                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+      88: aload         4
+      90: invokevirtual #49                 // Method org/apache/hadoop/hbase/security/UserProvider.create:(Lorg/apache/hadoop/security/UserGroupInformation;)Lorg/apache/hadoop/hbase/security/User;
+      93: astore        5
+      95: aload_0
+      96: getfield      #28                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      99: aload         5
+     101: invokestatic  #50                 // Method org/apache/hadoop/hbase/client/ConnectionFactory.createConnection:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/security/User;)Lorg/apache/hadoop/hbase/client/Connection;
+     104: astore        6
+     106: new           #45                 // class org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo
+     109: dup
+     110: aload_0
+     111: aload         6
+     113: aload_1
+     114: invokespecial #51                 // Method org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo."<init>":(Lorg/apache/hadoop/hbase/util/ConnectionCache;Lorg/apache/hadoop/hbase/client/Connection;Ljava/lang/String;)V
+     117: astore_2
+     118: aload_0
+     119: getfield      #2                  // Field connections:Ljava/util/Map;
+     122: aload_1
+     123: aload_2
+     124: invokeinterface #52,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     129: pop
+     130: aload_3
+     131: invokeinterface #39,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     136: goto          150
+     139: astore        7
+     141: aload_3
+     142: invokeinterface #39,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     147: aload         7
+     149: athrow
+     150: aload_2
+     151: areturn
+    Exception table:
+       from    to  target type
+          39   130   139   any
+         139   141   139   any
+
+  public boolean updateConnectionAccessTime();
+    Code:
+       0: aload_0
+       1: invokevirtual #35                 // Method getEffectiveUser:()Ljava/lang/String;
+       4: astore_1
+       5: aload_0
+       6: getfield      #2                  // Field connections:Ljava/util/Map;
+       9: aload_1
+      10: invokeinterface #44,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      15: checkcast     #45                 // class org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo
+      18: astore_2
+      19: aload_2
+      20: ifnull        28
+      23: aload_2
+      24: invokevirtual #46                 // Method org/apache/hadoop/hbase/util/ConnectionCache$ConnectionInfo.updateAccessTime:()Z
+      27: ireturn
+      28: iconst_0
+      29: ireturn
+
+  static java.lang.String access$000(org.apache.hadoop.hbase.util.ConnectionCache);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field realUserName:Ljava/lang/String;
+       4: areturn
+
+  static java.util.Map access$100(org.apache.hadoop.hbase.util.ConnectionCache);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field connections:Ljava/util/Map;
+       4: areturn
+
+  static org.slf4j.Logger access$200();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #53                 // class org/apache/hadoop/hbase/util/ConnectionCache
+       2: invokestatic  #54                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

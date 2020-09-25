@@ -1,0 +1,226 @@
+Compiled from "AbstractPeerProcedure.java"
+public abstract class org.apache.hadoop.hbase.master.replication.AbstractPeerProcedure<TState> extends org.apache.hadoop.hbase.master.replication.AbstractPeerNoLockProcedure<TState> implements org.apache.hadoop.hbase.master.procedure.PeerProcedureInterface {
+  protected static final int UPDATE_LAST_SEQ_ID_BATCH_SIZE;
+
+  protected static final int SLEEP_INTERVAL_MS;
+
+  protected org.apache.hadoop.hbase.master.procedure.ProcedurePrepareLatch latch;
+
+  protected org.apache.hadoop.hbase.master.replication.AbstractPeerProcedure();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/master/replication/AbstractPeerNoLockProcedure."<init>":()V
+       4: return
+
+  protected org.apache.hadoop.hbase.master.replication.AbstractPeerProcedure(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #2                  // Method org/apache/hadoop/hbase/master/replication/AbstractPeerNoLockProcedure."<init>":(Ljava/lang/String;)V
+       5: aload_0
+       6: iconst_2
+       7: iconst_1
+       8: invokestatic  #3                  // Method org/apache/hadoop/hbase/master/procedure/ProcedurePrepareLatch.createLatch:(II)Lorg/apache/hadoop/hbase/master/procedure/ProcedurePrepareLatch;
+      11: putfield      #4                  // Field latch:Lorg/apache/hadoop/hbase/master/procedure/ProcedurePrepareLatch;
+      14: return
+
+  public org.apache.hadoop.hbase.master.procedure.ProcedurePrepareLatch getLatch();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field latch:Lorg/apache/hadoop/hbase/master/procedure/ProcedurePrepareLatch;
+       4: areturn
+
+  protected org.apache.hadoop.hbase.procedure2.Procedure$LockState acquireLock(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv);
+    Code:
+       0: aload_1
+       1: invokevirtual #5                  // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getProcedureScheduler:()Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler;
+       4: aload_0
+       5: aload_0
+       6: getfield      #6                  // Field peerId:Ljava/lang/String;
+       9: invokevirtual #7                  // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler.waitPeerExclusiveLock:(Lorg/apache/hadoop/hbase/procedure2/Procedure;Ljava/lang/String;)Z
+      12: ifeq          19
+      15: getstatic     #8                  // Field org/apache/hadoop/hbase/procedure2/Procedure$LockState.LOCK_EVENT_WAIT:Lorg/apache/hadoop/hbase/procedure2/Procedure$LockState;
+      18: areturn
+      19: getstatic     #9                  // Field org/apache/hadoop/hbase/procedure2/Procedure$LockState.LOCK_ACQUIRED:Lorg/apache/hadoop/hbase/procedure2/Procedure$LockState;
+      22: areturn
+
+  protected void releaseLock(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv);
+    Code:
+       0: aload_1
+       1: invokevirtual #5                  // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getProcedureScheduler:()Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler;
+       4: aload_0
+       5: aload_0
+       6: getfield      #6                  // Field peerId:Ljava/lang/String;
+       9: invokevirtual #10                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler.wakePeerExclusiveLock:(Lorg/apache/hadoop/hbase/procedure2/Procedure;Ljava/lang/String;)V
+      12: return
+
+  protected boolean holdLock(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv);
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  protected final void refreshPeer(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv, org.apache.hadoop.hbase.master.procedure.PeerProcedureInterface$PeerOperationType);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #11                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getMasterServices:()Lorg/apache/hadoop/hbase/master/MasterServices;
+       5: invokeinterface #12,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getServerManager:()Lorg/apache/hadoop/hbase/master/ServerManager;
+      10: invokevirtual #13                 // Method org/apache/hadoop/hbase/master/ServerManager.getOnlineServersList:()Ljava/util/List;
+      13: invokeinterface #14,  1           // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+      18: aload_0
+      19: aload_2
+      20: invokedynamic #15,  0             // InvokeDynamic #0:apply:(Lorg/apache/hadoop/hbase/master/replication/AbstractPeerProcedure;Lorg/apache/hadoop/hbase/master/procedure/PeerProcedureInterface$PeerOperationType;)Ljava/util/function/Function;
+      25: invokeinterface #16,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      30: invokedynamic #17,  0             // InvokeDynamic #1:apply:()Ljava/util/function/IntFunction;
+      35: invokeinterface #18,  2           // InterfaceMethod java/util/stream/Stream.toArray:(Ljava/util/function/IntFunction;)[Ljava/lang/Object;
+      40: checkcast     #19                 // class "[Lorg/apache/hadoop/hbase/procedure2/Procedure;"
+      43: invokevirtual #20                 // Method addChildProcedure:([Lorg/apache/hadoop/hbase/procedure2/Procedure;)V
+      46: return
+
+  protected void enablePeer(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_1
+       1: invokevirtual #21                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getReplicationPeerManager:()Lorg/apache/hadoop/hbase/master/replication/ReplicationPeerManager;
+       4: aload_0
+       5: getfield      #6                  // Field peerId:Ljava/lang/String;
+       8: invokevirtual #22                 // Method org/apache/hadoop/hbase/master/replication/ReplicationPeerManager.enablePeer:(Ljava/lang/String;)V
+      11: return
+
+  protected final void setLastPushedSequenceId(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv, org.apache.hadoop.hbase.replication.ReplicationPeerConfig) throws java.io.IOException, org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: new           #29                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #30                 // Method java/util/HashMap."<init>":()V
+       7: astore_3
+       8: aload_1
+       9: invokevirtual #11                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getMasterServices:()Lorg/apache/hadoop/hbase/master/MasterServices;
+      12: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getTableDescriptors:()Lorg/apache/hadoop/hbase/TableDescriptors;
+      17: invokeinterface #32,  1           // InterfaceMethod org/apache/hadoop/hbase/TableDescriptors.getAll:()Ljava/util/Map;
+      22: invokeinterface #33,  1           // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+      27: invokeinterface #34,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      32: astore        4
+      34: aload         4
+      36: invokeinterface #35,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      41: ifeq          101
+      44: aload         4
+      46: invokeinterface #36,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      51: checkcast     #37                 // class org/apache/hadoop/hbase/client/TableDescriptor
+      54: astore        5
+      56: aload         5
+      58: invokeinterface #38,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.hasGlobalReplicationScope:()Z
+      63: ifne          69
+      66: goto          34
+      69: aload         5
+      71: invokeinterface #39,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      76: astore        6
+      78: aload_2
+      79: aload         6
+      81: invokestatic  #40                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.contains:(Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;Lorg/apache/hadoop/hbase/TableName;)Z
+      84: ifne          90
+      87: goto          34
+      90: aload_0
+      91: aload_1
+      92: aload         6
+      94: aload_3
+      95: invokevirtual #41                 // Method setLastPushedSequenceIdForTable:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;Lorg/apache/hadoop/hbase/TableName;Ljava/util/Map;)V
+      98: goto          34
+     101: aload_3
+     102: invokeinterface #42,  1           // InterfaceMethod java/util/Map.isEmpty:()Z
+     107: ifne          127
+     110: aload_1
+     111: invokevirtual #21                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getReplicationPeerManager:()Lorg/apache/hadoop/hbase/master/replication/ReplicationPeerManager;
+     114: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/replication/ReplicationPeerManager.getQueueStorage:()Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+     117: aload_0
+     118: getfield      #6                  // Field peerId:Ljava/lang/String;
+     121: aload_3
+     122: invokeinterface #27,  3           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationQueueStorage.setLastSequenceIds:(Ljava/lang/String;Ljava/util/Map;)V
+     127: return
+
+  protected final void setLastPushedSequenceIdForTable(org.apache.hadoop.hbase.master.procedure.MasterProcedureEnv, org.apache.hadoop.hbase.TableName, java.util.Map<java.lang.String, java.lang.Long>) throws java.io.IOException, org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_1
+       1: invokevirtual #11                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getMasterServices:()Lorg/apache/hadoop/hbase/master/MasterServices;
+       4: invokeinterface #56,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getTableStateManager:()Lorg/apache/hadoop/hbase/master/TableStateManager;
+       9: astore        4
+      11: aload_1
+      12: invokevirtual #21                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getReplicationPeerManager:()Lorg/apache/hadoop/hbase/master/replication/ReplicationPeerManager;
+      15: invokevirtual #43                 // Method org/apache/hadoop/hbase/master/replication/ReplicationPeerManager.getQueueStorage:()Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+      18: astore        5
+      20: aload_1
+      21: invokevirtual #11                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv.getMasterServices:()Lorg/apache/hadoop/hbase/master/MasterServices;
+      24: invokeinterface #57,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      29: astore        6
+      31: aload_0
+      32: aload         4
+      34: aload_2
+      35: invokespecial #58                 // Method needSetLastPushedSequenceId:(Lorg/apache/hadoop/hbase/master/TableStateManager;Lorg/apache/hadoop/hbase/TableName;)Z
+      38: ifne          53
+      41: getstatic     #59                 // Field LOG:Lorg/slf4j/Logger;
+      44: ldc           #60                 // String Skip settting last pushed sequence id for {}
+      46: aload_2
+      47: invokeinterface #61,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+      52: return
+      53: aload         6
+      55: aload_2
+      56: invokestatic  #62                 // Method org/apache/hadoop/hbase/MetaTableAccessor.getTableEncodedRegionNameAndLastBarrier:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      59: invokeinterface #63,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      64: astore        7
+      66: aload         7
+      68: invokeinterface #35,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      73: ifeq          132
+      76: aload         7
+      78: invokeinterface #36,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      83: checkcast     #64                 // class org/apache/hadoop/hbase/util/Pair
+      86: astore        8
+      88: getstatic     #59                 // Field LOG:Lorg/slf4j/Logger;
+      91: ldc           #65                 // String Update last pushed sequence id for {}, {}
+      93: aload_2
+      94: aload         8
+      96: invokeinterface #66,  4           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     101: aload_0
+     102: aload_3
+     103: aload         8
+     105: invokevirtual #67                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+     108: checkcast     #68                 // class java/lang/String
+     111: aload         8
+     113: invokevirtual #69                 // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+     116: checkcast     #70                 // class java/lang/Long
+     119: invokevirtual #71                 // Method java/lang/Long.longValue:()J
+     122: lconst_1
+     123: lsub
+     124: aload         5
+     126: invokespecial #72                 // Method addToMap:(Ljava/util/Map;Ljava/lang/String;JLorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;)V
+     129: goto          66
+     132: return
+
+  protected boolean holdLock(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #73                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+       5: invokevirtual #74                 // Method holdLock:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;)Z
+       8: ireturn
+
+  protected void releaseLock(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #73                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+       5: invokevirtual #75                 // Method releaseLock:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;)V
+       8: return
+
+  protected org.apache.hadoop.hbase.procedure2.Procedure$LockState acquireLock(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #73                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+       5: invokevirtual #76                 // Method acquireLock:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;)Lorg/apache/hadoop/hbase/procedure2/Procedure$LockState;
+       8: areturn
+
+  static {};
+    Code:
+       0: ldc           #26                 // class org/apache/hadoop/hbase/master/replication/AbstractPeerProcedure
+       2: invokestatic  #79                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #59                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

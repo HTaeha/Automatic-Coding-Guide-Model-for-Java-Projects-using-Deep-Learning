@@ -1,0 +1,497 @@
+Compiled from "RegionReplicaReplicationEndpoint.java"
+class org.apache.hadoop.hbase.replication.regionserver.RegionReplicaReplicationEndpoint$RegionReplicaSinkWriter extends org.apache.hadoop.hbase.wal.WALSplitter$SinkWriter {
+  org.apache.hadoop.hbase.replication.regionserver.RegionReplicaReplicationEndpoint$RegionReplicaOutputSink sink;
+
+  org.apache.hadoop.hbase.client.ClusterConnection connection;
+
+  org.apache.hadoop.hbase.ipc.RpcControllerFactory rpcControllerFactory;
+
+  org.apache.hadoop.hbase.client.RpcRetryingCallerFactory rpcRetryingCallerFactory;
+
+  int operationTimeout;
+
+  java.util.concurrent.ExecutorService pool;
+
+  org.apache.hbase.thirdparty.com.google.common.cache.Cache<org.apache.hadoop.hbase.TableName, java.lang.Boolean> disabledAndDroppedTables;
+
+  org.apache.hadoop.hbase.TableDescriptors tableDescriptors;
+
+  public org.apache.hadoop.hbase.replication.regionserver.RegionReplicaReplicationEndpoint$RegionReplicaSinkWriter(org.apache.hadoop.hbase.replication.regionserver.RegionReplicaReplicationEndpoint$RegionReplicaOutputSink, org.apache.hadoop.hbase.client.ClusterConnection, java.util.concurrent.ExecutorService, int, org.apache.hadoop.hbase.TableDescriptors);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/wal/WALSplitter$SinkWriter."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #2                  // Field sink:Lorg/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink;
+       9: aload_0
+      10: aload_2
+      11: putfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      14: aload_0
+      15: iload         4
+      17: putfield      #4                  // Field operationTimeout:I
+      20: aload_0
+      21: aload_2
+      22: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      27: invokestatic  #6                  // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      30: putfield      #7                  // Field rpcRetryingCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      33: aload_0
+      34: aload_2
+      35: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      40: invokestatic  #8                  // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      43: putfield      #9                  // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      46: aload_0
+      47: aload_3
+      48: putfield      #10                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      51: aload_0
+      52: aload         5
+      54: putfield      #11                 // Field tableDescriptors:Lorg/apache/hadoop/hbase/TableDescriptors;
+      57: aload_2
+      58: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      63: ldc           #12                 // String hbase.region.replica.replication.cache.disabledAndDroppedTables.expiryMs
+      65: sipush        5000
+      68: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      71: istore        6
+      73: aload_0
+      74: invokestatic  #14                 // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.newBuilder:()Lorg/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder;
+      77: iload         6
+      79: i2l
+      80: getstatic     #15                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      83: invokevirtual #16                 // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.expireAfterWrite:(JLjava/util/concurrent/TimeUnit;)Lorg/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder;
+      86: bipush        10
+      88: invokevirtual #17                 // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.initialCapacity:(I)Lorg/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder;
+      91: ldc2_w        #18                 // long 1000l
+      94: invokevirtual #20                 // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.maximumSize:(J)Lorg/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder;
+      97: invokevirtual #21                 // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.build:()Lorg/apache/hbase/thirdparty/com/google/common/cache/Cache;
+     100: putfield      #22                 // Field disabledAndDroppedTables:Lorg/apache/hbase/thirdparty/com/google/common/cache/Cache;
+     103: return
+
+  public void append(org.apache.hadoop.hbase.TableName, byte[], byte[], java.util.List<org.apache.hadoop.hbase.wal.WAL$Entry>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #22                 // Field disabledAndDroppedTables:Lorg/apache/hbase/thirdparty/com/google/common/cache/Cache;
+       4: aload_1
+       5: invokeinterface #23,  2           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/cache/Cache.getIfPresent:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: ifnull        153
+      13: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+      16: invokeinterface #25,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      21: ifeq          133
+      24: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+      27: new           #26                 // class java/lang/StringBuilder
+      30: dup
+      31: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      34: ldc           #28                 // String Skipping
+      36: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: aload         4
+      41: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+      46: invokevirtual #31                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      49: ldc           #32                 // String  entries because table
+      51: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      54: aload_1
+      55: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      58: ldc           #34                 // String  is cached as a disabled or dropped table
+      60: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      66: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      71: aload         4
+      73: invokeinterface #37,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      78: astore        5
+      80: aload         5
+      82: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      87: ifeq          133
+      90: aload         5
+      92: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      97: checkcast     #40                 // class org/apache/hadoop/hbase/wal/WAL$Entry
+     100: astore        6
+     102: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     105: new           #26                 // class java/lang/StringBuilder
+     108: dup
+     109: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     112: ldc           #41                 // String Skipping :
+     114: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: aload         6
+     119: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     122: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     125: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     130: goto          80
+     133: aload_0
+     134: getfield      #2                  // Field sink:Lorg/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink;
+     137: invokevirtual #42                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink.getSkippedEditsCounter:()Ljava/util/concurrent/atomic/AtomicLong;
+     140: aload         4
+     142: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+     147: i2l
+     148: invokevirtual #43                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+     151: pop2
+     152: return
+     153: aconst_null
+     154: astore        5
+     156: iconst_1
+     157: istore        6
+     159: aload_0
+     160: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     163: aload_1
+     164: aload_3
+     165: iload         6
+     167: iconst_0
+     168: invokestatic  #44                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaReplayCallable.getRegionLocations:(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/TableName;[BZI)Lorg/apache/hadoop/hbase/RegionLocations;
+     171: astore        5
+     173: aload         5
+     175: ifnonnull     217
+     178: new           #45                 // class org/apache/hadoop/hbase/HBaseIOException
+     181: dup
+     182: new           #26                 // class java/lang/StringBuilder
+     185: dup
+     186: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     189: ldc           #46                 // String Cannot locate locations for
+     191: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     194: aload_1
+     195: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     198: ldc           #47                 // String , row:
+     200: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     203: aload_3
+     204: invokestatic  #48                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+     207: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     210: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     213: invokespecial #49                 // Method org/apache/hadoop/hbase/HBaseIOException."<init>":(Ljava/lang/String;)V
+     216: athrow
+     217: goto          375
+     220: astore        7
+     222: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     225: invokeinterface #25,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     230: ifeq          342
+     233: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     236: new           #26                 // class java/lang/StringBuilder
+     239: dup
+     240: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     243: ldc           #28                 // String Skipping
+     245: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     248: aload         4
+     250: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+     255: invokevirtual #31                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     258: ldc           #32                 // String  entries because table
+     260: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     263: aload_1
+     264: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     267: ldc           #51                 // String  is dropped. Adding table to cache.
+     269: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     272: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     275: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     280: aload         4
+     282: invokeinterface #37,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     287: astore        8
+     289: aload         8
+     291: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     296: ifeq          342
+     299: aload         8
+     301: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     306: checkcast     #40                 // class org/apache/hadoop/hbase/wal/WAL$Entry
+     309: astore        9
+     311: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     314: new           #26                 // class java/lang/StringBuilder
+     317: dup
+     318: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     321: ldc           #41                 // String Skipping :
+     323: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     326: aload         9
+     328: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     331: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     334: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     339: goto          289
+     342: aload_0
+     343: getfield      #22                 // Field disabledAndDroppedTables:Lorg/apache/hbase/thirdparty/com/google/common/cache/Cache;
+     346: aload_1
+     347: getstatic     #52                 // Field java/lang/Boolean.TRUE:Ljava/lang/Boolean;
+     350: invokeinterface #53,  3           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/cache/Cache.put:(Ljava/lang/Object;Ljava/lang/Object;)V
+     355: aload_0
+     356: getfield      #2                  // Field sink:Lorg/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink;
+     359: invokevirtual #42                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink.getSkippedEditsCounter:()Ljava/util/concurrent/atomic/AtomicLong;
+     362: aload         4
+     364: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+     369: i2l
+     370: invokevirtual #43                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+     373: pop2
+     374: return
+     375: aload         5
+     377: invokevirtual #54                 // Method org/apache/hadoop/hbase/RegionLocations.getDefaultRegionLocation:()Lorg/apache/hadoop/hbase/HRegionLocation;
+     380: astore        7
+     382: aload         7
+     384: invokevirtual #55                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegionInfo:()Lorg/apache/hadoop/hbase/HRegionInfo;
+     387: invokevirtual #56                 // Method org/apache/hadoop/hbase/HRegionInfo.getEncodedNameAsBytes:()[B
+     390: aload_2
+     391: invokestatic  #57                 // Method org/apache/hadoop/hbase/util/Bytes.equals:([B[B)Z
+     394: ifne          576
+     397: iload         6
+     399: ifeq          408
+     402: iconst_0
+     403: istore        6
+     405: goto          159
+     408: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     411: invokeinterface #25,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     416: ifeq          556
+     419: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     422: new           #26                 // class java/lang/StringBuilder
+     425: dup
+     426: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     429: ldc           #28                 // String Skipping
+     431: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     434: aload         4
+     436: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+     441: invokevirtual #31                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     444: ldc           #58                 // String  entries in table
+     446: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     449: aload_1
+     450: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     453: ldc           #59                 // String  because located region
+     455: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     458: aload         7
+     460: invokevirtual #55                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegionInfo:()Lorg/apache/hadoop/hbase/HRegionInfo;
+     463: invokevirtual #60                 // Method org/apache/hadoop/hbase/HRegionInfo.getEncodedName:()Ljava/lang/String;
+     466: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     469: ldc           #61                 // String  is different than the original region
+     471: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     474: aload_2
+     475: invokestatic  #48                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+     478: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     481: ldc           #62                 // String  from WALEdit
+     483: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     486: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     489: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     494: aload         4
+     496: invokeinterface #37,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     501: astore        8
+     503: aload         8
+     505: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     510: ifeq          556
+     513: aload         8
+     515: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     520: checkcast     #40                 // class org/apache/hadoop/hbase/wal/WAL$Entry
+     523: astore        9
+     525: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     528: new           #26                 // class java/lang/StringBuilder
+     531: dup
+     532: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     535: ldc           #41                 // String Skipping :
+     537: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     540: aload         9
+     542: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     545: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     548: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     553: goto          503
+     556: aload_0
+     557: getfield      #2                  // Field sink:Lorg/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink;
+     560: invokevirtual #42                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink.getSkippedEditsCounter:()Ljava/util/concurrent/atomic/AtomicLong;
+     563: aload         4
+     565: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+     570: i2l
+     571: invokevirtual #43                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+     574: pop2
+     575: return
+     576: aload         5
+     578: invokevirtual #63                 // Method org/apache/hadoop/hbase/RegionLocations.size:()I
+     581: iconst_1
+     582: if_icmpne     586
+     585: return
+     586: new           #64                 // class java/util/ArrayList
+     589: dup
+     590: aload         5
+     592: invokevirtual #63                 // Method org/apache/hadoop/hbase/RegionLocations.size:()I
+     595: iconst_1
+     596: isub
+     597: invokespecial #65                 // Method java/util/ArrayList."<init>":(I)V
+     600: astore        7
+     602: iconst_0
+     603: istore        8
+     605: iload         8
+     607: aload         5
+     609: invokevirtual #63                 // Method org/apache/hadoop/hbase/RegionLocations.size:()I
+     612: if_icmpge     734
+     615: aload         5
+     617: iload         8
+     619: invokevirtual #66                 // Method org/apache/hadoop/hbase/RegionLocations.getRegionLocation:(I)Lorg/apache/hadoop/hbase/HRegionLocation;
+     622: astore        9
+     624: iload         8
+     626: invokestatic  #67                 // Method org/apache/hadoop/hbase/client/RegionReplicaUtil.isDefaultReplica:(I)Z
+     629: ifne          728
+     632: aload         9
+     634: ifnonnull     653
+     637: aload         5
+     639: invokevirtual #54                 // Method org/apache/hadoop/hbase/RegionLocations.getDefaultRegionLocation:()Lorg/apache/hadoop/hbase/HRegionLocation;
+     642: invokevirtual #55                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegionInfo:()Lorg/apache/hadoop/hbase/HRegionInfo;
+     645: iload         8
+     647: invokestatic  #68                 // Method org/apache/hadoop/hbase/client/RegionReplicaUtil.getRegionInfoForReplica:(Lorg/apache/hadoop/hbase/client/RegionInfo;I)Lorg/apache/hadoop/hbase/client/RegionInfo;
+     650: goto          658
+     653: aload         9
+     655: invokevirtual #55                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegionInfo:()Lorg/apache/hadoop/hbase/HRegionInfo;
+     658: astore        10
+     660: new           #69                 // class org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaReplayCallable
+     663: dup
+     664: aload_0
+     665: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     668: aload_0
+     669: getfield      #9                  // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     672: aload_1
+     673: aload         9
+     675: aload         10
+     677: aload_3
+     678: aload         4
+     680: aload_0
+     681: getfield      #2                  // Field sink:Lorg/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink;
+     684: invokevirtual #42                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink.getSkippedEditsCounter:()Ljava/util/concurrent/atomic/AtomicLong;
+     687: invokespecial #70                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaReplayCallable."<init>":(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/HRegionLocation;Lorg/apache/hadoop/hbase/client/RegionInfo;[BLjava/util/List;Ljava/util/concurrent/atomic/AtomicLong;)V
+     690: astore        11
+     692: aload_0
+     693: getfield      #10                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     696: new           #71                 // class org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RetryingRpcCallable
+     699: dup
+     700: aload_0
+     701: getfield      #7                  // Field rpcRetryingCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+     704: aload         11
+     706: aload_0
+     707: getfield      #4                  // Field operationTimeout:I
+     710: invokespecial #72                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RetryingRpcCallable."<init>":(Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/client/RetryingCallable;I)V
+     713: invokeinterface #73,  2           // InterfaceMethod java/util/concurrent/ExecutorService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+     718: astore        12
+     720: aload         7
+     722: aload         12
+     724: invokevirtual #74                 // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+     727: pop
+     728: iinc          8, 1
+     731: goto          605
+     734: iconst_0
+     735: istore        8
+     737: iconst_0
+     738: istore        9
+     740: iload         9
+     742: aload         7
+     744: invokevirtual #75                 // Method java/util/ArrayList.size:()I
+     747: if_icmpge     1064
+     750: aload         7
+     752: iload         9
+     754: invokevirtual #76                 // Method java/util/ArrayList.get:(I)Ljava/lang/Object;
+     757: checkcast     #77                 // class java/util/concurrent/Future
+     760: invokeinterface #78,  1           // InterfaceMethod java/util/concurrent/Future.get:()Ljava/lang/Object;
+     765: pop
+     766: goto          1058
+     769: astore        10
+     771: new           #80                 // class java/io/InterruptedIOException
+     774: dup
+     775: aload         10
+     777: invokevirtual #81                 // Method java/lang/InterruptedException.getMessage:()Ljava/lang/String;
+     780: invokespecial #82                 // Method java/io/InterruptedIOException."<init>":(Ljava/lang/String;)V
+     783: athrow
+     784: astore        10
+     786: aload         10
+     788: invokevirtual #84                 // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+     791: astore        11
+     793: iconst_0
+     794: istore        12
+     796: aload         11
+     798: instanceof    #85                 // class java/io/IOException
+     801: ifeq          1048
+     804: aload         11
+     806: instanceof    #50                 // class org/apache/hadoop/hbase/TableNotFoundException
+     809: ifne          825
+     812: aload_0
+     813: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     816: aload_1
+     817: invokeinterface #86,  2           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.isTableDisabled:(Lorg/apache/hadoop/hbase/TableName;)Z
+     822: ifeq          844
+     825: aload_0
+     826: getfield      #22                 // Field disabledAndDroppedTables:Lorg/apache/hbase/thirdparty/com/google/common/cache/Cache;
+     829: aload_1
+     830: getstatic     #52                 // Field java/lang/Boolean.TRUE:Ljava/lang/Boolean;
+     833: invokeinterface #53,  3           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/cache/Cache.put:(Ljava/lang/Object;Ljava/lang/Object;)V
+     838: iconst_1
+     839: istore        12
+     841: goto          885
+     844: aload_0
+     845: getfield      #11                 // Field tableDescriptors:Lorg/apache/hadoop/hbase/TableDescriptors;
+     848: ifnull        885
+     851: aload_0
+     852: getfield      #11                 // Field tableDescriptors:Lorg/apache/hadoop/hbase/TableDescriptors;
+     855: aload_1
+     856: invokeinterface #87,  2           // InterfaceMethod org/apache/hadoop/hbase/TableDescriptors.get:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     861: astore        13
+     863: aload         13
+     865: ifnull        885
+     868: aload         13
+     870: invokeinterface #88,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getRegionReplication:()I
+     875: iload         9
+     877: iconst_1
+     878: iadd
+     879: if_icmpgt     885
+     882: iconst_1
+     883: istore        12
+     885: iload         12
+     887: ifeq          1042
+     890: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     893: invokeinterface #25,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     898: ifeq          1012
+     901: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     904: new           #26                 // class java/lang/StringBuilder
+     907: dup
+     908: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     911: ldc           #28                 // String Skipping
+     913: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     916: aload         4
+     918: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+     923: invokevirtual #31                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     926: ldc           #58                 // String  entries in table
+     928: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     931: aload_1
+     932: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     935: ldc           #89                 // String  because received exception for dropped or disabled table
+     937: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     940: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     943: aload         11
+     945: invokeinterface #90,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     950: aload         4
+     952: invokeinterface #37,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     957: astore        13
+     959: aload         13
+     961: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     966: ifeq          1012
+     969: aload         13
+     971: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     976: checkcast     #40                 // class org/apache/hadoop/hbase/wal/WAL$Entry
+     979: astore        14
+     981: invokestatic  #24                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint.access$000:()Lorg/slf4j/Logger;
+     984: new           #26                 // class java/lang/StringBuilder
+     987: dup
+     988: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     991: ldc           #41                 // String Skipping :
+     993: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     996: aload         14
+     998: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    1001: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1004: invokeinterface #36,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+    1009: goto          959
+    1012: iload         8
+    1014: ifne          1039
+    1017: aload_0
+    1018: getfield      #2                  // Field sink:Lorg/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink;
+    1021: invokevirtual #42                 // Method org/apache/hadoop/hbase/replication/regionserver/RegionReplicaReplicationEndpoint$RegionReplicaOutputSink.getSkippedEditsCounter:()Ljava/util/concurrent/atomic/AtomicLong;
+    1024: aload         4
+    1026: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+    1031: i2l
+    1032: invokevirtual #43                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+    1035: pop2
+    1036: iconst_1
+    1037: istore        8
+    1039: goto          1058
+    1042: aload         11
+    1044: checkcast     #85                 // class java/io/IOException
+    1047: athrow
+    1048: new           #85                 // class java/io/IOException
+    1051: dup
+    1052: aload         11
+    1054: invokespecial #91                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+    1057: athrow
+    1058: iinc          9, 1
+    1061: goto          740
+    1064: return
+    Exception table:
+       from    to  target type
+         159   217   220   Class org/apache/hadoop/hbase/TableNotFoundException
+         750   766   769   Class java/lang/InterruptedException
+         750   766   784   Class java/util/concurrent/ExecutionException
+}

@@ -1,0 +1,401 @@
+Compiled from "MultiThreadedReader.java"
+public class org.apache.hadoop.hbase.util.MultiThreadedReader$HBaseReaderThread extends java.lang.Thread {
+  protected final int readerId;
+
+  protected final org.apache.hadoop.hbase.client.Table table;
+
+  protected long startTimeMs;
+
+  final org.apache.hadoop.hbase.util.MultiThreadedReader this$0;
+
+  public org.apache.hadoop.hbase.util.MultiThreadedReader$HBaseReaderThread(org.apache.hadoop.hbase.util.MultiThreadedReader, int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+       5: aload_0
+       6: invokespecial #2                  // Method java/lang/Thread."<init>":()V
+       9: aload_0
+      10: iconst_1
+      11: putfield      #3                  // Field printExceptionTrace:Z
+      14: aload_0
+      15: iload_2
+      16: putfield      #4                  // Field readerId:I
+      19: aload_0
+      20: aload_0
+      21: invokevirtual #5                  // Method createTable:()Lorg/apache/hadoop/hbase/client/Table;
+      24: putfield      #6                  // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      27: aload_0
+      28: new           #7                  // class java/lang/StringBuilder
+      31: dup
+      32: invokespecial #8                  // Method java/lang/StringBuilder."<init>":()V
+      35: aload_0
+      36: invokevirtual #9                  // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      39: invokevirtual #10                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      42: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      45: ldc           #12                 // String _
+      47: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: iload_2
+      51: invokevirtual #13                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      54: invokevirtual #14                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      57: invokevirtual #15                 // Method setName:(Ljava/lang/String;)V
+      60: return
+
+  protected org.apache.hadoop.hbase.client.Table createTable() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+       4: getfield      #16                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       7: aload_0
+       8: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      11: getfield      #17                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.tableName:Lorg/apache/hadoop/hbase/TableName;
+      14: invokeinterface #18,  2           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      19: areturn
+
+  public void run();
+    Code:
+       0: aload_0
+       1: invokespecial #19                 // Method runReader:()V
+       4: aload_0
+       5: invokevirtual #20                 // Method closeTable:()V
+       8: aload_0
+       9: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      12: getfield      #21                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.numThreadsWorking:Ljava/util/concurrent/atomic/AtomicInteger;
+      15: invokevirtual #22                 // Method java/util/concurrent/atomic/AtomicInteger.decrementAndGet:()I
+      18: pop
+      19: goto          40
+      22: astore_1
+      23: aload_0
+      24: invokevirtual #20                 // Method closeTable:()V
+      27: aload_0
+      28: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      31: getfield      #21                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.numThreadsWorking:Ljava/util/concurrent/atomic/AtomicInteger;
+      34: invokevirtual #22                 // Method java/util/concurrent/atomic/AtomicInteger.decrementAndGet:()I
+      37: pop
+      38: aload_1
+      39: athrow
+      40: return
+    Exception table:
+       from    to  target type
+           0     4    22   any
+
+  protected void closeTable();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field table:Lorg/apache/hadoop/hbase/client/Table;
+       4: ifnull        16
+       7: aload_0
+       8: getfield      #6                  // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      11: invokeinterface #23,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      16: goto          31
+      19: astore_1
+      20: invokestatic  #25                 // Method org/apache/hadoop/hbase/util/MultiThreadedReader.access$000:()Lorg/slf4j/Logger;
+      23: ldc           #26                 // String Error closing table
+      25: aload_1
+      26: invokeinterface #27,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      31: return
+    Exception table:
+       from    to  target type
+           0    16    19   Class java/io/IOException
+
+  protected long getNextKeyToRead();
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #52                 // Field readingRandomKey:Z
+       5: aload_0
+       6: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+       9: getfield      #50                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.writer:Lorg/apache/hadoop/hbase/util/MultiThreadedWriterBase;
+      12: ifnull        27
+      15: aload_0
+      16: getfield      #35                 // Field curKey:J
+      19: aload_0
+      20: invokespecial #59                 // Method maxKeyWeCanRead:()J
+      23: lcmp
+      24: ifgt          39
+      27: aload_0
+      28: dup
+      29: getfield      #35                 // Field curKey:J
+      32: dup2_x1
+      33: lconst_1
+      34: ladd
+      35: putfield      #35                 // Field curKey:J
+      38: lreturn
+      39: aload_0
+      40: invokespecial #59                 // Method maxKeyWeCanRead:()J
+      43: dup2
+      44: lstore_1
+      45: aload_0
+      46: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      49: getfield      #34                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.startKey:J
+      52: lcmp
+      53: ifge          65
+      56: ldc2_w        #60                 // long 50l
+      59: invokestatic  #62                 // Method org/apache/hadoop/hbase/util/Threads.sleepWithoutInterrupt:(J)V
+      62: goto          39
+      65: aload_0
+      66: getfield      #35                 // Field curKey:J
+      69: lload_1
+      70: lcmp
+      71: ifgt          86
+      74: aload_0
+      75: dup
+      76: getfield      #35                 // Field curKey:J
+      79: dup2_x1
+      80: lconst_1
+      81: ladd
+      82: putfield      #35                 // Field curKey:J
+      85: lreturn
+      86: aload_0
+      87: iconst_1
+      88: putfield      #52                 // Field readingRandomKey:Z
+      91: aload_0
+      92: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      95: getfield      #34                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.startKey:J
+      98: invokestatic  #63                 // Method org/apache/commons/lang3/RandomUtils.nextLong:()J
+     101: invokestatic  #64                 // Method java/lang/Math.abs:(J)J
+     104: lload_1
+     105: aload_0
+     106: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+     109: getfield      #34                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.startKey:J
+     112: lsub
+     113: lconst_1
+     114: ladd
+     115: lrem
+     116: ladd
+     117: lreturn
+
+  protected org.apache.hadoop.hbase.client.Get createGet(long) throws java.io.IOException;
+    Code:
+       0: new           #65                 // class org/apache/hadoop/hbase/client/Get
+       3: dup
+       4: aload_0
+       5: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+       8: getfield      #81                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+      11: lload_1
+      12: invokevirtual #82                 // Method org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.getDeterministicUniqueKey:(J)[B
+      15: invokespecial #83                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+      18: astore_3
+      19: ldc           #74                 // String
+      21: astore        4
+      23: aload_0
+      24: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      27: getfield      #81                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+      30: invokevirtual #84                 // Method org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.getColumnFamilies:()[[B
+      33: astore        5
+      35: aload         5
+      37: astore        6
+      39: aload         6
+      41: arraylength
+      42: istore        7
+      44: iconst_0
+      45: istore        8
+      47: iload         8
+      49: iload         7
+      51: if_icmpge     149
+      54: aload         6
+      56: iload         8
+      58: aaload
+      59: astore        9
+      61: aload_3
+      62: aload         9
+      64: invokevirtual #85                 // Method org/apache/hadoop/hbase/client/Get.addFamily:([B)Lorg/apache/hadoop/hbase/client/Get;
+      67: pop
+      68: aload_0
+      69: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      72: getfield      #28                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.verbose:Z
+      75: ifeq          143
+      78: aload         4
+      80: invokevirtual #86                 // Method java/lang/String.length:()I
+      83: ifle          108
+      86: new           #7                  // class java/lang/StringBuilder
+      89: dup
+      90: invokespecial #8                  // Method java/lang/StringBuilder."<init>":()V
+      93: aload         4
+      95: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      98: ldc           #87                 // String ,
+     100: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     103: invokevirtual #14                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     106: astore        4
+     108: new           #7                  // class java/lang/StringBuilder
+     111: dup
+     112: invokespecial #8                  // Method java/lang/StringBuilder."<init>":()V
+     115: aload         4
+     117: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     120: ldc           #72                 // String [
+     122: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     125: aload         9
+     127: invokestatic  #88                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+     130: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     133: ldc           #89                 // String ]
+     135: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     138: invokevirtual #14                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     141: astore        4
+     143: iinc          8, 1
+     146: goto          47
+     149: aload_0
+     150: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+     153: getfield      #81                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+     156: lload_1
+     157: aload_3
+     158: invokevirtual #90                 // Method org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.beforeGet:(JLorg/apache/hadoop/hbase/client/Get;)Lorg/apache/hadoop/hbase/client/Get;
+     161: astore_3
+     162: aload_0
+     163: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+     166: invokestatic  #91                 // Method org/apache/hadoop/hbase/util/MultiThreadedReader.access$500:(Lorg/apache/hadoop/hbase/util/MultiThreadedReader;)I
+     169: ifle          192
+     172: aload_3
+     173: aload_0
+     174: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+     177: invokestatic  #91                 // Method org/apache/hadoop/hbase/util/MultiThreadedReader.access$500:(Lorg/apache/hadoop/hbase/util/MultiThreadedReader;)I
+     180: invokevirtual #92                 // Method org/apache/hadoop/hbase/client/Get.setReplicaId:(I)Lorg/apache/hadoop/hbase/client/Get;
+     183: pop
+     184: aload_3
+     185: getstatic     #93                 // Field org/apache/hadoop/hbase/client/Consistency.TIMELINE:Lorg/apache/hadoop/hbase/client/Consistency;
+     188: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/Get.setConsistency:(Lorg/apache/hadoop/hbase/client/Consistency;)Lorg/apache/hadoop/hbase/client/Get;
+     191: pop
+     192: aload_0
+     193: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+     196: getfield      #28                 // Field org/apache/hadoop/hbase/util/MultiThreadedReader.verbose:Z
+     199: ifeq          251
+     202: invokestatic  #25                 // Method org/apache/hadoop/hbase/util/MultiThreadedReader.access$000:()Lorg/slf4j/Logger;
+     205: new           #7                  // class java/lang/StringBuilder
+     208: dup
+     209: invokespecial #8                  // Method java/lang/StringBuilder."<init>":()V
+     212: ldc           #72                 // String [
+     214: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     217: aload_0
+     218: getfield      #4                  // Field readerId:I
+     221: invokevirtual #13                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     224: ldc           #95                 // String ] Querying key
+     226: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     229: lload_1
+     230: invokevirtual #44                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     233: ldc           #96                 // String , cfs
+     235: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     238: aload         4
+     240: invokevirtual #11                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     243: invokevirtual #14                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     246: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     251: aload_3
+     252: areturn
+
+  public void queryKey(org.apache.hadoop.hbase.client.Get[], boolean, long[]) throws java.io.IOException;
+    Code:
+       0: invokestatic  #97                 // Method java/lang/System.nanoTime:()J
+       3: lstore        4
+       5: aload_0
+       6: getfield      #6                  // Field table:Lorg/apache/hadoop/hbase/client/Table;
+       9: aload_1
+      10: invokestatic  #98                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+      13: invokeinterface #99,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.get:(Ljava/util/List;)[Lorg/apache/hadoop/hbase/client/Result;
+      18: astore        6
+      20: invokestatic  #97                 // Method java/lang/System.nanoTime:()J
+      23: lstore        7
+      25: aload_0
+      26: iload_2
+      27: aload_1
+      28: lload         7
+      30: lload         4
+      32: lsub
+      33: aload         6
+      35: aload_0
+      36: getfield      #6                  // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      39: iconst_0
+      40: invokevirtual #100                // Method verifyResultsAndUpdateMetrics:(Z[Lorg/apache/hadoop/hbase/client/Get;J[Lorg/apache/hadoop/hbase/client/Result;Lorg/apache/hadoop/hbase/client/Table;Z)V
+      43: return
+
+  public void queryKey(org.apache.hadoop.hbase.client.Get, boolean, long) throws java.io.IOException;
+    Code:
+       0: invokestatic  #97                 // Method java/lang/System.nanoTime:()J
+       3: lstore        5
+       5: aload_0
+       6: getfield      #6                  // Field table:Lorg/apache/hadoop/hbase/client/Table;
+       9: aload_1
+      10: invokeinterface #101,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.get:(Lorg/apache/hadoop/hbase/client/Get;)Lorg/apache/hadoop/hbase/client/Result;
+      15: astore        7
+      17: invokestatic  #97                 // Method java/lang/System.nanoTime:()J
+      20: lstore        8
+      22: aload_0
+      23: iload_2
+      24: aload_1
+      25: lload         8
+      27: lload         5
+      29: lsub
+      30: aload         7
+      32: aload_0
+      33: getfield      #6                  // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      36: iconst_0
+      37: invokevirtual #102                // Method verifyResultsAndUpdateMetrics:(ZLorg/apache/hadoop/hbase/client/Get;JLorg/apache/hadoop/hbase/client/Result;Lorg/apache/hadoop/hbase/client/Table;Z)V
+      40: return
+
+  protected void verifyResultsAndUpdateMetrics(boolean, org.apache.hadoop.hbase.client.Get[], long, org.apache.hadoop.hbase.client.Result[], org.apache.hadoop.hbase.client.Table, boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+       4: getfield      #103                // Field org/apache/hadoop/hbase/util/MultiThreadedReader.totalOpTimeMs:Ljava/util/concurrent/atomic/AtomicLong;
+       7: lload_3
+       8: ldc2_w        #104                // long 1000000l
+      11: ldiv
+      12: invokevirtual #71                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+      15: pop2
+      16: aload_0
+      17: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/MultiThreadedReader;
+      20: getfield      #106                // Field org/apache/hadoop/hbase/util/MultiThreadedReader.numKeys:Ljava/util/concurrent/atomic/AtomicLong;
+      23: aload_2
+      24: arraylength
+      25: i2l
+      26: invokevirtual #71                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+      29: pop2
+      30: iconst_0
+      31: istore        8
+      33: aload         5
+      35: astore        9
+      37: aload         9
+      39: arraylength
+      40: istore        10
+      42: iconst_0
+      43: istore        11
+      45: iload         11
+      47: iload         10
+      49: if_icmpge     83
+      52: aload         9
+      54: iload         11
+      56: aaload
+      57: astore        12
+      59: aload_0
+      60: iload_1
+      61: aload_2
+      62: iload         8
+      64: iinc          8, 1
+      67: aaload
+      68: aload         12
+      70: aload         6
+      72: iload         7
+      74: invokespecial #107                // Method verifyResultsAndUpdateMetricsOnAPerGetBasis:(ZLorg/apache/hadoop/hbase/client/Get;Lorg/apache/hadoop/hbase/client/Result;Lorg/apache/hadoop/hbase/client/Table;Z)V
+      77: iinc          11, 1
+      80: goto          45
+      83: return
+
+  protected void verifyResultsAndUpdateMetrics(boolean, org.apache.hadoop.hbase.client.Get, long, org.apache.hadoop.hbase.client.Result, org.apache.hadoop.hbase.client.Table, boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iconst_1
+       3: anewarray     #65                 // class org/apache/hadoop/hbase/client/Get
+       6: dup
+       7: iconst_0
+       8: aload_2
+       9: aastore
+      10: lload_3
+      11: iconst_1
+      12: anewarray     #108                // class org/apache/hadoop/hbase/client/Result
+      15: dup
+      16: iconst_0
+      17: aload         5
+      19: aastore
+      20: aload         6
+      22: iload         7
+      24: invokevirtual #100                // Method verifyResultsAndUpdateMetrics:(Z[Lorg/apache/hadoop/hbase/client/Get;J[Lorg/apache/hadoop/hbase/client/Result;Lorg/apache/hadoop/hbase/client/Table;Z)V
+      27: return
+}

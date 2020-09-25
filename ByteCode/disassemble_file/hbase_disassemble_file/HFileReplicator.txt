@@ -1,0 +1,325 @@
+Compiled from "HFileReplicator.java"
+public class org.apache.hadoop.hbase.replication.regionserver.HFileReplicator {
+  public static final java.lang.String REPLICATION_BULKLOAD_COPY_MAXTHREADS_KEY;
+
+  public static final int REPLICATION_BULKLOAD_COPY_MAXTHREADS_DEFAULT;
+
+  public static final java.lang.String REPLICATION_BULKLOAD_COPY_HFILES_PERTHREAD_KEY;
+
+  public static final int REPLICATION_BULKLOAD_COPY_HFILES_PERTHREAD_DEFAULT;
+
+  public org.apache.hadoop.hbase.replication.regionserver.HFileReplicator(org.apache.hadoop.conf.Configuration, java.lang.String, java.lang.String, java.util.Map<java.lang.String, java.util.List<org.apache.hadoop.hbase.util.Pair<byte[], java.util.List<java.lang.String>>>>, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.Connection) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #8                  // Field sourceClusterConf:Lorg/apache/hadoop/conf/Configuration;
+       9: aload_0
+      10: aload_2
+      11: putfield      #6                  // Field sourceBaseNamespaceDirPath:Ljava/lang/String;
+      14: aload_0
+      15: aload_3
+      16: putfield      #2                  // Field sourceHFileArchiveDirPath:Ljava/lang/String;
+      19: aload_0
+      20: aload         4
+      22: putfield      #9                  // Field bulkLoadHFileMap:Ljava/util/Map;
+      25: aload_0
+      26: aload         5
+      28: putfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      31: aload_0
+      32: aload         6
+      34: putfield      #10                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      37: aload_0
+      38: aload         5
+      40: invokestatic  #11                 // Method org/apache/hadoop/hbase/security/UserProvider.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/security/UserProvider;
+      43: putfield      #12                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+      46: aload_0
+      47: new           #13                 // class org/apache/hadoop/hbase/security/token/FsDelegationToken
+      50: dup
+      51: aload_0
+      52: getfield      #12                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+      55: ldc           #14                 // String renewer
+      57: invokespecial #15                 // Method org/apache/hadoop/hbase/security/token/FsDelegationToken."<init>":(Lorg/apache/hadoop/hbase/security/UserProvider;Ljava/lang/String;)V
+      60: putfield      #16                 // Field fsDelegationToken:Lorg/apache/hadoop/hbase/security/token/FsDelegationToken;
+      63: aload_0
+      64: new           #17                 // class org/apache/hadoop/fs/Path
+      67: dup
+      68: aload         5
+      70: invokestatic  #18                 // Method org/apache/hadoop/hbase/util/FSUtils.getRootDir:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+      73: ldc           #20                 // String staging
+      75: invokespecial #21                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      78: putfield      #22                 // Field hbaseStagingDir:Lorg/apache/hadoop/fs/Path;
+      81: aload_0
+      82: aload_0
+      83: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      86: ldc           #24                 // String hbase.replication.bulkload.copy.maxthreads
+      88: bipush        10
+      90: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      93: putfield      #26                 // Field maxCopyThreads:I
+      96: new           #27                 // class org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder
+      99: dup
+     100: invokespecial #28                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder."<init>":()V
+     103: astore        7
+     105: aload         7
+     107: ldc           #29                 // String HFileReplicationCallable-%1$d
+     109: invokevirtual #30                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setNameFormat:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+     112: pop
+     113: aload_0
+     114: new           #31                 // class java/util/concurrent/ThreadPoolExecutor
+     117: dup
+     118: aload_0
+     119: getfield      #26                 // Field maxCopyThreads:I
+     122: aload_0
+     123: getfield      #26                 // Field maxCopyThreads:I
+     126: ldc2_w        #32                 // long 60l
+     129: getstatic     #34                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     132: new           #35                 // class java/util/concurrent/LinkedBlockingQueue
+     135: dup
+     136: invokespecial #36                 // Method java/util/concurrent/LinkedBlockingQueue."<init>":()V
+     139: aload         7
+     141: invokevirtual #37                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.build:()Ljava/util/concurrent/ThreadFactory;
+     144: invokespecial #38                 // Method java/util/concurrent/ThreadPoolExecutor."<init>":(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V
+     147: putfield      #39                 // Field exec:Ljava/util/concurrent/ThreadPoolExecutor;
+     150: aload_0
+     151: getfield      #39                 // Field exec:Ljava/util/concurrent/ThreadPoolExecutor;
+     154: iconst_1
+     155: invokevirtual #40                 // Method java/util/concurrent/ThreadPoolExecutor.allowCoreThreadTimeOut:(Z)V
+     158: aload_0
+     159: aload         5
+     161: ldc           #41                 // String hbase.replication.bulkload.copy.hfiles.perthread
+     163: bipush        10
+     165: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     168: putfield      #42                 // Field copiesPerThread:I
+     171: aload_0
+     172: aload         5
+     174: invokestatic  #43                 // Method org/apache/hadoop/fs/FileSystem.get:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+     177: putfield      #5                  // Field sinkFs:Lorg/apache/hadoop/fs/FileSystem;
+     180: return
+
+  public java.lang.Void replicate() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #44                 // Method copyHFilesToStagingDir:()Ljava/util/Map;
+       4: astore_1
+       5: aload_0
+       6: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       9: ldc           #45                 // String hbase.bulkload.retries.number
+      11: bipush        10
+      13: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      16: istore_2
+      17: aload_1
+      18: invokeinterface #46,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      23: invokeinterface #47,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      28: astore_3
+      29: aload_3
+      30: invokeinterface #48,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      35: ifeq          403
+      38: aload_3
+      39: invokeinterface #49,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      44: checkcast     #50                 // class java/util/Map$Entry
+      47: astore        4
+      49: aload         4
+      51: invokeinterface #51,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      56: checkcast     #52                 // class java/lang/String
+      59: astore        5
+      61: aload         4
+      63: invokeinterface #53,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      68: checkcast     #17                 // class org/apache/hadoop/fs/Path
+      71: astore        6
+      73: aconst_null
+      74: astore        7
+      76: new           #54                 // class org/apache/hadoop/hbase/tool/LoadIncrementalHFiles
+      79: dup
+      80: aload_0
+      81: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      84: invokespecial #55                 // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+      87: astore        7
+      89: goto          116
+      92: astore        8
+      94: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      97: ldc           #57                 // String Failed to initialize LoadIncrementalHFiles for replicating bulk loaded data.
+      99: aload         8
+     101: invokeinterface #58,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     106: new           #59                 // class java/io/IOException
+     109: dup
+     110: aload         8
+     112: invokespecial #60                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+     115: athrow
+     116: aload_0
+     117: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     120: invokestatic  #61                 // Method org/apache/hadoop/hbase/HBaseConfiguration.create:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/conf/Configuration;
+     123: astore        8
+     125: aload         8
+     127: ldc           #62                 // String create.table
+     129: ldc           #63                 // String no
+     131: invokevirtual #64                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+     134: aload         7
+     136: aload         8
+     138: invokevirtual #65                 // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.setConf:(Lorg/apache/hadoop/conf/Configuration;)V
+     141: aload         5
+     143: invokestatic  #66                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+     146: astore        9
+     148: aload_0
+     149: getfield      #10                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+     152: aload         9
+     154: invokeinterface #67,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     159: astore        10
+     161: new           #68                 // class java/util/LinkedList
+     164: dup
+     165: invokespecial #69                 // Method java/util/LinkedList."<init>":()V
+     168: astore        11
+     170: aload         7
+     172: aload         6
+     174: aload         10
+     176: aload         11
+     178: iconst_0
+     179: invokevirtual #70                 // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.prepareHFileQueue:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/client/Table;Ljava/util/Deque;Z)V
+     182: aload         11
+     184: invokeinterface #71,  1           // InterfaceMethod java/util/Deque.isEmpty:()Z
+     189: ifeq          225
+     192: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     195: new           #72                 // class java/lang/StringBuilder
+     198: dup
+     199: invokespecial #73                 // Method java/lang/StringBuilder."<init>":()V
+     202: ldc           #74                 // String Replication process did not find any files to replicate in directory
+     204: invokevirtual #75                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     207: aload         6
+     209: invokevirtual #76                 // Method org/apache/hadoop/fs/Path.toUri:()Ljava/net/URI;
+     212: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     215: invokevirtual #78                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     218: invokeinterface #79,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     223: aconst_null
+     224: areturn
+     225: aload_0
+     226: getfield      #10                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+     229: aload         9
+     231: invokeinterface #80,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getRegionLocator:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/RegionLocator;
+     236: astore        12
+     238: aconst_null
+     239: astore        13
+     241: aload_0
+     242: getfield      #16                 // Field fsDelegationToken:Lorg/apache/hadoop/hbase/security/token/FsDelegationToken;
+     245: aload_0
+     246: getfield      #5                  // Field sinkFs:Lorg/apache/hadoop/fs/FileSystem;
+     249: invokevirtual #81                 // Method org/apache/hadoop/hbase/security/token/FsDelegationToken.acquireDelegationToken:(Lorg/apache/hadoop/fs/FileSystem;)V
+     252: aload         7
+     254: aload         6
+     256: invokevirtual #82                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     259: invokevirtual #83                 // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.setBulkToken:(Ljava/lang/String;)V
+     262: aload_0
+     263: aload         7
+     265: aload         10
+     267: aload         11
+     269: aload         12
+     271: iload_2
+     272: invokespecial #84                 // Method doBulkLoad:(Lorg/apache/hadoop/hbase/tool/LoadIncrementalHFiles;Lorg/apache/hadoop/hbase/client/Table;Ljava/util/Deque;Lorg/apache/hadoop/hbase/client/RegionLocator;I)V
+     275: aload         12
+     277: ifnull        370
+     280: aload         13
+     282: ifnull        307
+     285: aload         12
+     287: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionLocator.close:()V
+     292: goto          370
+     295: astore        14
+     297: aload         13
+     299: aload         14
+     301: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     304: goto          370
+     307: aload         12
+     309: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionLocator.close:()V
+     314: goto          370
+     317: astore        14
+     319: aload         14
+     321: astore        13
+     323: aload         14
+     325: athrow
+     326: astore        15
+     328: aload         12
+     330: ifnull        367
+     333: aload         13
+     335: ifnull        360
+     338: aload         12
+     340: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionLocator.close:()V
+     345: goto          367
+     348: astore        16
+     350: aload         13
+     352: aload         16
+     354: invokevirtual #87                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     357: goto          367
+     360: aload         12
+     362: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionLocator.close:()V
+     367: aload         15
+     369: athrow
+     370: aload_0
+     371: aload         6
+     373: invokevirtual #82                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     376: aload         10
+     378: invokespecial #88                 // Method cleanup:(Ljava/lang/String;Lorg/apache/hadoop/hbase/client/Table;)V
+     381: goto          400
+     384: astore        17
+     386: aload_0
+     387: aload         6
+     389: invokevirtual #82                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     392: aload         10
+     394: invokespecial #88                 // Method cleanup:(Ljava/lang/String;Lorg/apache/hadoop/hbase/client/Table;)V
+     397: aload         17
+     399: athrow
+     400: goto          29
+     403: aconst_null
+     404: areturn
+    Exception table:
+       from    to  target type
+          76    89    92   Class java/lang/Exception
+         285   292   295   Class java/lang/Throwable
+         241   275   317   Class java/lang/Throwable
+         241   275   326   any
+         338   345   348   Class java/lang/Throwable
+         317   328   326   any
+         225   370   384   any
+         384   386   384   any
+
+  static java.lang.String access$000(org.apache.hadoop.hbase.replication.regionserver.HFileReplicator);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field sourceBaseNamespaceDirPath:Ljava/lang/String;
+       4: areturn
+
+  static org.apache.hadoop.fs.FileSystem access$100(org.apache.hadoop.hbase.replication.regionserver.HFileReplicator);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field sinkFs:Lorg/apache/hadoop/fs/FileSystem;
+       4: areturn
+
+  static org.apache.hadoop.conf.Configuration access$200(org.apache.hadoop.hbase.replication.regionserver.HFileReplicator);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: areturn
+
+  static org.slf4j.Logger access$300();
+    Code:
+       0: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static java.lang.String access$400(org.apache.hadoop.hbase.replication.regionserver.HFileReplicator);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field sourceHFileArchiveDirPath:Ljava/lang/String;
+       4: areturn
+
+  static org.apache.hadoop.fs.permission.FsPermission access$500();
+    Code:
+       0: getstatic     #1                  // Field PERM_ALL_ACCESS:Lorg/apache/hadoop/fs/permission/FsPermission;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #23                 // class org/apache/hadoop/hbase/replication/regionserver/HFileReplicator
+       2: invokestatic  #158                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       8: ldc           #159                // String -rwxrwxrwx
+      10: invokestatic  #160                // Method org/apache/hadoop/fs/permission/FsPermission.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/fs/permission/FsPermission;
+      13: putstatic     #1                  // Field PERM_ALL_ACCESS:Lorg/apache/hadoop/fs/permission/FsPermission;
+      16: return
+}

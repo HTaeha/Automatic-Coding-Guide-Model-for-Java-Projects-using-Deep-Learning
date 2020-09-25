@@ -1,0 +1,343 @@
+Compiled from "TestSnapshotCloneIndependence.java"
+public class org.apache.hadoop.hbase.client.TestSnapshotCloneIndependence {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.junit.rules.TestName testName;
+
+  protected static final org.apache.hadoop.hbase.HBaseTestingUtility UTIL;
+
+  protected static final int NUM_RS;
+
+  protected static final byte[] TEST_FAM;
+
+  java.lang.String snapshotNameAsString;
+
+  java.lang.String snapshotName;
+
+  public org.apache.hadoop.hbase.client.TestSnapshotCloneIndependence();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/junit/rules/TestName
+       8: dup
+       9: invokespecial #3                  // Method org/junit/rules/TestName."<init>":()V
+      12: putfield      #4                  // Field testName:Lorg/junit/rules/TestName;
+      15: return
+
+  public static void setupCluster() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: invokestatic  #7                  // Method setupConf:(Lorg/apache/hadoop/conf/Configuration;)V
+       9: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      12: iconst_2
+      13: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      16: pop
+      17: return
+
+  static void setupConf(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #11                 // String hbase.regionserver.metahandler.count
+       3: bipush        15
+       5: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+       8: aload_0
+       9: ldc           #14                 // String hbase.snapshot.enabled
+      11: iconst_1
+      12: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      15: aload_0
+      16: ldc           #16                 // String hbase.hregion.memstore.flush.size
+      18: sipush        25000
+      21: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      24: aload_0
+      25: ldc           #17                 // String hbase.hstore.compaction.min
+      27: bipush        10
+      29: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      32: aload_0
+      33: ldc           #18                 // String hbase.hstore.compactionThreshold
+      35: bipush        10
+      37: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      40: aload_0
+      41: ldc           #19                 // String hbase.hstore.blockingStoreFiles
+      43: bipush        12
+      45: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      48: aload_0
+      49: ldc           #20                 // String hbase.regionserver.msginterval
+      51: bipush        100
+      53: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      56: aload_0
+      57: ldc           #21                 // String hbase.master.enabletable.roundrobin
+      59: iconst_1
+      60: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      63: aload_0
+      64: ldc           #22                 // String hbase.regionserver.region.split.policy
+      66: ldc           #23                 // class org/apache/hadoop/hbase/regionserver/ConstantSizeRegionSplitPolicy
+      68: invokevirtual #24                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      71: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      74: aload_0
+      75: ldc           #26                 // String hbase.master.cleaner.interval
+      77: bipush        100
+      79: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      82: aload_0
+      83: ldc           #27                 // String hbase.master.hfilecleaner.plugins.snapshot.period
+      85: bipush        100
+      87: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      90: aload_0
+      91: ldc           #28                 // String hbase.master.hfilecleaner.ttl
+      93: bipush        100
+      95: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      98: return
+
+  public void setup() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       4: invokevirtual #29                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       7: invokevirtual #30                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      10: invokevirtual #31                 // Method org/apache/hadoop/hbase/master/HMaster.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      13: invokevirtual #32                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      16: putfield      #33                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      19: aload_0
+      20: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      23: invokevirtual #29                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      26: invokevirtual #30                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      29: invokevirtual #31                 // Method org/apache/hadoop/hbase/master/HMaster.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      32: invokevirtual #34                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getRootDir:()Lorg/apache/hadoop/fs/Path;
+      35: putfield      #35                 // Field rootDir:Lorg/apache/hadoop/fs/Path;
+      38: aload_0
+      39: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      42: invokevirtual #36                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      45: putfield      #37                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+      48: aload_0
+      49: new           #38                 // class java/lang/StringBuilder
+      52: dup
+      53: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+      56: ldc           #40                 // String test
+      58: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: aload_0
+      62: getfield      #4                  // Field testName:Lorg/junit/rules/TestName;
+      65: invokevirtual #42                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+      68: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      71: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      74: invokestatic  #44                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      77: putfield      #45                 // Field originalTableName:Lorg/apache/hadoop/hbase/TableName;
+      80: aload_0
+      81: new           #38                 // class java/lang/StringBuilder
+      84: dup
+      85: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+      88: ldc           #46                 // String test-clone-
+      90: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      93: aload_0
+      94: getfield      #45                 // Field originalTableName:Lorg/apache/hadoop/hbase/TableName;
+      97: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     100: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     103: invokestatic  #44                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+     106: putfield      #48                 // Field cloneTableName:Lorg/apache/hadoop/hbase/TableName;
+     109: aload_0
+     110: new           #38                 // class java/lang/StringBuilder
+     113: dup
+     114: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     117: ldc           #49                 // String snapshot_
+     119: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     122: aload_0
+     123: getfield      #45                 // Field originalTableName:Lorg/apache/hadoop/hbase/TableName;
+     126: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     129: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     132: putfield      #50                 // Field snapshotNameAsString:Ljava/lang/String;
+     135: aload_0
+     136: aload_0
+     137: getfield      #50                 // Field snapshotNameAsString:Ljava/lang/String;
+     140: putfield      #51                 // Field snapshotName:Ljava/lang/String;
+     143: aload_0
+     144: aload_0
+     145: aload_0
+     146: getfield      #45                 // Field originalTableName:Lorg/apache/hadoop/hbase/TableName;
+     149: getstatic     #52                 // Field TEST_FAM:[B
+     152: invokevirtual #53                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;[B)Lorg/apache/hadoop/hbase/client/Table;
+     155: putfield      #54                 // Field originalTable:Lorg/apache/hadoop/hbase/client/Table;
+     158: aload_0
+     159: aload_0
+     160: getfield      #54                 // Field originalTable:Lorg/apache/hadoop/hbase/client/Table;
+     163: iconst_1
+     164: anewarray     #55                 // class "[B"
+     167: dup
+     168: iconst_0
+     169: getstatic     #52                 // Field TEST_FAM:[B
+     172: aastore
+     173: invokevirtual #56                 // Method loadData:(Lorg/apache/hadoop/hbase/client/Table;[[B)V
+     176: aload_0
+     177: aload_0
+     178: aload_0
+     179: getfield      #54                 // Field originalTable:Lorg/apache/hadoop/hbase/client/Table;
+     182: iconst_0
+     183: anewarray     #55                 // class "[B"
+     186: invokevirtual #57                 // Method countRows:(Lorg/apache/hadoop/hbase/client/Table;[[B)I
+     189: putfield      #58                 // Field countOriginalTable:I
+     192: getstatic     #59                 // Field java/lang/System.out:Ljava/io/PrintStream;
+     195: new           #38                 // class java/lang/StringBuilder
+     198: dup
+     199: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     202: ldc           #60                 // String Original table has:
+     204: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     207: aload_0
+     208: getfield      #58                 // Field countOriginalTable:I
+     211: invokevirtual #61                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     214: ldc           #62                 // String  rows
+     216: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     219: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     222: invokevirtual #63                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+     225: return
+
+  public void tearDown() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: aload_0
+       4: getfield      #45                 // Field originalTableName:Lorg/apache/hadoop/hbase/TableName;
+       7: invokevirtual #64                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.deleteTable:(Lorg/apache/hadoop/hbase/TableName;)V
+      10: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      13: aload_0
+      14: getfield      #48                 // Field cloneTableName:Lorg/apache/hadoop/hbase/TableName;
+      17: invokevirtual #64                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.deleteTable:(Lorg/apache/hadoop/hbase/TableName;)V
+      20: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      23: invokevirtual #36                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      26: invokestatic  #65                 // Method org/apache/hadoop/hbase/snapshot/SnapshotTestingUtils.deleteAllSnapshots:(Lorg/apache/hadoop/hbase/client/Admin;)V
+      29: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      32: invokestatic  #66                 // Method org/apache/hadoop/hbase/snapshot/SnapshotTestingUtils.deleteArchiveDirectory:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;)V
+      35: return
+
+  public static void cleanupTest() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #67                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+       6: goto          21
+       9: astore_0
+      10: getstatic     #69                 // Field LOG:Lorg/slf4j/Logger;
+      13: ldc           #70                 // String failure shutting down cluster
+      15: aload_0
+      16: invokeinterface #71,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      21: return
+    Exception table:
+       from    to  target type
+           0     6     9   Class java/lang/Exception
+
+  public void testOnlineSnapshotAppendIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #73                 // Method runTestSnapshotAppendIndependent:()V
+       9: return
+
+  public void testOfflineSnapshotAppendIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #73                 // Method runTestSnapshotAppendIndependent:()V
+       9: return
+
+  public void testOnlineSnapshotMetadataChangesIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #74                 // Method runTestSnapshotMetadataChangesIndependent:()V
+       9: return
+
+  public void testOfflineSnapshotMetadataChangesIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #74                 // Method runTestSnapshotMetadataChangesIndependent:()V
+       9: return
+
+  public void testOfflineSnapshotRegionOperationsIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #75                 // Method runTestRegionOperationsIndependent:()V
+       9: return
+
+  public void testOnlineSnapshotRegionOperationsIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #75                 // Method runTestRegionOperationsIndependent:()V
+       9: return
+
+  public void testOfflineSnapshotDeleteIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #76                 // Method runTestSnapshotDeleteIndependent:()V
+       9: return
+
+  public void testOnlineSnapshotDeleteIndependent() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: invokespecial #72                 // Method createAndCloneSnapshot:(Z)V
+       5: aload_0
+       6: invokespecial #76                 // Method runTestSnapshotDeleteIndependent:()V
+       9: return
+
+  protected org.apache.hadoop.hbase.client.Table createTable(org.apache.hadoop.hbase.TableName, byte[]) throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: aload_1
+       4: aload_2
+       5: invokevirtual #147                // Method org/apache/hadoop/hbase/HBaseTestingUtility.createTable:(Lorg/apache/hadoop/hbase/TableName;[B)Lorg/apache/hadoop/hbase/client/Table;
+       8: astore_3
+       9: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      12: aload_1
+      13: invokevirtual #94                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitUntilAllRegionsAssigned:(Lorg/apache/hadoop/hbase/TableName;)V
+      16: aload_3
+      17: areturn
+
+  public void loadData(org.apache.hadoop.hbase.client.Table, byte[]...) throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: aload_0
+       4: getfield      #54                 // Field originalTable:Lorg/apache/hadoop/hbase/client/Table;
+       7: getstatic     #52                 // Field TEST_FAM:[B
+      10: invokevirtual #148                // Method org/apache/hadoop/hbase/HBaseTestingUtility.loadTable:(Lorg/apache/hadoop/hbase/client/Table;[B)I
+      13: pop
+      14: return
+
+  protected int countRows(org.apache.hadoop.hbase.client.Table, byte[]...) throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: aload_1
+       4: aload_2
+       5: invokevirtual #149                // Method org/apache/hadoop/hbase/HBaseTestingUtility.countRows:(Lorg/apache/hadoop/hbase/client/Table;[[B)I
+       8: ireturn
+
+  static {};
+    Code:
+       0: ldc           #8                  // class org/apache/hadoop/hbase/client/TestSnapshotCloneIndependence
+       2: invokestatic  #150                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #151                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: ldc           #8                  // class org/apache/hadoop/hbase/client/TestSnapshotCloneIndependence
+      10: invokestatic  #152                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      13: putstatic     #69                 // Field LOG:Lorg/slf4j/Logger;
+      16: new           #153                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      19: dup
+      20: invokespecial #154                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      23: putstatic     #5                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      26: ldc           #89                 // String fam
+      28: invokestatic  #103                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: putstatic     #52                 // Field TEST_FAM:[B
+      34: return
+}

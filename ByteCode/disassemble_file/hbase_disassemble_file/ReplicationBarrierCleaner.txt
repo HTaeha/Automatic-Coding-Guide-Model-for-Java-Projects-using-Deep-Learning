@@ -1,0 +1,415 @@
+Compiled from "ReplicationBarrierCleaner.java"
+public class org.apache.hadoop.hbase.master.cleaner.ReplicationBarrierCleaner extends org.apache.hadoop.hbase.ScheduledChore {
+  public org.apache.hadoop.hbase.master.cleaner.ReplicationBarrierCleaner(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.Stoppable, org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.hbase.master.replication.ReplicationPeerManager);
+    Code:
+       0: aload_0
+       1: ldc           #1                  // String ReplicationBarrierCleaner
+       3: aload_2
+       4: aload_1
+       5: ldc           #3                  // String hbase.master.cleaner.replication.barrier.interval
+       7: ldc           #4                  // int 43200000
+       9: invokevirtual #5                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      12: invokespecial #6                  // Method org/apache/hadoop/hbase/ScheduledChore."<init>":(Ljava/lang/String;Lorg/apache/hadoop/hbase/Stoppable;I)V
+      15: aload_0
+      16: aload_3
+      17: putfield      #7                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      20: aload_0
+      21: aload         4
+      23: putfield      #8                  // Field peerManager:Lorg/apache/hadoop/hbase/master/replication/ReplicationPeerManager;
+      26: return
+
+  protected void chore();
+    Code:
+       0: lconst_0
+       1: lstore_1
+       2: lconst_0
+       3: lstore_3
+       4: lconst_0
+       5: lstore        5
+       7: lconst_0
+       8: lstore        7
+      10: lconst_0
+      11: lstore        9
+      13: aconst_null
+      14: astore        11
+      16: aconst_null
+      17: astore        12
+      19: aload_0
+      20: getfield      #7                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      23: getstatic     #9                  // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      26: invokeinterface #10,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      31: astore        13
+      33: aconst_null
+      34: astore        14
+      36: aload         13
+      38: new           #11                 // class org/apache/hadoop/hbase/client/Scan
+      41: dup
+      42: invokespecial #12                 // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+      45: getstatic     #13                 // Field org/apache/hadoop/hbase/HConstants.REPLICATION_BARRIER_FAMILY:[B
+      48: invokevirtual #14                 // Method org/apache/hadoop/hbase/client/Scan.addFamily:([B)Lorg/apache/hadoop/hbase/client/Scan;
+      51: invokevirtual #15                 // Method org/apache/hadoop/hbase/client/Scan.readAllVersions:()Lorg/apache/hadoop/hbase/client/Scan;
+      54: invokeinterface #16,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+      59: astore        15
+      61: aconst_null
+      62: astore        16
+      64: aload         15
+      66: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.next:()Lorg/apache/hadoop/hbase/client/Result;
+      71: astore        17
+      73: aload         17
+      75: ifnonnull     81
+      78: goto          568
+      81: lload_1
+      82: lconst_1
+      83: ladd
+      84: lstore_1
+      85: aload         17
+      87: invokestatic  #18                 // Method org/apache/hadoop/hbase/MetaTableAccessor.getReplicationBarriers:(Lorg/apache/hadoop/hbase/client/Result;)[J
+      90: astore        18
+      92: aload         18
+      94: arraylength
+      95: ifne          101
+      98: goto          64
+     101: aload         17
+     103: invokevirtual #19                 // Method org/apache/hadoop/hbase/client/Result.getRow:()[B
+     106: astore        19
+     108: aload         19
+     110: invokestatic  #20                 // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:([B)Lorg/apache/hadoop/hbase/TableName;
+     113: astore        20
+     115: aload         20
+     117: aload         11
+     119: invokevirtual #21                 // Method org/apache/hadoop/hbase/TableName.equals:(Ljava/lang/Object;)Z
+     122: ifne          140
+     125: aload         20
+     127: astore        11
+     129: aload_0
+     130: getfield      #8                  // Field peerManager:Lorg/apache/hadoop/hbase/master/replication/ReplicationPeerManager;
+     133: aload         11
+     135: invokevirtual #22                 // Method org/apache/hadoop/hbase/master/replication/ReplicationPeerManager.getSerialPeerIdsBelongsTo:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+     138: astore        12
+     140: aload         12
+     142: invokeinterface #23,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     147: ifeq          212
+     150: aload         17
+     152: getstatic     #13                 // Field org/apache/hadoop/hbase/HConstants.REPLICATION_BARRIER_FAMILY:[B
+     155: getstatic     #24                 // Field org/apache/hadoop/hbase/HConstants.SEQNUM_QUALIFIER:[B
+     158: invokevirtual #25                 // Method org/apache/hadoop/hbase/client/Result.getColumnLatestCell:([B[B)Lorg/apache/hadoop/hbase/Cell;
+     161: astore        21
+     163: aload         13
+     165: new           #26                 // class org/apache/hadoop/hbase/client/Delete
+     168: dup
+     169: aload         19
+     171: invokespecial #27                 // Method org/apache/hadoop/hbase/client/Delete."<init>":([B)V
+     174: getstatic     #13                 // Field org/apache/hadoop/hbase/HConstants.REPLICATION_BARRIER_FAMILY:[B
+     177: aload         21
+     179: invokeinterface #28,  1           // InterfaceMethod org/apache/hadoop/hbase/Cell.getTimestamp:()J
+     184: lconst_1
+     185: lsub
+     186: invokevirtual #29                 // Method org/apache/hadoop/hbase/client/Delete.addFamily:([BJ)Lorg/apache/hadoop/hbase/client/Delete;
+     189: invokeinterface #30,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.delete:(Lorg/apache/hadoop/hbase/client/Delete;)V
+     194: lload_3
+     195: lconst_1
+     196: ladd
+     197: lstore_3
+     198: lload         7
+     200: aload         18
+     202: arraylength
+     203: iconst_1
+     204: isub
+     205: i2l
+     206: ladd
+     207: lstore        7
+     209: goto          64
+     212: aload         19
+     214: invokestatic  #31                 // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.encodeRegionName:([B)Ljava/lang/String;
+     217: astore        21
+     219: ldc2_w        #33                 // long 9223372036854775807l
+     222: lstore        22
+     224: aload         12
+     226: invokeinterface #35,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     231: astore        24
+     233: aload         24
+     235: invokeinterface #36,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     240: ifeq          281
+     243: aload         24
+     245: invokeinterface #37,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     250: checkcast     #38                 // class java/lang/String
+     253: astore        25
+     255: lload         22
+     257: aload_0
+     258: getfield      #8                  // Field peerManager:Lorg/apache/hadoop/hbase/master/replication/ReplicationPeerManager;
+     261: invokevirtual #39                 // Method org/apache/hadoop/hbase/master/replication/ReplicationPeerManager.getQueueStorage:()Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+     264: aload         21
+     266: aload         25
+     268: invokeinterface #40,  3           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationQueueStorage.getLastSequenceId:(Ljava/lang/String;Ljava/lang/String;)J
+     273: invokestatic  #41                 // Method java/lang/Math.min:(JJ)J
+     276: lstore        22
+     278: goto          233
+     281: aload         18
+     283: lload         22
+     285: invokestatic  #42                 // Method java/util/Arrays.binarySearch:([JJ)I
+     288: istore        24
+     290: iload         24
+     292: iconst_m1
+     293: if_icmpne     299
+     296: goto          64
+     299: iload         24
+     301: ifge          314
+     304: iload         24
+     306: ineg
+     307: iconst_1
+     308: isub
+     309: istore        24
+     311: goto          317
+     314: iinc          24, 1
+     317: iload         24
+     319: aload         18
+     321: arraylength
+     322: iconst_1
+     323: isub
+     324: if_icmpne     478
+     327: lload         22
+     329: aload         18
+     331: aload         18
+     333: arraylength
+     334: iconst_1
+     335: isub
+     336: laload
+     337: lconst_1
+     338: lsub
+     339: lcmp
+     340: ifne          478
+     343: aload         13
+     345: new           #43                 // class org/apache/hadoop/hbase/client/Get
+     348: dup
+     349: aload         19
+     351: invokespecial #44                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+     354: getstatic     #45                 // Field org/apache/hadoop/hbase/HConstants.CATALOG_FAMILY:[B
+     357: invokevirtual #46                 // Method org/apache/hadoop/hbase/client/Get.addFamily:([B)Lorg/apache/hadoop/hbase/client/Get;
+     360: invokeinterface #47,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.exists:(Lorg/apache/hadoop/hbase/client/Get;)Z
+     365: ifne          478
+     368: aload_0
+     369: getfield      #8                  // Field peerManager:Lorg/apache/hadoop/hbase/master/replication/ReplicationPeerManager;
+     372: invokevirtual #39                 // Method org/apache/hadoop/hbase/master/replication/ReplicationPeerManager.getQueueStorage:()Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+     375: astore        25
+     377: aload         12
+     379: invokeinterface #35,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     384: astore        26
+     386: aload         26
+     388: invokeinterface #36,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     393: ifeq          438
+     396: aload         26
+     398: invokeinterface #37,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     403: checkcast     #38                 // class java/lang/String
+     406: astore        27
+     408: aload         25
+     410: aload         27
+     412: iconst_1
+     413: anewarray     #38                 // class java/lang/String
+     416: dup
+     417: iconst_0
+     418: aload         21
+     420: aastore
+     421: invokestatic  #48                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+     424: invokeinterface #49,  3           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationQueueStorage.removeLastSequenceIds:(Ljava/lang/String;Ljava/util/List;)V
+     429: lload         9
+     431: lconst_1
+     432: ladd
+     433: lstore        9
+     435: goto          386
+     438: aload         13
+     440: new           #26                 // class org/apache/hadoop/hbase/client/Delete
+     443: dup
+     444: aload         19
+     446: invokespecial #27                 // Method org/apache/hadoop/hbase/client/Delete."<init>":([B)V
+     449: getstatic     #13                 // Field org/apache/hadoop/hbase/HConstants.REPLICATION_BARRIER_FAMILY:[B
+     452: invokevirtual #50                 // Method org/apache/hadoop/hbase/client/Delete.addFamily:([B)Lorg/apache/hadoop/hbase/client/Delete;
+     455: invokeinterface #30,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.delete:(Lorg/apache/hadoop/hbase/client/Delete;)V
+     460: lload         5
+     462: lconst_1
+     463: ladd
+     464: lstore        5
+     466: lload         7
+     468: aload         18
+     470: arraylength
+     471: i2l
+     472: ladd
+     473: lstore        7
+     475: goto          64
+     478: iload         24
+     480: iconst_1
+     481: isub
+     482: ifle          565
+     485: aload         17
+     487: getstatic     #13                 // Field org/apache/hadoop/hbase/HConstants.REPLICATION_BARRIER_FAMILY:[B
+     490: getstatic     #24                 // Field org/apache/hadoop/hbase/HConstants.SEQNUM_QUALIFIER:[B
+     493: invokevirtual #51                 // Method org/apache/hadoop/hbase/client/Result.getColumnCells:([B[B)Ljava/util/List;
+     496: astore        25
+     498: aload         25
+     500: aload         25
+     502: invokeinterface #52,  1           // InterfaceMethod java/util/List.size:()I
+     507: iload         24
+     509: isub
+     510: invokeinterface #53,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     515: checkcast     #54                 // class org/apache/hadoop/hbase/Cell
+     518: astore        26
+     520: aload         13
+     522: new           #26                 // class org/apache/hadoop/hbase/client/Delete
+     525: dup
+     526: aload         19
+     528: invokespecial #27                 // Method org/apache/hadoop/hbase/client/Delete."<init>":([B)V
+     531: getstatic     #13                 // Field org/apache/hadoop/hbase/HConstants.REPLICATION_BARRIER_FAMILY:[B
+     534: aload         26
+     536: invokeinterface #28,  1           // InterfaceMethod org/apache/hadoop/hbase/Cell.getTimestamp:()J
+     541: lconst_1
+     542: lsub
+     543: invokevirtual #29                 // Method org/apache/hadoop/hbase/client/Delete.addFamily:([BJ)Lorg/apache/hadoop/hbase/client/Delete;
+     546: invokeinterface #30,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.delete:(Lorg/apache/hadoop/hbase/client/Delete;)V
+     551: lload_3
+     552: lconst_1
+     553: ladd
+     554: lstore_3
+     555: lload         7
+     557: iload         24
+     559: iconst_1
+     560: isub
+     561: i2l
+     562: ladd
+     563: lstore        7
+     565: goto          64
+     568: aload         15
+     570: ifnull        663
+     573: aload         16
+     575: ifnull        600
+     578: aload         15
+     580: invokeinterface #55,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     585: goto          663
+     588: astore        17
+     590: aload         16
+     592: aload         17
+     594: invokevirtual #57                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     597: goto          663
+     600: aload         15
+     602: invokeinterface #55,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     607: goto          663
+     610: astore        17
+     612: aload         17
+     614: astore        16
+     616: aload         17
+     618: athrow
+     619: astore        28
+     621: aload         15
+     623: ifnull        660
+     626: aload         16
+     628: ifnull        653
+     631: aload         15
+     633: invokeinterface #55,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     638: goto          660
+     641: astore        29
+     643: aload         16
+     645: aload         29
+     647: invokevirtual #57                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     650: goto          660
+     653: aload         15
+     655: invokeinterface #55,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     660: aload         28
+     662: athrow
+     663: aload         13
+     665: ifnull        758
+     668: aload         14
+     670: ifnull        695
+     673: aload         13
+     675: invokeinterface #58,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     680: goto          758
+     683: astore        15
+     685: aload         14
+     687: aload         15
+     689: invokevirtual #57                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     692: goto          758
+     695: aload         13
+     697: invokeinterface #58,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     702: goto          758
+     705: astore        15
+     707: aload         15
+     709: astore        14
+     711: aload         15
+     713: athrow
+     714: astore        30
+     716: aload         13
+     718: ifnull        755
+     721: aload         14
+     723: ifnull        748
+     726: aload         13
+     728: invokeinterface #58,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     733: goto          755
+     736: astore        31
+     738: aload         14
+     740: aload         31
+     742: invokevirtual #57                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     745: goto          755
+     748: aload         13
+     750: invokeinterface #58,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     755: aload         30
+     757: athrow
+     758: goto          775
+     761: astore        13
+     763: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     766: ldc           #62                 // String Failed to clean up replication barrier
+     768: aload         13
+     770: invokeinterface #63,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     775: lload_1
+     776: lconst_0
+     777: lcmp
+     778: ifle          833
+     781: getstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+     784: ldc           #64                 // String Cleanup replication barriers: totalRows {}, cleanedRows {}, deletedRows {}, deletedBarriers {}, deletedLastPushedSeqIds {}
+     786: iconst_5
+     787: anewarray     #65                 // class java/lang/Object
+     790: dup
+     791: iconst_0
+     792: lload_1
+     793: invokestatic  #66                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     796: aastore
+     797: dup
+     798: iconst_1
+     799: lload_3
+     800: invokestatic  #66                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     803: aastore
+     804: dup
+     805: iconst_2
+     806: lload         5
+     808: invokestatic  #66                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     811: aastore
+     812: dup
+     813: iconst_3
+     814: lload         7
+     816: invokestatic  #66                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     819: aastore
+     820: dup
+     821: iconst_4
+     822: lload         9
+     824: invokestatic  #66                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     827: aastore
+     828: invokeinterface #67,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     833: return
+    Exception table:
+       from    to  target type
+         578   585   588   Class java/lang/Throwable
+          64   568   610   Class java/lang/Throwable
+          64   568   619   any
+         631   638   641   Class java/lang/Throwable
+         610   621   619   any
+         673   680   683   Class java/lang/Throwable
+          36   663   705   Class java/lang/Throwable
+          36   663   714   any
+         726   733   736   Class java/lang/Throwable
+         705   716   714   any
+          19   758   761   Class org/apache/hadoop/hbase/replication/ReplicationException
+          19   758   761   Class java/io/IOException
+
+  static {};
+    Code:
+       0: ldc           #2                  // class org/apache/hadoop/hbase/master/cleaner/ReplicationBarrierCleaner
+       2: invokestatic  #68                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

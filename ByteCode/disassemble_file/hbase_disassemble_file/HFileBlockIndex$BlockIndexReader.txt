@@ -1,0 +1,492 @@
+Compiled from "HFileBlockIndex.java"
+abstract class org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$BlockIndexReader implements org.apache.hadoop.hbase.io.HeapSize {
+  protected long[] blockOffsets;
+
+  protected int[] blockDataSizes;
+
+  protected int rootCount;
+
+  protected long midLeafBlockOffset;
+
+  protected int midLeafBlockOnDiskSize;
+
+  protected int midKeyEntry;
+
+  protected int searchTreeLevel;
+
+  protected org.apache.hadoop.hbase.io.hfile.HFile$CachingBlockReader cachingBlockReader;
+
+  org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$BlockIndexReader();
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #3                  // Field rootCount:I
+       9: aload_0
+      10: ldc2_w        #4                  // long -1l
+      13: putfield      #6                  // Field midLeafBlockOffset:J
+      16: aload_0
+      17: iconst_m1
+      18: putfield      #7                  // Field midLeafBlockOnDiskSize:I
+      21: aload_0
+      22: iconst_m1
+      23: putfield      #8                  // Field midKeyEntry:I
+      26: return
+
+  public abstract boolean isEmpty();
+
+  public void ensureNonEmpty();
+    Code:
+       0: aload_0
+       1: invokevirtual #9                  // Method isEmpty:()Z
+       4: ifeq          17
+       7: new           #10                 // class java/lang/IllegalStateException
+      10: dup
+      11: ldc           #11                 // String Block index is empty or not loaded
+      13: invokespecial #12                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: return
+
+  public org.apache.hadoop.hbase.io.hfile.HFileBlock seekToDataBlock(org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.io.hfile.HFileBlock, boolean, boolean, boolean, org.apache.hadoop.hbase.io.encoding.DataBlockEncoding) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: iload_3
+       4: iload         4
+       6: iload         5
+       8: aload         6
+      10: invokevirtual #13                 // Method loadDataBlockWithScanInfo:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;ZZZLorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)Lorg/apache/hadoop/hbase/io/hfile/BlockWithScanInfo;
+      13: astore        7
+      15: aload         7
+      17: ifnonnull     22
+      20: aconst_null
+      21: areturn
+      22: aload         7
+      24: invokevirtual #14                 // Method org/apache/hadoop/hbase/io/hfile/BlockWithScanInfo.getHFileBlock:()Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;
+      27: areturn
+
+  public abstract org.apache.hadoop.hbase.io.hfile.BlockWithScanInfo loadDataBlockWithScanInfo(org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.io.hfile.HFileBlock, boolean, boolean, boolean, org.apache.hadoop.hbase.io.encoding.DataBlockEncoding) throws java.io.IOException;
+
+  public abstract org.apache.hadoop.hbase.Cell midkey() throws java.io.IOException;
+
+  public long getRootBlockOffset(int);
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field blockOffsets:[J
+       4: iload_1
+       5: laload
+       6: lreturn
+
+  public int getRootBlockDataSize(int);
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field blockDataSizes:[I
+       4: iload_1
+       5: iaload
+       6: ireturn
+
+  public int getRootBlockCount();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field rootCount:I
+       4: ireturn
+
+  public abstract int rootBlockContainingKey(byte[], int, int, org.apache.hadoop.hbase.CellComparator);
+
+  public int rootBlockContainingKey(byte[], int, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: iload_3
+       4: aconst_null
+       5: invokevirtual #17                 // Method rootBlockContainingKey:([BIILorg/apache/hadoop/hbase/CellComparator;)I
+       8: ireturn
+
+  public abstract int rootBlockContainingKey(org.apache.hadoop.hbase.Cell);
+
+  protected byte[] getNonRootIndexedKey(org.apache.hadoop.hbase.nio.ByteBuff, int);
+    Code:
+       0: aload_1
+       1: iconst_0
+       2: invokevirtual #18                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getInt:(I)I
+       5: istore_3
+       6: iload_2
+       7: iflt          15
+      10: iload_2
+      11: iload_3
+      12: if_icmplt     17
+      15: aconst_null
+      16: areturn
+      17: iconst_4
+      18: iload_3
+      19: iconst_2
+      20: iadd
+      21: imul
+      22: istore        4
+      24: aload_1
+      25: iconst_4
+      26: iload_2
+      27: iconst_1
+      28: iadd
+      29: imul
+      30: invokevirtual #18                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getInt:(I)I
+      33: istore        5
+      35: iload         4
+      37: iload         5
+      39: iadd
+      40: bipush        12
+      42: iadd
+      43: istore        6
+      45: aload_1
+      46: iconst_4
+      47: iload_2
+      48: iconst_2
+      49: iadd
+      50: imul
+      51: invokevirtual #18                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getInt:(I)I
+      54: iload         5
+      56: isub
+      57: bipush        12
+      59: isub
+      60: istore        7
+      62: aload_1
+      63: iload         6
+      65: iload         7
+      67: invokevirtual #20                 // Method org/apache/hadoop/hbase/nio/ByteBuff.toBytes:(II)[B
+      70: areturn
+
+  static int binarySearchNonRootIndex(org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.nio.ByteBuff, org.apache.hadoop.hbase.CellComparator);
+    Code:
+       0: aload_1
+       1: iconst_0
+       2: invokevirtual #21                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+       5: istore_3
+       6: iconst_0
+       7: istore        4
+       9: iload_3
+      10: iconst_1
+      11: isub
+      12: istore        5
+      14: iconst_0
+      15: istore        6
+      17: iconst_4
+      18: iload_3
+      19: iconst_2
+      20: iadd
+      21: imul
+      22: istore        7
+      24: new           #22                 // class org/apache/hadoop/hbase/ByteBufferKeyOnlyKeyValue
+      27: dup
+      28: invokespecial #23                 // Method org/apache/hadoop/hbase/ByteBufferKeyOnlyKeyValue."<init>":()V
+      31: astore        8
+      33: new           #24                 // class org/apache/hadoop/hbase/util/ObjectIntPair
+      36: dup
+      37: invokespecial #25                 // Method org/apache/hadoop/hbase/util/ObjectIntPair."<init>":()V
+      40: astore        9
+      42: iload         4
+      44: iload         5
+      46: if_icmpgt     174
+      49: iload         4
+      51: iload         5
+      53: iload         4
+      55: isub
+      56: iconst_1
+      57: ishr
+      58: iadd
+      59: istore        6
+      61: aload_1
+      62: iconst_4
+      63: iload         6
+      65: iconst_1
+      66: iadd
+      67: imul
+      68: invokevirtual #21                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+      71: istore        10
+      73: iload         7
+      75: iload         10
+      77: iadd
+      78: bipush        12
+      80: iadd
+      81: istore        11
+      83: aload_1
+      84: iconst_4
+      85: iload         6
+      87: iconst_2
+      88: iadd
+      89: imul
+      90: invokevirtual #21                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+      93: iload         10
+      95: isub
+      96: bipush        12
+      98: isub
+      99: istore        12
+     101: aload_1
+     102: iload         11
+     104: iload         12
+     106: aload         9
+     108: invokevirtual #26                 // Method org/apache/hadoop/hbase/nio/ByteBuff.asSubByteBuffer:(IILorg/apache/hadoop/hbase/util/ObjectIntPair;)V
+     111: aload         8
+     113: aload         9
+     115: invokevirtual #27                 // Method org/apache/hadoop/hbase/util/ObjectIntPair.getFirst:()Ljava/lang/Object;
+     118: checkcast     #28                 // class java/nio/ByteBuffer
+     121: aload         9
+     123: invokevirtual #29                 // Method org/apache/hadoop/hbase/util/ObjectIntPair.getSecond:()I
+     126: iload         12
+     128: invokevirtual #30                 // Method org/apache/hadoop/hbase/ByteBufferKeyOnlyKeyValue.setKey:(Ljava/nio/ByteBuffer;II)V
+     131: aload_2
+     132: aload_0
+     133: aload         8
+     135: invokestatic  #31                 // Method org/apache/hadoop/hbase/PrivateCellUtil.compareKeyIgnoresMvcc:(Lorg/apache/hadoop/hbase/CellComparator;Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/Cell;)I
+     138: istore        13
+     140: iload         13
+     142: ifle          154
+     145: iload         6
+     147: iconst_1
+     148: iadd
+     149: istore        4
+     151: goto          171
+     154: iload         13
+     156: ifge          168
+     159: iload         6
+     161: iconst_1
+     162: isub
+     163: istore        5
+     165: goto          171
+     168: iload         6
+     170: ireturn
+     171: goto          42
+     174: iload         4
+     176: iload         5
+     178: iconst_1
+     179: iadd
+     180: if_icmpeq     223
+     183: new           #10                 // class java/lang/IllegalStateException
+     186: dup
+     187: new           #32                 // class java/lang/StringBuilder
+     190: dup
+     191: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     194: ldc           #34                 // String Binary search broken: low=
+     196: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     199: iload         4
+     201: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     204: ldc           #37                 // String  instead of
+     206: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     209: iload         5
+     211: iconst_1
+     212: iadd
+     213: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     216: invokevirtual #38                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     219: invokespecial #12                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+     222: athrow
+     223: iload         4
+     225: iconst_1
+     226: isub
+     227: istore        10
+     229: iload         10
+     231: iconst_m1
+     232: if_icmplt     241
+     235: iload         10
+     237: iload_3
+     238: if_icmplt     280
+     241: new           #10                 // class java/lang/IllegalStateException
+     244: dup
+     245: new           #32                 // class java/lang/StringBuilder
+     248: dup
+     249: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     252: ldc           #39                 // String Binary search broken: result is
+     254: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     257: iload         10
+     259: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     262: ldc           #40                 // String  but expected to be between -1 and (numEntries - 1) =
+     264: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     267: iload_3
+     268: iconst_1
+     269: isub
+     270: invokevirtual #36                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     273: invokevirtual #38                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     276: invokespecial #12                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+     279: athrow
+     280: iload         10
+     282: ireturn
+
+  static int locateNonRootIndexEntry(org.apache.hadoop.hbase.nio.ByteBuff, org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.CellComparator);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: aload_2
+       3: invokestatic  #41                 // Method binarySearchNonRootIndex:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/nio/ByteBuff;Lorg/apache/hadoop/hbase/CellComparator;)I
+       6: istore_3
+       7: iload_3
+       8: iconst_m1
+       9: if_icmpeq     48
+      12: aload_0
+      13: iconst_0
+      14: invokevirtual #21                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+      17: istore        4
+      19: iconst_4
+      20: iload         4
+      22: iconst_2
+      23: iadd
+      24: imul
+      25: istore        5
+      27: aload_0
+      28: iconst_4
+      29: iconst_1
+      30: iload_3
+      31: iadd
+      32: imul
+      33: invokevirtual #21                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+      36: istore        6
+      38: aload_0
+      39: iload         5
+      41: iload         6
+      43: iadd
+      44: invokevirtual #42                 // Method org/apache/hadoop/hbase/nio/ByteBuff.position:(I)Lorg/apache/hadoop/hbase/nio/ByteBuff;
+      47: pop
+      48: iload_3
+      49: ireturn
+
+  public void readRootIndex(java.io.DataInput, int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iload_2
+       2: newarray       long
+       4: putfield      #15                 // Field blockOffsets:[J
+       7: aload_0
+       8: iload_2
+       9: invokevirtual #43                 // Method initialize:(I)V
+      12: aload_0
+      13: iload_2
+      14: newarray       int
+      16: putfield      #16                 // Field blockDataSizes:[I
+      19: iload_2
+      20: ifle          68
+      23: iconst_0
+      24: istore_3
+      25: iload_3
+      26: iload_2
+      27: if_icmpge     68
+      30: aload_1
+      31: invokeinterface #44,  1           // InterfaceMethod java/io/DataInput.readLong:()J
+      36: lstore        4
+      38: aload_1
+      39: invokeinterface #45,  1           // InterfaceMethod java/io/DataInput.readInt:()I
+      44: istore        6
+      46: aload_1
+      47: invokestatic  #46                 // Method org/apache/hadoop/hbase/util/Bytes.readByteArray:(Ljava/io/DataInput;)[B
+      50: astore        7
+      52: aload_0
+      53: aload         7
+      55: lload         4
+      57: iload         6
+      59: invokevirtual #47                 // Method add:([BJI)V
+      62: iinc          3, 1
+      65: goto          25
+      68: return
+
+  protected abstract void initialize(int);
+
+  protected abstract void add(byte[], long, int);
+
+  public java.io.DataInputStream readRootIndex(org.apache.hadoop.hbase.io.hfile.HFileBlock, int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #48                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.getByteStream:()Ljava/io/DataInputStream;
+       4: astore_3
+       5: aload_0
+       6: aload_3
+       7: iload_2
+       8: invokevirtual #49                 // Method readRootIndex:(Ljava/io/DataInput;I)V
+      11: aload_3
+      12: areturn
+
+  public void readMultiLevelIndexRoot(org.apache.hadoop.hbase.io.hfile.HFileBlock, int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: invokevirtual #50                 // Method readRootIndex:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;I)Ljava/io/DataInputStream;
+       6: astore_3
+       7: aload_1
+       8: invokevirtual #51                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.totalChecksumBytes:()I
+      11: istore        4
+      13: aload_3
+      14: invokevirtual #52                 // Method java/io/DataInputStream.available:()I
+      17: iload         4
+      19: isub
+      20: bipush        16
+      22: if_icmpge     26
+      25: return
+      26: aload_0
+      27: aload_3
+      28: invokevirtual #53                 // Method java/io/DataInputStream.readLong:()J
+      31: putfield      #6                  // Field midLeafBlockOffset:J
+      34: aload_0
+      35: aload_3
+      36: invokevirtual #54                 // Method java/io/DataInputStream.readInt:()I
+      39: putfield      #7                  // Field midLeafBlockOnDiskSize:I
+      42: aload_0
+      43: aload_3
+      44: invokevirtual #54                 // Method java/io/DataInputStream.readInt:()I
+      47: putfield      #8                  // Field midKeyEntry:I
+      50: return
+
+  public long heapSize();
+    Code:
+       0: iconst_3
+       1: getstatic     #55                 // Field org/apache/hadoop/hbase/util/ClassSize.REFERENCE:I
+       4: imul
+       5: bipush        8
+       7: iadd
+       8: getstatic     #56                 // Field org/apache/hadoop/hbase/util/ClassSize.OBJECT:I
+      11: iadd
+      12: invokestatic  #57                 // Method org/apache/hadoop/hbase/util/ClassSize.align:(I)I
+      15: i2l
+      16: lstore_1
+      17: lload_1
+      18: ldc2_w        #58                 // long 16l
+      21: ladd
+      22: lstore_1
+      23: aload_0
+      24: lload_1
+      25: invokevirtual #60                 // Method calculateHeapSizeForBlockKeys:(J)J
+      28: lstore_1
+      29: aload_0
+      30: getfield      #15                 // Field blockOffsets:[J
+      33: ifnull        55
+      36: lload_1
+      37: getstatic     #61                 // Field org/apache/hadoop/hbase/util/ClassSize.ARRAY:I
+      40: aload_0
+      41: getfield      #15                 // Field blockOffsets:[J
+      44: arraylength
+      45: bipush        8
+      47: imul
+      48: iadd
+      49: invokestatic  #57                 // Method org/apache/hadoop/hbase/util/ClassSize.align:(I)I
+      52: i2l
+      53: ladd
+      54: lstore_1
+      55: aload_0
+      56: getfield      #16                 // Field blockDataSizes:[I
+      59: ifnull        80
+      62: lload_1
+      63: getstatic     #61                 // Field org/apache/hadoop/hbase/util/ClassSize.ARRAY:I
+      66: aload_0
+      67: getfield      #16                 // Field blockDataSizes:[I
+      70: arraylength
+      71: iconst_4
+      72: imul
+      73: iadd
+      74: invokestatic  #57                 // Method org/apache/hadoop/hbase/util/ClassSize.align:(I)I
+      77: i2l
+      78: ladd
+      79: lstore_1
+      80: lload_1
+      81: invokestatic  #62                 // Method org/apache/hadoop/hbase/util/ClassSize.align:(J)J
+      84: lreturn
+
+  protected abstract long calculateHeapSizeForBlockKeys(long);
+}

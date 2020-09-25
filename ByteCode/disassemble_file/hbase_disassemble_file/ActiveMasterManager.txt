@@ -1,0 +1,412 @@
+Compiled from "ActiveMasterManager.java"
+public class org.apache.hadoop.hbase.master.ActiveMasterManager extends org.apache.hadoop.hbase.zookeeper.ZKListener {
+  final java.util.concurrent.atomic.AtomicBoolean clusterHasActiveMaster;
+
+  final java.util.concurrent.atomic.AtomicBoolean clusterShutDown;
+
+  org.apache.hadoop.hbase.master.ActiveMasterManager(org.apache.hadoop.hbase.zookeeper.ZKWatcher, org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.Server);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method org/apache/hadoop/hbase/zookeeper/ZKListener."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;)V
+       5: aload_0
+       6: new           #2                  // class java/util/concurrent/atomic/AtomicBoolean
+       9: dup
+      10: iconst_0
+      11: invokespecial #3                  // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      14: putfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+      17: aload_0
+      18: new           #2                  // class java/util/concurrent/atomic/AtomicBoolean
+      21: dup
+      22: iconst_0
+      23: invokespecial #3                  // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      26: putfield      #5                  // Field clusterShutDown:Ljava/util/concurrent/atomic/AtomicBoolean;
+      29: aload_1
+      30: aload_0
+      31: invokevirtual #6                  // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.registerListener:(Lorg/apache/hadoop/hbase/zookeeper/ZKListener;)V
+      34: aload_0
+      35: aload_2
+      36: putfield      #7                  // Field sn:Lorg/apache/hadoop/hbase/ServerName;
+      39: aload_0
+      40: aload_3
+      41: putfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+      44: return
+
+  public void setInfoPort(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #9                  // Field infoPort:I
+       5: return
+
+  public void nodeCreated(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #10                 // Method handle:(Ljava/lang/String;)V
+       5: return
+
+  public void nodeDeleted(java.lang.String);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       5: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+       8: getfield      #13                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.clusterStateZNode:Ljava/lang/String;
+      11: invokevirtual #14                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      14: ifeq          37
+      17: aload_0
+      18: getfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+      21: invokeinterface #15,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isStopped:()Z
+      26: ifne          37
+      29: aload_0
+      30: getfield      #5                  // Field clusterShutDown:Ljava/util/concurrent/atomic/AtomicBoolean;
+      33: iconst_1
+      34: invokevirtual #16                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+      37: aload_0
+      38: aload_1
+      39: invokevirtual #10                 // Method handle:(Ljava/lang/String;)V
+      42: return
+
+  void handle(java.lang.String);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       5: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+       8: getfield      #17                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.masterAddressZNode:Ljava/lang/String;
+      11: invokevirtual #14                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      14: ifeq          33
+      17: aload_0
+      18: getfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+      21: invokeinterface #15,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isStopped:()Z
+      26: ifne          33
+      29: aload_0
+      30: invokespecial #18                 // Method handleMasterNodeChange:()V
+      33: return
+
+  boolean blockUntilBecomingActiveMaster(int, org.apache.hadoop.hbase.monitoring.MonitoredTask);
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+       7: getfield      #29                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.backupMasterAddressesZNode:Ljava/lang/String;
+      10: aload_0
+      11: getfield      #7                  // Field sn:Lorg/apache/hadoop/hbase/ServerName;
+      14: invokevirtual #30                 // Method org/apache/hadoop/hbase/ServerName.toString:()Ljava/lang/String;
+      17: invokestatic  #31                 // Method org/apache/hadoop/hbase/zookeeper/ZNodePaths.joinZNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      20: astore_3
+      21: aload_0
+      22: getfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+      25: invokeinterface #32,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isAborted:()Z
+      30: ifne          481
+      33: aload_0
+      34: getfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+      37: invokeinterface #15,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isStopped:()Z
+      42: ifne          481
+      45: aload_2
+      46: ldc           #33                 // String Trying to register in ZK as active master
+      48: invokeinterface #34,  2           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.setStatus:(Ljava/lang/String;)V
+      53: aload_0
+      54: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      57: aload_0
+      58: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      61: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      64: getfield      #17                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.masterAddressZNode:Ljava/lang/String;
+      67: aload_0
+      68: getfield      #7                  // Field sn:Lorg/apache/hadoop/hbase/ServerName;
+      71: aload_0
+      72: getfield      #9                  // Field infoPort:I
+      75: invokestatic  #35                 // Method org/apache/hadoop/hbase/zookeeper/MasterAddressTracker.setMasterAddress:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;Lorg/apache/hadoop/hbase/ServerName;I)Z
+      78: ifeq          191
+      81: aload_0
+      82: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      85: aload_3
+      86: invokestatic  #36                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.checkExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)I
+      89: iconst_m1
+      90: if_icmpeq     133
+      93: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+      96: new           #37                 // class java/lang/StringBuilder
+      99: dup
+     100: invokespecial #38                 // Method java/lang/StringBuilder."<init>":()V
+     103: ldc           #39                 // String Deleting ZNode for
+     105: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     108: aload_3
+     109: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     112: ldc           #41                 // String  from backup master directory
+     114: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: invokevirtual #42                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     120: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     125: aload_0
+     126: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     129: aload_3
+     130: invokestatic  #44                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNodeFailSilent:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+     133: aload_0
+     134: getfield      #7                  // Field sn:Lorg/apache/hadoop/hbase/ServerName;
+     137: invokevirtual #30                 // Method org/apache/hadoop/hbase/ServerName.toString:()Ljava/lang/String;
+     140: invokestatic  #45                 // Method org/apache/hadoop/hbase/ZNodeClearer.writeMyEphemeralNodeOnDisk:(Ljava/lang/String;)V
+     143: aload_2
+     144: ldc           #46                 // String Successfully registered as active master.
+     146: invokeinterface #34,  2           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.setStatus:(Ljava/lang/String;)V
+     151: aload_0
+     152: getfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+     155: iconst_1
+     156: invokevirtual #16                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     159: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+     162: new           #37                 // class java/lang/StringBuilder
+     165: dup
+     166: invokespecial #38                 // Method java/lang/StringBuilder."<init>":()V
+     169: ldc           #47                 // String Registered as active master=
+     171: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     174: aload_0
+     175: getfield      #7                  // Field sn:Lorg/apache/hadoop/hbase/ServerName;
+     178: invokevirtual #48                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     181: invokevirtual #42                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     184: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     189: iconst_1
+     190: ireturn
+     191: aload_0
+     192: getfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+     195: iconst_1
+     196: invokevirtual #16                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     199: aload_0
+     200: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     203: aload_0
+     204: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     207: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+     210: getfield      #17                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.masterAddressZNode:Ljava/lang/String;
+     213: invokestatic  #49                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataAndWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+     216: astore        5
+     218: aload         5
+     220: ifnonnull     230
+     223: ldc           #50                 // String A master was detected, but went down before its address could be read.  Attempting to become the next active master
+     225: astore        4
+     227: goto          346
+     230: aload         5
+     232: invokestatic  #51                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.parseServerNameFrom:([B)Lorg/apache/hadoop/hbase/ServerName;
+     235: astore        6
+     237: goto          257
+     240: astore        7
+     242: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+     245: ldc           #53                 // String Failed parse
+     247: aload         7
+     249: invokeinterface #54,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     254: goto          21
+     257: aload         6
+     259: aload_0
+     260: getfield      #7                  // Field sn:Lorg/apache/hadoop/hbase/ServerName;
+     263: invokestatic  #55                 // Method org/apache/hadoop/hbase/ServerName.isSameAddress:(Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/ServerName;)Z
+     266: ifeq          319
+     269: new           #37                 // class java/lang/StringBuilder
+     272: dup
+     273: invokespecial #38                 // Method java/lang/StringBuilder."<init>":()V
+     276: ldc           #56                 // String Current master has this master's address,
+     278: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     281: aload         6
+     283: invokevirtual #48                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     286: ldc           #57                 // String ; master was restarted? Deleting node.
+     288: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     291: invokevirtual #42                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     294: astore        4
+     296: aload_0
+     297: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     300: aload_0
+     301: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     304: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+     307: getfield      #17                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.masterAddressZNode:Ljava/lang/String;
+     310: invokestatic  #58                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNode:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+     313: invokestatic  #59                 // Method org/apache/hadoop/hbase/ZNodeClearer.deleteMyEphemeralNodeOnDisk:()V
+     316: goto          346
+     319: new           #37                 // class java/lang/StringBuilder
+     322: dup
+     323: invokespecial #38                 // Method java/lang/StringBuilder."<init>":()V
+     326: ldc           #60                 // String Another master is the active master,
+     328: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     331: aload         6
+     333: invokevirtual #48                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     336: ldc           #61                 // String ; waiting to become the next active master
+     338: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     341: invokevirtual #42                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     344: astore        4
+     346: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+     349: aload         4
+     351: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     356: aload_2
+     357: aload         4
+     359: invokeinterface #34,  2           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.setStatus:(Ljava/lang/String;)V
+     364: goto          384
+     367: astore        4
+     369: aload_0
+     370: getfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+     373: ldc           #27                 // String Received an unexpected KeeperException, aborting
+     375: aload         4
+     377: invokeinterface #28,  3           // InterfaceMethod org/apache/hadoop/hbase/Server.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     382: iconst_0
+     383: ireturn
+     384: aload_0
+     385: getfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+     388: dup
+     389: astore        4
+     391: monitorenter
+     392: aload_0
+     393: getfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+     396: invokevirtual #62                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+     399: ifeq          443
+     402: aload_0
+     403: getfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+     406: invokeinterface #15,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isStopped:()Z
+     411: ifne          443
+     414: aload_0
+     415: getfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+     418: iload_1
+     419: i2l
+     420: invokevirtual #63                 // Method java/lang/Object.wait:(J)V
+     423: goto          392
+     426: astore        5
+     428: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+     431: ldc           #65                 // String Interrupted waiting for master to die
+     433: aload         5
+     435: invokeinterface #66,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     440: goto          392
+     443: aload_0
+     444: getfield      #5                  // Field clusterShutDown:Ljava/util/concurrent/atomic/AtomicBoolean;
+     447: invokevirtual #62                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+     450: ifeq          464
+     453: aload_0
+     454: getfield      #8                  // Field master:Lorg/apache/hadoop/hbase/Server;
+     457: ldc           #67                 // String Cluster went down before this master became active
+     459: invokeinterface #68,  2           // InterfaceMethod org/apache/hadoop/hbase/Server.stop:(Ljava/lang/String;)V
+     464: aload         4
+     466: monitorexit
+     467: goto          478
+     470: astore        8
+     472: aload         4
+     474: monitorexit
+     475: aload         8
+     477: athrow
+     478: goto          21
+     481: iconst_0
+     482: ireturn
+    Exception table:
+       from    to  target type
+         230   237   240   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+          53   190   367   Class org/apache/zookeeper/KeeperException
+         191   254   367   Class org/apache/zookeeper/KeeperException
+         257   364   367   Class org/apache/zookeeper/KeeperException
+         414   423   426   Class java/lang/InterruptedException
+         392   467   470   any
+         470   475   470   any
+
+  boolean hasActiveMaster();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       8: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      11: getfield      #17                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.masterAddressZNode:Ljava/lang/String;
+      14: invokestatic  #36                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.checkExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)I
+      17: iflt          22
+      20: iconst_1
+      21: ireturn
+      22: goto          53
+      25: astore_1
+      26: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+      29: new           #37                 // class java/lang/StringBuilder
+      32: dup
+      33: invokespecial #38                 // Method java/lang/StringBuilder."<init>":()V
+      36: ldc           #69                 // String Received an unexpected KeeperException when checking isActiveMaster :
+      38: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      41: aload_1
+      42: invokevirtual #48                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      45: invokevirtual #42                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      48: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      53: iconst_0
+      54: ireturn
+    Exception table:
+       from    to  target type
+           0    21    25   Class org/apache/zookeeper/KeeperException
+
+  public void stop();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: dup
+       5: astore_1
+       6: monitorenter
+       7: aload_0
+       8: getfield      #4                  // Field clusterHasActiveMaster:Ljava/util/concurrent/atomic/AtomicBoolean;
+      11: invokevirtual #25                 // Method java/lang/Object.notifyAll:()V
+      14: aload_1
+      15: monitorexit
+      16: goto          24
+      19: astore_2
+      20: aload_1
+      21: monitorexit
+      22: aload_2
+      23: athrow
+      24: aconst_null
+      25: astore_1
+      26: aload_0
+      27: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      30: invokestatic  #70                 // Method org/apache/hadoop/hbase/zookeeper/MasterAddressTracker.getMasterAddress:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;)Lorg/apache/hadoop/hbase/ServerName;
+      33: astore_1
+      34: goto          68
+      37: astore_2
+      38: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+      41: new           #37                 // class java/lang/StringBuilder
+      44: dup
+      45: invokespecial #38                 // Method java/lang/StringBuilder."<init>":()V
+      48: ldc           #72                 // String Failed get of master address:
+      50: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: aload_2
+      54: invokevirtual #73                 // Method java/io/IOException.toString:()Ljava/lang/String;
+      57: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: invokevirtual #42                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      63: invokeinterface #74,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      68: aload_1
+      69: ifnull        103
+      72: aload_1
+      73: aload_0
+      74: getfield      #7                  // Field sn:Lorg/apache/hadoop/hbase/ServerName;
+      77: invokevirtual #75                 // Method org/apache/hadoop/hbase/ServerName.equals:(Ljava/lang/Object;)Z
+      80: ifeq          103
+      83: aload_0
+      84: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      87: aload_0
+      88: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      91: invokevirtual #12                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+      94: getfield      #17                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.masterAddressZNode:Ljava/lang/String;
+      97: invokestatic  #58                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNode:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+     100: invokestatic  #59                 // Method org/apache/hadoop/hbase/ZNodeClearer.deleteMyEphemeralNodeOnDisk:()V
+     103: goto          144
+     106: astore_1
+     107: getstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+     110: aload_0
+     111: getfield      #11                 // Field watcher:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     114: new           #37                 // class java/lang/StringBuilder
+     117: dup
+     118: invokespecial #38                 // Method java/lang/StringBuilder."<init>":()V
+     121: ldc           #76                 // String Failed delete of our master address node;
+     123: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     126: aload_1
+     127: invokevirtual #77                 // Method org/apache/zookeeper/KeeperException.getMessage:()Ljava/lang/String;
+     130: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     133: invokevirtual #42                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     136: invokevirtual #78                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.prefix:(Ljava/lang/String;)Ljava/lang/String;
+     139: invokeinterface #24,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     144: return
+    Exception table:
+       from    to  target type
+           7    16    19   any
+          19    22    19   any
+          26    34    37   Class java/io/IOException
+           0   103   106   Class org/apache/zookeeper/KeeperException
+
+  static {};
+    Code:
+       0: ldc           #79                 // class org/apache/hadoop/hbase/master/ActiveMasterManager
+       2: invokestatic  #80                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #20                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

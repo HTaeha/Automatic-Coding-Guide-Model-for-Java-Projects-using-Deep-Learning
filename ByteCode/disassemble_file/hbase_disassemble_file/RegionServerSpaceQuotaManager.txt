@@ -1,0 +1,474 @@
+Compiled from "RegionServerSpaceQuotaManager.java"
+public class org.apache.hadoop.hbase.quotas.RegionServerSpaceQuotaManager {
+  public org.apache.hadoop.hbase.quotas.RegionServerSpaceQuotaManager(org.apache.hadoop.hbase.regionserver.RegionServerServices);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #1                  // Method org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcementFactory.getInstance:()Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcementFactory;
+       5: invokespecial #2                  // Method "<init>":(Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcementFactory;)V
+       8: return
+
+  org.apache.hadoop.hbase.quotas.RegionServerSpaceQuotaManager(org.apache.hadoop.hbase.regionserver.RegionServerServices, org.apache.hadoop.hbase.quotas.SpaceViolationPolicyEnforcementFactory);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #4                  // Field started:Z
+       9: aload_0
+      10: aload_1
+      11: invokestatic  #5                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      14: checkcast     #6                  // class org/apache/hadoop/hbase/regionserver/RegionServerServices
+      17: putfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      20: aload_0
+      21: aload_2
+      22: putfield      #8                  // Field factory:Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcementFactory;
+      25: aload_0
+      26: new           #9                  // class java/util/concurrent/ConcurrentHashMap
+      29: dup
+      30: invokespecial #10                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      33: putfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+      36: aload_0
+      37: new           #12                 // class java/util/concurrent/atomic/AtomicReference
+      40: dup
+      41: new           #13                 // class java/util/HashMap
+      44: dup
+      45: invokespecial #14                 // Method java/util/HashMap."<init>":()V
+      48: invokespecial #15                 // Method java/util/concurrent/atomic/AtomicReference."<init>":(Ljava/lang/Object;)V
+      51: putfield      #16                 // Field currentQuotaSnapshots:Ljava/util/concurrent/atomic/AtomicReference;
+      54: aload_0
+      55: invokestatic  #17                 // Method org/apache/hadoop/hbase/quotas/NoOpRegionSizeStore.getInstance:()Lorg/apache/hadoop/hbase/quotas/NoOpRegionSizeStore;
+      58: putfield      #18                 // Field regionSizeStore:Lorg/apache/hadoop/hbase/quotas/RegionSizeStore;
+      61: return
+
+  public synchronized void start() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+       4: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       9: invokestatic  #20                 // Method org/apache/hadoop/hbase/quotas/QuotaUtil.isQuotaEnabled:(Lorg/apache/hadoop/conf/Configuration;)Z
+      12: ifne          26
+      15: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+      18: ldc           #22                 // String Quota support disabled, not starting space quota manager.
+      20: invokeinterface #23,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      25: return
+      26: aload_0
+      27: getfield      #4                  // Field started:Z
+      30: ifeq          44
+      33: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+      36: ldc           #24                 // String RegionServerSpaceQuotaManager has already been started!
+      38: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      43: return
+      44: aload_0
+      45: new           #26                 // class org/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore
+      48: dup
+      49: aload_0
+      50: aload_0
+      51: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      54: invokeinterface #27,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getClusterConnection:()Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      59: invokespecial #28                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore."<init>":(Lorg/apache/hadoop/hbase/quotas/RegionServerSpaceQuotaManager;Lorg/apache/hadoop/hbase/client/Connection;)V
+      62: putfield      #29                 // Field spaceQuotaRefresher:Lorg/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore;
+      65: aload_0
+      66: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      69: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getChoreService:()Lorg/apache/hadoop/hbase/ChoreService;
+      74: aload_0
+      75: getfield      #29                 // Field spaceQuotaRefresher:Lorg/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore;
+      78: invokevirtual #31                 // Method org/apache/hadoop/hbase/ChoreService.scheduleChore:(Lorg/apache/hadoop/hbase/ScheduledChore;)Z
+      81: pop
+      82: aload_0
+      83: new           #32                 // class org/apache/hadoop/hbase/quotas/RegionSizeReportingChore
+      86: dup
+      87: aload_0
+      88: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      91: invokespecial #33                 // Method org/apache/hadoop/hbase/quotas/RegionSizeReportingChore."<init>":(Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;)V
+      94: putfield      #34                 // Field regionSizeReporter:Lorg/apache/hadoop/hbase/quotas/RegionSizeReportingChore;
+      97: aload_0
+      98: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     101: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getChoreService:()Lorg/apache/hadoop/hbase/ChoreService;
+     106: aload_0
+     107: getfield      #34                 // Field regionSizeReporter:Lorg/apache/hadoop/hbase/quotas/RegionSizeReportingChore;
+     110: invokevirtual #31                 // Method org/apache/hadoop/hbase/ChoreService.scheduleChore:(Lorg/apache/hadoop/hbase/ScheduledChore;)Z
+     113: pop
+     114: aload_0
+     115: invokestatic  #35                 // Method org/apache/hadoop/hbase/quotas/RegionSizeStoreFactory.getInstance:()Lorg/apache/hadoop/hbase/quotas/RegionSizeStoreFactory;
+     118: invokevirtual #36                 // Method org/apache/hadoop/hbase/quotas/RegionSizeStoreFactory.createStore:()Lorg/apache/hadoop/hbase/quotas/RegionSizeStore;
+     121: putfield      #18                 // Field regionSizeStore:Lorg/apache/hadoop/hbase/quotas/RegionSizeStore;
+     124: aload_0
+     125: iconst_1
+     126: putfield      #4                  // Field started:Z
+     129: return
+
+  public synchronized void stop();
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field spaceQuotaRefresher:Lorg/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore;
+       4: ifnull        19
+       7: aload_0
+       8: getfield      #29                 // Field spaceQuotaRefresher:Lorg/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore;
+      11: invokevirtual #37                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore.cancel:()V
+      14: aload_0
+      15: aconst_null
+      16: putfield      #29                 // Field spaceQuotaRefresher:Lorg/apache/hadoop/hbase/quotas/SpaceQuotaRefresherChore;
+      19: aload_0
+      20: getfield      #34                 // Field regionSizeReporter:Lorg/apache/hadoop/hbase/quotas/RegionSizeReportingChore;
+      23: ifnull        38
+      26: aload_0
+      27: getfield      #34                 // Field regionSizeReporter:Lorg/apache/hadoop/hbase/quotas/RegionSizeReportingChore;
+      30: invokevirtual #38                 // Method org/apache/hadoop/hbase/quotas/RegionSizeReportingChore.cancel:()V
+      33: aload_0
+      34: aconst_null
+      35: putfield      #34                 // Field regionSizeReporter:Lorg/apache/hadoop/hbase/quotas/RegionSizeReportingChore;
+      38: aload_0
+      39: iconst_0
+      40: putfield      #4                  // Field started:Z
+      43: return
+
+  public boolean isStarted();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field started:Z
+       4: ireturn
+
+  public java.util.Map<org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot> copyQuotaSnapshots();
+    Code:
+       0: new           #13                 // class java/util/HashMap
+       3: dup
+       4: aload_0
+       5: getfield      #16                 // Field currentQuotaSnapshots:Ljava/util/concurrent/atomic/AtomicReference;
+       8: invokevirtual #39                 // Method java/util/concurrent/atomic/AtomicReference.get:()Ljava/lang/Object;
+      11: checkcast     #40                 // class java/util/Map
+      14: invokespecial #41                 // Method java/util/HashMap."<init>":(Ljava/util/Map;)V
+      17: areturn
+
+  public void updateQuotaSnapshot(java.util.Map<org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot>);
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field currentQuotaSnapshots:Ljava/util/concurrent/atomic/AtomicReference;
+       4: aload_1
+       5: invokestatic  #5                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+       8: invokevirtual #42                 // Method java/util/concurrent/atomic/AtomicReference.set:(Ljava/lang/Object;)V
+      11: return
+
+  public org.apache.hadoop.hbase.quotas.ActivePolicyEnforcement getActiveEnforcements();
+    Code:
+       0: new           #43                 // class org/apache/hadoop/hbase/quotas/ActivePolicyEnforcement
+       3: dup
+       4: aload_0
+       5: invokevirtual #44                 // Method copyActiveEnforcements:()Ljava/util/Map;
+       8: aload_0
+       9: invokevirtual #45                 // Method copyQuotaSnapshots:()Ljava/util/Map;
+      12: aload_0
+      13: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      16: invokespecial #46                 // Method org/apache/hadoop/hbase/quotas/ActivePolicyEnforcement."<init>":(Ljava/util/Map;Ljava/util/Map;Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;)V
+      19: areturn
+
+  public java.util.Map<org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot> getActivePoliciesAsMap();
+    Code:
+       0: aload_0
+       1: invokevirtual #44                 // Method copyActiveEnforcements:()Ljava/util/Map;
+       4: astore_1
+       5: new           #13                 // class java/util/HashMap
+       8: dup
+       9: invokespecial #14                 // Method java/util/HashMap."<init>":()V
+      12: astore_2
+      13: aload_1
+      14: invokeinterface #47,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      19: invokeinterface #48,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      24: astore_3
+      25: aload_3
+      26: invokeinterface #49,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      31: ifeq          86
+      34: aload_3
+      35: invokeinterface #50,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      40: checkcast     #51                 // class java/util/Map$Entry
+      43: astore        4
+      45: aload         4
+      47: invokeinterface #52,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      52: checkcast     #53                 // class org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement
+      55: invokeinterface #54,  1           // InterfaceMethod org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement.getQuotaSnapshot:()Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot;
+      60: astore        5
+      62: aload         5
+      64: ifnull        83
+      67: aload_2
+      68: aload         4
+      70: invokeinterface #55,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      75: aload         5
+      77: invokeinterface #56,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      82: pop
+      83: goto          25
+      86: aload_2
+      87: areturn
+
+  public void enforceViolationPolicy(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot);
+    Code:
+       0: aload_2
+       1: invokevirtual #57                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot.getQuotaStatus:()Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus;
+       4: astore_3
+       5: aload_3
+       6: invokevirtual #58                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus.isInViolation:()Z
+       9: ifne          39
+      12: new           #59                 // class java/lang/IllegalStateException
+      15: dup
+      16: new           #60                 // class java/lang/StringBuilder
+      19: dup
+      20: invokespecial #61                 // Method java/lang/StringBuilder."<init>":()V
+      23: aload_1
+      24: invokevirtual #62                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      27: ldc           #63                 // String  is not in violation. Violation policy should not be enabled.
+      29: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: invokevirtual #65                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      35: invokespecial #66                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      38: athrow
+      39: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+      42: invokeinterface #67,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      47: ifeq          89
+      50: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+      53: new           #60                 // class java/lang/StringBuilder
+      56: dup
+      57: invokespecial #61                 // Method java/lang/StringBuilder."<init>":()V
+      60: ldc           #68                 // String Enabling violation policy enforcement on
+      62: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      65: aload_1
+      66: invokevirtual #62                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      69: ldc           #69                 // String  with policy
+      71: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      74: aload_3
+      75: invokevirtual #70                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus.getPolicy:()Ljava/util/Optional;
+      78: invokevirtual #62                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      81: invokevirtual #65                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      84: invokeinterface #71,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      89: aload_0
+      90: invokevirtual #72                 // Method getFactory:()Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcementFactory;
+      93: aload_0
+      94: invokevirtual #73                 // Method getRegionServerServices:()Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      97: aload_1
+      98: aload_2
+      99: invokevirtual #74                 // Method org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcementFactory.create:(Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot;)Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement;
+     102: astore        4
+     104: aload_0
+     105: getfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+     108: dup
+     109: astore        5
+     111: monitorenter
+     112: aload         4
+     114: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement.enable:()V
+     119: goto          162
+     122: astore        6
+     124: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+     127: new           #60                 // class java/lang/StringBuilder
+     130: dup
+     131: invokespecial #61                 // Method java/lang/StringBuilder."<init>":()V
+     134: ldc           #77                 // String Failed to enable space violation policy for
+     136: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     139: aload_1
+     140: invokevirtual #62                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     143: ldc           #78                 // String . This table will not enter violation.
+     145: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     148: invokevirtual #65                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     151: aload         6
+     153: invokeinterface #79,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     158: aload         5
+     160: monitorexit
+     161: return
+     162: aload_0
+     163: getfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+     166: aload_1
+     167: aload         4
+     169: invokevirtual #80                 // Method java/util/concurrent/ConcurrentHashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     172: pop
+     173: aload         5
+     175: monitorexit
+     176: goto          187
+     179: astore        7
+     181: aload         5
+     183: monitorexit
+     184: aload         7
+     186: athrow
+     187: return
+    Exception table:
+       from    to  target type
+         112   119   122   Class java/io/IOException
+         112   161   179   any
+         162   176   179   any
+         179   184   179   any
+
+  public void disableViolationPolicyEnforcement(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+       3: invokeinterface #67,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+       8: ifeq          38
+      11: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+      14: new           #60                 // class java/lang/StringBuilder
+      17: dup
+      18: invokespecial #61                 // Method java/lang/StringBuilder."<init>":()V
+      21: ldc           #81                 // String Disabling violation policy enforcement on
+      23: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      26: aload_1
+      27: invokevirtual #62                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      30: invokevirtual #65                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      33: invokeinterface #71,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      38: aload_0
+      39: getfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+      42: dup
+      43: astore_2
+      44: monitorenter
+      45: aload_0
+      46: getfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+      49: aload_1
+      50: invokevirtual #82                 // Method java/util/concurrent/ConcurrentHashMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      53: checkcast     #53                 // class org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement
+      56: astore_3
+      57: aload_3
+      58: ifnull        116
+      61: aload_3
+      62: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement.disable:()V
+      67: goto          116
+      70: astore        4
+      72: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+      75: new           #60                 // class java/lang/StringBuilder
+      78: dup
+      79: invokespecial #61                 // Method java/lang/StringBuilder."<init>":()V
+      82: ldc           #84                 // String Failed to disable space violation policy for
+      84: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: aload_1
+      88: invokevirtual #62                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      91: ldc           #85                 // String . This table will remain in violation.
+      93: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: invokevirtual #65                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      99: aload         4
+     101: invokeinterface #79,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     106: aload_0
+     107: getfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+     110: aload_1
+     111: aload_3
+     112: invokevirtual #80                 // Method java/util/concurrent/ConcurrentHashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     115: pop
+     116: aload_2
+     117: monitorexit
+     118: goto          128
+     121: astore        5
+     123: aload_2
+     124: monitorexit
+     125: aload         5
+     127: athrow
+     128: return
+    Exception table:
+       from    to  target type
+          61    67    70   Class java/io/IOException
+          45   118   121   any
+         121   125   121   any
+
+  public boolean areCompactionsDisabled(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+       4: aload_1
+       5: invokestatic  #5                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+       8: invokevirtual #86                 // Method java/util/concurrent/ConcurrentHashMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      11: checkcast     #53                 // class org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement
+      14: astore_2
+      15: aload_2
+      16: ifnull        26
+      19: aload_2
+      20: invokeinterface #87,  1           // InterfaceMethod org/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcement.areCompactionsDisabled:()Z
+      25: ireturn
+      26: iconst_0
+      27: ireturn
+
+  public org.apache.hadoop.hbase.quotas.RegionSizeStore getRegionSizeStore();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field regionSizeStore:Lorg/apache/hadoop/hbase/quotas/RegionSizeStore;
+       4: areturn
+
+  public org.apache.hadoop.hbase.shaded.protobuf.generated.RegionServerStatusProtos$FileArchiveNotificationRequest buildFileArchiveRequest(org.apache.hadoop.hbase.TableName, java.util.Collection<java.util.Map$Entry<java.lang.String, java.lang.Long>>);
+    Code:
+       0: invokestatic  #88                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$Builder;
+       3: astore_3
+       4: aload_1
+       5: invokestatic  #89                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toProtoTableName:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$TableName;
+       8: astore        4
+      10: aload_2
+      11: invokeinterface #90,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      16: astore        5
+      18: aload         5
+      20: invokeinterface #49,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      25: ifeq          92
+      28: aload         5
+      30: invokeinterface #50,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #51                 // class java/util/Map$Entry
+      38: astore        6
+      40: invokestatic  #91                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder;
+      43: aload         6
+      45: invokeinterface #55,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      50: checkcast     #92                 // class java/lang/String
+      53: invokevirtual #93                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder.setName:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder;
+      56: aload         6
+      58: invokeinterface #52,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      63: checkcast     #94                 // class java/lang/Long
+      66: invokevirtual #95                 // Method java/lang/Long.longValue:()J
+      69: invokevirtual #96                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder.setSize:(J)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder;
+      72: aload         4
+      74: invokevirtual #97                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder.setTableName:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$TableName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder;
+      77: invokevirtual #98                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize;
+      80: astore        7
+      82: aload_3
+      83: aload         7
+      85: invokevirtual #99                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$Builder.addArchivedFiles:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$FileWithSize;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$Builder;
+      88: pop
+      89: goto          18
+      92: aload_3
+      93: invokevirtual #100                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$FileArchiveNotificationRequest;
+      96: astore        5
+      98: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+     101: invokeinterface #67,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     106: ifeq          140
+     109: getstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+     112: new           #60                 // class java/lang/StringBuilder
+     115: dup
+     116: invokespecial #61                 // Method java/lang/StringBuilder."<init>":()V
+     119: ldc           #101                // String Reporting file archival to Master:
+     121: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     124: aload         5
+     126: invokestatic  #102                // Method org/apache/hbase/thirdparty/com/google/protobuf/TextFormat.shortDebugString:(Lorg/apache/hbase/thirdparty/com/google/protobuf/MessageOrBuilder;)Ljava/lang/String;
+     129: invokevirtual #64                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     132: invokevirtual #65                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     135: invokeinterface #71,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     140: aload         5
+     142: areturn
+
+  java.util.Map<org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.SpaceViolationPolicyEnforcement> copyActiveEnforcements();
+    Code:
+       0: new           #13                 // class java/util/HashMap
+       3: dup
+       4: aload_0
+       5: getfield      #11                 // Field enforcedPolicies:Ljava/util/concurrent/ConcurrentHashMap;
+       8: invokespecial #41                 // Method java/util/HashMap."<init>":(Ljava/util/Map;)V
+      11: areturn
+
+  org.apache.hadoop.hbase.regionserver.RegionServerServices getRegionServerServices();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+       4: areturn
+
+  org.apache.hadoop.hbase.client.Connection getConnection();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+       4: invokeinterface #103,  1          // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+       9: areturn
+
+  org.apache.hadoop.hbase.quotas.SpaceViolationPolicyEnforcementFactory getFactory();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field factory:Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicyEnforcementFactory;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #104                // class org/apache/hadoop/hbase/quotas/RegionServerSpaceQuotaManager
+       2: invokestatic  #105                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #21                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

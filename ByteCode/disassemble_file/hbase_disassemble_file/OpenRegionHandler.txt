@@ -1,0 +1,571 @@
+Compiled from "OpenRegionHandler.java"
+public class org.apache.hadoop.hbase.regionserver.handler.OpenRegionHandler extends org.apache.hadoop.hbase.executor.EventHandler {
+  protected final org.apache.hadoop.hbase.regionserver.RegionServerServices rsServices;
+
+  public org.apache.hadoop.hbase.regionserver.handler.OpenRegionHandler(org.apache.hadoop.hbase.Server, org.apache.hadoop.hbase.regionserver.RegionServerServices, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.client.TableDescriptor, long);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: lload         5
+       8: getstatic     #4                  // Field org/apache/hadoop/hbase/executor/EventType.M_RS_OPEN_REGION:Lorg/apache/hadoop/hbase/executor/EventType;
+      11: invokespecial #5                  // Method "<init>":(Lorg/apache/hadoop/hbase/Server;Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/client/TableDescriptor;JLorg/apache/hadoop/hbase/executor/EventType;)V
+      14: return
+
+  protected org.apache.hadoop.hbase.regionserver.handler.OpenRegionHandler(org.apache.hadoop.hbase.Server, org.apache.hadoop.hbase.regionserver.RegionServerServices, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.client.TableDescriptor, long, org.apache.hadoop.hbase.executor.EventType);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload         7
+       4: invokespecial #6                  // Method org/apache/hadoop/hbase/executor/EventHandler."<init>":(Lorg/apache/hadoop/hbase/Server;Lorg/apache/hadoop/hbase/executor/EventType;)V
+       7: aload_0
+       8: aload_2
+       9: putfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      12: aload_0
+      13: aload_3
+      14: putfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      17: aload_0
+      18: aload         4
+      20: putfield      #9                  // Field htd:Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      23: aload_0
+      24: lload         5
+      26: putfield      #10                 // Field masterSystemTime:J
+      29: return
+
+  public org.apache.hadoop.hbase.client.RegionInfo getRegionInfo();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: areturn
+
+  public void process() throws java.io.IOException;
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+       6: invokeinterface #11,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+      11: astore_2
+      12: aconst_null
+      13: astore_3
+      14: aload_0
+      15: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/Server;
+      18: invokeinterface #13,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isStopped:()Z
+      23: ifne          38
+      26: aload_0
+      27: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      30: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.isStopping:()Z
+      35: ifeq          163
+      38: iload_1
+      39: ifne          47
+      42: aload_0
+      43: aload_3
+      44: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+      47: aload_0
+      48: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      51: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+      56: aload_0
+      57: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      60: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+      65: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      70: checkcast     #19                 // class java/lang/Boolean
+      73: astore        4
+      75: iload_1
+      76: ifeq          162
+      79: aload         4
+      81: ifnonnull     114
+      84: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+      87: new           #20                 // class java/lang/StringBuilder
+      90: dup
+      91: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+      94: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+      96: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      99: aload_2
+     100: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     103: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     106: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     111: goto          162
+     114: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     117: aload         4
+     119: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+     122: ifeq          162
+     125: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     128: new           #20                 // class java/lang/StringBuilder
+     131: dup
+     132: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     135: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+     137: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     140: aload_2
+     141: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     144: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+     146: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     149: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     152: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     157: aload_0
+     158: aload_3
+     159: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     162: return
+     163: aload_0
+     164: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     167: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     172: astore        4
+     174: aload_0
+     175: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     178: aload         4
+     180: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegion:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/Region;
+     185: ifnull        346
+     188: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     191: new           #20                 // class java/lang/StringBuilder
+     194: dup
+     195: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     198: ldc           #33                 // String Region
+     200: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     203: aload         4
+     205: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     208: ldc           #34                 // String  was already online when we started processing the opening. Marking this new attempt as failed
+     210: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     213: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     216: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     221: iload_1
+     222: ifne          230
+     225: aload_0
+     226: aload_3
+     227: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     230: aload_0
+     231: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     234: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     239: aload_0
+     240: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     243: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+     248: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     253: checkcast     #19                 // class java/lang/Boolean
+     256: astore        5
+     258: iload_1
+     259: ifeq          345
+     262: aload         5
+     264: ifnonnull     297
+     267: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     270: new           #20                 // class java/lang/StringBuilder
+     273: dup
+     274: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     277: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+     279: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     282: aload_2
+     283: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     286: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     289: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     294: goto          345
+     297: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     300: aload         5
+     302: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+     305: ifeq          345
+     308: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     311: new           #20                 // class java/lang/StringBuilder
+     314: dup
+     315: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     318: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+     320: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     323: aload_2
+     324: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     327: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+     329: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     332: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     335: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     340: aload_0
+     341: aload_3
+     342: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     345: return
+     346: aload_0
+     347: invokespecial #1                  // Method isRegionStillOpening:()Z
+     350: ifne          511
+     353: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     356: new           #20                 // class java/lang/StringBuilder
+     359: dup
+     360: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     363: ldc           #33                 // String Region
+     365: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     368: aload         4
+     370: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     373: ldc           #35                 // String  opening cancelled
+     375: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     378: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     381: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     386: iload_1
+     387: ifne          395
+     390: aload_0
+     391: aload_3
+     392: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     395: aload_0
+     396: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     399: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     404: aload_0
+     405: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     408: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+     413: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     418: checkcast     #19                 // class java/lang/Boolean
+     421: astore        5
+     423: iload_1
+     424: ifeq          510
+     427: aload         5
+     429: ifnonnull     462
+     432: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     435: new           #20                 // class java/lang/StringBuilder
+     438: dup
+     439: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     442: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+     444: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     447: aload_2
+     448: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     451: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     454: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     459: goto          510
+     462: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     465: aload         5
+     467: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+     470: ifeq          510
+     473: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     476: new           #20                 // class java/lang/StringBuilder
+     479: dup
+     480: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     483: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+     485: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     488: aload_2
+     489: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     492: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+     494: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     497: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     500: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     505: aload_0
+     506: aload_3
+     507: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     510: return
+     511: aload_0
+     512: invokespecial #36                 // Method openRegion:()Lorg/apache/hadoop/hbase/regionserver/HRegion;
+     515: astore_3
+     516: aload_3
+     517: ifnonnull     645
+     520: iload_1
+     521: ifne          529
+     524: aload_0
+     525: aload_3
+     526: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     529: aload_0
+     530: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     533: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     538: aload_0
+     539: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     542: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+     547: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     552: checkcast     #19                 // class java/lang/Boolean
+     555: astore        5
+     557: iload_1
+     558: ifeq          644
+     561: aload         5
+     563: ifnonnull     596
+     566: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     569: new           #20                 // class java/lang/StringBuilder
+     572: dup
+     573: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     576: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+     578: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     581: aload_2
+     582: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     585: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     588: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     593: goto          644
+     596: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     599: aload         5
+     601: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+     604: ifeq          644
+     607: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     610: new           #20                 // class java/lang/StringBuilder
+     613: dup
+     614: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     617: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+     619: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     622: aload_2
+     623: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     626: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+     628: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     631: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     634: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     639: aload_0
+     640: aload_3
+     641: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     644: return
+     645: aload_0
+     646: aload_3
+     647: aload_0
+     648: getfield      #10                 // Field masterSystemTime:J
+     651: invokespecial #37                 // Method updateMeta:(Lorg/apache/hadoop/hbase/regionserver/HRegion;J)Z
+     654: ifeq          681
+     657: aload_0
+     658: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/Server;
+     661: invokeinterface #13,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isStopped:()Z
+     666: ifne          681
+     669: aload_0
+     670: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     673: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.isStopping:()Z
+     678: ifeq          806
+     681: iload_1
+     682: ifne          690
+     685: aload_0
+     686: aload_3
+     687: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     690: aload_0
+     691: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     694: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     699: aload_0
+     700: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     703: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+     708: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     713: checkcast     #19                 // class java/lang/Boolean
+     716: astore        5
+     718: iload_1
+     719: ifeq          805
+     722: aload         5
+     724: ifnonnull     757
+     727: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     730: new           #20                 // class java/lang/StringBuilder
+     733: dup
+     734: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     737: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+     739: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     742: aload_2
+     743: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     746: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     749: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     754: goto          805
+     757: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     760: aload         5
+     762: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+     765: ifeq          805
+     768: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     771: new           #20                 // class java/lang/StringBuilder
+     774: dup
+     775: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     778: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+     780: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     783: aload_2
+     784: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     787: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+     789: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     792: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     795: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     800: aload_0
+     801: aload_3
+     802: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     805: return
+     806: aload_0
+     807: invokespecial #1                  // Method isRegionStillOpening:()Z
+     810: ifne          938
+     813: iload_1
+     814: ifne          822
+     817: aload_0
+     818: aload_3
+     819: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     822: aload_0
+     823: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     826: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     831: aload_0
+     832: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     835: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+     840: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     845: checkcast     #19                 // class java/lang/Boolean
+     848: astore        5
+     850: iload_1
+     851: ifeq          937
+     854: aload         5
+     856: ifnonnull     889
+     859: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     862: new           #20                 // class java/lang/StringBuilder
+     865: dup
+     866: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     869: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+     871: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     874: aload_2
+     875: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     878: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     881: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     886: goto          937
+     889: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     892: aload         5
+     894: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+     897: ifeq          937
+     900: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     903: new           #20                 // class java/lang/StringBuilder
+     906: dup
+     907: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     910: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+     912: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     915: aload_2
+     916: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     919: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+     921: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     924: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     927: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     932: aload_0
+     933: aload_3
+     934: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     937: return
+     938: aload_0
+     939: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+     942: aload_3
+     943: invokeinterface #38,  2           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.addRegion:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     948: iconst_1
+     949: istore_1
+     950: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+     953: new           #20                 // class java/lang/StringBuilder
+     956: dup
+     957: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+     960: ldc           #39                 // String Opened
+     962: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     965: aload_2
+     966: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     969: ldc           #40                 // String  on
+     971: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     974: aload_0
+     975: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/Server;
+     978: invokeinterface #41,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     983: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     986: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     989: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     994: iload_1
+     995: ifne          1003
+     998: aload_0
+     999: aload_3
+    1000: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+    1003: aload_0
+    1004: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+    1007: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+    1012: aload_0
+    1013: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+    1016: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+    1021: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+    1026: checkcast     #19                 // class java/lang/Boolean
+    1029: astore        4
+    1031: iload_1
+    1032: ifeq          1118
+    1035: aload         4
+    1037: ifnonnull     1070
+    1040: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+    1043: new           #20                 // class java/lang/StringBuilder
+    1046: dup
+    1047: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+    1050: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+    1052: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1055: aload_2
+    1056: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1059: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1062: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+    1067: goto          1118
+    1070: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+    1073: aload         4
+    1075: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+    1078: ifeq          1118
+    1081: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+    1084: new           #20                 // class java/lang/StringBuilder
+    1087: dup
+    1088: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+    1091: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+    1093: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1096: aload_2
+    1097: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1100: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+    1102: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1105: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1108: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+    1113: aload_0
+    1114: aload_3
+    1115: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+    1118: goto          1250
+    1121: astore        6
+    1123: iload_1
+    1124: ifne          1132
+    1127: aload_0
+    1128: aload_3
+    1129: invokespecial #15                 // Method doCleanUpOnFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+    1132: aload_0
+    1133: getfield      #7                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+    1136: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+    1141: aload_0
+    1142: getfield      #8                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+    1145: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+    1150: invokeinterface #18,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+    1155: checkcast     #19                 // class java/lang/Boolean
+    1158: astore        7
+    1160: iload_1
+    1161: ifeq          1247
+    1164: aload         7
+    1166: ifnonnull     1199
+    1169: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+    1172: new           #20                 // class java/lang/StringBuilder
+    1175: dup
+    1176: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+    1179: ldc           #22                 // String Bad state: we've just opened a region that was NOT in transition. Region=
+    1181: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1184: aload_2
+    1185: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1188: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1191: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+    1196: goto          1247
+    1199: getstatic     #26                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+    1202: aload         7
+    1204: invokevirtual #27                 // Method java/lang/Boolean.equals:(Ljava/lang/Object;)Z
+    1207: ifeq          1247
+    1210: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+    1213: new           #20                 // class java/lang/StringBuilder
+    1216: dup
+    1217: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+    1220: ldc           #28                 // String Race condition: we've finished to open a region, while a close was requested  on region=
+    1222: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1225: aload_2
+    1226: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1229: ldc           #29                 // String . It can be a critical error, as a region that should be closed is now opened. Closing it now
+    1231: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1234: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1237: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+    1242: aload_0
+    1243: aload_3
+    1244: invokespecial #30                 // Method cleanupFailedOpen:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+    1247: aload         6
+    1249: athrow
+    1250: return
+    Exception table:
+       from    to  target type
+          14    38  1121   any
+         163   221  1121   any
+         346   386  1121   any
+         511   520  1121   any
+         645   681  1121   any
+         806   813  1121   any
+         938   994  1121   any
+        1121  1123  1121   any
+
+  static boolean access$000(org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.regionserver.RegionServerServices);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #3                  // Method isRegionStillOpening:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;)Z
+       5: ireturn
+
+  static org.slf4j.Logger access$100();
+    Code:
+       0: getstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static boolean access$200(org.apache.hadoop.hbase.regionserver.handler.OpenRegionHandler);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method isRegionStillOpening:()Z
+       4: ireturn
+
+  static {};
+    Code:
+       0: ldc           #85                 // class org/apache/hadoop/hbase/regionserver/handler/OpenRegionHandler
+       2: invokestatic  #86                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #2                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

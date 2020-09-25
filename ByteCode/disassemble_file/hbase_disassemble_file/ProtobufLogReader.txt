@@ -1,0 +1,656 @@
+Compiled from "ProtobufLogReader.java"
+public class org.apache.hadoop.hbase.regionserver.wal.ProtobufLogReader extends org.apache.hadoop.hbase.regionserver.wal.ReaderBase {
+  public static final byte[] PB_WAL_MAGIC;
+
+  public static final byte[] PB_WAL_COMPLETE_MAGIC;
+
+  static final java.lang.String WAL_TRAILER_WARN_SIZE;
+
+  static final int DEFAULT_WAL_TRAILER_WARN_SIZE;
+
+  protected org.apache.hadoop.fs.FSDataInputStream inputStream;
+
+  protected org.apache.hadoop.hbase.codec.Codec$Decoder cellDecoder;
+
+  protected org.apache.hadoop.hbase.regionserver.wal.WALCellCodec$ByteStringUncompressor byteStringUncompressor;
+
+  protected boolean hasCompression;
+
+  protected boolean hasTagCompression;
+
+  protected org.apache.hadoop.hbase.shaded.protobuf.generated.WALProtos$WALTrailer trailer;
+
+  protected int trailerWarnSize;
+
+  public long trailerSize();
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field trailerPresent:Z
+       4: ifeq          62
+       7: getstatic     #2                  // Field PB_WAL_COMPLETE_MAGIC:[B
+      10: arraylength
+      11: i2l
+      12: ldc2_w        #4                  // long 4l
+      15: ladd
+      16: aload_0
+      17: getfield      #6                  // Field trailer:Lorg/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALTrailer;
+      20: invokevirtual #7                  // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALTrailer.getSerializedSize:()I
+      23: i2l
+      24: ladd
+      25: lstore_1
+      26: aload_0
+      27: getfield      #8                  // Field fileLength:J
+      30: aload_0
+      31: getfield      #9                  // Field walEditsStopOffset:J
+      34: lsub
+      35: lstore_3
+      36: lload_3
+      37: lload_1
+      38: lcmp
+      39: ifeq          60
+      42: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+      45: ldc           #11                 // String After parsing the trailer, we expect the total footer to be {} bytes, but we calculate it as being {}
+      47: lload_3
+      48: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      51: lload_1
+      52: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      55: invokeinterface #13,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      60: lload_3
+      61: lreturn
+      62: ldc2_w        #14                 // long -1l
+      65: lreturn
+
+  public org.apache.hadoop.hbase.regionserver.wal.ProtobufLogReader();
+    Code:
+       0: aload_0
+       1: invokespecial #16                 // Method org/apache/hadoop/hbase/regionserver/wal/ReaderBase."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #17                 // Field hasCompression:Z
+       9: aload_0
+      10: iconst_0
+      11: putfield      #18                 // Field hasTagCompression:Z
+      14: aload_0
+      15: aconst_null
+      16: putfield      #19                 // Field codecClsName:Ljava/lang/String;
+      19: return
+
+  public void close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+       4: ifnull        19
+       7: aload_0
+       8: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+      11: invokevirtual #21                 // Method org/apache/hadoop/fs/FSDataInputStream.close:()V
+      14: aload_0
+      15: aconst_null
+      16: putfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+      19: return
+
+  public long getPosition() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+       4: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+       7: lreturn
+
+  public void reset() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: iconst_0
+       3: invokespecial #23                 // Method initInternal:(Lorg/apache/hadoop/fs/FSDataInputStream;Z)Ljava/lang/String;
+       6: astore_1
+       7: aload_0
+       8: aload_1
+       9: invokevirtual #24                 // Method initAfterCompression:(Ljava/lang/String;)V
+      12: return
+
+  public void init(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FSDataInputStream) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_3
+       2: ldc           #26                 // String hbase.regionserver.waltrailer.warn.size
+       4: ldc           #27                 // int 1048576
+       6: invokevirtual #28                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       9: putfield      #29                 // Field trailerWarnSize:I
+      12: aload_0
+      13: aload_1
+      14: aload_2
+      15: aload_3
+      16: aload         4
+      18: invokespecial #30                 // Method org/apache/hadoop/hbase/regionserver/wal/ReaderBase.init:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FSDataInputStream;)V
+      21: return
+
+  protected java.lang.String initReader(org.apache.hadoop.fs.FSDataInputStream) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: invokespecial #23                 // Method initInternal:(Lorg/apache/hadoop/fs/FSDataInputStream;Z)Ljava/lang/String;
+       6: areturn
+
+  public java.util.List<java.lang.String> getWriterClsNames();
+    Code:
+       0: getstatic     #31                 // Field writerClsNames:Ljava/util/List;
+       3: areturn
+
+  public java.lang.String getCodecClsName();
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field codecClsName:Ljava/lang/String;
+       4: areturn
+
+  protected org.apache.hadoop.hbase.regionserver.wal.ProtobufLogReader$WALHdrContext readHeader(org.apache.hadoop.hbase.shaded.protobuf.generated.WALProtos$WALHeader$Builder, org.apache.hadoop.fs.FSDataInputStream) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: aload_2
+       2: invokevirtual #32                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALHeader$Builder.mergeDelimitedFrom:(Ljava/io/InputStream;)Z
+       5: istore_3
+       6: iload_3
+       7: ifne          22
+      10: new           #33                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrContext
+      13: dup
+      14: getstatic     #34                 // Field org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult.EOF:Lorg/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult;
+      17: aconst_null
+      18: invokespecial #35                 // Method org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrContext."<init>":(Lorg/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult;Ljava/lang/String;)V
+      21: areturn
+      22: aload_1
+      23: invokevirtual #36                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALHeader$Builder.hasWriterClsName:()Z
+      26: ifeq          57
+      29: aload_0
+      30: invokevirtual #37                 // Method getWriterClsNames:()Ljava/util/List;
+      33: aload_1
+      34: invokevirtual #38                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALHeader$Builder.getWriterClsName:()Ljava/lang/String;
+      37: invokeinterface #39,  2           // InterfaceMethod java/util/List.contains:(Ljava/lang/Object;)Z
+      42: ifne          57
+      45: new           #33                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrContext
+      48: dup
+      49: getstatic     #40                 // Field org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult.UNKNOWN_WRITER_CLS:Lorg/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult;
+      52: aconst_null
+      53: invokespecial #35                 // Method org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrContext."<init>":(Lorg/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult;Ljava/lang/String;)V
+      56: areturn
+      57: aconst_null
+      58: astore        4
+      60: aload_1
+      61: invokevirtual #41                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALHeader$Builder.hasCellCodecClsName:()Z
+      64: ifeq          73
+      67: aload_1
+      68: invokevirtual #42                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALHeader$Builder.getCellCodecClsName:()Ljava/lang/String;
+      71: astore        4
+      73: new           #33                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrContext
+      76: dup
+      77: getstatic     #43                 // Field org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult.SUCCESS:Lorg/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult;
+      80: aload         4
+      82: invokespecial #35                 // Method org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrContext."<init>":(Lorg/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader$WALHdrResult;Ljava/lang/String;)V
+      85: areturn
+
+  protected org.apache.hadoop.hbase.regionserver.wal.WALCellCodec getCodec(org.apache.hadoop.conf.Configuration, java.lang.String, org.apache.hadoop.hbase.regionserver.wal.CompressionContext) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: aload_2
+       2: aload_3
+       3: invokestatic  #98                 // Method org/apache/hadoop/hbase/regionserver/wal/WALCellCodec.create:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/wal/CompressionContext;)Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec;
+       6: areturn
+
+  protected void initAfterCompression() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: invokevirtual #24                 // Method initAfterCompression:(Ljava/lang/String;)V
+       5: return
+
+  protected void initAfterCompression(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #99                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       5: aload_1
+       6: aload_0
+       7: getfield      #100                // Field compressionContext:Lorg/apache/hadoop/hbase/regionserver/wal/CompressionContext;
+      10: invokevirtual #101                // Method getCodec:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/wal/CompressionContext;)Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec;
+      13: astore_2
+      14: aload_0
+      15: aload_2
+      16: aload_0
+      17: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+      20: invokevirtual #102                // Method org/apache/hadoop/hbase/regionserver/wal/WALCellCodec.getDecoder:(Ljava/io/InputStream;)Lorg/apache/hadoop/hbase/codec/Codec$Decoder;
+      23: putfield      #103                // Field cellDecoder:Lorg/apache/hadoop/hbase/codec/Codec$Decoder;
+      26: aload_0
+      27: getfield      #17                 // Field hasCompression:Z
+      30: ifeq          44
+      33: aload_0
+      34: aload_2
+      35: invokevirtual #104                // Method org/apache/hadoop/hbase/regionserver/wal/WALCellCodec.getByteStringUncompressor:()Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringUncompressor;
+      38: putfield      #105                // Field byteStringUncompressor:Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringUncompressor;
+      41: goto          51
+      44: aload_0
+      45: invokestatic  #106                // Method org/apache/hadoop/hbase/regionserver/wal/WALCellCodec.getNoneUncompressor:()Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringUncompressor;
+      48: putfield      #105                // Field byteStringUncompressor:Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringUncompressor;
+      51: return
+
+  protected boolean hasCompression();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field hasCompression:Z
+       4: ireturn
+
+  protected boolean hasTagCompression();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field hasTagCompression:Z
+       4: ireturn
+
+  protected boolean readNext(org.apache.hadoop.hbase.wal.WAL$Entry) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+       4: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+       7: lstore_2
+       8: aload_0
+       9: getfield      #1                  // Field trailerPresent:Z
+      12: ifeq          46
+      15: lload_2
+      16: lconst_0
+      17: lcmp
+      18: ifle          46
+      21: lload_2
+      22: aload_0
+      23: getfield      #9                  // Field walEditsStopOffset:J
+      26: lcmp
+      27: ifne          46
+      30: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+      33: ldc           #107                // String Reached end of expected edits area at offset {}
+      35: lload_2
+      36: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      39: invokeinterface #108,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      44: iconst_0
+      45: ireturn
+      46: invokestatic  #109                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey$Builder;
+      49: astore        4
+      51: lconst_0
+      52: lstore        5
+      54: iconst_0
+      55: istore        7
+      57: ldc2_w        #14                 // long -1l
+      60: lstore        8
+      62: aload_0
+      63: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+      66: invokevirtual #110                // Method org/apache/hadoop/fs/FSDataInputStream.read:()I
+      69: istore        10
+      71: iload         10
+      73: iconst_m1
+      74: if_icmpne     85
+      77: new           #61                 // class java/io/EOFException
+      80: dup
+      81: invokespecial #111                // Method java/io/EOFException."<init>":()V
+      84: athrow
+      85: iload         10
+      87: aload_0
+      88: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+      91: invokestatic  #112                // Method org/apache/hbase/thirdparty/com/google/protobuf/CodedInputStream.readRawVarint32:(ILjava/io/InputStream;)I
+      94: i2l
+      95: lstore        5
+      97: aload_0
+      98: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     101: invokevirtual #113                // Method org/apache/hadoop/fs/FSDataInputStream.available:()I
+     104: i2l
+     105: lstore        8
+     107: lload         8
+     109: lconst_0
+     110: lcmp
+     111: ifle          180
+     114: lload         8
+     116: lload         5
+     118: lcmp
+     119: ifge          180
+     122: new           #61                 // class java/io/EOFException
+     125: dup
+     126: new           #51                 // class java/lang/StringBuilder
+     129: dup
+     130: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     133: ldc           #114                // String Available stream not enough for edit, inputStream.available()=
+     135: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     138: aload_0
+     139: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     142: invokevirtual #113                // Method org/apache/hadoop/fs/FSDataInputStream.available:()I
+     145: invokevirtual #77                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     148: ldc           #115                // String , entry size=
+     150: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     153: lload         5
+     155: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     158: ldc           #116                // String  at offset =
+     160: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     163: aload_0
+     164: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     167: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     170: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     173: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     176: invokespecial #63                 // Method java/io/EOFException."<init>":(Ljava/lang/String;)V
+     179: athrow
+     180: aload         4
+     182: aload_0
+     183: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     186: lload         5
+     188: invokestatic  #117                // Method org/apache/hbase/thirdparty/com/google/common/io/ByteStreams.limit:(Ljava/io/InputStream;J)Ljava/io/InputStream;
+     191: lload         5
+     193: l2i
+     194: invokestatic  #118                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.mergeFrom:(Lorg/apache/hbase/thirdparty/com/google/protobuf/Message$Builder;Ljava/io/InputStream;I)V
+     197: goto          275
+     200: astore        10
+     202: iconst_1
+     203: istore        7
+     205: new           #61                 // class java/io/EOFException
+     208: dup
+     209: new           #51                 // class java/lang/StringBuilder
+     212: dup
+     213: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     216: ldc           #120                // String Invalid PB, EOF? Ignoring; originalPosition=
+     218: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     221: lload_2
+     222: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     225: ldc           #121                // String , currentPosition=
+     227: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     230: aload_0
+     231: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     234: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     237: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     240: ldc           #122                // String , messageSize=
+     242: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     245: lload         5
+     247: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     250: ldc           #123                // String , currentAvailable=
+     252: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     255: lload         8
+     257: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     260: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     263: invokespecial #63                 // Method java/io/EOFException."<init>":(Ljava/lang/String;)V
+     266: aload         10
+     268: invokevirtual #124                // Method java/io/EOFException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+     271: checkcast     #61                 // class java/io/EOFException
+     274: athrow
+     275: aload         4
+     277: invokevirtual #125                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey$Builder.isInitialized:()Z
+     280: ifne          316
+     283: new           #61                 // class java/io/EOFException
+     286: dup
+     287: new           #51                 // class java/lang/StringBuilder
+     290: dup
+     291: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     294: ldc           #126                // String Partial PB while reading WAL, probably an unexpected EOF, ignoring. current offset=
+     296: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     299: aload_0
+     300: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     303: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     306: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     309: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     312: invokespecial #63                 // Method java/io/EOFException."<init>":(Ljava/lang/String;)V
+     315: athrow
+     316: aload         4
+     318: invokevirtual #127                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey;
+     321: astore        10
+     323: aload_1
+     324: invokevirtual #128                // Method org/apache/hadoop/hbase/wal/WAL$Entry.getKey:()Lorg/apache/hadoop/hbase/wal/WALKeyImpl;
+     327: aload         10
+     329: aload_0
+     330: getfield      #105                // Field byteStringUncompressor:Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringUncompressor;
+     333: invokevirtual #129                // Method org/apache/hadoop/hbase/wal/WALKeyImpl.readFieldsFromPb:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey;Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringUncompressor;)V
+     336: aload         10
+     338: invokevirtual #130                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey.hasFollowingKvCount:()Z
+     341: ifeq          353
+     344: iconst_0
+     345: aload         10
+     347: invokevirtual #131                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey.getFollowingKvCount:()I
+     350: if_icmpne     380
+     353: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     356: ldc           #132                // String WALKey has no KVs that follow it; trying the next one. current offset={}
+     358: aload_0
+     359: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     362: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     365: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     368: invokeinterface #108,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+     373: aload_0
+     374: lload_2
+     375: invokevirtual #71                 // Method seekOnFs:(J)V
+     378: iconst_0
+     379: ireturn
+     380: aload         10
+     382: invokevirtual #131                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey.getFollowingKvCount:()I
+     385: istore        11
+     387: aload_0
+     388: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     391: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     394: lstore        12
+     396: aload_1
+     397: invokevirtual #133                // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+     400: aload_0
+     401: getfield      #103                // Field cellDecoder:Lorg/apache/hadoop/hbase/codec/Codec$Decoder;
+     404: iload         11
+     406: invokevirtual #134                // Method org/apache/hadoop/hbase/wal/WALEdit.readFromCells:(Lorg/apache/hadoop/hbase/codec/Codec$Decoder;I)I
+     409: istore        14
+     411: iload         11
+     413: iload         14
+     415: if_icmpeq     449
+     418: iconst_1
+     419: istore        7
+     421: new           #61                 // class java/io/EOFException
+     424: dup
+     425: new           #51                 // class java/lang/StringBuilder
+     428: dup
+     429: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     432: ldc           #135                // String Only read
+     434: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     437: iload         14
+     439: invokevirtual #77                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     442: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     445: invokespecial #63                 // Method java/io/EOFException."<init>":(Ljava/lang/String;)V
+     448: athrow
+     449: goto          598
+     452: astore        14
+     454: ldc           #137                // String <unknown>
+     456: astore        15
+     458: new           #51                 // class java/lang/StringBuilder
+     461: dup
+     462: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     465: aload_0
+     466: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     469: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     472: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     475: ldc           #138                // String
+     477: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     480: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     483: astore        15
+     485: goto          502
+     488: astore        16
+     490: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     493: ldc           #140                // String Error getting pos for error message - ignoring
+     495: aload         16
+     497: invokeinterface #141,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     502: new           #51                 // class java/lang/StringBuilder
+     505: dup
+     506: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     509: ldc           #142                // String  while reading
+     511: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     514: iload         11
+     516: invokevirtual #77                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     519: ldc           #143                // String  WAL KVs; started reading at
+     521: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     524: lload         12
+     526: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     529: ldc           #144                // String  and read up to
+     531: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     534: aload         15
+     536: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     539: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     542: astore        16
+     544: aload_0
+     545: aload         14
+     547: invokespecial #145                // Method extractHiddenEof:(Ljava/lang/Exception;)Ljava/io/IOException;
+     550: astore        17
+     552: new           #61                 // class java/io/EOFException
+     555: dup
+     556: new           #51                 // class java/lang/StringBuilder
+     559: dup
+     560: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     563: ldc           #146                // String EOF
+     565: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     568: aload         16
+     570: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     573: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     576: invokespecial #63                 // Method java/io/EOFException."<init>":(Ljava/lang/String;)V
+     579: aload         17
+     581: ifnull        589
+     584: aload         17
+     586: goto          591
+     589: aload         14
+     591: invokevirtual #124                // Method java/io/EOFException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+     594: checkcast     #61                 // class java/io/EOFException
+     597: athrow
+     598: aload_0
+     599: getfield      #1                  // Field trailerPresent:Z
+     602: ifeq          687
+     605: aload_0
+     606: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     609: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     612: aload_0
+     613: getfield      #9                  // Field walEditsStopOffset:J
+     616: lcmp
+     617: ifle          687
+     620: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     623: new           #51                 // class java/lang/StringBuilder
+     626: dup
+     627: invokespecial #52                 // Method java/lang/StringBuilder."<init>":()V
+     630: ldc           #147                // String Read WALTrailer while reading WALEdits. wal:
+     632: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     635: aload_0
+     636: getfield      #47                 // Field path:Lorg/apache/hadoop/fs/Path;
+     639: invokevirtual #148                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     642: ldc           #149                // String , inputStream.getPos():
+     644: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     647: aload_0
+     648: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     651: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     654: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     657: ldc           #150                // String , walEditsStopOffset:
+     659: invokevirtual #54                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     662: aload_0
+     663: getfield      #9                  // Field walEditsStopOffset:J
+     666: invokevirtual #55                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     669: invokevirtual #56                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     672: invokeinterface #151,  2          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     677: new           #61                 // class java/io/EOFException
+     680: dup
+     681: ldc           #152                // String Read WALTrailer while reading WALEdits
+     683: invokespecial #63                 // Method java/io/EOFException."<init>":(Ljava/lang/String;)V
+     686: athrow
+     687: goto          825
+     690: astore        8
+     692: lload_2
+     693: lconst_0
+     694: lcmp
+     695: ifge          723
+     698: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     701: ldc           #153                // String Encountered a malformed edit, but can't seek back to last good position because originalPosition is negative. last offset={}
+     703: aload_0
+     704: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     707: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     710: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     713: aload         8
+     715: invokeinterface #13,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     720: aload         8
+     722: athrow
+     723: aload_0
+     724: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     727: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     730: lload_2
+     731: lcmp
+     732: ifne          779
+     735: iload         7
+     737: ifeq          762
+     740: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     743: ldc           #154                // String Encountered a malformed edit, seeking to the beginning of the WAL since current position and original position match at {}
+     745: lload_2
+     746: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     749: invokeinterface #155,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+     754: aload_0
+     755: lconst_0
+     756: invokevirtual #71                 // Method seekOnFs:(J)V
+     759: goto          823
+     762: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     765: ldc           #156                // String Reached the end of file at position {}
+     767: lload_2
+     768: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     771: invokeinterface #157,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+     776: goto          823
+     779: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     782: ldc           #158                // String Encountered a malformed edit, seeking back to last good position in file, from {} to {}
+     784: iconst_3
+     785: anewarray     #159                // class java/lang/Object
+     788: dup
+     789: iconst_0
+     790: aload_0
+     791: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+     794: invokevirtual #22                 // Method org/apache/hadoop/fs/FSDataInputStream.getPos:()J
+     797: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     800: aastore
+     801: dup
+     802: iconst_1
+     803: lload_2
+     804: invokestatic  #12                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     807: aastore
+     808: dup
+     809: iconst_2
+     810: aload         8
+     812: aastore
+     813: invokeinterface #160,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;[Ljava/lang/Object;)V
+     818: aload_0
+     819: lload_2
+     820: invokevirtual #71                 // Method seekOnFs:(J)V
+     823: iconst_0
+     824: ireturn
+     825: iconst_1
+     826: ireturn
+    Exception table:
+       from    to  target type
+          62   197   200   Class org/apache/hbase/thirdparty/com/google/protobuf/InvalidProtocolBufferException
+         396   449   452   Class java/lang/Exception
+         458   485   488   Class java/lang/Throwable
+          57   379   690   Class java/io/EOFException
+         380   687   690   Class java/io/EOFException
+
+  protected void seekOnFs(long) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field inputStream:Lorg/apache/hadoop/fs/FSDataInputStream;
+       4: lload_1
+       5: invokevirtual #49                 // Method org/apache/hadoop/fs/FSDataInputStream.seek:(J)V
+       8: return
+
+  static {};
+    Code:
+       0: ldc           #25                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogReader
+       2: invokestatic  #166                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+       8: ldc           #167                // String PWAL
+      10: invokestatic  #168                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      13: putstatic     #45                 // Field PB_WAL_MAGIC:[B
+      16: ldc           #169                // String LAWP
+      18: invokestatic  #168                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      21: putstatic     #2                  // Field PB_WAL_COMPLETE_MAGIC:[B
+      24: new           #170                // class java/util/ArrayList
+      27: dup
+      28: invokespecial #171                // Method java/util/ArrayList."<init>":()V
+      31: putstatic     #31                 // Field writerClsNames:Ljava/util/List;
+      34: getstatic     #31                 // Field writerClsNames:Ljava/util/List;
+      37: ldc           #172                // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter
+      39: invokevirtual #173                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      42: invokeinterface #174,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      47: pop
+      48: getstatic     #31                 // Field writerClsNames:Ljava/util/List;
+      51: ldc           #175                // class org/apache/hadoop/hbase/regionserver/wal/AsyncProtobufLogWriter
+      53: invokevirtual #173                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      56: invokeinterface #174,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      61: pop
+      62: return
+}

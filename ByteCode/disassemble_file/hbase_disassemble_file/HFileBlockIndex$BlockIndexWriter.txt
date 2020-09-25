@@ -1,0 +1,555 @@
+Compiled from "HFileBlockIndex.java"
+public class org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$BlockIndexWriter implements org.apache.hadoop.hbase.io.hfile.InlineBlockWriter {
+  public org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$BlockIndexWriter();
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: aconst_null
+       3: aconst_null
+       4: invokespecial #2                  // Method "<init>":(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer;Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;Ljava/lang/String;)V
+       7: aload_0
+       8: iconst_1
+       9: putfield      #3                  // Field singleLevelOnly:Z
+      12: return
+
+  public org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$BlockIndexWriter(org.apache.hadoop.hbase.io.hfile.HFileBlock$Writer, org.apache.hadoop.hbase.io.hfile.CacheConfig, java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #5                  // class org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk
+       8: dup
+       9: invokespecial #6                  // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk."<init>":()V
+      12: putfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      15: aload_0
+      16: new           #5                  // class org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk
+      19: dup
+      20: invokespecial #6                  // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk."<init>":()V
+      23: putfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      26: aload_0
+      27: iconst_1
+      28: putfield      #9                  // Field numLevels:I
+      31: aload_0
+      32: aconst_null
+      33: putfield      #10                 // Field firstKey:[B
+      36: aload_2
+      37: ifnonnull     44
+      40: iconst_1
+      41: goto          45
+      44: iconst_0
+      45: aload_3
+      46: ifnonnull     53
+      49: iconst_1
+      50: goto          54
+      53: iconst_0
+      54: if_icmpeq     67
+      57: new           #11                 // class java/lang/IllegalArgumentException
+      60: dup
+      61: ldc           #12                 // String Block cache and file name for caching must be both specified or both null
+      63: invokespecial #13                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      66: athrow
+      67: aload_0
+      68: aload_1
+      69: putfield      #14                 // Field blockWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer;
+      72: aload_0
+      73: aload_2
+      74: putfield      #15                 // Field cacheConf:Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+      77: aload_0
+      78: aload_3
+      79: putfield      #16                 // Field nameForCaching:Ljava/lang/String;
+      82: aload_0
+      83: ldc           #17                 // int 131072
+      85: putfield      #18                 // Field maxChunkSize:I
+      88: aload_0
+      89: bipush        16
+      91: putfield      #19                 // Field minIndexNumEntries:I
+      94: return
+
+  public void setMaxChunkSize(int);
+    Code:
+       0: iload_1
+       1: ifgt          14
+       4: new           #11                 // class java/lang/IllegalArgumentException
+       7: dup
+       8: ldc           #20                 // String Invalid maximum index block size
+      10: invokespecial #13                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      13: athrow
+      14: aload_0
+      15: iload_1
+      16: putfield      #18                 // Field maxChunkSize:I
+      19: return
+
+  public void setMinIndexNumEntries(int);
+    Code:
+       0: iload_1
+       1: iconst_1
+       2: if_icmpgt     15
+       5: new           #11                 // class java/lang/IllegalArgumentException
+       8: dup
+       9: ldc           #21                 // String Invalid maximum index level, should be >= 2
+      11: invokespecial #13                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      14: athrow
+      15: aload_0
+      16: iload_1
+      17: putfield      #19                 // Field minIndexNumEntries:I
+      20: return
+
+  public long writeIndexBlocks(org.apache.hadoop.fs.FSDataOutputStream) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+       4: ifnull        55
+       7: aload_0
+       8: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      11: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+      14: ifeq          55
+      17: new           #23                 // class java/io/IOException
+      20: dup
+      21: new           #24                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      28: ldc           #26                 // String Trying to write a multi-level block index, but are
+      30: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload_0
+      34: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      37: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+      40: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      43: ldc           #29                 // String  entries in the last inline chunk.
+      45: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      48: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      51: invokespecial #31                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      54: athrow
+      55: aload_0
+      56: getfield      #9                  // Field numLevels:I
+      59: iconst_1
+      60: if_icmple     73
+      63: aload_0
+      64: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      67: invokevirtual #32                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getMidKeyMetadata:()[B
+      70: goto          74
+      73: aconst_null
+      74: astore_2
+      75: aload_0
+      76: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      79: ifnull        145
+      82: aload_0
+      83: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      86: invokevirtual #33                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getRootSize:()I
+      89: aload_0
+      90: getfield      #18                 // Field maxChunkSize:I
+      93: if_icmple     145
+      96: aload_0
+      97: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     100: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+     103: aload_0
+     104: getfield      #19                 // Field minIndexNumEntries:I
+     107: if_icmple     145
+     110: aload_0
+     111: getfield      #9                  // Field numLevels:I
+     114: bipush        16
+     116: if_icmpge     145
+     119: aload_0
+     120: aload_0
+     121: aload_1
+     122: aload_0
+     123: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     126: invokespecial #34                 // Method writeIntermediateLevel:(Lorg/apache/hadoop/fs/FSDataOutputStream;Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;)Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     129: putfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     132: aload_0
+     133: dup
+     134: getfield      #9                  // Field numLevels:I
+     137: iconst_1
+     138: iadd
+     139: putfield      #9                  // Field numLevels:I
+     142: goto          82
+     145: aload_1
+     146: invokevirtual #35                 // Method org/apache/hadoop/fs/FSDataOutputStream.getPos:()J
+     149: lstore_3
+     150: aload_0
+     151: getfield      #14                 // Field blockWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer;
+     154: getstatic     #36                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.ROOT_INDEX:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     157: invokevirtual #37                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer.startWriting:(Lorg/apache/hadoop/hbase/io/hfile/BlockType;)Ljava/io/DataOutputStream;
+     160: astore        5
+     162: aload_0
+     163: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     166: aload         5
+     168: invokevirtual #38                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.writeRoot:(Ljava/io/DataOutput;)V
+     171: aload_2
+     172: ifnull        183
+     175: aload         5
+     177: aload_2
+     178: invokeinterface #39,  2           // InterfaceMethod java/io/DataOutput.write:([B)V
+     183: aload_0
+     184: getfield      #14                 // Field blockWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer;
+     187: aload_1
+     188: invokevirtual #40                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer.writeHeaderAndData:(Lorg/apache/hadoop/fs/FSDataOutputStream;)V
+     191: aload_0
+     192: getfield      #15                 // Field cacheConf:Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+     195: ifnull        215
+     198: aload_0
+     199: getfield      #15                 // Field cacheConf:Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+     202: invokevirtual #41                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.getBlockCache:()Ljava/util/Optional;
+     205: aload_0
+     206: lload_3
+     207: invokedynamic #42,  0             // InvokeDynamic #0:accept:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexWriter;J)Ljava/util/function/Consumer;
+     212: invokevirtual #43                 // Method java/util/Optional.ifPresent:(Ljava/util/function/Consumer;)V
+     215: aload_0
+     216: dup
+     217: getfield      #44                 // Field totalBlockOnDiskSize:J
+     220: aload_0
+     221: getfield      #14                 // Field blockWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer;
+     224: invokevirtual #45                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer.getOnDiskSizeWithoutHeader:()I
+     227: i2l
+     228: ladd
+     229: putfield      #44                 // Field totalBlockOnDiskSize:J
+     232: aload_0
+     233: dup
+     234: getfield      #46                 // Field totalBlockUncompressedSize:J
+     237: aload_0
+     238: getfield      #14                 // Field blockWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer;
+     241: invokevirtual #47                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer.getUncompressedSizeWithoutHeader:()I
+     244: i2l
+     245: ladd
+     246: putfield      #46                 // Field totalBlockUncompressedSize:J
+     249: invokestatic  #48                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex.access$000:()Lorg/slf4j/Logger;
+     252: invokeinterface #49,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     257: ifeq          361
+     260: invokestatic  #48                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex.access$000:()Lorg/slf4j/Logger;
+     263: new           #24                 // class java/lang/StringBuilder
+     266: dup
+     267: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+     270: ldc           #50                 // String Wrote a
+     272: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     275: aload_0
+     276: getfield      #9                  // Field numLevels:I
+     279: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     282: ldc           #51                 // String -level index with root level at pos
+     284: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     287: lload_3
+     288: invokevirtual #52                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     291: ldc           #53                 // String ,
+     293: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     296: aload_0
+     297: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     300: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+     303: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     306: ldc           #54                 // String  root-level entries,
+     308: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     311: aload_0
+     312: getfield      #55                 // Field totalNumEntries:J
+     315: invokevirtual #52                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     318: ldc           #56                 // String  total entries,
+     320: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     323: aload_0
+     324: getfield      #44                 // Field totalBlockOnDiskSize:J
+     327: invokestatic  #57                 // Method org/apache/hadoop/util/StringUtils.humanReadableInt:(J)Ljava/lang/String;
+     330: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     333: ldc           #58                 // String  on-disk size,
+     335: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     338: aload_0
+     339: getfield      #46                 // Field totalBlockUncompressedSize:J
+     342: invokestatic  #57                 // Method org/apache/hadoop/util/StringUtils.humanReadableInt:(J)Ljava/lang/String;
+     345: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     348: ldc           #59                 // String  total uncompressed size.
+     350: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     353: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     356: invokeinterface #60,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     361: lload_3
+     362: lreturn
+
+  public void writeSingleLevelIndex(java.io.DataOutput, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: invokespecial #61                 // Method expectNumLevels:(I)V
+       5: aload_0
+       6: getfield      #3                  // Field singleLevelOnly:Z
+       9: ifne          22
+      12: new           #23                 // class java/io/IOException
+      15: dup
+      16: ldc           #62                 // String Single-level mode is turned off
+      18: invokespecial #31                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      21: athrow
+      22: aload_0
+      23: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      26: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+      29: ifle          42
+      32: new           #23                 // class java/io/IOException
+      35: dup
+      36: ldc           #63                 // String Root-level entries already added in single-level mode
+      38: invokespecial #31                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      41: athrow
+      42: aload_0
+      43: aload_0
+      44: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      47: putfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      50: aload_0
+      51: new           #5                  // class org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk
+      54: dup
+      55: invokespecial #6                  // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk."<init>":()V
+      58: putfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      61: invokestatic  #48                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex.access$000:()Lorg/slf4j/Logger;
+      64: invokeinterface #49,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      69: ifeq          134
+      72: invokestatic  #48                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex.access$000:()Lorg/slf4j/Logger;
+      75: new           #24                 // class java/lang/StringBuilder
+      78: dup
+      79: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      82: ldc           #64                 // String Wrote a single-level
+      84: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: aload_2
+      88: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      91: ldc           #65                 // String  index with
+      93: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: aload_0
+      97: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     100: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+     103: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     106: ldc           #66                 // String  entries,
+     108: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     111: aload_0
+     112: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     115: invokevirtual #33                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getRootSize:()I
+     118: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     121: ldc           #67                 // String  bytes
+     123: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     126: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     129: invokeinterface #60,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     134: aload_0
+     135: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     138: aload_1
+     139: invokevirtual #38                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.writeRoot:(Ljava/io/DataOutput;)V
+     142: return
+
+  public final int getNumRootEntries();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+       4: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+       7: ireturn
+
+  public int getNumLevels();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field numLevels:I
+       4: ireturn
+
+  public boolean shouldWriteBlock(boolean);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field singleLevelOnly:Z
+       4: ifeq          17
+       7: new           #83                 // class java/lang/UnsupportedOperationException
+      10: dup
+      11: ldc           #84                 // String Inline blocks are not allowed in the single-level-only mode
+      13: invokespecial #85                 // Method java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_0
+      18: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      21: ifnonnull     34
+      24: new           #79                 // class java/lang/IllegalStateException
+      27: dup
+      28: ldc           #86                 // String curInlineChunk is null; has shouldWriteBlock been called with closing=true and then called again?
+      30: invokespecial #82                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      33: athrow
+      34: aload_0
+      35: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      38: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+      41: ifne          46
+      44: iconst_0
+      45: ireturn
+      46: iload_1
+      47: ifeq          82
+      50: aload_0
+      51: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      54: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+      57: ifne          80
+      60: aload_0
+      61: iconst_1
+      62: invokespecial #61                 // Method expectNumLevels:(I)V
+      65: aload_0
+      66: aload_0
+      67: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      70: putfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      73: aload_0
+      74: aconst_null
+      75: putfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      78: iconst_0
+      79: ireturn
+      80: iconst_1
+      81: ireturn
+      82: aload_0
+      83: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      86: invokevirtual #87                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNonRootSize:()I
+      89: aload_0
+      90: getfield      #18                 // Field maxChunkSize:I
+      93: if_icmplt     100
+      96: iconst_1
+      97: goto          101
+     100: iconst_0
+     101: ireturn
+
+  public void writeInlineBlock(java.io.DataOutput) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field singleLevelOnly:Z
+       4: ifeq          17
+       7: new           #83                 // class java/lang/UnsupportedOperationException
+      10: dup
+      11: ldc           #84                 // String Inline blocks are not allowed in the single-level-only mode
+      13: invokespecial #85                 // Method java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_0
+      18: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      21: aload_1
+      22: invokevirtual #74                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.writeNonRoot:(Ljava/io/DataOutput;)V
+      25: aload_0
+      26: aload_0
+      27: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      30: iconst_0
+      31: invokevirtual #68                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getBlockKey:(I)[B
+      34: putfield      #10                 // Field firstKey:[B
+      37: aload_0
+      38: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      41: invokevirtual #78                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.clear:()V
+      44: return
+
+  public void blockWritten(long, int, int);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #44                 // Field totalBlockOnDiskSize:J
+       5: iload_3
+       6: i2l
+       7: ladd
+       8: putfield      #44                 // Field totalBlockOnDiskSize:J
+      11: aload_0
+      12: dup
+      13: getfield      #46                 // Field totalBlockUncompressedSize:J
+      16: iload         4
+      18: i2l
+      19: ladd
+      20: putfield      #46                 // Field totalBlockUncompressedSize:J
+      23: aload_0
+      24: getfield      #3                  // Field singleLevelOnly:Z
+      27: ifeq          40
+      30: new           #83                 // class java/lang/UnsupportedOperationException
+      33: dup
+      34: ldc           #84                 // String Inline blocks are not allowed in the single-level-only mode
+      36: invokespecial #85                 // Method java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+      39: athrow
+      40: aload_0
+      41: getfield      #10                 // Field firstKey:[B
+      44: ifnonnull     88
+      47: new           #79                 // class java/lang/IllegalStateException
+      50: dup
+      51: new           #24                 // class java/lang/StringBuilder
+      54: dup
+      55: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      58: ldc           #88                 // String Trying to add second-level index entry with offset=
+      60: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: lload_1
+      64: invokevirtual #52                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      67: ldc           #89                 // String  and onDiskSize=
+      69: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      72: iload_3
+      73: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      76: ldc           #90                 // String but the first key was not set in writeInlineBlock
+      78: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      84: invokespecial #82                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      87: athrow
+      88: aload_0
+      89: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      92: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+      95: ifne          108
+      98: aload_0
+      99: iconst_1
+     100: invokespecial #61                 // Method expectNumLevels:(I)V
+     103: aload_0
+     104: iconst_2
+     105: putfield      #9                  // Field numLevels:I
+     108: aload_0
+     109: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+     112: aload_0
+     113: getfield      #10                 // Field firstKey:[B
+     116: lload_1
+     117: iload_3
+     118: aload_0
+     119: getfield      #55                 // Field totalNumEntries:J
+     122: invokevirtual #91                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.add:([BJIJ)V
+     125: aload_0
+     126: aconst_null
+     127: putfield      #10                 // Field firstKey:[B
+     130: return
+
+  public org.apache.hadoop.hbase.io.hfile.BlockType getInlineBlockType();
+    Code:
+       0: getstatic     #92                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.LEAF_INDEX:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+       3: areturn
+
+  public void addEntry(byte[], long, int);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field curInlineChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+       4: aload_1
+       5: lload_2
+       6: iload         4
+       8: invokevirtual #71                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.add:([BJI)V
+      11: aload_0
+      12: dup
+      13: getfield      #55                 // Field totalNumEntries:J
+      16: lconst_1
+      17: ladd
+      18: putfield      #55                 // Field totalNumEntries:J
+      21: return
+
+  public void ensureSingleLevel() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field numLevels:I
+       4: iconst_1
+       5: if_icmple     58
+       8: new           #23                 // class java/io/IOException
+      11: dup
+      12: new           #24                 // class java/lang/StringBuilder
+      15: dup
+      16: invokespecial #25                 // Method java/lang/StringBuilder."<init>":()V
+      19: ldc           #50                 // String Wrote a
+      21: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: aload_0
+      25: getfield      #9                  // Field numLevels:I
+      28: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      31: ldc           #93                 // String -level index with
+      33: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      36: aload_0
+      37: getfield      #7                  // Field rootChunk:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk;
+      40: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexChunk.getNumEntries:()I
+      43: invokevirtual #28                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      46: ldc           #94                 // String  root-level entries, but this is expected to be a single-level block index.
+      48: invokevirtual #27                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: invokespecial #31                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      57: athrow
+      58: return
+
+  public boolean getCacheOnWrite();
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field cacheConf:Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+       4: ifnull        21
+       7: aload_0
+       8: getfield      #15                 // Field cacheConf:Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+      11: invokevirtual #95                 // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.shouldCacheIndexesOnWrite:()Z
+      14: ifeq          21
+      17: iconst_1
+      18: goto          22
+      21: iconst_0
+      22: ireturn
+
+  public long getTotalUncompressedSize();
+    Code:
+       0: aload_0
+       1: getfield      #46                 // Field totalBlockUncompressedSize:J
+       4: lreturn
+}

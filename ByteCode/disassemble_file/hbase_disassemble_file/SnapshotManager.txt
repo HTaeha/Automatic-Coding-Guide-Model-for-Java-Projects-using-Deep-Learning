@@ -1,0 +1,836 @@
+Compiled from "SnapshotManager.java"
+public class org.apache.hadoop.hbase.master.snapshot.SnapshotManager extends org.apache.hadoop.hbase.procedure.MasterProcedureManager implements org.apache.hadoop.hbase.Stoppable {
+  public static final java.lang.String HBASE_SNAPSHOT_SENTINELS_CLEANUP_TIMEOUT_MILLIS;
+
+  public static final long SNAPSHOT_SENTINELS_CLEANUP_TIMEOUT_MILLS_DEFAULT;
+
+  public static final java.lang.String HBASE_SNAPSHOT_ENABLED;
+
+  public static final java.lang.String ONLINE_SNAPSHOT_CONTROLLER_DESCRIPTION;
+
+  public org.apache.hadoop.hbase.master.snapshot.SnapshotManager();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/procedure/MasterProcedureManager."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #2                  // Field isSnapshotSupported:Z
+       9: aload_0
+      10: new           #3                  // class java/util/concurrent/ConcurrentHashMap
+      13: dup
+      14: invokespecial #4                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      17: putfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+      20: aload_0
+      21: iconst_1
+      22: new           #6                  // class org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder
+      25: dup
+      26: invokespecial #7                  // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder."<init>":()V
+      29: ldc           #8                  // String SnapshotHandlerChoreCleaner
+      31: invokevirtual #9                  // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setNameFormat:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      34: iconst_1
+      35: invokevirtual #10                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setDaemon:(Z)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      38: invokevirtual #11                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.build:()Ljava/util/concurrent/ThreadFactory;
+      41: invokestatic  #12                 // Method java/util/concurrent/Executors.newScheduledThreadPool:(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;
+      44: putfield      #13                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      47: aload_0
+      48: new           #14                 // class java/util/HashMap
+      51: dup
+      52: invokespecial #15                 // Method java/util/HashMap."<init>":()V
+      55: putfield      #16                 // Field restoreTableToProcIdMap:Ljava/util/Map;
+      58: aload_0
+      59: new           #17                 // class java/util/concurrent/locks/ReentrantReadWriteLock
+      62: dup
+      63: iconst_1
+      64: invokespecial #18                 // Method java/util/concurrent/locks/ReentrantReadWriteLock."<init>":(Z)V
+      67: putfield      #19                 // Field takingSnapshotLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      70: return
+
+  org.apache.hadoop.hbase.master.snapshot.SnapshotManager(org.apache.hadoop.hbase.master.MasterServices, org.apache.hadoop.hbase.procedure.ProcedureCoordinator, org.apache.hadoop.hbase.executor.ExecutorService, int) throws java.io.IOException, java.lang.UnsupportedOperationException;
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/procedure/MasterProcedureManager."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #2                  // Field isSnapshotSupported:Z
+       9: aload_0
+      10: new           #3                  // class java/util/concurrent/ConcurrentHashMap
+      13: dup
+      14: invokespecial #4                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      17: putfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+      20: aload_0
+      21: iconst_1
+      22: new           #6                  // class org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder
+      25: dup
+      26: invokespecial #7                  // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder."<init>":()V
+      29: ldc           #8                  // String SnapshotHandlerChoreCleaner
+      31: invokevirtual #9                  // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setNameFormat:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      34: iconst_1
+      35: invokevirtual #10                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setDaemon:(Z)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      38: invokevirtual #11                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.build:()Ljava/util/concurrent/ThreadFactory;
+      41: invokestatic  #12                 // Method java/util/concurrent/Executors.newScheduledThreadPool:(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;
+      44: putfield      #13                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      47: aload_0
+      48: new           #14                 // class java/util/HashMap
+      51: dup
+      52: invokespecial #15                 // Method java/util/HashMap."<init>":()V
+      55: putfield      #16                 // Field restoreTableToProcIdMap:Ljava/util/Map;
+      58: aload_0
+      59: new           #17                 // class java/util/concurrent/locks/ReentrantReadWriteLock
+      62: dup
+      63: iconst_1
+      64: invokespecial #18                 // Method java/util/concurrent/locks/ReentrantReadWriteLock."<init>":(Z)V
+      67: putfield      #19                 // Field takingSnapshotLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      70: aload_0
+      71: aload_1
+      72: putfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      75: aload_0
+      76: aload_1
+      77: invokeinterface #21,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      82: invokevirtual #22                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getRootDir:()Lorg/apache/hadoop/fs/Path;
+      85: putfield      #23                 // Field rootDir:Lorg/apache/hadoop/fs/Path;
+      88: aload_1
+      89: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      94: astore        5
+      96: aload_0
+      97: aload         5
+      99: aload_1
+     100: invokeinterface #21,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+     105: invokespecial #25                 // Method checkSnapshotSupport:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/master/MasterFileSystem;)V
+     108: aload_0
+     109: aload_2
+     110: putfield      #26                 // Field coordinator:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;
+     113: aload_0
+     114: aload_3
+     115: putfield      #27                 // Field executorService:Lorg/apache/hadoop/hbase/executor/ExecutorService;
+     118: aload_0
+     119: invokespecial #28                 // Method resetTempDir:()V
+     122: aload_0
+     123: aload_0
+     124: getfield      #13                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+     127: aload_0
+     128: invokedynamic #29,  0             // InvokeDynamic #0:run:(Lorg/apache/hadoop/hbase/master/snapshot/SnapshotManager;)Ljava/lang/Runnable;
+     133: iload         4
+     135: i2l
+     136: iload         4
+     138: i2l
+     139: getstatic     #30                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     142: invokeinterface #31,  7           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+     147: putfield      #32                 // Field snapshotHandlerChoreCleanerTask:Ljava/util/concurrent/ScheduledFuture;
+     150: return
+
+  public java.util.List<org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription> getCompletedSnapshots() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #23                 // Field rootDir:Lorg/apache/hadoop/fs/Path;
+       5: invokestatic  #33                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.getSnapshotsDir:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+       8: iconst_1
+       9: invokespecial #34                 // Method getCompletedSnapshots:(Lorg/apache/hadoop/fs/Path;Z)Ljava/util/List;
+      12: areturn
+
+  public void deleteSnapshot(org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #76                 // Method isSnapshotCompleted:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Z
+       5: ifne          20
+       8: new           #77                 // class org/apache/hadoop/hbase/snapshot/SnapshotDoesNotExistException
+      11: dup
+      12: aload_1
+      13: invokestatic  #59                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.createSnapshotDesc:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/client/SnapshotDescription;
+      16: invokespecial #78                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDoesNotExistException."<init>":(Lorg/apache/hadoop/hbase/client/SnapshotDescription;)V
+      19: athrow
+      20: aload_1
+      21: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getName:()Ljava/lang/String;
+      24: astore_2
+      25: aload_0
+      26: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      29: invokeinterface #21,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      34: invokevirtual #37                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      37: astore_3
+      38: aload_2
+      39: aload_0
+      40: getfield      #23                 // Field rootDir:Lorg/apache/hadoop/fs/Path;
+      43: invokestatic  #79                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.getCompletedSnapshotDir:(Ljava/lang/String;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      46: astore        4
+      48: aload_3
+      49: aload         4
+      51: invokestatic  #80                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.readSnapshotInfo:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+      54: astore_1
+      55: aload_0
+      56: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      59: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterCoprocessorHost:()Lorg/apache/hadoop/hbase/master/MasterCoprocessorHost;
+      64: astore        5
+      66: aconst_null
+      67: astore        6
+      69: aload         5
+      71: ifnull        87
+      74: aload_1
+      75: invokestatic  #59                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.createSnapshotDesc:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/client/SnapshotDescription;
+      78: astore        6
+      80: aload         5
+      82: aload         6
+      84: invokevirtual #81                 // Method org/apache/hadoop/hbase/master/MasterCoprocessorHost.preDeleteSnapshot:(Lorg/apache/hadoop/hbase/client/SnapshotDescription;)V
+      87: getstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+      90: new           #49                 // class java/lang/StringBuilder
+      93: dup
+      94: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      97: ldc           #82                 // String Deleting snapshot:
+      99: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     102: aload_2
+     103: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     106: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     109: invokeinterface #83,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     114: aload_3
+     115: aload         4
+     117: iconst_1
+     118: invokevirtual #74                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+     121: ifne          152
+     124: new           #84                 // class org/apache/hadoop/hbase/snapshot/HBaseSnapshotException
+     127: dup
+     128: new           #49                 // class java/lang/StringBuilder
+     131: dup
+     132: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     135: ldc           #85                 // String Failed to delete snapshot directory:
+     137: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     140: aload         4
+     142: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     145: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     148: invokespecial #86                 // Method org/apache/hadoop/hbase/snapshot/HBaseSnapshotException."<init>":(Ljava/lang/String;)V
+     151: athrow
+     152: aload         5
+     154: ifnull        164
+     157: aload         5
+     159: aload         6
+     161: invokevirtual #87                 // Method org/apache/hadoop/hbase/master/MasterCoprocessorHost.postDeleteSnapshot:(Lorg/apache/hadoop/hbase/client/SnapshotDescription;)V
+     164: return
+
+  public boolean isSnapshotDone(org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: ifnonnull     14
+       4: new           #88                 // class org/apache/hadoop/hbase/snapshot/UnknownSnapshotException
+       7: dup
+       8: ldc           #89                 // String No snapshot name passed in request, can't figure out which snapshot you want to check.
+      10: invokespecial #90                 // Method org/apache/hadoop/hbase/snapshot/UnknownSnapshotException."<init>":(Ljava/lang/String;)V
+      13: athrow
+      14: aload_1
+      15: invokestatic  #91                 // Method org/apache/hadoop/hbase/snapshot/ClientSnapshotDescriptionUtils.toString:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Ljava/lang/String;
+      18: astore_2
+      19: aload_0
+      20: aload_0
+      21: getfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+      24: aload_1
+      25: invokespecial #92                 // Method removeSentinelIfFinished:(Ljava/util/Map;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/master/SnapshotSentinel;
+      28: astore_3
+      29: aload_0
+      30: invokespecial #93                 // Method cleanupSentinels:()V
+      33: aload_3
+      34: ifnonnull     79
+      37: aload_0
+      38: aload_1
+      39: invokespecial #76                 // Method isSnapshotCompleted:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Z
+      42: ifne          77
+      45: new           #88                 // class org/apache/hadoop/hbase/snapshot/UnknownSnapshotException
+      48: dup
+      49: new           #49                 // class java/lang/StringBuilder
+      52: dup
+      53: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      56: ldc           #94                 // String Snapshot
+      58: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: aload_2
+      62: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      65: ldc           #95                 // String  is not currently running or one of the known completed snapshots.
+      67: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      70: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      73: invokespecial #90                 // Method org/apache/hadoop/hbase/snapshot/UnknownSnapshotException."<init>":(Ljava/lang/String;)V
+      76: athrow
+      77: iconst_1
+      78: ireturn
+      79: aload_3
+      80: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/master/SnapshotSentinel.rethrowExceptionIfFailed:()V
+      85: goto          195
+      88: astore        4
+      90: aload_0
+      91: getfield      #26                 // Field coordinator:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;
+      94: aload_1
+      95: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getName:()Ljava/lang/String;
+      98: invokevirtual #98                 // Method org/apache/hadoop/hbase/procedure/ProcedureCoordinator.getProcedure:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/procedure/Procedure;
+     101: astore        6
+     103: aload         6
+     105: ifnull        118
+     108: aload         6
+     110: invokevirtual #99                 // Method org/apache/hadoop/hbase/procedure/Procedure.getStatus:()Ljava/lang/String;
+     113: astore        5
+     115: goto          152
+     118: new           #49                 // class java/lang/StringBuilder
+     121: dup
+     122: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     125: aload_1
+     126: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getName:()Ljava/lang/String;
+     129: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     132: ldc           #100                // String  not found in proclist
+     134: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     137: aload_0
+     138: getfield      #26                 // Field coordinator:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;
+     141: invokevirtual #101                // Method org/apache/hadoop/hbase/procedure/ProcedureCoordinator.getProcedureNames:()Ljava/util/Set;
+     144: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     147: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     150: astore        5
+     152: new           #84                 // class org/apache/hadoop/hbase/snapshot/HBaseSnapshotException
+     155: dup
+     156: new           #49                 // class java/lang/StringBuilder
+     159: dup
+     160: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     163: ldc           #94                 // String Snapshot
+     165: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     168: aload_2
+     169: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     172: ldc           #102                // String  had an error.
+     174: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     177: aload         5
+     179: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     182: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     185: aload         4
+     187: aload_1
+     188: invokestatic  #59                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.createSnapshotDesc:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/client/SnapshotDescription;
+     191: invokespecial #103                // Method org/apache/hadoop/hbase/snapshot/HBaseSnapshotException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;Lorg/apache/hadoop/hbase/client/SnapshotDescription;)V
+     194: athrow
+     195: aload_3
+     196: invokeinterface #104,  1          // InterfaceMethod org/apache/hadoop/hbase/master/SnapshotSentinel.isFinished:()Z
+     201: ifeq          238
+     204: getstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+     207: new           #49                 // class java/lang/StringBuilder
+     210: dup
+     211: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     214: ldc           #105                // String Snapshot '
+     216: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     219: aload_2
+     220: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     223: ldc           #106                // String ' has completed, notifying client.
+     225: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     228: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     231: invokeinterface #83,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     236: iconst_1
+     237: ireturn
+     238: getstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+     241: invokeinterface #107,  1          // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     246: ifeq          281
+     249: getstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+     252: new           #49                 // class java/lang/StringBuilder
+     255: dup
+     256: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     259: ldc           #108                // String Snapshoting '
+     261: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     264: aload_2
+     265: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     268: ldc           #109                // String ' is still in progress!
+     270: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     273: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     276: invokeinterface #83,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     281: iconst_0
+     282: ireturn
+    Exception table:
+       from    to  target type
+          79    85    88   Class org/apache/hadoop/hbase/errorhandling/ForeignException
+
+  synchronized boolean isTakingSnapshot(org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription);
+    Code:
+       0: aload_1
+       1: invokevirtual #110                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getTable:()Ljava/lang/String;
+       4: invokestatic  #111                // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+       7: astore_2
+       8: aload_0
+       9: aload_2
+      10: invokevirtual #112                // Method isTakingSnapshot:(Lorg/apache/hadoop/hbase/TableName;)Z
+      13: ifeq          18
+      16: iconst_1
+      17: ireturn
+      18: aload_0
+      19: getfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+      22: invokeinterface #113,  1          // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      27: invokeinterface #114,  1          // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      32: astore_3
+      33: aload_3
+      34: invokeinterface #115,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      39: ifeq          100
+      42: aload_3
+      43: invokeinterface #116,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      48: checkcast     #117                // class java/util/Map$Entry
+      51: astore        4
+      53: aload         4
+      55: invokeinterface #118,  1          // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      60: checkcast     #119                // class org/apache/hadoop/hbase/master/SnapshotSentinel
+      63: astore        5
+      65: aload_1
+      66: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getName:()Ljava/lang/String;
+      69: aload         5
+      71: invokeinterface #120,  1          // InterfaceMethod org/apache/hadoop/hbase/master/SnapshotSentinel.getSnapshot:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+      76: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getName:()Ljava/lang/String;
+      79: invokevirtual #121                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      82: ifeq          97
+      85: aload         5
+      87: invokeinterface #104,  1          // InterfaceMethod org/apache/hadoop/hbase/master/SnapshotSentinel.isFinished:()Z
+      92: ifne          97
+      95: iconst_1
+      96: ireturn
+      97: goto          33
+     100: iconst_0
+     101: ireturn
+
+  public boolean isTakingSnapshot(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+       4: aload_1
+       5: invokeinterface #122,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #119                // class org/apache/hadoop/hbase/master/SnapshotSentinel
+      13: astore_2
+      14: aload_2
+      15: ifnull        31
+      18: aload_2
+      19: invokeinterface #104,  1          // InterfaceMethod org/apache/hadoop/hbase/master/SnapshotSentinel.isFinished:()Z
+      24: ifne          31
+      27: iconst_1
+      28: goto          32
+      31: iconst_0
+      32: ireturn
+
+  public java.util.concurrent.locks.ReadWriteLock getTakingSnapshotLock();
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field takingSnapshotLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+       4: areturn
+
+  public synchronized boolean isTakingAnySnapshot();
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field takingSnapshotLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+       4: invokevirtual #156                // Method java/util/concurrent/locks/ReentrantReadWriteLock.getReadHoldCount:()I
+       7: ifgt          22
+      10: aload_0
+      11: getfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+      14: invokeinterface #157,  1          // InterfaceMethod java/util/Map.size:()I
+      19: ifle          26
+      22: iconst_1
+      23: goto          27
+      26: iconst_0
+      27: ireturn
+
+  public void takeSnapshot(org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field takingSnapshotLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+       4: invokevirtual #158                // Method java/util/concurrent/locks/ReentrantReadWriteLock.readLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+       7: invokevirtual #159                // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.lock:()V
+      10: aload_0
+      11: aload_1
+      12: invokespecial #160                // Method takeSnapshotInternal:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)V
+      15: aload_0
+      16: getfield      #19                 // Field takingSnapshotLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      19: invokevirtual #158                // Method java/util/concurrent/locks/ReentrantReadWriteLock.readLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      22: invokevirtual #161                // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+      25: goto          41
+      28: astore_2
+      29: aload_0
+      30: getfield      #19                 // Field takingSnapshotLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      33: invokevirtual #158                // Method java/util/concurrent/locks/ReentrantReadWriteLock.readLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      36: invokevirtual #161                // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+      39: aload_2
+      40: athrow
+      41: return
+    Exception table:
+       from    to  target type
+          10    15    28   any
+
+  public synchronized void setSnapshotHandlerForTesting(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.master.SnapshotSentinel);
+    Code:
+       0: aload_2
+       1: ifnull        19
+       4: aload_0
+       5: getfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+       8: aload_1
+       9: aload_2
+      10: invokeinterface #151,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      15: pop
+      16: goto          30
+      19: aload_0
+      20: getfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+      23: aload_1
+      24: invokeinterface #197,  2          // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      29: pop
+      30: return
+
+  org.apache.hadoop.hbase.procedure.ProcedureCoordinator getCoordinator();
+    Code:
+       0: aload_0
+       1: getfield      #26                 // Field coordinator:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;
+       4: areturn
+
+  synchronized long cloneSnapshot(org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription, org.apache.hadoop.hbase.client.TableDescriptor, org.apache.hadoop.hbase.util.NonceKey, boolean) throws org.apache.hadoop.hbase.snapshot.HBaseSnapshotException;
+    Code:
+       0: aload_2
+       1: invokeinterface #213,  1          // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+       6: astore        5
+       8: aload_0
+       9: aload         5
+      11: invokevirtual #112                // Method isTakingSnapshot:(Lorg/apache/hadoop/hbase/TableName;)Z
+      14: ifeq          45
+      17: new           #214                // class org/apache/hadoop/hbase/snapshot/RestoreSnapshotException
+      20: dup
+      21: new           #49                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      28: ldc           #215                // String Snapshot in progress on the restore table=
+      30: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload         5
+      35: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      38: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      41: invokespecial #216                // Method org/apache/hadoop/hbase/snapshot/RestoreSnapshotException."<init>":(Ljava/lang/String;)V
+      44: athrow
+      45: aload_0
+      46: aload         5
+      48: invokespecial #131                // Method isRestoringTable:(Lorg/apache/hadoop/hbase/TableName;)Z
+      51: ifeq          82
+      54: new           #214                // class org/apache/hadoop/hbase/snapshot/RestoreSnapshotException
+      57: dup
+      58: new           #49                 // class java/lang/StringBuilder
+      61: dup
+      62: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      65: ldc           #217                // String Restore already in progress on the table=
+      67: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      70: aload         5
+      72: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      75: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      78: invokespecial #216                // Method org/apache/hadoop/hbase/snapshot/RestoreSnapshotException."<init>":(Ljava/lang/String;)V
+      81: athrow
+      82: aload_0
+      83: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      86: invokeinterface #218,  1          // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      91: new           #219                // class org/apache/hadoop/hbase/master/procedure/CloneSnapshotProcedure
+      94: dup
+      95: aload_0
+      96: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      99: invokeinterface #218,  1          // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+     104: invokevirtual #220                // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+     107: checkcast     #221                // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+     110: aload_2
+     111: aload_1
+     112: iload         4
+     114: invokespecial #222                // Method org/apache/hadoop/hbase/master/procedure/CloneSnapshotProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;Lorg/apache/hadoop/hbase/client/TableDescriptor;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;Z)V
+     117: aload_3
+     118: invokevirtual #223                // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;Lorg/apache/hadoop/hbase/util/NonceKey;)J
+     121: lstore        6
+     123: aload_0
+     124: getfield      #16                 // Field restoreTableToProcIdMap:Ljava/util/Map;
+     127: aload         5
+     129: lload         6
+     131: invokestatic  #224                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     134: invokeinterface #151,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     139: pop
+     140: lload         6
+     142: lreturn
+     143: astore        6
+     145: new           #49                 // class java/lang/StringBuilder
+     148: dup
+     149: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     152: ldc           #225                // String Couldn't clone the snapshot=
+     154: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     157: aload_1
+     158: invokestatic  #91                 // Method org/apache/hadoop/hbase/snapshot/ClientSnapshotDescriptionUtils.toString:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Ljava/lang/String;
+     161: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     164: ldc           #226                // String  on table=
+     166: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     169: aload         5
+     171: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     174: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     177: astore        7
+     179: getstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+     182: aload         7
+     184: aload         6
+     186: invokeinterface #208,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     191: new           #214                // class org/apache/hadoop/hbase/snapshot/RestoreSnapshotException
+     194: dup
+     195: aload         7
+     197: aload         6
+     199: invokespecial #227                // Method org/apache/hadoop/hbase/snapshot/RestoreSnapshotException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     202: athrow
+    Exception table:
+       from    to  target type
+          82   142   143   Class java/lang/Exception
+
+  public long restoreOrCloneSnapshot(org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription, org.apache.hadoop.hbase.util.NonceKey, boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+       4: invokeinterface #21,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+       9: invokevirtual #37                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      12: astore        4
+      14: aload_1
+      15: aload_0
+      16: getfield      #23                 // Field rootDir:Lorg/apache/hadoop/fs/Path;
+      19: invokestatic  #198                // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.getCompletedSnapshotDir:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      22: astore        5
+      24: aload         4
+      26: aload         5
+      28: invokevirtual #38                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      31: ifne          81
+      34: getstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+      37: new           #49                 // class java/lang/StringBuilder
+      40: dup
+      41: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      44: ldc           #228                // String A Snapshot named '
+      46: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      49: aload_1
+      50: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getName:()Ljava/lang/String;
+      53: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: ldc           #229                // String ' does not exist.
+      58: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: invokevirtual #55                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      64: invokeinterface #56,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+      69: new           #77                 // class org/apache/hadoop/hbase/snapshot/SnapshotDoesNotExistException
+      72: dup
+      73: aload_1
+      74: invokestatic  #59                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.createSnapshotDesc:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/client/SnapshotDescription;
+      77: invokespecial #78                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDoesNotExistException."<init>":(Lorg/apache/hadoop/hbase/client/SnapshotDescription;)V
+      80: athrow
+      81: aload         4
+      83: aload         5
+      85: invokestatic  #80                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.readSnapshotInfo:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+      88: astore        6
+      90: aload_0
+      91: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      94: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      99: aload         4
+     101: aload         5
+     103: aload         6
+     105: invokestatic  #230                // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.open:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;
+     108: astore        7
+     110: aload         7
+     112: invokevirtual #231                // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.getTableDescriptor:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     115: astore        8
+     117: aload_1
+     118: invokevirtual #110                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getTable:()Ljava/lang/String;
+     121: invokestatic  #111                // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+     124: astore        9
+     126: aload_0
+     127: invokespecial #93                 // Method cleanupSentinels:()V
+     130: aload_0
+     131: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+     134: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     139: aload         4
+     141: aload         7
+     143: invokestatic  #232                // Method org/apache/hadoop/hbase/snapshot/SnapshotReferenceUtil.verifySnapshot:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;)V
+     146: aload_0
+     147: getfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+     150: invokeinterface #233,  1          // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     155: aload         9
+     157: invokestatic  #234                // Method org/apache/hadoop/hbase/MetaTableAccessor.tableExists:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;)Z
+     160: ifeq          181
+     163: aload_0
+     164: aload_1
+     165: aload         9
+     167: aload         6
+     169: aload         8
+     171: aload_2
+     172: iload_3
+     173: invokespecial #235                // Method restoreSnapshot:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;Lorg/apache/hadoop/hbase/client/TableDescriptor;Lorg/apache/hadoop/hbase/util/NonceKey;Z)J
+     176: lstore        10
+     178: goto          196
+     181: aload_0
+     182: aload_1
+     183: aload         9
+     185: aload         6
+     187: aload         8
+     189: aload_2
+     190: iload_3
+     191: invokespecial #236                // Method cloneSnapshot:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;Lorg/apache/hadoop/hbase/client/TableDescriptor;Lorg/apache/hadoop/hbase/util/NonceKey;Z)J
+     194: lstore        10
+     196: lload         10
+     198: lreturn
+
+  public void stop(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #263                // Field stopped:Z
+       4: ifeq          8
+       7: return
+       8: aload_0
+       9: iconst_1
+      10: putfield      #263                // Field stopped:Z
+      13: aload_0
+      14: getfield      #5                  // Field snapshotHandlers:Ljava/util/Map;
+      17: invokeinterface #264,  1          // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+      22: invokeinterface #265,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      27: astore_2
+      28: aload_2
+      29: invokeinterface #115,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      34: ifeq          57
+      37: aload_2
+      38: invokeinterface #116,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      43: checkcast     #119                // class org/apache/hadoop/hbase/master/SnapshotSentinel
+      46: astore_3
+      47: aload_3
+      48: aload_1
+      49: invokeinterface #266,  2          // InterfaceMethod org/apache/hadoop/hbase/master/SnapshotSentinel.cancel:(Ljava/lang/String;)V
+      54: goto          28
+      57: aload_0
+      58: getfield      #32                 // Field snapshotHandlerChoreCleanerTask:Ljava/util/concurrent/ScheduledFuture;
+      61: ifnull        75
+      64: aload_0
+      65: getfield      #32                 // Field snapshotHandlerChoreCleanerTask:Ljava/util/concurrent/ScheduledFuture;
+      68: iconst_1
+      69: invokeinterface #267,  2          // InterfaceMethod java/util/concurrent/ScheduledFuture.cancel:(Z)Z
+      74: pop
+      75: aload_0
+      76: getfield      #26                 // Field coordinator:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;
+      79: ifnull        89
+      82: aload_0
+      83: getfield      #26                 // Field coordinator:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;
+      86: invokevirtual #268                // Method org/apache/hadoop/hbase/procedure/ProcedureCoordinator.close:()V
+      89: goto          105
+      92: astore_2
+      93: getstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+      96: ldc_w         #269                // String stop ProcedureCoordinator error
+      99: aload_2
+     100: invokeinterface #208,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     105: return
+    Exception table:
+       from    to  target type
+          75    89    92   Class java/io/IOException
+
+  public boolean isStopped();
+    Code:
+       0: aload_0
+       1: getfield      #263                // Field stopped:Z
+       4: ireturn
+
+  public void checkSnapshotSupport() throws java.lang.UnsupportedOperationException;
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field isSnapshotSupported:Z
+       4: ifne          18
+       7: new           #237                // class java/lang/UnsupportedOperationException
+      10: dup
+      11: ldc_w         #270                // String To use snapshots, You must add to the hbase-site.xml of the HBase Master: 'hbase.snapshot.enabled' property with value 'true'.
+      14: invokespecial #239                // Method java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+      17: athrow
+      18: return
+
+  public void initialize(org.apache.hadoop.hbase.master.MasterServices, org.apache.hadoop.hbase.master.MetricsMaster) throws org.apache.zookeeper.KeeperException, java.io.IOException, java.lang.UnsupportedOperationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #20                 // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+       5: aload_0
+       6: aload_1
+       7: invokeinterface #21,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      12: invokevirtual #22                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getRootDir:()Lorg/apache/hadoop/fs/Path;
+      15: putfield      #23                 // Field rootDir:Lorg/apache/hadoop/fs/Path;
+      18: aload_0
+      19: aload_1
+      20: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      25: aload_1
+      26: invokeinterface #21,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      31: invokespecial #25                 // Method checkSnapshotSupport:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/master/MasterFileSystem;)V
+      34: aload_1
+      35: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      40: astore_3
+      41: aload_3
+      42: ldc_w         #306                // String hbase.snapshot.master.wakeMillis
+      45: sipush        500
+      48: invokevirtual #307                // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      51: i2l
+      52: lstore        4
+      54: aload_3
+      55: ldc_w         #308                // String hbase.snapshot.master.timeout.millis
+      58: ldc2_w        #309                // long 300000l
+      61: invokevirtual #260                // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      64: aload_3
+      65: ldc_w         #308                // String hbase.snapshot.master.timeout.millis
+      68: ldc2_w        #309                // long 300000l
+      71: invokevirtual #260                // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      74: invokestatic  #311                // Method java/lang/Math.max:(JJ)J
+      77: lstore        6
+      79: aload_3
+      80: ldc_w         #312                // String hbase.snapshot.master.threads
+      83: iconst_1
+      84: invokevirtual #307                // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      87: istore        8
+      89: aload_1
+      90: invokeinterface #313,  1          // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      95: invokevirtual #314                // Method org/apache/hadoop/hbase/ServerName.toString:()Ljava/lang/String;
+      98: astore        9
+     100: aload         9
+     102: iload         8
+     104: invokestatic  #315                // Method org/apache/hadoop/hbase/procedure/ProcedureCoordinator.defaultPool:(Ljava/lang/String;I)Ljava/util/concurrent/ThreadPoolExecutor;
+     107: astore        10
+     109: new           #316                // class org/apache/hadoop/hbase/procedure/ZKProcedureCoordinator
+     112: dup
+     113: aload_1
+     114: invokeinterface #317,  1          // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getZooKeeper:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     119: ldc_w         #318                // String online-snapshot
+     122: aload         9
+     124: invokespecial #319                // Method org/apache/hadoop/hbase/procedure/ZKProcedureCoordinator."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;Ljava/lang/String;)V
+     127: astore        11
+     129: aload_0
+     130: new           #320                // class org/apache/hadoop/hbase/procedure/ProcedureCoordinator
+     133: dup
+     134: aload         11
+     136: aload         10
+     138: lload         6
+     140: lload         4
+     142: invokespecial #321                // Method org/apache/hadoop/hbase/procedure/ProcedureCoordinator."<init>":(Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs;Ljava/util/concurrent/ThreadPoolExecutor;JJ)V
+     145: putfield      #26                 // Field coordinator:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;
+     148: aload_0
+     149: aload_1
+     150: invokeinterface #322,  1          // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getExecutorService:()Lorg/apache/hadoop/hbase/executor/ExecutorService;
+     155: putfield      #27                 // Field executorService:Lorg/apache/hadoop/hbase/executor/ExecutorService;
+     158: aload_0
+     159: invokespecial #28                 // Method resetTempDir:()V
+     162: aload_0
+     163: aload_0
+     164: getfield      #13                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+     167: aload_0
+     168: invokedynamic #29,  0             // InvokeDynamic #0:run:(Lorg/apache/hadoop/hbase/master/snapshot/SnapshotManager;)Ljava/lang/Runnable;
+     173: ldc2_w        #323                // long 10l
+     176: ldc2_w        #323                // long 10l
+     179: getstatic     #30                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     182: invokeinterface #31,  7           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+     187: putfield      #32                 // Field snapshotHandlerChoreCleanerTask:Ljava/util/concurrent/ScheduledFuture;
+     190: return
+
+  public java.lang.String getProcedureSignature();
+    Code:
+       0: ldc_w         #318                // String online-snapshot
+       3: areturn
+
+  public void execProcedure(org.apache.hadoop.hbase.shaded.protobuf.generated.HBaseProtos$ProcedureDescription) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: aload_1
+       3: invokespecial #325                // Method toSnapshotDescription:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+       6: invokevirtual #326                // Method takeSnapshot:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)V
+       9: return
+
+  public void checkPermissions(org.apache.hadoop.hbase.shaded.protobuf.generated.HBaseProtos$ProcedureDescription, org.apache.hadoop.hbase.security.access.AccessChecker, org.apache.hadoop.hbase.security.User) throws java.io.IOException;
+    Code:
+       0: return
+
+  public boolean isProcedureDone(org.apache.hadoop.hbase.shaded.protobuf.generated.HBaseProtos$ProcedureDescription) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: aload_1
+       3: invokespecial #325                // Method toSnapshotDescription:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+       6: invokevirtual #327                // Method isSnapshotDone:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Z
+       9: ireturn
+
+  static {};
+    Code:
+       0: ldc_w         #256                // class org/apache/hadoop/hbase/master/snapshot/SnapshotManager
+       3: invokestatic  #348                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       6: putstatic     #48                 // Field LOG:Lorg/slf4j/Logger;
+       9: return
+}

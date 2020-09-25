@@ -1,0 +1,615 @@
+Compiled from "AbstractRpcClient.java"
+public abstract class org.apache.hadoop.hbase.ipc.AbstractRpcClient<T extends org.apache.hadoop.hbase.ipc.RpcConnection> implements org.apache.hadoop.hbase.ipc.RpcClient {
+  public static final org.slf4j.Logger LOG;
+
+  protected static final org.apache.hbase.thirdparty.io.netty.util.HashedWheelTimer WHEEL_TIMER;
+
+  protected static final java.util.Map<org.apache.hadoop.hbase.protobuf.generated.AuthenticationProtos$TokenIdentifier$Kind, org.apache.hadoop.security.token.TokenSelector<? extends org.apache.hadoop.security.token.TokenIdentifier>> TOKEN_HANDLERS;
+
+  protected boolean running;
+
+  protected final org.apache.hadoop.conf.Configuration conf;
+
+  protected final java.lang.String clusterId;
+
+  protected final java.net.SocketAddress localAddr;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection metrics;
+
+  protected final org.apache.hadoop.hbase.security.UserProvider userProvider;
+
+  protected final org.apache.hadoop.hbase.ipc.CellBlockBuilder cellBlockBuilder;
+
+  protected final int minIdleTimeBeforeClose;
+
+  protected final int maxRetries;
+
+  protected final long failureSleep;
+
+  protected final boolean tcpNoDelay;
+
+  protected final boolean tcpKeepAlive;
+
+  protected final org.apache.hadoop.hbase.codec.Codec codec;
+
+  protected final org.apache.hadoop.io.compress.CompressionCodec compressor;
+
+  protected final boolean fallbackAllowed;
+
+  protected final org.apache.hadoop.hbase.ipc.FailedServers failedServers;
+
+  protected final int connectTO;
+
+  protected final int readTO;
+
+  protected final int writeTO;
+
+  protected final org.apache.hadoop.hbase.util.PoolMap<org.apache.hadoop.hbase.ipc.ConnectionId, T> connections;
+
+  public org.apache.hadoop.hbase.ipc.AbstractRpcClient(org.apache.hadoop.conf.Configuration, java.lang.String, java.net.SocketAddress, org.apache.hadoop.hbase.client.MetricsConnection);
+    Code:
+       0: aload_0
+       1: invokespecial #5                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_1
+       6: putfield      #6                  // Field running:Z
+       9: aload_0
+      10: new           #7                  // class java/util/concurrent/atomic/AtomicInteger
+      13: dup
+      14: iconst_0
+      15: invokespecial #8                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      18: putfield      #9                  // Field callIdCnt:Ljava/util/concurrent/atomic/AtomicInteger;
+      21: aload_0
+      22: aload_1
+      23: invokestatic  #10                 // Method org/apache/hadoop/hbase/security/UserProvider.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/security/UserProvider;
+      26: putfield      #11                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+      29: aload_0
+      30: aload_3
+      31: putfield      #12                 // Field localAddr:Ljava/net/SocketAddress;
+      34: aload_0
+      35: aload_1
+      36: ldc           #13                 // String hbase.ipc.client.tcpkeepalive
+      38: iconst_1
+      39: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      42: putfield      #15                 // Field tcpKeepAlive:Z
+      45: aload_0
+      46: aload_2
+      47: ifnull        54
+      50: aload_2
+      51: goto          56
+      54: ldc           #17                 // String default-cluster
+      56: putfield      #18                 // Field clusterId:Ljava/lang/String;
+      59: aload_0
+      60: aload_1
+      61: ldc           #19                 // String hbase.client.pause
+      63: ldc2_w        #20                 // long 100l
+      66: invokevirtual #22                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      69: putfield      #23                 // Field failureSleep:J
+      72: aload_0
+      73: aload_1
+      74: ldc           #24                 // String hbase.ipc.client.connect.max.retries
+      76: iconst_0
+      77: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      80: putfield      #26                 // Field maxRetries:I
+      83: aload_0
+      84: aload_1
+      85: ldc           #27                 // String hbase.ipc.client.tcpnodelay
+      87: iconst_1
+      88: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      91: putfield      #28                 // Field tcpNoDelay:Z
+      94: aload_0
+      95: new           #29                 // class org/apache/hadoop/hbase/ipc/CellBlockBuilder
+      98: dup
+      99: aload_1
+     100: invokespecial #30                 // Method org/apache/hadoop/hbase/ipc/CellBlockBuilder."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     103: putfield      #31                 // Field cellBlockBuilder:Lorg/apache/hadoop/hbase/ipc/CellBlockBuilder;
+     106: aload_0
+     107: aload_1
+     108: ldc           #33                 // String hbase.ipc.client.connection.minIdleTimeBeforeClose
+     110: ldc           #34                 // int 120000
+     112: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     115: putfield      #35                 // Field minIdleTimeBeforeClose:I
+     118: aload_0
+     119: aload_1
+     120: putfield      #36                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     123: aload_0
+     124: aload_0
+     125: invokevirtual #37                 // Method getCodec:()Lorg/apache/hadoop/hbase/codec/Codec;
+     128: putfield      #38                 // Field codec:Lorg/apache/hadoop/hbase/codec/Codec;
+     131: aload_0
+     132: aload_1
+     133: invokestatic  #39                 // Method getCompressor:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/io/compress/CompressionCodec;
+     136: putfield      #40                 // Field compressor:Lorg/apache/hadoop/io/compress/CompressionCodec;
+     139: aload_0
+     140: aload_1
+     141: ldc           #41                 // String hbase.ipc.client.fallback-to-simple-auth-allowed
+     143: iconst_0
+     144: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     147: putfield      #42                 // Field fallbackAllowed:Z
+     150: aload_0
+     151: new           #43                 // class org/apache/hadoop/hbase/ipc/FailedServers
+     154: dup
+     155: aload_1
+     156: invokespecial #44                 // Method org/apache/hadoop/hbase/ipc/FailedServers."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     159: putfield      #45                 // Field failedServers:Lorg/apache/hadoop/hbase/ipc/FailedServers;
+     162: aload_0
+     163: aload_1
+     164: ldc           #46                 // String hbase.ipc.client.socket.timeout.connect
+     166: sipush        10000
+     169: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     172: putfield      #47                 // Field connectTO:I
+     175: aload_0
+     176: aload_1
+     177: ldc           #48                 // String hbase.ipc.client.socket.timeout.read
+     179: sipush        20000
+     182: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     185: putfield      #49                 // Field readTO:I
+     188: aload_0
+     189: aload_1
+     190: ldc           #50                 // String hbase.ipc.client.socket.timeout.write
+     192: ldc           #51                 // int 60000
+     194: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     197: putfield      #52                 // Field writeTO:I
+     200: aload_0
+     201: aload         4
+     203: putfield      #53                 // Field metrics:Lorg/apache/hadoop/hbase/client/MetricsConnection;
+     206: aload_0
+     207: aload_1
+     208: ldc           #54                 // String hbase.client.perserver.requests.threshold
+     210: ldc           #55                 // int 2147483647
+     212: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     215: putfield      #56                 // Field maxConcurrentCallsPerServer:I
+     218: aload_0
+     219: new           #57                 // class org/apache/hadoop/hbase/util/PoolMap
+     222: dup
+     223: aload_1
+     224: invokestatic  #58                 // Method getPoolType:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/util/PoolMap$PoolType;
+     227: aload_1
+     228: invokestatic  #59                 // Method getPoolSize:(Lorg/apache/hadoop/conf/Configuration;)I
+     231: invokespecial #60                 // Method org/apache/hadoop/hbase/util/PoolMap."<init>":(Lorg/apache/hadoop/hbase/util/PoolMap$PoolType;I)V
+     234: putfield      #61                 // Field connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+     237: aload_0
+     238: getstatic     #62                 // Field IDLE_CONN_SWEEPER:Ljava/util/concurrent/ScheduledExecutorService;
+     241: new           #63                 // class org/apache/hadoop/hbase/ipc/AbstractRpcClient$2
+     244: dup
+     245: aload_0
+     246: invokespecial #64                 // Method org/apache/hadoop/hbase/ipc/AbstractRpcClient$2."<init>":(Lorg/apache/hadoop/hbase/ipc/AbstractRpcClient;)V
+     249: aload_0
+     250: getfield      #35                 // Field minIdleTimeBeforeClose:I
+     253: i2l
+     254: aload_0
+     255: getfield      #35                 // Field minIdleTimeBeforeClose:I
+     258: i2l
+     259: getstatic     #65                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+     262: invokeinterface #66,  7           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+     267: putfield      #67                 // Field cleanupIdleConnectionTask:Ljava/util/concurrent/ScheduledFuture;
+     270: getstatic     #68                 // Field LOG:Lorg/slf4j/Logger;
+     273: invokeinterface #69,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     278: ifeq          443
+     281: getstatic     #68                 // Field LOG:Lorg/slf4j/Logger;
+     284: new           #70                 // class java/lang/StringBuilder
+     287: dup
+     288: invokespecial #71                 // Method java/lang/StringBuilder."<init>":()V
+     291: ldc           #72                 // String Codec=
+     293: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     296: aload_0
+     297: getfield      #38                 // Field codec:Lorg/apache/hadoop/hbase/codec/Codec;
+     300: invokevirtual #74                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     303: ldc           #75                 // String , compressor=
+     305: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     308: aload_0
+     309: getfield      #40                 // Field compressor:Lorg/apache/hadoop/io/compress/CompressionCodec;
+     312: invokevirtual #74                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     315: ldc           #76                 // String , tcpKeepAlive=
+     317: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     320: aload_0
+     321: getfield      #15                 // Field tcpKeepAlive:Z
+     324: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     327: ldc           #78                 // String , tcpNoDelay=
+     329: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     332: aload_0
+     333: getfield      #28                 // Field tcpNoDelay:Z
+     336: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     339: ldc           #79                 // String , connectTO=
+     341: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     344: aload_0
+     345: getfield      #47                 // Field connectTO:I
+     348: invokevirtual #80                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     351: ldc           #81                 // String , readTO=
+     353: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     356: aload_0
+     357: getfield      #49                 // Field readTO:I
+     360: invokevirtual #80                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     363: ldc           #82                 // String , writeTO=
+     365: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     368: aload_0
+     369: getfield      #52                 // Field writeTO:I
+     372: invokevirtual #80                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     375: ldc           #83                 // String , minIdleTimeBeforeClose=
+     377: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     380: aload_0
+     381: getfield      #35                 // Field minIdleTimeBeforeClose:I
+     384: invokevirtual #80                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     387: ldc           #84                 // String , maxRetries=
+     389: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     392: aload_0
+     393: getfield      #26                 // Field maxRetries:I
+     396: invokevirtual #80                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     399: ldc           #85                 // String , fallbackAllowed=
+     401: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     404: aload_0
+     405: getfield      #42                 // Field fallbackAllowed:Z
+     408: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     411: ldc           #86                 // String , bind address=
+     413: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     416: aload_0
+     417: getfield      #12                 // Field localAddr:Ljava/net/SocketAddress;
+     420: ifnull        430
+     423: aload_0
+     424: getfield      #12                 // Field localAddr:Ljava/net/SocketAddress;
+     427: goto          432
+     430: ldc           #87                 // String null
+     432: invokevirtual #74                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     435: invokevirtual #88                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     438: invokeinterface #89,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     443: return
+
+  public static java.lang.String getDefaultCodec(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #105                // String hbase.client.default.rpc.codec
+       3: ldc           #106                // class org/apache/hadoop/hbase/codec/KeyValueCodec
+       5: invokevirtual #107                // Method java/lang/Class.getCanonicalName:()Ljava/lang/String;
+       8: invokevirtual #108                // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      11: areturn
+
+  org.apache.hadoop.hbase.codec.Codec getCodec();
+    Code:
+       0: aload_0
+       1: getfield      #36                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: ldc           #109                // String hbase.client.rpc.codec
+       6: aload_0
+       7: getfield      #36                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      10: invokestatic  #110                // Method getDefaultCodec:(Lorg/apache/hadoop/conf/Configuration;)Ljava/lang/String;
+      13: invokevirtual #108                // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      16: astore_1
+      17: aload_1
+      18: ifnull        28
+      21: aload_1
+      22: invokevirtual #111                // Method java/lang/String.length:()I
+      25: ifne          30
+      28: aconst_null
+      29: areturn
+      30: aload_1
+      31: invokestatic  #112                // Method java/lang/Class.forName:(Ljava/lang/String;)Ljava/lang/Class;
+      34: iconst_0
+      35: anewarray     #113                // class java/lang/Class
+      38: invokevirtual #114                // Method java/lang/Class.getDeclaredConstructor:([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;
+      41: iconst_0
+      42: anewarray     #115                // class java/lang/Object
+      45: invokevirtual #116                // Method java/lang/reflect/Constructor.newInstance:([Ljava/lang/Object;)Ljava/lang/Object;
+      48: checkcast     #117                // class org/apache/hadoop/hbase/codec/Codec
+      51: areturn
+      52: astore_2
+      53: new           #119                // class java/lang/RuntimeException
+      56: dup
+      57: new           #70                 // class java/lang/StringBuilder
+      60: dup
+      61: invokespecial #71                 // Method java/lang/StringBuilder."<init>":()V
+      64: ldc           #120                // String Failed getting codec
+      66: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: aload_1
+      70: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      73: invokevirtual #88                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      76: aload_2
+      77: invokespecial #121                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      80: athrow
+    Exception table:
+       from    to  target type
+          30    51    52   Class java/lang/Exception
+
+  public boolean hasCellBlockSupport();
+    Code:
+       0: aload_0
+       1: getfield      #38                 // Field codec:Lorg/apache/hadoop/hbase/codec/Codec;
+       4: ifnull        11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+
+  boolean isTcpNoDelay();
+    Code:
+       0: aload_0
+       1: getfield      #28                 // Field tcpNoDelay:Z
+       4: ireturn
+
+  protected abstract T createConnection(org.apache.hadoop.hbase.ipc.ConnectionId) throws java.io.IOException;
+
+  public void cancelConnections(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #61                 // Field connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+       4: dup
+       5: astore_2
+       6: monitorenter
+       7: aload_0
+       8: getfield      #61                 // Field connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+      11: invokevirtual #91                 // Method org/apache/hadoop/hbase/util/PoolMap.values:()Ljava/util/Collection;
+      14: invokeinterface #92,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      19: astore_3
+      20: aload_3
+      21: invokeinterface #93,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          143
+      29: aload_3
+      30: invokeinterface #94,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #95                 // class org/apache/hadoop/hbase/ipc/RpcConnection
+      38: astore        4
+      40: aload         4
+      42: invokevirtual #100                // Method org/apache/hadoop/hbase/ipc/RpcConnection.remoteId:()Lorg/apache/hadoop/hbase/ipc/ConnectionId;
+      45: astore        5
+      47: aload         5
+      49: getfield      #101                // Field org/apache/hadoop/hbase/ipc/ConnectionId.address:Ljava/net/InetSocketAddress;
+      52: invokevirtual #218                // Method java/net/InetSocketAddress.getPort:()I
+      55: aload_1
+      56: invokevirtual #211                // Method org/apache/hadoop/hbase/ServerName.getPort:()I
+      59: if_icmpne     140
+      62: aload         5
+      64: getfield      #101                // Field org/apache/hadoop/hbase/ipc/ConnectionId.address:Ljava/net/InetSocketAddress;
+      67: invokevirtual #219                // Method java/net/InetSocketAddress.getHostName:()Ljava/lang/String;
+      70: aload_1
+      71: invokevirtual #210                // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+      74: invokevirtual #220                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      77: ifeq          140
+      80: getstatic     #68                 // Field LOG:Lorg/slf4j/Logger;
+      83: new           #70                 // class java/lang/StringBuilder
+      86: dup
+      87: invokespecial #71                 // Method java/lang/StringBuilder."<init>":()V
+      90: ldc           #221                // String The server on
+      92: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      95: aload_1
+      96: invokevirtual #222                // Method org/apache/hadoop/hbase/ServerName.toString:()Ljava/lang/String;
+      99: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     102: ldc           #223                // String  is dead - stopping the connection
+     104: invokevirtual #73                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     107: aload         4
+     109: getfield      #224                // Field org/apache/hadoop/hbase/ipc/RpcConnection.remoteId:Lorg/apache/hadoop/hbase/ipc/ConnectionId;
+     112: invokevirtual #74                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     115: invokevirtual #88                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     118: invokeinterface #225,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     123: aload_0
+     124: getfield      #61                 // Field connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+     127: aload         5
+     129: aload         4
+     131: invokevirtual #103                // Method org/apache/hadoop/hbase/util/PoolMap.removeValue:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     134: pop
+     135: aload         4
+     137: invokevirtual #226                // Method org/apache/hadoop/hbase/ipc/RpcConnection.shutdown:()V
+     140: goto          20
+     143: aload_2
+     144: monitorexit
+     145: goto          155
+     148: astore        6
+     150: aload_2
+     151: monitorexit
+     152: aload         6
+     154: athrow
+     155: return
+    Exception table:
+       from    to  target type
+           7   145   148   any
+         148   152   148   any
+
+  static org.apache.hadoop.hbase.ipc.HBaseRpcController configureHBaseRpcController(org.apache.hbase.thirdparty.com.google.protobuf.RpcController, int);
+    Code:
+       0: aload_0
+       1: ifnull        35
+       4: aload_0
+       5: instanceof    #227                // class org/apache/hadoop/hbase/ipc/HBaseRpcController
+       8: ifeq          35
+      11: aload_0
+      12: checkcast     #227                // class org/apache/hadoop/hbase/ipc/HBaseRpcController
+      15: astore_2
+      16: aload_2
+      17: invokeinterface #228,  1          // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.hasCallTimeout:()Z
+      22: ifne          50
+      25: aload_2
+      26: iload_1
+      27: invokeinterface #229,  2          // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.setCallTimeout:(I)V
+      32: goto          50
+      35: new           #230                // class org/apache/hadoop/hbase/ipc/HBaseRpcControllerImpl
+      38: dup
+      39: invokespecial #231                // Method org/apache/hadoop/hbase/ipc/HBaseRpcControllerImpl."<init>":()V
+      42: astore_2
+      43: aload_2
+      44: iload_1
+      45: invokeinterface #229,  2          // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.setCallTimeout:(I)V
+      50: aload_2
+      51: areturn
+
+  protected abstract void closeInternal();
+
+  public void close();
+    Code:
+       0: getstatic     #68                 // Field LOG:Lorg/slf4j/Logger;
+       3: invokeinterface #69,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+       8: ifeq          21
+      11: getstatic     #68                 // Field LOG:Lorg/slf4j/Logger;
+      14: ldc           #232                // String Stopping rpc client
+      16: invokeinterface #89,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      21: aload_0
+      22: getfield      #61                 // Field connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+      25: dup
+      26: astore_2
+      27: monitorenter
+      28: aload_0
+      29: getfield      #6                  // Field running:Z
+      32: ifne          38
+      35: aload_2
+      36: monitorexit
+      37: return
+      38: aload_0
+      39: iconst_0
+      40: putfield      #6                  // Field running:Z
+      43: aload_0
+      44: getfield      #61                 // Field connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+      47: invokevirtual #91                 // Method org/apache/hadoop/hbase/util/PoolMap.values:()Ljava/util/Collection;
+      50: astore_1
+      51: aload_0
+      52: getfield      #61                 // Field connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+      55: invokevirtual #233                // Method org/apache/hadoop/hbase/util/PoolMap.clear:()V
+      58: aload_2
+      59: monitorexit
+      60: goto          68
+      63: astore_3
+      64: aload_2
+      65: monitorexit
+      66: aload_3
+      67: athrow
+      68: aload_0
+      69: getfield      #67                 // Field cleanupIdleConnectionTask:Ljava/util/concurrent/ScheduledFuture;
+      72: iconst_1
+      73: invokeinterface #234,  2          // InterfaceMethod java/util/concurrent/ScheduledFuture.cancel:(Z)Z
+      78: pop
+      79: aload_1
+      80: invokeinterface #92,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      85: astore_2
+      86: aload_2
+      87: invokeinterface #93,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      92: ifeq          112
+      95: aload_2
+      96: invokeinterface #94,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     101: checkcast     #95                 // class org/apache/hadoop/hbase/ipc/RpcConnection
+     104: astore_3
+     105: aload_3
+     106: invokevirtual #226                // Method org/apache/hadoop/hbase/ipc/RpcConnection.shutdown:()V
+     109: goto          86
+     112: aload_0
+     113: invokevirtual #235                // Method closeInternal:()V
+     116: aload_1
+     117: invokeinterface #92,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+     122: astore_2
+     123: aload_2
+     124: invokeinterface #93,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     129: ifeq          149
+     132: aload_2
+     133: invokeinterface #94,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     138: checkcast     #95                 // class org/apache/hadoop/hbase/ipc/RpcConnection
+     141: astore_3
+     142: aload_3
+     143: invokevirtual #104                // Method org/apache/hadoop/hbase/ipc/RpcConnection.cleanupConnection:()V
+     146: goto          123
+     149: return
+    Exception table:
+       from    to  target type
+          28    37    63   any
+          38    60    63   any
+          63    66    63   any
+
+  public org.apache.hbase.thirdparty.com.google.protobuf.BlockingRpcChannel createBlockingRpcChannel(org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.security.User, int) throws java.net.UnknownHostException;
+    Code:
+       0: new           #236                // class org/apache/hadoop/hbase/ipc/AbstractRpcClient$BlockingRpcChannelImplementation
+       3: dup
+       4: aload_0
+       5: aload_0
+       6: aload_1
+       7: invokespecial #237                // Method createAddr:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/net/InetSocketAddress;
+      10: aload_2
+      11: iload_3
+      12: invokespecial #238                // Method org/apache/hadoop/hbase/ipc/AbstractRpcClient$BlockingRpcChannelImplementation."<init>":(Lorg/apache/hadoop/hbase/ipc/AbstractRpcClient;Ljava/net/InetSocketAddress;Lorg/apache/hadoop/hbase/security/User;I)V
+      15: areturn
+
+  public org.apache.hbase.thirdparty.com.google.protobuf.RpcChannel createRpcChannel(org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.security.User, int) throws java.net.UnknownHostException;
+    Code:
+       0: new           #239                // class org/apache/hadoop/hbase/ipc/AbstractRpcClient$RpcChannelImplementation
+       3: dup
+       4: aload_0
+       5: aload_0
+       6: aload_1
+       7: invokespecial #237                // Method createAddr:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/net/InetSocketAddress;
+      10: aload_2
+      11: iload_3
+      12: invokespecial #240                // Method org/apache/hadoop/hbase/ipc/AbstractRpcClient$RpcChannelImplementation."<init>":(Lorg/apache/hadoop/hbase/ipc/AbstractRpcClient;Ljava/net/InetSocketAddress;Lorg/apache/hadoop/hbase/security/User;I)V
+      15: areturn
+
+  static void access$000(org.apache.hadoop.hbase.ipc.AbstractRpcClient);
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method cleanupIdleConnections:()V
+       4: return
+
+  static void access$100(org.apache.hadoop.hbase.ipc.AbstractRpcClient, org.apache.hadoop.hbase.ipc.Call, org.apache.hadoop.hbase.ipc.HBaseRpcController, java.net.InetSocketAddress, org.apache.hbase.thirdparty.com.google.protobuf.RpcCallback);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: invokespecial #3                  // Method onCallFinished:(Lorg/apache/hadoop/hbase/ipc/Call;Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;Ljava/net/InetSocketAddress;Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcCallback;)V
+       9: return
+
+  static org.apache.hbase.thirdparty.com.google.protobuf.Message access$200(org.apache.hadoop.hbase.ipc.AbstractRpcClient, org.apache.hbase.thirdparty.com.google.protobuf.Descriptors$MethodDescriptor, org.apache.hadoop.hbase.ipc.HBaseRpcController, org.apache.hbase.thirdparty.com.google.protobuf.Message, org.apache.hbase.thirdparty.com.google.protobuf.Message, org.apache.hadoop.hbase.security.User, java.net.InetSocketAddress) throws org.apache.hbase.thirdparty.com.google.protobuf.ServiceException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: invokespecial #2                  // Method callBlockingMethod:(Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;Lorg/apache/hadoop/hbase/security/User;Ljava/net/InetSocketAddress;)Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;
+      13: areturn
+
+  static void access$300(org.apache.hadoop.hbase.ipc.AbstractRpcClient, org.apache.hbase.thirdparty.com.google.protobuf.Descriptors$MethodDescriptor, org.apache.hadoop.hbase.ipc.HBaseRpcController, org.apache.hbase.thirdparty.com.google.protobuf.Message, org.apache.hbase.thirdparty.com.google.protobuf.Message, org.apache.hadoop.hbase.security.User, java.net.InetSocketAddress, org.apache.hbase.thirdparty.com.google.protobuf.RpcCallback);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: aload         7
+      12: invokespecial #1                  // Method callMethod:(Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;Lorg/apache/hadoop/hbase/security/User;Ljava/net/InetSocketAddress;Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcCallback;)V
+      15: return
+
+  static {};
+    Code:
+       0: ldc           #241                // class org/apache/hadoop/hbase/ipc/AbstractRpcClient
+       2: invokestatic  #242                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #68                 // Field LOG:Lorg/slf4j/Logger;
+       8: new           #243                // class org/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer
+      11: dup
+      12: ldc           #244                // String RpcClient-timer
+      14: invokestatic  #245                // Method org/apache/hadoop/hbase/util/Threads.newDaemonThreadFactory:(Ljava/lang/String;)Ljava/util/concurrent/ThreadFactory;
+      17: ldc2_w        #246                // long 10l
+      20: getstatic     #65                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      23: invokespecial #248                // Method org/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer."<init>":(Ljava/util/concurrent/ThreadFactory;JLjava/util/concurrent/TimeUnit;)V
+      26: putstatic     #249                // Field WHEEL_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+      29: iconst_1
+      30: ldc           #250                // String Idle-Rpc-Conn-Sweeper
+      32: invokestatic  #245                // Method org/apache/hadoop/hbase/util/Threads.newDaemonThreadFactory:(Ljava/lang/String;)Ljava/util/concurrent/ThreadFactory;
+      35: invokestatic  #251                // Method java/util/concurrent/Executors.newScheduledThreadPool:(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;
+      38: putstatic     #62                 // Field IDLE_CONN_SWEEPER:Ljava/util/concurrent/ScheduledExecutorService;
+      41: new           #252                // class java/util/HashMap
+      44: dup
+      45: invokespecial #253                // Method java/util/HashMap."<init>":()V
+      48: putstatic     #254                // Field TOKEN_HANDLERS:Ljava/util/Map;
+      51: getstatic     #254                // Field TOKEN_HANDLERS:Ljava/util/Map;
+      54: getstatic     #255                // Field org/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$TokenIdentifier$Kind.HBASE_AUTH_TOKEN:Lorg/apache/hadoop/hbase/protobuf/generated/AuthenticationProtos$TokenIdentifier$Kind;
+      57: new           #256                // class org/apache/hadoop/hbase/security/token/AuthenticationTokenSelector
+      60: dup
+      61: invokespecial #257                // Method org/apache/hadoop/hbase/security/token/AuthenticationTokenSelector."<init>":()V
+      64: invokeinterface #258,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      69: pop
+      70: invokestatic  #259                // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.newBuilder:()Lorg/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder;
+      73: lconst_1
+      74: getstatic     #260                // Field java/util/concurrent/TimeUnit.HOURS:Ljava/util/concurrent/TimeUnit;
+      77: invokevirtual #261                // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.expireAfterAccess:(JLjava/util/concurrent/TimeUnit;)Lorg/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder;
+      80: new           #262                // class org/apache/hadoop/hbase/ipc/AbstractRpcClient$1
+      83: dup
+      84: invokespecial #263                // Method org/apache/hadoop/hbase/ipc/AbstractRpcClient$1."<init>":()V
+      87: invokevirtual #264                // Method org/apache/hbase/thirdparty/com/google/common/cache/CacheBuilder.build:(Lorg/apache/hbase/thirdparty/com/google/common/cache/CacheLoader;)Lorg/apache/hbase/thirdparty/com/google/common/cache/LoadingCache;
+      90: putstatic     #187                // Field concurrentCounterCache:Lorg/apache/hbase/thirdparty/com/google/common/cache/LoadingCache;
+      93: return
+}

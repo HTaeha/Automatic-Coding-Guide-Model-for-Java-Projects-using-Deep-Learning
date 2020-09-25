@@ -1,0 +1,1171 @@
+Compiled from "TestHttpServer.java"
+public class org.apache.hadoop.hbase.http.TestHttpServer extends org.apache.hadoop.hbase.http.HttpServerFunctionalTest {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  static final int MAX_THREADS;
+
+  public org.apache.hadoop.hbase.http.TestHttpServer();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/http/HttpServerFunctionalTest."<init>":()V
+       4: return
+
+  public static void setup() throws java.lang.Exception;
+    Code:
+       0: new           #2                  // class org/apache/hadoop/conf/Configuration
+       3: dup
+       4: invokespecial #3                  // Method org/apache/hadoop/conf/Configuration."<init>":()V
+       7: astore_0
+       8: aload_0
+       9: ldc           #5                  // String hbase.http.max.threads
+      11: bipush        16
+      13: invokevirtual #7                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      16: aload_0
+      17: invokestatic  #8                  // Method createTestServer:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/http/HttpServer;
+      20: putstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      23: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      26: ldc           #10                 // String echo
+      28: ldc           #11                 // String /echo
+      30: ldc           #12                 // class org/apache/hadoop/hbase/http/TestHttpServer$EchoServlet
+      32: invokevirtual #13                 // Method org/apache/hadoop/hbase/http/HttpServer.addServlet:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)V
+      35: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      38: ldc           #14                 // String echomap
+      40: ldc           #15                 // String /echomap
+      42: ldc           #16                 // class org/apache/hadoop/hbase/http/TestHttpServer$EchoMapServlet
+      44: invokevirtual #13                 // Method org/apache/hadoop/hbase/http/HttpServer.addServlet:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)V
+      47: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      50: ldc           #17                 // String htmlcontent
+      52: ldc           #18                 // String /htmlcontent
+      54: ldc           #19                 // class org/apache/hadoop/hbase/http/TestHttpServer$HtmlContentServlet
+      56: invokevirtual #13                 // Method org/apache/hadoop/hbase/http/HttpServer.addServlet:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)V
+      59: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      62: ldc           #20                 // String longheader
+      64: ldc           #21                 // String /longheader
+      66: ldc           #22                 // class org/apache/hadoop/hbase/http/TestHttpServer$LongHeaderServlet
+      68: invokevirtual #13                 // Method org/apache/hadoop/hbase/http/HttpServer.addServlet:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)V
+      71: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      74: ldc           #23                 // class org/apache/hadoop/hbase/http/resource/JerseyResource
+      76: invokevirtual #24                 // Method java/lang/Class.getPackage:()Ljava/lang/Package;
+      79: invokevirtual #25                 // Method java/lang/Package.getName:()Ljava/lang/String;
+      82: ldc           #26                 // String /jersey/*
+      84: invokevirtual #27                 // Method org/apache/hadoop/hbase/http/HttpServer.addJerseyResourcePackage:(Ljava/lang/String;Ljava/lang/String;)V
+      87: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      90: invokevirtual #28                 // Method org/apache/hadoop/hbase/http/HttpServer.start:()V
+      93: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+      96: invokestatic  #29                 // Method getServerURL:(Lorg/apache/hadoop/hbase/http/HttpServer;)Ljava/net/URL;
+      99: putstatic     #30                 // Field baseUrl:Ljava/net/URL;
+     102: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+     105: new           #32                 // class java/lang/StringBuilder
+     108: dup
+     109: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     112: ldc           #34                 // String HTTP server started:
+     114: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+     120: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     123: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     126: invokeinterface #38,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     131: return
+
+  public static void cleanup() throws java.lang.Exception;
+    Code:
+       0: getstatic     #9                  // Field server:Lorg/apache/hadoop/hbase/http/HttpServer;
+       3: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+       6: return
+
+  public void testMaxThreads() throws java.lang.Exception;
+    Code:
+       0: sipush        160
+       3: istore_1
+       4: iload_1
+       5: invokestatic  #40                 // Method java/util/concurrent/Executors.newFixedThreadPool:(I)Ljava/util/concurrent/ExecutorService;
+       8: astore_2
+       9: new           #41                 // class java/util/concurrent/CountDownLatch
+      12: dup
+      13: iload_1
+      14: invokespecial #42                 // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+      17: astore_3
+      18: new           #41                 // class java/util/concurrent/CountDownLatch
+      21: dup
+      22: iconst_1
+      23: invokespecial #42                 // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+      26: astore        4
+      28: iconst_0
+      29: istore        5
+      31: iload         5
+      33: iload_1
+      34: if_icmpge     57
+      37: aload_2
+      38: aload_3
+      39: aload         4
+      41: invokedynamic #43,  0             // InvokeDynamic #0:run:(Ljava/util/concurrent/CountDownLatch;Ljava/util/concurrent/CountDownLatch;)Ljava/lang/Runnable;
+      46: invokeinterface #44,  2           // InterfaceMethod java/util/concurrent/Executor.execute:(Ljava/lang/Runnable;)V
+      51: iinc          5, 1
+      54: goto          31
+      57: aload_3
+      58: invokevirtual #45                 // Method java/util/concurrent/CountDownLatch.await:()V
+      61: aload         4
+      63: invokevirtual #46                 // Method java/util/concurrent/CountDownLatch.countDown:()V
+      66: return
+
+  public void testEcho() throws java.lang.Exception;
+    Code:
+       0: ldc           #47                 // String a:b\nc:d\n
+       2: new           #48                 // class java/net/URL
+       5: dup
+       6: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+       9: ldc           #49                 // String /echo?a=b&c=d
+      11: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      14: invokestatic  #51                 // Method readOutput:(Ljava/net/URL;)Ljava/lang/String;
+      17: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      20: ldc           #53                 // String a:b\nc&lt;:d\ne:&gt;\n
+      22: new           #48                 // class java/net/URL
+      25: dup
+      26: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+      29: ldc           #54                 // String /echo?a=b&c<=d&e=>
+      31: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      34: invokestatic  #51                 // Method readOutput:(Ljava/net/URL;)Ljava/lang/String;
+      37: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      40: return
+
+  public void testEchoMap() throws java.lang.Exception;
+    Code:
+       0: ldc           #47                 // String a:b\nc:d\n
+       2: new           #48                 // class java/net/URL
+       5: dup
+       6: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+       9: ldc           #55                 // String /echomap?a=b&c=d
+      11: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      14: invokestatic  #51                 // Method readOutput:(Ljava/net/URL;)Ljava/lang/String;
+      17: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      20: ldc           #56                 // String a:b,&gt;\nc&lt;:d\n
+      22: new           #48                 // class java/net/URL
+      25: dup
+      26: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+      29: ldc           #57                 // String /echomap?a=b&c<=d&a=>
+      31: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      34: invokestatic  #51                 // Method readOutput:(Ljava/net/URL;)Ljava/lang/String;
+      37: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      40: return
+
+  public void testLongHeader() throws java.lang.Exception;
+    Code:
+       0: new           #48                 // class java/net/URL
+       3: dup
+       4: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+       7: ldc           #21                 // String /longheader
+       9: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      12: astore_1
+      13: aload_1
+      14: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+      17: checkcast     #59                 // class java/net/HttpURLConnection
+      20: astore_2
+      21: new           #32                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+      28: astore_3
+      29: iconst_0
+      30: istore        4
+      32: iload         4
+      34: ldc           #60                 // int 64512
+      36: if_icmpge     52
+      39: aload_3
+      40: ldc           #61                 // String a
+      42: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      45: pop
+      46: iinc          4, 1
+      49: goto          32
+      52: aload_2
+      53: ldc           #20                 // String longheader
+      55: aload_3
+      56: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      59: invokevirtual #62                 // Method java/net/HttpURLConnection.setRequestProperty:(Ljava/lang/String;Ljava/lang/String;)V
+      62: ldc2_w        #63                 // long 200l
+      65: aload_2
+      66: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+      69: i2l
+      70: invokestatic  #66                 // Method assertEquals:(JJ)V
+      73: return
+
+  public void testContentTypes() throws java.lang.Exception;
+    Code:
+       0: new           #48                 // class java/net/URL
+       3: dup
+       4: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+       7: ldc           #67                 // String /static/test.css
+       9: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      12: astore_1
+      13: aload_1
+      14: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+      17: checkcast     #59                 // class java/net/HttpURLConnection
+      20: astore_2
+      21: aload_2
+      22: invokevirtual #68                 // Method java/net/HttpURLConnection.connect:()V
+      25: ldc2_w        #63                 // long 200l
+      28: aload_2
+      29: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+      32: i2l
+      33: invokestatic  #66                 // Method assertEquals:(JJ)V
+      36: ldc           #69                 // String text/css
+      38: aload_2
+      39: invokevirtual #70                 // Method java/net/HttpURLConnection.getContentType:()Ljava/lang/String;
+      42: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      45: new           #48                 // class java/net/URL
+      48: dup
+      49: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+      52: ldc           #71                 // String /echo?a=b
+      54: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      57: astore_3
+      58: aload_3
+      59: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+      62: checkcast     #59                 // class java/net/HttpURLConnection
+      65: astore_2
+      66: aload_2
+      67: invokevirtual #68                 // Method java/net/HttpURLConnection.connect:()V
+      70: ldc2_w        #63                 // long 200l
+      73: aload_2
+      74: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+      77: i2l
+      78: invokestatic  #66                 // Method assertEquals:(JJ)V
+      81: ldc           #72                 // String text/plain;charset=utf-8
+      83: aload_2
+      84: invokevirtual #70                 // Method java/net/HttpURLConnection.getContentType:()Ljava/lang/String;
+      87: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      90: new           #48                 // class java/net/URL
+      93: dup
+      94: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+      97: ldc           #73                 // String /echo?a=b.css
+      99: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+     102: astore_3
+     103: aload_3
+     104: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+     107: checkcast     #59                 // class java/net/HttpURLConnection
+     110: astore_2
+     111: aload_2
+     112: invokevirtual #68                 // Method java/net/HttpURLConnection.connect:()V
+     115: ldc2_w        #63                 // long 200l
+     118: aload_2
+     119: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+     122: i2l
+     123: invokestatic  #66                 // Method assertEquals:(JJ)V
+     126: ldc           #72                 // String text/plain;charset=utf-8
+     128: aload_2
+     129: invokevirtual #70                 // Method java/net/HttpURLConnection.getContentType:()Ljava/lang/String;
+     132: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     135: new           #48                 // class java/net/URL
+     138: dup
+     139: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+     142: ldc           #18                 // String /htmlcontent
+     144: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+     147: astore_3
+     148: aload_3
+     149: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+     152: checkcast     #59                 // class java/net/HttpURLConnection
+     155: astore_2
+     156: aload_2
+     157: invokevirtual #68                 // Method java/net/HttpURLConnection.connect:()V
+     160: ldc2_w        #63                 // long 200l
+     163: aload_2
+     164: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+     167: i2l
+     168: invokestatic  #66                 // Method assertEquals:(JJ)V
+     171: ldc           #74                 // String text/html;charset=utf-8
+     173: aload_2
+     174: invokevirtual #70                 // Method java/net/HttpURLConnection.getContentType:()Ljava/lang/String;
+     177: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     180: return
+
+  public void testDisabledAuthorizationOfDefaultServlets() throws java.lang.Exception;
+    Code:
+       0: new           #2                  // class org/apache/hadoop/conf/Configuration
+       3: dup
+       4: invokespecial #3                  // Method org/apache/hadoop/conf/Configuration."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: ldc           #81                 // String hbase.http.filter.initializers
+      11: ldc           #82                 // class org/apache/hadoop/hbase/http/TestHttpServer$DummyFilterInitializer
+      13: invokevirtual #83                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      16: invokevirtual #84                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      19: aload_1
+      20: ldc           #86                 // String hadoop.security.group.mapping
+      22: ldc           #87                 // class org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider
+      24: invokevirtual #83                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      27: invokevirtual #84                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      30: aload_1
+      31: invokestatic  #88                 // Method org/apache/hadoop/security/Groups.getUserToGroupsMappingService:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/security/Groups;
+      34: pop
+      35: invokestatic  #89                 // Method org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.clearMapping:()V
+      38: getstatic     #90                 // Field org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.mapping:Ljava/util/Map;
+      41: ldc           #91                 // String userA
+      43: ldc           #92                 // String groupA
+      45: invokestatic  #93                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+      48: invokeinterface #94,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      53: pop
+      54: getstatic     #90                 // Field org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.mapping:Ljava/util/Map;
+      57: ldc           #95                 // String userB
+      59: ldc           #96                 // String groupB
+      61: invokestatic  #93                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+      64: invokeinterface #94,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      69: pop
+      70: new           #97                 // class org/apache/hadoop/hbase/http/HttpServer$Builder
+      73: dup
+      74: invokespecial #98                 // Method org/apache/hadoop/hbase/http/HttpServer$Builder."<init>":()V
+      77: ldc           #99                 // String test
+      79: invokevirtual #100                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setName:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+      82: new           #101                // class java/net/URI
+      85: dup
+      86: ldc           #102                // String http://localhost:0
+      88: invokespecial #103                // Method java/net/URI."<init>":(Ljava/lang/String;)V
+      91: invokevirtual #104                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.addEndpoint:(Ljava/net/URI;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+      94: iconst_1
+      95: invokevirtual #105                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setFindPort:(Z)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+      98: invokevirtual #106                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.build:()Lorg/apache/hadoop/hbase/http/HttpServer;
+     101: astore_2
+     102: aload_2
+     103: ldc           #107                // String hbase.conf
+     105: aload_1
+     106: invokevirtual #108                // Method org/apache/hadoop/hbase/http/HttpServer.setAttribute:(Ljava/lang/String;Ljava/lang/Object;)V
+     109: aload_2
+     110: invokevirtual #28                 // Method org/apache/hadoop/hbase/http/HttpServer.start:()V
+     113: new           #32                 // class java/lang/StringBuilder
+     116: dup
+     117: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     120: ldc           #109                // String http://
+     122: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     125: aload_2
+     126: iconst_0
+     127: invokevirtual #110                // Method org/apache/hadoop/hbase/http/HttpServer.getConnectorAddress:(I)Ljava/net/InetSocketAddress;
+     130: invokestatic  #111                // Method org/apache/hadoop/net/NetUtils.getHostPortString:(Ljava/net/InetSocketAddress;)Ljava/lang/String;
+     133: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     136: ldc           #112                // String /
+     138: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     141: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     144: astore_3
+     145: iconst_5
+     146: anewarray     #113                // class java/lang/String
+     149: dup
+     150: iconst_0
+     151: ldc           #114                // String conf
+     153: aastore
+     154: dup
+     155: iconst_1
+     156: ldc           #115                // String logs
+     158: aastore
+     159: dup
+     160: iconst_2
+     161: ldc           #116                // String stacks
+     163: aastore
+     164: dup
+     165: iconst_3
+     166: ldc           #117                // String logLevel
+     168: aastore
+     169: dup
+     170: iconst_4
+     171: ldc           #118                // String metrics
+     173: aastore
+     174: astore        4
+     176: aload         4
+     178: arraylength
+     179: istore        5
+     181: iconst_0
+     182: istore        6
+     184: iload         6
+     186: iload         5
+     188: if_icmpge     279
+     191: aload         4
+     193: iload         6
+     195: aaload
+     196: astore        7
+     198: iconst_2
+     199: anewarray     #113                // class java/lang/String
+     202: dup
+     203: iconst_0
+     204: ldc           #91                 // String userA
+     206: aastore
+     207: dup
+     208: iconst_1
+     209: ldc           #95                 // String userB
+     211: aastore
+     212: astore        8
+     214: aload         8
+     216: arraylength
+     217: istore        9
+     219: iconst_0
+     220: istore        10
+     222: iload         10
+     224: iload         9
+     226: if_icmpge     273
+     229: aload         8
+     231: iload         10
+     233: aaload
+     234: astore        11
+     236: ldc2_w        #63                 // long 200l
+     239: new           #32                 // class java/lang/StringBuilder
+     242: dup
+     243: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     246: aload_3
+     247: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     250: aload         7
+     252: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     255: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     258: aload         11
+     260: invokestatic  #119                // Method getHttpStatusCode:(Ljava/lang/String;Ljava/lang/String;)I
+     263: i2l
+     264: invokestatic  #66                 // Method assertEquals:(JJ)V
+     267: iinc          10, 1
+     270: goto          222
+     273: iinc          6, 1
+     276: goto          184
+     279: aload_2
+     280: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+     283: return
+
+  public void testAuthorizationOfDefaultServlets() throws java.lang.Exception;
+    Code:
+       0: new           #2                  // class org/apache/hadoop/conf/Configuration
+       3: dup
+       4: invokespecial #3                  // Method org/apache/hadoop/conf/Configuration."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: ldc           #120                // String hadoop.security.authorization
+      11: iconst_1
+      12: invokevirtual #121                // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      15: aload_1
+      16: ldc           #122                // String hadoop.security.instrumentation.requires.admin
+      18: iconst_1
+      19: invokevirtual #121                // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      22: aload_1
+      23: ldc           #81                 // String hbase.http.filter.initializers
+      25: ldc           #82                 // class org/apache/hadoop/hbase/http/TestHttpServer$DummyFilterInitializer
+      27: invokevirtual #83                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      30: invokevirtual #84                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      33: aload_1
+      34: ldc           #86                 // String hadoop.security.group.mapping
+      36: ldc           #87                 // class org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider
+      38: invokevirtual #83                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      41: invokevirtual #84                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      44: aload_1
+      45: invokestatic  #88                 // Method org/apache/hadoop/security/Groups.getUserToGroupsMappingService:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/security/Groups;
+      48: pop
+      49: invokestatic  #89                 // Method org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.clearMapping:()V
+      52: getstatic     #90                 // Field org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.mapping:Ljava/util/Map;
+      55: ldc           #91                 // String userA
+      57: ldc           #92                 // String groupA
+      59: invokestatic  #93                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+      62: invokeinterface #94,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      67: pop
+      68: getstatic     #90                 // Field org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.mapping:Ljava/util/Map;
+      71: ldc           #95                 // String userB
+      73: ldc           #96                 // String groupB
+      75: invokestatic  #93                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+      78: invokeinterface #94,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      83: pop
+      84: getstatic     #90                 // Field org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.mapping:Ljava/util/Map;
+      87: ldc           #123                // String userC
+      89: ldc           #124                // String groupC
+      91: invokestatic  #93                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+      94: invokeinterface #94,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      99: pop
+     100: getstatic     #90                 // Field org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.mapping:Ljava/util/Map;
+     103: ldc           #125                // String userD
+     105: ldc           #126                // String groupD
+     107: invokestatic  #93                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+     110: invokeinterface #94,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     115: pop
+     116: getstatic     #90                 // Field org/apache/hadoop/hbase/http/TestHttpServer$MyGroupsProvider.mapping:Ljava/util/Map;
+     119: ldc           #127                // String userE
+     121: ldc           #128                // String groupE
+     123: invokestatic  #93                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+     126: invokeinterface #94,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     131: pop
+     132: new           #97                 // class org/apache/hadoop/hbase/http/HttpServer$Builder
+     135: dup
+     136: invokespecial #98                 // Method org/apache/hadoop/hbase/http/HttpServer$Builder."<init>":()V
+     139: ldc           #99                 // String test
+     141: invokevirtual #100                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setName:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+     144: new           #101                // class java/net/URI
+     147: dup
+     148: ldc           #102                // String http://localhost:0
+     150: invokespecial #103                // Method java/net/URI."<init>":(Ljava/lang/String;)V
+     153: invokevirtual #104                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.addEndpoint:(Ljava/net/URI;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+     156: iconst_1
+     157: invokevirtual #105                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setFindPort:(Z)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+     160: aload_1
+     161: invokevirtual #129                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setConf:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+     164: new           #130                // class org/apache/hadoop/security/authorize/AccessControlList
+     167: dup
+     168: ldc           #131                // String userA,userB groupC,groupD
+     170: invokespecial #132                // Method org/apache/hadoop/security/authorize/AccessControlList."<init>":(Ljava/lang/String;)V
+     173: invokevirtual #133                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setACL:(Lorg/apache/hadoop/security/authorize/AccessControlList;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+     176: invokevirtual #106                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.build:()Lorg/apache/hadoop/hbase/http/HttpServer;
+     179: astore_2
+     180: aload_2
+     181: ldc           #107                // String hbase.conf
+     183: aload_1
+     184: invokevirtual #108                // Method org/apache/hadoop/hbase/http/HttpServer.setAttribute:(Ljava/lang/String;Ljava/lang/Object;)V
+     187: aload_2
+     188: invokevirtual #28                 // Method org/apache/hadoop/hbase/http/HttpServer.start:()V
+     191: new           #32                 // class java/lang/StringBuilder
+     194: dup
+     195: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     198: ldc           #109                // String http://
+     200: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     203: aload_2
+     204: iconst_0
+     205: invokevirtual #110                // Method org/apache/hadoop/hbase/http/HttpServer.getConnectorAddress:(I)Ljava/net/InetSocketAddress;
+     208: invokestatic  #111                // Method org/apache/hadoop/net/NetUtils.getHostPortString:(Ljava/net/InetSocketAddress;)Ljava/lang/String;
+     211: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     214: ldc           #112                // String /
+     216: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     219: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     222: astore_3
+     223: iconst_5
+     224: anewarray     #113                // class java/lang/String
+     227: dup
+     228: iconst_0
+     229: ldc           #114                // String conf
+     231: aastore
+     232: dup
+     233: iconst_1
+     234: ldc           #115                // String logs
+     236: aastore
+     237: dup
+     238: iconst_2
+     239: ldc           #116                // String stacks
+     241: aastore
+     242: dup
+     243: iconst_3
+     244: ldc           #117                // String logLevel
+     246: aastore
+     247: dup
+     248: iconst_4
+     249: ldc           #118                // String metrics
+     251: aastore
+     252: astore        4
+     254: aload         4
+     256: arraylength
+     257: istore        5
+     259: iconst_0
+     260: istore        6
+     262: iload         6
+     264: iload         5
+     266: if_icmpge     398
+     269: aload         4
+     271: iload         6
+     273: aaload
+     274: astore        7
+     276: iconst_4
+     277: anewarray     #113                // class java/lang/String
+     280: dup
+     281: iconst_0
+     282: ldc           #91                 // String userA
+     284: aastore
+     285: dup
+     286: iconst_1
+     287: ldc           #95                 // String userB
+     289: aastore
+     290: dup
+     291: iconst_2
+     292: ldc           #123                // String userC
+     294: aastore
+     295: dup
+     296: iconst_3
+     297: ldc           #125                // String userD
+     299: aastore
+     300: astore        8
+     302: aload         8
+     304: arraylength
+     305: istore        9
+     307: iconst_0
+     308: istore        10
+     310: iload         10
+     312: iload         9
+     314: if_icmpge     361
+     317: aload         8
+     319: iload         10
+     321: aaload
+     322: astore        11
+     324: ldc2_w        #63                 // long 200l
+     327: new           #32                 // class java/lang/StringBuilder
+     330: dup
+     331: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     334: aload_3
+     335: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     338: aload         7
+     340: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     343: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     346: aload         11
+     348: invokestatic  #119                // Method getHttpStatusCode:(Ljava/lang/String;Ljava/lang/String;)I
+     351: i2l
+     352: invokestatic  #66                 // Method assertEquals:(JJ)V
+     355: iinc          10, 1
+     358: goto          310
+     361: ldc2_w        #134                // long 401l
+     364: new           #32                 // class java/lang/StringBuilder
+     367: dup
+     368: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+     371: aload_3
+     372: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     375: aload         7
+     377: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     380: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     383: ldc           #127                // String userE
+     385: invokestatic  #119                // Method getHttpStatusCode:(Ljava/lang/String;Ljava/lang/String;)I
+     388: i2l
+     389: invokestatic  #66                 // Method assertEquals:(JJ)V
+     392: iinc          6, 1
+     395: goto          262
+     398: aload_2
+     399: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+     402: return
+
+  public void testRequestQuoterWithNull();
+    Code:
+       0: ldc           #136                // class javax/servlet/http/HttpServletRequest
+       2: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+       5: checkcast     #136                // class javax/servlet/http/HttpServletRequest
+       8: astore_1
+       9: aconst_null
+      10: invokestatic  #138                // Method org/mockito/Mockito.doReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/Stubber;
+      13: aload_1
+      14: invokeinterface #139,  2          // InterfaceMethod org/mockito/stubbing/Stubber.when:(Ljava/lang/Object;)Ljava/lang/Object;
+      19: checkcast     #136                // class javax/servlet/http/HttpServletRequest
+      22: ldc           #140                // String dummy
+      24: invokeinterface #141,  2          // InterfaceMethod javax/servlet/http/HttpServletRequest.getParameterValues:(Ljava/lang/String;)[Ljava/lang/String;
+      29: pop
+      30: new           #142                // class org/apache/hadoop/hbase/http/HttpServer$QuotingInputFilter$RequestQuoter
+      33: dup
+      34: aload_1
+      35: invokespecial #143                // Method org/apache/hadoop/hbase/http/HttpServer$QuotingInputFilter$RequestQuoter."<init>":(Ljavax/servlet/http/HttpServletRequest;)V
+      38: astore_2
+      39: aload_2
+      40: ldc           #140                // String dummy
+      42: invokevirtual #144                // Method org/apache/hadoop/hbase/http/HttpServer$QuotingInputFilter$RequestQuoter.getParameterValues:(Ljava/lang/String;)[Ljava/lang/String;
+      45: astore_3
+      46: ldc           #145                // String It should return null when there are no values for the parameter
+      48: aload_3
+      49: invokestatic  #146                // Method org/junit/Assert.assertNull:(Ljava/lang/String;Ljava/lang/Object;)V
+      52: return
+
+  public void testRequestQuoterWithNotNull();
+    Code:
+       0: ldc           #136                // class javax/servlet/http/HttpServletRequest
+       2: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+       5: checkcast     #136                // class javax/servlet/http/HttpServletRequest
+       8: astore_1
+       9: iconst_2
+      10: anewarray     #113                // class java/lang/String
+      13: dup
+      14: iconst_0
+      15: ldc           #147                // String abc
+      17: aastore
+      18: dup
+      19: iconst_1
+      20: ldc           #148                // String def
+      22: aastore
+      23: astore_2
+      24: aload_2
+      25: invokestatic  #138                // Method org/mockito/Mockito.doReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/Stubber;
+      28: aload_1
+      29: invokeinterface #139,  2          // InterfaceMethod org/mockito/stubbing/Stubber.when:(Ljava/lang/Object;)Ljava/lang/Object;
+      34: checkcast     #136                // class javax/servlet/http/HttpServletRequest
+      37: ldc           #140                // String dummy
+      39: invokeinterface #141,  2          // InterfaceMethod javax/servlet/http/HttpServletRequest.getParameterValues:(Ljava/lang/String;)[Ljava/lang/String;
+      44: pop
+      45: new           #142                // class org/apache/hadoop/hbase/http/HttpServer$QuotingInputFilter$RequestQuoter
+      48: dup
+      49: aload_1
+      50: invokespecial #143                // Method org/apache/hadoop/hbase/http/HttpServer$QuotingInputFilter$RequestQuoter."<init>":(Ljavax/servlet/http/HttpServletRequest;)V
+      53: astore_3
+      54: aload_3
+      55: ldc           #140                // String dummy
+      57: invokevirtual #144                // Method org/apache/hadoop/hbase/http/HttpServer$QuotingInputFilter$RequestQuoter.getParameterValues:(Ljava/lang/String;)[Ljava/lang/String;
+      60: astore        4
+      62: ldc           #149                // String It should return Parameter Values
+      64: aload_2
+      65: aload         4
+      67: invokestatic  #150                // Method java/util/Arrays.equals:([Ljava/lang/Object;[Ljava/lang/Object;)Z
+      70: invokestatic  #151                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+      73: return
+
+  public void testJersey() throws java.lang.Exception;
+    Code:
+       0: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #154                // String BEGIN testJersey()
+       5: invokeinterface #38,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      10: new           #48                 // class java/net/URL
+      13: dup
+      14: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+      17: ldc           #155                // String /jersey/foo?op=bar
+      19: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      22: invokestatic  #51                 // Method readOutput:(Ljava/net/URL;)Ljava/lang/String;
+      25: astore_1
+      26: aload_1
+      27: invokestatic  #156                // Method parse:(Ljava/lang/String;)Ljava/util/Map;
+      30: astore_2
+      31: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+      34: new           #32                 // class java/lang/StringBuilder
+      37: dup
+      38: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+      41: ldc           #157                // String m=
+      43: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_2
+      47: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      50: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      53: invokeinterface #38,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      58: ldc           #158                // String foo
+      60: aload_2
+      61: ldc           #159                // String path
+      63: invokeinterface #160,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      68: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      71: ldc           #161                // String bar
+      73: aload_2
+      74: ldc           #162                // String op
+      76: invokeinterface #160,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      81: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      84: getstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+      87: ldc           #163                // String END testJersey()
+      89: invokeinterface #38,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      94: return
+
+  public void testHasAdministratorAccess() throws java.lang.Exception;
+    Code:
+       0: new           #2                  // class org/apache/hadoop/conf/Configuration
+       3: dup
+       4: invokespecial #3                  // Method org/apache/hadoop/conf/Configuration."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: ldc           #120                // String hadoop.security.authorization
+      11: iconst_0
+      12: invokevirtual #121                // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      15: ldc           #164                // class javax/servlet/ServletContext
+      17: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      20: checkcast     #164                // class javax/servlet/ServletContext
+      23: astore_2
+      24: aload_2
+      25: ldc           #107                // String hbase.conf
+      27: invokeinterface #165,  2          // InterfaceMethod javax/servlet/ServletContext.getAttribute:(Ljava/lang/String;)Ljava/lang/Object;
+      32: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      35: aload_1
+      36: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      41: pop
+      42: aload_2
+      43: ldc           #168                // String admins.acl
+      45: invokeinterface #165,  2          // InterfaceMethod javax/servlet/ServletContext.getAttribute:(Ljava/lang/String;)Ljava/lang/Object;
+      50: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      53: aconst_null
+      54: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      59: pop
+      60: ldc           #136                // class javax/servlet/http/HttpServletRequest
+      62: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      65: checkcast     #136                // class javax/servlet/http/HttpServletRequest
+      68: astore_3
+      69: aload_3
+      70: invokeinterface #169,  1          // InterfaceMethod javax/servlet/http/HttpServletRequest.getRemoteUser:()Ljava/lang/String;
+      75: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      78: aconst_null
+      79: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      84: pop
+      85: ldc           #170                // class javax/servlet/http/HttpServletResponse
+      87: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      90: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+      93: astore        4
+      95: aload_2
+      96: aload_3
+      97: aload         4
+      99: invokestatic  #171                // Method org/apache/hadoop/hbase/http/HttpServer.hasAdministratorAccess:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+     102: invokestatic  #172                // Method org/junit/Assert.assertTrue:(Z)V
+     105: ldc           #170                // class javax/servlet/http/HttpServletResponse
+     107: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+     110: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+     113: astore        4
+     115: aload_1
+     116: ldc           #120                // String hadoop.security.authorization
+     118: iconst_1
+     119: invokevirtual #121                // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+     122: aload_2
+     123: aload_3
+     124: aload         4
+     126: invokestatic  #171                // Method org/apache/hadoop/hbase/http/HttpServer.hasAdministratorAccess:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+     129: invokestatic  #173                // Method org/junit/Assert.assertFalse:(Z)V
+     132: aload         4
+     134: invokestatic  #174                // Method org/mockito/Mockito.verify:(Ljava/lang/Object;)Ljava/lang/Object;
+     137: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+     140: sipush        401
+     143: invokestatic  #175                // Method org/mockito/Mockito.eq:(I)I
+     146: invokestatic  #176                // Method org/mockito/Mockito.anyString:()Ljava/lang/String;
+     149: invokeinterface #177,  3          // InterfaceMethod javax/servlet/http/HttpServletResponse.sendError:(ILjava/lang/String;)V
+     154: ldc           #170                // class javax/servlet/http/HttpServletResponse
+     156: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+     159: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+     162: astore        4
+     164: aload_3
+     165: invokeinterface #169,  1          // InterfaceMethod javax/servlet/http/HttpServletRequest.getRemoteUser:()Ljava/lang/String;
+     170: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     173: ldc           #158                // String foo
+     175: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     180: pop
+     181: aload_2
+     182: aload_3
+     183: aload         4
+     185: invokestatic  #171                // Method org/apache/hadoop/hbase/http/HttpServer.hasAdministratorAccess:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+     188: invokestatic  #172                // Method org/junit/Assert.assertTrue:(Z)V
+     191: ldc           #170                // class javax/servlet/http/HttpServletResponse
+     193: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+     196: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+     199: astore        4
+     201: ldc           #130                // class org/apache/hadoop/security/authorize/AccessControlList
+     203: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+     206: checkcast     #130                // class org/apache/hadoop/security/authorize/AccessControlList
+     209: astore        5
+     211: aload         5
+     213: invokestatic  #178                // Method org/mockito/Mockito.any:()Ljava/lang/Object;
+     216: checkcast     #179                // class org/apache/hadoop/security/UserGroupInformation
+     219: invokevirtual #180                // Method org/apache/hadoop/security/authorize/AccessControlList.isUserAllowed:(Lorg/apache/hadoop/security/UserGroupInformation;)Z
+     222: invokestatic  #181                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+     225: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     228: iconst_0
+     229: invokestatic  #181                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+     232: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     237: pop
+     238: aload_2
+     239: ldc           #168                // String admins.acl
+     241: invokeinterface #165,  2          // InterfaceMethod javax/servlet/ServletContext.getAttribute:(Ljava/lang/String;)Ljava/lang/Object;
+     246: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     249: aload         5
+     251: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     256: pop
+     257: aload_2
+     258: aload_3
+     259: aload         4
+     261: invokestatic  #171                // Method org/apache/hadoop/hbase/http/HttpServer.hasAdministratorAccess:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+     264: invokestatic  #173                // Method org/junit/Assert.assertFalse:(Z)V
+     267: aload         4
+     269: invokestatic  #174                // Method org/mockito/Mockito.verify:(Ljava/lang/Object;)Ljava/lang/Object;
+     272: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+     275: sipush        401
+     278: invokestatic  #175                // Method org/mockito/Mockito.eq:(I)I
+     281: invokestatic  #176                // Method org/mockito/Mockito.anyString:()Ljava/lang/String;
+     284: invokeinterface #177,  3          // InterfaceMethod javax/servlet/http/HttpServletResponse.sendError:(ILjava/lang/String;)V
+     289: ldc           #170                // class javax/servlet/http/HttpServletResponse
+     291: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+     294: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+     297: astore        4
+     299: aload         5
+     301: invokestatic  #178                // Method org/mockito/Mockito.any:()Ljava/lang/Object;
+     304: checkcast     #179                // class org/apache/hadoop/security/UserGroupInformation
+     307: invokevirtual #180                // Method org/apache/hadoop/security/authorize/AccessControlList.isUserAllowed:(Lorg/apache/hadoop/security/UserGroupInformation;)Z
+     310: invokestatic  #181                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+     313: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     316: iconst_1
+     317: invokestatic  #181                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+     320: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     325: pop
+     326: aload_2
+     327: ldc           #168                // String admins.acl
+     329: invokeinterface #165,  2          // InterfaceMethod javax/servlet/ServletContext.getAttribute:(Ljava/lang/String;)Ljava/lang/Object;
+     334: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     337: aload         5
+     339: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     344: pop
+     345: aload_2
+     346: aload_3
+     347: aload         4
+     349: invokestatic  #171                // Method org/apache/hadoop/hbase/http/HttpServer.hasAdministratorAccess:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+     352: invokestatic  #172                // Method org/junit/Assert.assertTrue:(Z)V
+     355: return
+
+  public void testRequiresAuthorizationAccess() throws java.lang.Exception;
+    Code:
+       0: new           #2                  // class org/apache/hadoop/conf/Configuration
+       3: dup
+       4: invokespecial #3                  // Method org/apache/hadoop/conf/Configuration."<init>":()V
+       7: astore_1
+       8: ldc           #164                // class javax/servlet/ServletContext
+      10: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      13: checkcast     #164                // class javax/servlet/ServletContext
+      16: astore_2
+      17: aload_2
+      18: ldc           #107                // String hbase.conf
+      20: invokeinterface #165,  2          // InterfaceMethod javax/servlet/ServletContext.getAttribute:(Ljava/lang/String;)Ljava/lang/Object;
+      25: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      28: aload_1
+      29: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      34: pop
+      35: ldc           #136                // class javax/servlet/http/HttpServletRequest
+      37: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      40: checkcast     #136                // class javax/servlet/http/HttpServletRequest
+      43: astore_3
+      44: ldc           #170                // class javax/servlet/http/HttpServletResponse
+      46: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      49: checkcast     #170                // class javax/servlet/http/HttpServletResponse
+      52: astore        4
+      54: aload_2
+      55: aload_3
+      56: aload         4
+      58: invokestatic  #182                // Method org/apache/hadoop/hbase/http/HttpServer.isInstrumentationAccessAllowed:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+      61: invokestatic  #172                // Method org/junit/Assert.assertTrue:(Z)V
+      64: aload_1
+      65: ldc           #122                // String hadoop.security.instrumentation.requires.admin
+      67: iconst_1
+      68: invokevirtual #121                // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      71: aload_1
+      72: ldc           #120                // String hadoop.security.authorization
+      74: iconst_1
+      75: invokevirtual #121                // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      78: ldc           #130                // class org/apache/hadoop/security/authorize/AccessControlList
+      80: invokestatic  #137                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      83: checkcast     #130                // class org/apache/hadoop/security/authorize/AccessControlList
+      86: astore        5
+      88: aload         5
+      90: invokestatic  #178                // Method org/mockito/Mockito.any:()Ljava/lang/Object;
+      93: checkcast     #179                // class org/apache/hadoop/security/UserGroupInformation
+      96: invokevirtual #180                // Method org/apache/hadoop/security/authorize/AccessControlList.isUserAllowed:(Lorg/apache/hadoop/security/UserGroupInformation;)Z
+      99: invokestatic  #181                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+     102: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     105: iconst_0
+     106: invokestatic  #181                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+     109: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     114: pop
+     115: aload_2
+     116: ldc           #168                // String admins.acl
+     118: invokeinterface #165,  2          // InterfaceMethod javax/servlet/ServletContext.getAttribute:(Ljava/lang/String;)Ljava/lang/Object;
+     123: invokestatic  #166                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     126: aload         5
+     128: invokeinterface #167,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+     133: pop
+     134: aload_2
+     135: aload_3
+     136: aload         4
+     138: invokestatic  #182                // Method org/apache/hadoop/hbase/http/HttpServer.isInstrumentationAccessAllowed:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+     141: invokestatic  #173                // Method org/junit/Assert.assertFalse:(Z)V
+     144: return
+
+  public void testBindAddress() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #183                // String localhost
+       3: iconst_0
+       4: iconst_0
+       5: invokespecial #184                // Method checkBindAddress:(Ljava/lang/String;IZ)Lorg/apache/hadoop/hbase/http/HttpServer;
+       8: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+      11: aload_0
+      12: ldc           #183                // String localhost
+      14: iconst_0
+      15: iconst_0
+      16: invokespecial #184                // Method checkBindAddress:(Ljava/lang/String;IZ)Lorg/apache/hadoop/hbase/http/HttpServer;
+      19: astore_1
+      20: aconst_null
+      21: astore_2
+      22: aload_1
+      23: iconst_0
+      24: invokevirtual #110                // Method org/apache/hadoop/hbase/http/HttpServer.getConnectorAddress:(I)Ljava/net/InetSocketAddress;
+      27: invokevirtual #185                // Method java/net/InetSocketAddress.getPort:()I
+      30: istore_3
+      31: aload_0
+      32: ldc           #183                // String localhost
+      34: iload_3
+      35: iconst_1
+      36: invokespecial #184                // Method checkBindAddress:(Ljava/lang/String;IZ)Lorg/apache/hadoop/hbase/http/HttpServer;
+      39: astore_2
+      40: aload_2
+      41: iconst_0
+      42: invokevirtual #110                // Method org/apache/hadoop/hbase/http/HttpServer.getConnectorAddress:(I)Ljava/net/InetSocketAddress;
+      45: invokevirtual #185                // Method java/net/InetSocketAddress.getPort:()I
+      48: istore_3
+      49: aload_2
+      50: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+      53: aload_2
+      54: iconst_0
+      55: invokevirtual #110                // Method org/apache/hadoop/hbase/http/HttpServer.getConnectorAddress:(I)Ljava/net/InetSocketAddress;
+      58: invokestatic  #186                // Method assertNull:(Ljava/lang/Object;)V
+      61: aload_2
+      62: invokevirtual #187                // Method org/apache/hadoop/hbase/http/HttpServer.openListeners:()V
+      65: iload_3
+      66: i2l
+      67: aload_2
+      68: iconst_0
+      69: invokevirtual #110                // Method org/apache/hadoop/hbase/http/HttpServer.getConnectorAddress:(I)Ljava/net/InetSocketAddress;
+      72: invokevirtual #185                // Method java/net/InetSocketAddress.getPort:()I
+      75: i2l
+      76: invokestatic  #66                 // Method assertEquals:(JJ)V
+      79: aload_1
+      80: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+      83: aload_2
+      84: ifnull        111
+      87: aload_2
+      88: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+      91: goto          111
+      94: astore        4
+      96: aload_1
+      97: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+     100: aload_2
+     101: ifnull        108
+     104: aload_2
+     105: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+     108: aload         4
+     110: athrow
+     111: return
+    Exception table:
+       from    to  target type
+          22    79    94   any
+          94    96    94   any
+
+  public void testXFrameHeaderSameOrigin() throws java.lang.Exception;
+    Code:
+       0: new           #2                  // class org/apache/hadoop/conf/Configuration
+       3: dup
+       4: invokespecial #3                  // Method org/apache/hadoop/conf/Configuration."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: ldc           #196                // String hbase.http.filter.xframeoptions.mode
+      11: ldc           #197                // String SAMEORIGIN
+      13: invokevirtual #84                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      16: new           #97                 // class org/apache/hadoop/hbase/http/HttpServer$Builder
+      19: dup
+      20: invokespecial #98                 // Method org/apache/hadoop/hbase/http/HttpServer$Builder."<init>":()V
+      23: ldc           #99                 // String test
+      25: invokevirtual #100                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setName:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+      28: new           #101                // class java/net/URI
+      31: dup
+      32: ldc           #102                // String http://localhost:0
+      34: invokespecial #103                // Method java/net/URI."<init>":(Ljava/lang/String;)V
+      37: invokevirtual #104                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.addEndpoint:(Ljava/net/URI;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+      40: iconst_1
+      41: invokevirtual #105                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setFindPort:(Z)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+      44: aload_1
+      45: invokevirtual #129                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.setConf:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/http/HttpServer$Builder;
+      48: invokevirtual #106                // Method org/apache/hadoop/hbase/http/HttpServer$Builder.build:()Lorg/apache/hadoop/hbase/http/HttpServer;
+      51: astore_2
+      52: aload_2
+      53: ldc           #107                // String hbase.conf
+      55: aload_1
+      56: invokevirtual #108                // Method org/apache/hadoop/hbase/http/HttpServer.setAttribute:(Ljava/lang/String;Ljava/lang/Object;)V
+      59: aload_2
+      60: ldc           #10                 // String echo
+      62: ldc           #11                 // String /echo
+      64: ldc           #12                 // class org/apache/hadoop/hbase/http/TestHttpServer$EchoServlet
+      66: invokevirtual #13                 // Method org/apache/hadoop/hbase/http/HttpServer.addServlet:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Class;)V
+      69: aload_2
+      70: invokevirtual #28                 // Method org/apache/hadoop/hbase/http/HttpServer.start:()V
+      73: new           #32                 // class java/lang/StringBuilder
+      76: dup
+      77: invokespecial #33                 // Method java/lang/StringBuilder."<init>":()V
+      80: ldc           #109                // String http://
+      82: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      85: aload_2
+      86: iconst_0
+      87: invokevirtual #110                // Method org/apache/hadoop/hbase/http/HttpServer.getConnectorAddress:(I)Ljava/net/InetSocketAddress;
+      90: invokestatic  #111                // Method org/apache/hadoop/net/NetUtils.getHostPortString:(Ljava/net/InetSocketAddress;)Ljava/lang/String;
+      93: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      99: astore_3
+     100: new           #48                 // class java/net/URL
+     103: dup
+     104: new           #48                 // class java/net/URL
+     107: dup
+     108: aload_3
+     109: invokespecial #76                 // Method java/net/URL."<init>":(Ljava/lang/String;)V
+     112: ldc           #49                 // String /echo?a=b&c=d
+     114: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+     117: astore        4
+     119: aload         4
+     121: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+     124: checkcast     #59                 // class java/net/HttpURLConnection
+     127: astore        5
+     129: ldc2_w        #63                 // long 200l
+     132: aload         5
+     134: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+     137: i2l
+     138: invokestatic  #66                 // Method assertEquals:(JJ)V
+     141: ldc           #197                // String SAMEORIGIN
+     143: aload         5
+     145: ldc           #198                // String X-Frame-Options
+     147: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+     150: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     153: aload_2
+     154: invokevirtual #39                 // Method org/apache/hadoop/hbase/http/HttpServer.stop:()V
+     157: return
+
+  public void testNoCacheHeader() throws java.lang.Exception;
+    Code:
+       0: new           #48                 // class java/net/URL
+       3: dup
+       4: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+       7: ldc           #49                 // String /echo?a=b&c=d
+       9: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      12: astore_1
+      13: aload_1
+      14: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+      17: checkcast     #59                 // class java/net/HttpURLConnection
+      20: astore_2
+      21: ldc2_w        #63                 // long 200l
+      24: aload_2
+      25: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+      28: i2l
+      29: invokestatic  #66                 // Method assertEquals:(JJ)V
+      32: ldc           #200                // String no-cache
+      34: aload_2
+      35: ldc           #201                // String Cache-Control
+      37: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+      40: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      43: ldc           #200                // String no-cache
+      45: aload_2
+      46: ldc           #202                // String Pragma
+      48: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+      51: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      54: aload_2
+      55: ldc           #203                // String Expires
+      57: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+      60: invokestatic  #204                // Method assertNotNull:(Ljava/lang/Object;)V
+      63: aload_2
+      64: ldc           #205                // String Date
+      66: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+      69: invokestatic  #204                // Method assertNotNull:(Ljava/lang/Object;)V
+      72: aload_2
+      73: ldc           #203                // String Expires
+      75: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+      78: aload_2
+      79: ldc           #205                // String Date
+      81: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+      84: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      87: ldc           #206                // String DENY
+      89: aload_2
+      90: ldc           #198                // String X-Frame-Options
+      92: invokevirtual #199                // Method java/net/HttpURLConnection.getHeaderField:(Ljava/lang/String;)Ljava/lang/String;
+      95: invokestatic  #52                 // Method assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+      98: return
+
+  public void testHttpMethods() throws java.lang.Exception;
+    Code:
+       0: new           #48                 // class java/net/URL
+       3: dup
+       4: getstatic     #30                 // Field baseUrl:Ljava/net/URL;
+       7: ldc           #71                 // String /echo?a=b
+       9: invokespecial #50                 // Method java/net/URL."<init>":(Ljava/net/URL;Ljava/lang/String;)V
+      12: astore_1
+      13: aload_1
+      14: invokevirtual #58                 // Method java/net/URL.openConnection:()Ljava/net/URLConnection;
+      17: checkcast     #59                 // class java/net/HttpURLConnection
+      20: astore_2
+      21: aload_2
+      22: ldc           #207                // String TRACE
+      24: invokevirtual #208                // Method java/net/HttpURLConnection.setRequestMethod:(Ljava/lang/String;)V
+      27: aload_2
+      28: invokevirtual #68                 // Method java/net/HttpURLConnection.connect:()V
+      31: ldc2_w        #209                // long 403l
+      34: aload_2
+      35: invokevirtual #65                 // Method java/net/HttpURLConnection.getResponseCode:()I
+      38: i2l
+      39: invokestatic  #66                 // Method assertEquals:(JJ)V
+      42: return
+
+  static {};
+    Code:
+       0: ldc           #6                  // class org/apache/hadoop/hbase/http/TestHttpServer
+       2: invokestatic  #219                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #220                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: ldc           #6                  // class org/apache/hadoop/hbase/http/TestHttpServer
+      10: invokestatic  #221                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      13: putstatic     #31                 // Field LOG:Lorg/slf4j/Logger;
+      16: return
+}

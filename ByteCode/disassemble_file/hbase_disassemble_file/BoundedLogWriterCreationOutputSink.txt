@@ -1,0 +1,172 @@
+Compiled from "BoundedLogWriterCreationOutputSink.java"
+public class org.apache.hadoop.hbase.wal.BoundedLogWriterCreationOutputSink extends org.apache.hadoop.hbase.wal.LogRecoveredEditsOutputSink {
+  public org.apache.hadoop.hbase.wal.BoundedLogWriterCreationOutputSink(org.apache.hadoop.hbase.wal.WALSplitter, org.apache.hadoop.hbase.wal.WALSplitter$PipelineController, org.apache.hadoop.hbase.wal.EntryBuffers, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: iload         4
+       6: invokespecial #2                  // Method org/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink."<init>":(Lorg/apache/hadoop/hbase/wal/WALSplitter;Lorg/apache/hadoop/hbase/wal/WALSplitter$PipelineController;Lorg/apache/hadoop/hbase/wal/EntryBuffers;I)V
+       9: aload_0
+      10: new           #3                  // class java/util/concurrent/ConcurrentHashMap
+      13: dup
+      14: invokespecial #4                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      17: putfield      #5                  // Field regionRecoverStatMap:Ljava/util/concurrent/ConcurrentHashMap;
+      20: return
+
+  public java.util.List<org.apache.hadoop.fs.Path> finishWritingAndClose() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: invokevirtual #6                  // Method finishWriting:(Z)Z
+       5: istore_1
+       6: aload_0
+       7: invokevirtual #7                  // Method close:()Ljava/util/List;
+      10: astore_2
+      11: goto          22
+      14: astore_3
+      15: aload_0
+      16: invokevirtual #7                  // Method close:()Ljava/util/List;
+      19: astore_2
+      20: aload_3
+      21: athrow
+      22: iload_1
+      23: ifeq          31
+      26: aload_0
+      27: aload_2
+      28: putfield      #8                  // Field splits:Ljava/util/List;
+      31: aload_0
+      32: getfield      #8                  // Field splits:Ljava/util/List;
+      35: areturn
+    Exception table:
+       from    to  target type
+           0     6    14   any
+
+  boolean executeCloseTask(java.util.concurrent.CompletionService<java.lang.Void>, java.util.List<java.io.IOException>, java.util.List<org.apache.hadoop.fs.Path>) throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field entryBuffers:Lorg/apache/hadoop/hbase/wal/EntryBuffers;
+       4: getfield      #10                 // Field org/apache/hadoop/hbase/wal/EntryBuffers.buffers:Ljava/util/Map;
+       7: invokeinterface #11,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      12: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      17: astore        4
+      19: aload         4
+      21: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          88
+      29: aload         4
+      31: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #15                 // class java/util/Map$Entry
+      39: astore        5
+      41: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+      44: ldc           #17                 // String Submitting writeThenClose of {}
+      46: aload         5
+      48: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      53: checkcast     #19                 // class org/apache/hadoop/hbase/wal/WALSplitter$RegionEntryBuffer
+      56: getfield      #20                 // Field org/apache/hadoop/hbase/wal/WALSplitter$RegionEntryBuffer.encodedRegionName:[B
+      59: invokestatic  #21                 // Method java/util/Arrays.toString:([B)Ljava/lang/String;
+      62: invokeinterface #22,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+      67: aload_1
+      68: new           #23                 // class org/apache/hadoop/hbase/wal/BoundedLogWriterCreationOutputSink$1
+      71: dup
+      72: aload_0
+      73: aload         5
+      75: aload_3
+      76: invokespecial #24                 // Method org/apache/hadoop/hbase/wal/BoundedLogWriterCreationOutputSink$1."<init>":(Lorg/apache/hadoop/hbase/wal/BoundedLogWriterCreationOutputSink;Ljava/util/Map$Entry;Ljava/util/List;)V
+      79: invokeinterface #25,  2           // InterfaceMethod java/util/concurrent/CompletionService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+      84: pop
+      85: goto          19
+      88: iconst_0
+      89: istore        4
+      91: iconst_0
+      92: istore        5
+      94: aload_0
+      95: getfield      #9                  // Field entryBuffers:Lorg/apache/hadoop/hbase/wal/EntryBuffers;
+      98: getfield      #10                 // Field org/apache/hadoop/hbase/wal/EntryBuffers.buffers:Ljava/util/Map;
+     101: invokeinterface #26,  1           // InterfaceMethod java/util/Map.size:()I
+     106: istore        6
+     108: iload         5
+     110: iload         6
+     112: if_icmpge     164
+     115: aload_1
+     116: invokeinterface #27,  1           // InterfaceMethod java/util/concurrent/CompletionService.take:()Ljava/util/concurrent/Future;
+     121: astore        7
+     123: aload         7
+     125: invokeinterface #28,  1           // InterfaceMethod java/util/concurrent/Future.get:()Ljava/lang/Object;
+     130: pop
+     131: iload         4
+     133: ifne          158
+     136: aload_0
+     137: getfield      #29                 // Field reporter:Lorg/apache/hadoop/hbase/util/CancelableProgressable;
+     140: ifnull        158
+     143: aload_0
+     144: getfield      #29                 // Field reporter:Lorg/apache/hadoop/hbase/util/CancelableProgressable;
+     147: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/util/CancelableProgressable.progress:()Z
+     152: ifne          158
+     155: iconst_1
+     156: istore        4
+     158: iinc          5, 1
+     161: goto          108
+     164: iload         4
+     166: ireturn
+
+  public java.util.Map<byte[], java.lang.Long> getOutputCounts();
+    Code:
+       0: new           #31                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #32                 // Method java/util/HashMap."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getfield      #5                  // Field regionRecoverStatMap:Ljava/util/concurrent/ConcurrentHashMap;
+      12: invokevirtual #33                 // Method java/util/concurrent/ConcurrentHashMap.entrySet:()Ljava/util/Set;
+      15: invokeinterface #12,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      20: astore_2
+      21: aload_2
+      22: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      27: ifeq          68
+      30: aload_2
+      31: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #15                 // class java/util/Map$Entry
+      39: astore_3
+      40: aload_1
+      41: aload_3
+      42: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      47: checkcast     #35                 // class java/lang/String
+      50: invokestatic  #36                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      53: aload_3
+      54: invokeinterface #18,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      59: invokeinterface #37,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      64: pop
+      65: goto          21
+      68: aload_1
+      69: areturn
+
+  public int getNumberOfRecoveredRegions();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field regionRecoverStatMap:Ljava/util/concurrent/ConcurrentHashMap;
+       4: invokevirtual #38                 // Method java/util/concurrent/ConcurrentHashMap.size:()I
+       7: ireturn
+
+  public void append(org.apache.hadoop.hbase.wal.WALSplitter$RegionEntryBuffer) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method writeThenClose:(Lorg/apache/hadoop/hbase/wal/WALSplitter$RegionEntryBuffer;)Lorg/apache/hadoop/fs/Path;
+       5: pop
+       6: return
+
+  static org.apache.hadoop.fs.Path access$000(org.apache.hadoop.hbase.wal.BoundedLogWriterCreationOutputSink, org.apache.hadoop.hbase.wal.WALSplitter$RegionEntryBuffer) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method writeThenClose:(Lorg/apache/hadoop/hbase/wal/WALSplitter$RegionEntryBuffer;)Lorg/apache/hadoop/fs/Path;
+       5: areturn
+
+  static {};
+    Code:
+       0: ldc           #53                 // class org/apache/hadoop/hbase/wal/BoundedLogWriterCreationOutputSink
+       2: invokestatic  #54                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

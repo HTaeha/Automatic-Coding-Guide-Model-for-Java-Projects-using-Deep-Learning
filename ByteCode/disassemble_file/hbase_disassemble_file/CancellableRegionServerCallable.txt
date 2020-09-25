@@ -1,0 +1,153 @@
+Compiled from "CancellableRegionServerCallable.java"
+abstract class org.apache.hadoop.hbase.client.CancellableRegionServerCallable<T> extends org.apache.hadoop.hbase.client.ClientServiceCallable<T> implements org.apache.hadoop.hbase.client.Cancellable {
+  org.apache.hadoop.hbase.client.CancellableRegionServerCallable(org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.hbase.TableName, byte[], org.apache.hbase.thirdparty.com.google.protobuf.RpcController, int, org.apache.hadoop.hbase.client.RetryingTimeTracker, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: iload         7
+       8: invokespecial #1                  // Method org/apache/hadoop/hbase/client/ClientServiceCallable."<init>":(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;I)V
+      11: aload_0
+      12: iload         5
+      14: putfield      #2                  // Field rpcTimeout:I
+      17: aload_0
+      18: aload         6
+      20: putfield      #3                  // Field tracker:Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      23: return
+
+  public T call(int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #4                  // Method isCancelled:()Z
+       4: ifeq          9
+       7: aconst_null
+       8: areturn
+       9: invokestatic  #5                  // Method java/lang/Thread.interrupted:()Z
+      12: ifeq          23
+      15: new           #6                  // class java/io/InterruptedIOException
+      18: dup
+      19: invokespecial #7                  // Method java/io/InterruptedIOException."<init>":()V
+      22: athrow
+      23: aload_0
+      24: getfield      #3                  // Field tracker:Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      27: invokevirtual #8                  // Method org/apache/hadoop/hbase/client/RetryingTimeTracker.start:()Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      30: pop
+      31: aload_0
+      32: getfield      #3                  // Field tracker:Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      35: iload_1
+      36: invokevirtual #9                  // Method org/apache/hadoop/hbase/client/RetryingTimeTracker.getRemainingTime:(I)I
+      39: istore_2
+      40: iload_2
+      41: iconst_1
+      42: if_icmpgt     55
+      45: new           #10                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      48: dup
+      49: ldc           #11                 // String Operation rpcTimeout
+      51: invokespecial #12                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      54: athrow
+      55: aload_0
+      56: aload_0
+      57: getfield      #2                  // Field rpcTimeout:I
+      60: iload_2
+      61: invokestatic  #13                 // Method java/lang/Math.min:(II)I
+      64: invokespecial #14                 // Method org/apache/hadoop/hbase/client/ClientServiceCallable.call:(I)Ljava/lang/Object;
+      67: areturn
+
+  public void prepare(boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #4                  // Method isCancelled:()Z
+       4: ifeq          8
+       7: return
+       8: invokestatic  #5                  // Method java/lang/Thread.interrupted:()Z
+      11: ifeq          22
+      14: new           #6                  // class java/io/InterruptedIOException
+      17: dup
+      18: invokespecial #7                  // Method java/io/InterruptedIOException."<init>":()V
+      21: athrow
+      22: aload_0
+      23: iload_1
+      24: invokespecial #15                 // Method org/apache/hadoop/hbase/client/ClientServiceCallable.prepare:(Z)V
+      27: return
+
+  protected void setStubByServiceName(org.apache.hadoop.hbase.ServerName) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: invokevirtual #16                 // Method getConnection:()Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       5: aload_1
+       6: invokeinterface #17,  2           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getClient:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface;
+      11: invokevirtual #18                 // Method setStub:(Ljava/lang/Object;)V
+      14: return
+
+  public void cancel();
+    Code:
+       0: aload_0
+       1: invokevirtual #19                 // Method getRpcController:()Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;
+       4: invokeinterface #20,  1           // InterfaceMethod org/apache/hbase/thirdparty/com/google/protobuf/RpcController.startCancel:()V
+       9: return
+
+  public boolean isCancelled();
+    Code:
+       0: aload_0
+       1: invokevirtual #19                 // Method getRpcController:()Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;
+       4: invokeinterface #21,  1           // InterfaceMethod org/apache/hbase/thirdparty/com/google/protobuf/RpcController.isCanceled:()Z
+       9: ireturn
+
+  protected org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$MultiResponse doMulti(org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$MultiRequest) throws org.apache.hbase.thirdparty.com.google.protobuf.ServiceException;
+    Code:
+       0: aload_0
+       1: invokevirtual #22                 // Method getStub:()Ljava/lang/Object;
+       4: checkcast     #23                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface
+       7: aload_0
+       8: invokevirtual #19                 // Method getRpcController:()Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;
+      11: aload_1
+      12: invokeinterface #24,  3           // InterfaceMethod org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface.multi:(Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MultiRequest;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MultiResponse;
+      17: areturn
+
+  protected org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$ScanResponse doScan(org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$ScanRequest) throws org.apache.hbase.thirdparty.com.google.protobuf.ServiceException;
+    Code:
+       0: aload_0
+       1: invokevirtual #22                 // Method getStub:()Ljava/lang/Object;
+       4: checkcast     #23                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface
+       7: aload_0
+       8: invokevirtual #19                 // Method getRpcController:()Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;
+      11: aload_1
+      12: invokeinterface #25,  3           // InterfaceMethod org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface.scan:(Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ScanRequest;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ScanResponse;
+      17: areturn
+
+  protected org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$PrepareBulkLoadResponse doPrepareBulkLoad(org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$PrepareBulkLoadRequest) throws org.apache.hbase.thirdparty.com.google.protobuf.ServiceException;
+    Code:
+       0: aload_0
+       1: invokevirtual #22                 // Method getStub:()Ljava/lang/Object;
+       4: checkcast     #23                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface
+       7: aload_0
+       8: invokevirtual #19                 // Method getRpcController:()Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;
+      11: aload_1
+      12: invokeinterface #26,  3           // InterfaceMethod org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface.prepareBulkLoad:(Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$PrepareBulkLoadRequest;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$PrepareBulkLoadResponse;
+      17: areturn
+
+  protected org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$BulkLoadHFileResponse doBulkLoadHFile(org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$BulkLoadHFileRequest) throws org.apache.hbase.thirdparty.com.google.protobuf.ServiceException;
+    Code:
+       0: aload_0
+       1: invokevirtual #22                 // Method getStub:()Ljava/lang/Object;
+       4: checkcast     #23                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface
+       7: aload_0
+       8: invokevirtual #19                 // Method getRpcController:()Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;
+      11: aload_1
+      12: invokeinterface #27,  3           // InterfaceMethod org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface.bulkLoadHFile:(Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileResponse;
+      17: areturn
+
+  protected org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$CleanupBulkLoadResponse doCleanupBulkLoad(org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$CleanupBulkLoadRequest) throws org.apache.hbase.thirdparty.com.google.protobuf.ServiceException;
+    Code:
+       0: aload_0
+       1: invokevirtual #22                 // Method getStub:()Ljava/lang/Object;
+       4: checkcast     #23                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface
+       7: aload_0
+       8: invokevirtual #19                 // Method getRpcController:()Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;
+      11: aload_1
+      12: invokeinterface #28,  3           // InterfaceMethod org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$BlockingInterface.cleanupBulkLoad:(Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcController;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$CleanupBulkLoadRequest;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$CleanupBulkLoadResponse;
+      17: areturn
+}

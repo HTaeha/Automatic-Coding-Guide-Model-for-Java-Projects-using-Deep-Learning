@@ -1,0 +1,564 @@
+Compiled from "BufferedMutatorImpl.java"
+public class org.apache.hadoop.hbase.client.BufferedMutatorImpl implements org.apache.hadoop.hbase.client.BufferedMutator {
+  org.apache.hadoop.hbase.client.BufferedMutatorImpl(org.apache.hadoop.hbase.client.ClusterConnection, org.apache.hadoop.hbase.client.BufferedMutatorParams, org.apache.hadoop.hbase.client.AsyncProcess);
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #9                  // class java/util/concurrent/ConcurrentLinkedQueue
+       8: dup
+       9: invokespecial #10                 // Method java/util/concurrent/ConcurrentLinkedQueue."<init>":()V
+      12: putfield      #3                  // Field writeAsyncBuffer:Ljava/util/concurrent/ConcurrentLinkedQueue;
+      15: aload_0
+      16: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      19: dup
+      20: lconst_0
+      21: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      24: putfield      #2                  // Field currentWriteBufferSize:Ljava/util/concurrent/atomic/AtomicLong;
+      27: aload_0
+      28: new           #13                 // class java/util/concurrent/atomic/AtomicInteger
+      31: dup
+      32: iconst_0
+      33: invokespecial #14                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      36: putfield      #4                  // Field undealtMutationCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      39: aload_0
+      40: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      43: dup
+      44: lconst_0
+      45: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      48: putfield      #15                 // Field writeBufferPeriodicFlushTimeoutMs:Ljava/util/concurrent/atomic/AtomicLong;
+      51: aload_0
+      52: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      55: dup
+      56: ldc2_w        #17                 // long 100l
+      59: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      62: putfield      #19                 // Field writeBufferPeriodicFlushTimerTickMs:Ljava/util/concurrent/atomic/AtomicLong;
+      65: aload_0
+      66: aconst_null
+      67: putfield      #20                 // Field writeBufferPeriodicFlushTimer:Ljava/util/Timer;
+      70: aload_0
+      71: iconst_0
+      72: putfield      #21                 // Field closed:Z
+      75: aload_0
+      76: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      79: dup
+      80: lconst_0
+      81: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      84: putfield      #22                 // Field firstRecordInBufferTimestamp:Ljava/util/concurrent/atomic/AtomicLong;
+      87: aload_0
+      88: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      91: dup
+      92: lconst_0
+      93: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      96: putfield      #23                 // Field executedWriteBufferPeriodicFlushes:Ljava/util/concurrent/atomic/AtomicLong;
+      99: aload_1
+     100: ifnull        112
+     103: aload_1
+     104: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.isClosed:()Z
+     109: ifeq          122
+     112: new           #25                 // class java/lang/IllegalArgumentException
+     115: dup
+     116: ldc           #26                 // String Connection is null or closed.
+     118: invokespecial #27                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+     121: athrow
+     122: aload_0
+     123: aload_2
+     124: invokevirtual #28                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+     127: putfield      #29                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+     130: aload_0
+     131: aload_1
+     132: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     137: putfield      #31                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     140: aload_0
+     141: aload_2
+     142: invokevirtual #32                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getListener:()Lorg/apache/hadoop/hbase/client/BufferedMutator$ExceptionListener;
+     145: putfield      #33                 // Field listener:Lorg/apache/hadoop/hbase/client/BufferedMutator$ExceptionListener;
+     148: aload_2
+     149: invokevirtual #34                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getPool:()Ljava/util/concurrent/ExecutorService;
+     152: ifnonnull     174
+     155: aload_0
+     156: aload_0
+     157: getfield      #31                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     160: invokestatic  #35                 // Method org/apache/hadoop/hbase/client/HTable.getDefaultExecutor:(Lorg/apache/hadoop/conf/Configuration;)Ljava/util/concurrent/ThreadPoolExecutor;
+     163: putfield      #36                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     166: aload_0
+     167: iconst_1
+     168: putfield      #37                 // Field cleanupPoolOnClose:Z
+     171: goto          187
+     174: aload_0
+     175: aload_2
+     176: invokevirtual #34                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getPool:()Ljava/util/concurrent/ExecutorService;
+     179: putfield      #36                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     182: aload_0
+     183: iconst_0
+     184: putfield      #37                 // Field cleanupPoolOnClose:Z
+     187: new           #38                 // class org/apache/hadoop/hbase/client/ConnectionConfiguration
+     190: dup
+     191: aload_0
+     192: getfield      #31                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     195: invokespecial #39                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     198: astore        4
+     200: aload_0
+     201: aload_2
+     202: invokevirtual #40                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getWriteBufferSize:()J
+     205: ldc2_w        #41                 // long -1l
+     208: lcmp
+     209: ifeq          219
+     212: aload_2
+     213: invokevirtual #40                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getWriteBufferSize:()J
+     216: goto          224
+     219: aload         4
+     221: invokevirtual #43                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getWriteBufferSize:()J
+     224: putfield      #44                 // Field writeBufferSize:J
+     227: aload_2
+     228: invokevirtual #45                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getWriteBufferPeriodicFlushTimeoutMs:()J
+     231: ldc2_w        #41                 // long -1l
+     234: lcmp
+     235: ifeq          245
+     238: aload_2
+     239: invokevirtual #45                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getWriteBufferPeriodicFlushTimeoutMs:()J
+     242: goto          250
+     245: aload         4
+     247: invokevirtual #46                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getWriteBufferPeriodicFlushTimeoutMs:()J
+     250: lstore        5
+     252: aload_2
+     253: invokevirtual #47                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getWriteBufferPeriodicFlushTimerTickMs:()J
+     256: ldc2_w        #41                 // long -1l
+     259: lcmp
+     260: ifeq          270
+     263: aload_2
+     264: invokevirtual #47                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getWriteBufferPeriodicFlushTimerTickMs:()J
+     267: goto          275
+     270: aload         4
+     272: invokevirtual #48                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getWriteBufferPeriodicFlushTimerTickMs:()J
+     275: lstore        7
+     277: aload_0
+     278: lload         5
+     280: lload         7
+     282: invokevirtual #49                 // Method setWriteBufferPeriodicFlush:(JJ)V
+     285: aload_0
+     286: aload_2
+     287: invokevirtual #50                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getMaxKeyValueSize:()I
+     290: iconst_m1
+     291: if_icmpeq     301
+     294: aload_2
+     295: invokevirtual #50                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getMaxKeyValueSize:()I
+     298: goto          306
+     301: aload         4
+     303: invokevirtual #51                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getMaxKeyValueSize:()I
+     306: putfield      #52                 // Field maxKeyValueSize:I
+     309: aload_0
+     310: new           #13                 // class java/util/concurrent/atomic/AtomicInteger
+     313: dup
+     314: aload_2
+     315: invokevirtual #53                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getRpcTimeout:()I
+     318: iconst_m1
+     319: if_icmpeq     329
+     322: aload_2
+     323: invokevirtual #53                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getRpcTimeout:()I
+     326: goto          338
+     329: aload_1
+     330: invokeinterface #54,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConnectionConfiguration:()Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+     335: invokevirtual #55                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getWriteRpcTimeout:()I
+     338: invokespecial #14                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+     341: putfield      #7                  // Field rpcTimeout:Ljava/util/concurrent/atomic/AtomicInteger;
+     344: aload_0
+     345: new           #13                 // class java/util/concurrent/atomic/AtomicInteger
+     348: dup
+     349: aload_2
+     350: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getOperationTimeout:()I
+     353: iconst_m1
+     354: if_icmpeq     364
+     357: aload_2
+     358: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/BufferedMutatorParams.getOperationTimeout:()I
+     361: goto          373
+     364: aload_1
+     365: invokeinterface #54,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConnectionConfiguration:()Lorg/apache/hadoop/hbase/client/ConnectionConfiguration;
+     370: invokevirtual #57                 // Method org/apache/hadoop/hbase/client/ConnectionConfiguration.getOperationTimeout:()I
+     373: invokespecial #14                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+     376: putfield      #6                  // Field operationTimeout:Ljava/util/concurrent/atomic/AtomicInteger;
+     379: aload_0
+     380: aload_3
+     381: putfield      #58                 // Field ap:Lorg/apache/hadoop/hbase/client/AsyncProcess;
+     384: return
+
+  org.apache.hadoop.hbase.client.BufferedMutatorImpl(org.apache.hadoop.hbase.client.ClusterConnection, org.apache.hadoop.hbase.client.RpcRetryingCallerFactory, org.apache.hadoop.hbase.ipc.RpcControllerFactory, org.apache.hadoop.hbase.client.BufferedMutatorParams);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload         4
+       4: new           #59                 // class org/apache/hadoop/hbase/client/AsyncProcess
+       7: dup
+       8: aload_1
+       9: aload_1
+      10: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      15: aload_2
+      16: aload_3
+      17: invokespecial #60                 // Method org/apache/hadoop/hbase/client/AsyncProcess."<init>":(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;)V
+      20: invokespecial #61                 // Method "<init>":(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/client/BufferedMutatorParams;Lorg/apache/hadoop/hbase/client/AsyncProcess;)V
+      23: return
+
+  java.util.concurrent.ExecutorService getPool();
+    Code:
+       0: aload_0
+       1: getfield      #36                 // Field pool:Ljava/util/concurrent/ExecutorService;
+       4: areturn
+
+  org.apache.hadoop.hbase.client.AsyncProcess getAsyncProcess();
+    Code:
+       0: aload_0
+       1: getfield      #58                 // Field ap:Lorg/apache/hadoop/hbase/client/AsyncProcess;
+       4: areturn
+
+  public org.apache.hadoop.hbase.TableName getName();
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       4: areturn
+
+  public org.apache.hadoop.conf.Configuration getConfiguration();
+    Code:
+       0: aload_0
+       1: getfield      #31                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: areturn
+
+  public void mutate(org.apache.hadoop.hbase.client.Mutation) throws java.io.InterruptedIOException, org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #65                 // Method java/util/Collections.singletonList:(Ljava/lang/Object;)Ljava/util/List;
+       5: invokevirtual #66                 // Method mutate:(Ljava/util/List;)V
+       8: return
+
+  public void mutate(java.util.List<? extends org.apache.hadoop.hbase.client.Mutation>) throws java.io.InterruptedIOException, org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
+    Code:
+       0: aload_0
+       1: invokespecial #67                 // Method checkClose:()V
+       4: lconst_0
+       5: lstore_2
+       6: iconst_0
+       7: istore        4
+       9: aload_1
+      10: invokeinterface #68,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      15: astore        5
+      17: aload         5
+      19: invokeinterface #69,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      24: ifeq          73
+      27: aload         5
+      29: invokeinterface #70,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      34: checkcast     #71                 // class org/apache/hadoop/hbase/client/Mutation
+      37: astore        6
+      39: aload         6
+      41: instanceof    #72                 // class org/apache/hadoop/hbase/client/Put
+      44: ifeq          59
+      47: aload         6
+      49: checkcast     #72                 // class org/apache/hadoop/hbase/client/Put
+      52: aload_0
+      53: getfield      #52                 // Field maxKeyValueSize:I
+      56: invokestatic  #73                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.validatePut:(Lorg/apache/hadoop/hbase/client/Put;I)V
+      59: lload_2
+      60: aload         6
+      62: invokevirtual #74                 // Method org/apache/hadoop/hbase/client/Mutation.heapSize:()J
+      65: ladd
+      66: lstore_2
+      67: iinc          4, 1
+      70: goto          17
+      73: aload_0
+      74: getfield      #2                  // Field currentWriteBufferSize:Ljava/util/concurrent/atomic/AtomicLong;
+      77: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      80: lconst_0
+      81: lcmp
+      82: ifne          95
+      85: aload_0
+      86: getfield      #22                 // Field firstRecordInBufferTimestamp:Ljava/util/concurrent/atomic/AtomicLong;
+      89: invokestatic  #76                 // Method java/lang/System.currentTimeMillis:()J
+      92: invokevirtual #77                 // Method java/util/concurrent/atomic/AtomicLong.set:(J)V
+      95: aload_0
+      96: getfield      #2                  // Field currentWriteBufferSize:Ljava/util/concurrent/atomic/AtomicLong;
+      99: lload_2
+     100: invokevirtual #78                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+     103: pop2
+     104: aload_0
+     105: getfield      #3                  // Field writeAsyncBuffer:Ljava/util/concurrent/ConcurrentLinkedQueue;
+     108: aload_1
+     109: invokevirtual #79                 // Method java/util/concurrent/ConcurrentLinkedQueue.addAll:(Ljava/util/Collection;)Z
+     112: pop
+     113: aload_0
+     114: getfield      #4                  // Field undealtMutationCount:Ljava/util/concurrent/atomic/AtomicInteger;
+     117: iload         4
+     119: invokevirtual #80                 // Method java/util/concurrent/atomic/AtomicInteger.addAndGet:(I)I
+     122: pop
+     123: aload_0
+     124: iconst_0
+     125: invokespecial #81                 // Method doFlush:(Z)V
+     128: return
+
+  protected long getExecutedWriteBufferPeriodicFlushes();
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field executedWriteBufferPeriodicFlushes:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public synchronized void close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field closed:Z
+       4: ifeq          8
+       7: return
+       8: aload_0
+       9: invokevirtual #94                 // Method disableWriteBufferPeriodicFlush:()V
+      12: aload_0
+      13: iconst_1
+      14: invokespecial #81                 // Method doFlush:(Z)V
+      17: aload_0
+      18: getfield      #37                 // Field cleanupPoolOnClose:Z
+      21: ifeq          81
+      24: aload_0
+      25: getfield      #36                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      28: invokeinterface #95,  1           // InterfaceMethod java/util/concurrent/ExecutorService.shutdown:()V
+      33: aload_0
+      34: getfield      #36                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      37: ldc2_w        #96                 // long 600l
+      40: getstatic     #98                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      43: invokeinterface #99,  4           // InterfaceMethod java/util/concurrent/ExecutorService.awaitTermination:(JLjava/util/concurrent/TimeUnit;)Z
+      48: ifne          61
+      51: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+      54: ldc           #100                // String close() failed to terminate pool after 10 minutes. Abandoning pool.
+      56: invokeinterface #101,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      61: goto          81
+      64: astore_1
+      65: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+      68: ldc           #103                // String waitForTermination interrupted
+      70: invokeinterface #101,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      75: invokestatic  #104                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      78: invokevirtual #105                // Method java/lang/Thread.interrupt:()V
+      81: aload_0
+      82: iconst_1
+      83: putfield      #21                 // Field closed:Z
+      86: goto          161
+      89: astore_2
+      90: aload_0
+      91: getfield      #37                 // Field cleanupPoolOnClose:Z
+      94: ifeq          154
+      97: aload_0
+      98: getfield      #36                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     101: invokeinterface #95,  1           // InterfaceMethod java/util/concurrent/ExecutorService.shutdown:()V
+     106: aload_0
+     107: getfield      #36                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     110: ldc2_w        #96                 // long 600l
+     113: getstatic     #98                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     116: invokeinterface #99,  4           // InterfaceMethod java/util/concurrent/ExecutorService.awaitTermination:(JLjava/util/concurrent/TimeUnit;)Z
+     121: ifne          134
+     124: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     127: ldc           #100                // String close() failed to terminate pool after 10 minutes. Abandoning pool.
+     129: invokeinterface #101,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     134: goto          154
+     137: astore_3
+     138: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     141: ldc           #103                // String waitForTermination interrupted
+     143: invokeinterface #101,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     148: invokestatic  #104                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     151: invokevirtual #105                // Method java/lang/Thread.interrupt:()V
+     154: aload_0
+     155: iconst_1
+     156: putfield      #21                 // Field closed:Z
+     159: aload_2
+     160: athrow
+     161: return
+    Exception table:
+       from    to  target type
+          33    61    64   Class java/lang/InterruptedException
+          12    17    89   any
+         106   134   137   Class java/lang/InterruptedException
+
+  public void flush() throws java.io.InterruptedIOException, org.apache.hadoop.hbase.client.RetriesExhaustedWithDetailsException;
+    Code:
+       0: aload_0
+       1: invokespecial #67                 // Method checkClose:()V
+       4: aload_0
+       5: iconst_1
+       6: invokespecial #81                 // Method doFlush:(Z)V
+       9: return
+
+  public long getWriteBufferSize();
+    Code:
+       0: aload_0
+       1: getfield      #44                 // Field writeBufferSize:J
+       4: lreturn
+
+  public synchronized void setWriteBufferPeriodicFlush(long, long);
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field writeBufferPeriodicFlushTimeoutMs:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lstore        5
+       9: aload_0
+      10: getfield      #19                 // Field writeBufferPeriodicFlushTimerTickMs:Ljava/util/concurrent/atomic/AtomicLong;
+      13: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      16: lstore        7
+      18: aload_0
+      19: getfield      #15                 // Field writeBufferPeriodicFlushTimeoutMs:Ljava/util/concurrent/atomic/AtomicLong;
+      22: lconst_0
+      23: lload_1
+      24: invokestatic  #135                // Method java/lang/Math.max:(JJ)J
+      27: invokevirtual #77                 // Method java/util/concurrent/atomic/AtomicLong.set:(J)V
+      30: aload_0
+      31: getfield      #19                 // Field writeBufferPeriodicFlushTimerTickMs:Ljava/util/concurrent/atomic/AtomicLong;
+      34: ldc2_w        #17                 // long 100l
+      37: lload_3
+      38: invokestatic  #135                // Method java/lang/Math.max:(JJ)J
+      41: invokevirtual #77                 // Method java/util/concurrent/atomic/AtomicLong.set:(J)V
+      44: aload_0
+      45: getfield      #15                 // Field writeBufferPeriodicFlushTimeoutMs:Ljava/util/concurrent/atomic/AtomicLong;
+      48: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      51: lload         5
+      53: lcmp
+      54: ifne          70
+      57: aload_0
+      58: getfield      #19                 // Field writeBufferPeriodicFlushTimerTickMs:Ljava/util/concurrent/atomic/AtomicLong;
+      61: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      64: lload         7
+      66: lcmp
+      67: ifeq          89
+      70: aload_0
+      71: getfield      #20                 // Field writeBufferPeriodicFlushTimer:Ljava/util/Timer;
+      74: ifnull        89
+      77: aload_0
+      78: getfield      #20                 // Field writeBufferPeriodicFlushTimer:Ljava/util/Timer;
+      81: invokevirtual #136                // Method java/util/Timer.cancel:()V
+      84: aload_0
+      85: aconst_null
+      86: putfield      #20                 // Field writeBufferPeriodicFlushTimer:Ljava/util/Timer;
+      89: aload_0
+      90: getfield      #20                 // Field writeBufferPeriodicFlushTimer:Ljava/util/Timer;
+      93: ifnonnull     149
+      96: aload_0
+      97: getfield      #15                 // Field writeBufferPeriodicFlushTimeoutMs:Ljava/util/concurrent/atomic/AtomicLong;
+     100: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+     103: lconst_0
+     104: lcmp
+     105: ifle          149
+     108: aload_0
+     109: new           #137                // class java/util/Timer
+     112: dup
+     113: iconst_1
+     114: invokespecial #138                // Method java/util/Timer."<init>":(Z)V
+     117: putfield      #20                 // Field writeBufferPeriodicFlushTimer:Ljava/util/Timer;
+     120: aload_0
+     121: getfield      #20                 // Field writeBufferPeriodicFlushTimer:Ljava/util/Timer;
+     124: new           #139                // class org/apache/hadoop/hbase/client/BufferedMutatorImpl$2
+     127: dup
+     128: aload_0
+     129: invokespecial #140                // Method org/apache/hadoop/hbase/client/BufferedMutatorImpl$2."<init>":(Lorg/apache/hadoop/hbase/client/BufferedMutatorImpl;)V
+     132: aload_0
+     133: getfield      #19                 // Field writeBufferPeriodicFlushTimerTickMs:Ljava/util/concurrent/atomic/AtomicLong;
+     136: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+     139: aload_0
+     140: getfield      #19                 // Field writeBufferPeriodicFlushTimerTickMs:Ljava/util/concurrent/atomic/AtomicLong;
+     143: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+     146: invokevirtual #141                // Method java/util/Timer.schedule:(Ljava/util/TimerTask;JJ)V
+     149: return
+
+  public long getWriteBufferPeriodicFlushTimeoutMs();
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field writeBufferPeriodicFlushTimeoutMs:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public long getWriteBufferPeriodicFlushTimerTickMs();
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field writeBufferPeriodicFlushTimerTickMs:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public void setRpcTimeout(int);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field rpcTimeout:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: iload_1
+       5: invokevirtual #142                // Method java/util/concurrent/atomic/AtomicInteger.set:(I)V
+       8: return
+
+  public void setOperationTimeout(int);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field operationTimeout:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: iload_1
+       5: invokevirtual #142                // Method java/util/concurrent/atomic/AtomicInteger.set:(I)V
+       8: return
+
+  long getCurrentWriteBufferSize();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field currentWriteBufferSize:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  int size();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field undealtMutationCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #143                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ireturn
+
+  int getUnflushedSize();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field writeAsyncBuffer:Ljava/util/concurrent/ConcurrentLinkedQueue;
+       4: invokevirtual #144                // Method java/util/concurrent/ConcurrentLinkedQueue.size:()I
+       7: ireturn
+
+  org.apache.hadoop.hbase.client.BufferedMutatorImpl$QueueRowAccess createQueueRowAccess();
+    Code:
+       0: new           #145                // class org/apache/hadoop/hbase/client/BufferedMutatorImpl$QueueRowAccess
+       3: dup
+       4: aload_0
+       5: invokespecial #146                // Method org/apache/hadoop/hbase/client/BufferedMutatorImpl$QueueRowAccess."<init>":(Lorg/apache/hadoop/hbase/client/BufferedMutatorImpl;)V
+       8: areturn
+
+  static java.util.concurrent.atomic.AtomicInteger access$000(org.apache.hadoop.hbase.client.BufferedMutatorImpl);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field rpcTimeout:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: areturn
+
+  static java.util.concurrent.atomic.AtomicInteger access$100(org.apache.hadoop.hbase.client.BufferedMutatorImpl);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field operationTimeout:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: areturn
+
+  static void access$200(org.apache.hadoop.hbase.client.BufferedMutatorImpl);
+    Code:
+       0: aload_0
+       1: invokespecial #5                  // Method timerCallbackForWriteBufferPeriodicFlush:()V
+       4: return
+
+  static java.util.concurrent.atomic.AtomicInteger access$300(org.apache.hadoop.hbase.client.BufferedMutatorImpl);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field undealtMutationCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: areturn
+
+  static java.util.concurrent.ConcurrentLinkedQueue access$400(org.apache.hadoop.hbase.client.BufferedMutatorImpl);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field writeAsyncBuffer:Ljava/util/concurrent/ConcurrentLinkedQueue;
+       4: areturn
+
+  static java.util.concurrent.atomic.AtomicLong access$500(org.apache.hadoop.hbase.client.BufferedMutatorImpl);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field currentWriteBufferSize:Ljava/util/concurrent/atomic/AtomicLong;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #151                // class org/apache/hadoop/hbase/client/BufferedMutatorImpl
+       2: invokestatic  #152                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

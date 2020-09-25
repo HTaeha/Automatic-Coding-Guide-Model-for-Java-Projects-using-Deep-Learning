@@ -1,0 +1,248 @@
+Compiled from "AsyncRegionLocatorHelper.java"
+final class org.apache.hadoop.hbase.client.AsyncRegionLocatorHelper {
+  static boolean canUpdateOnError(org.apache.hadoop.hbase.HRegionLocation, org.apache.hadoop.hbase.HRegionLocation);
+    Code:
+       0: aload_1
+       1: ifnull        34
+       4: aload_1
+       5: invokevirtual #2                  // Method org/apache/hadoop/hbase/HRegionLocation.getSeqNum:()J
+       8: aload_0
+       9: invokevirtual #2                  // Method org/apache/hadoop/hbase/HRegionLocation.getSeqNum:()J
+      12: lcmp
+      13: ifgt          34
+      16: aload_1
+      17: invokevirtual #3                  // Method org/apache/hadoop/hbase/HRegionLocation.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      20: aload_0
+      21: invokevirtual #3                  // Method org/apache/hadoop/hbase/HRegionLocation.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      24: invokevirtual #4                  // Method org/apache/hadoop/hbase/ServerName.equals:(Ljava/lang/Object;)Z
+      27: ifeq          34
+      30: iconst_1
+      31: goto          35
+      34: iconst_0
+      35: ireturn
+
+  static void updateCachedLocationOnError(org.apache.hadoop.hbase.HRegionLocation, java.lang.Throwable, java.util.function.Function<org.apache.hadoop.hbase.HRegionLocation, org.apache.hadoop.hbase.HRegionLocation>, java.util.function.Consumer<org.apache.hadoop.hbase.HRegionLocation>, java.util.function.Consumer<org.apache.hadoop.hbase.HRegionLocation>, java.util.Optional<org.apache.hadoop.hbase.client.MetricsConnection>);
+    Code:
+       0: aload_2
+       1: aload_0
+       2: invokeinterface #5,  2            // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+       7: checkcast     #6                  // class org/apache/hadoop/hbase/HRegionLocation
+      10: astore        6
+      12: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+      15: invokeinterface #8,  1            // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      20: ifeq          62
+      23: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+      26: ldc           #9                  // String Try updating {} , the old value is {}, error={}
+      28: iconst_3
+      29: anewarray     #10                 // class java/lang/Object
+      32: dup
+      33: iconst_0
+      34: aload_0
+      35: aastore
+      36: dup
+      37: iconst_1
+      38: aload         6
+      40: aastore
+      41: dup
+      42: iconst_2
+      43: aload_1
+      44: ifnull        54
+      47: aload_1
+      48: invokevirtual #11                 // Method java/lang/Throwable.toString:()Ljava/lang/String;
+      51: goto          56
+      54: ldc           #12                 // String none
+      56: aastore
+      57: invokeinterface #13,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;[Ljava/lang/Object;)V
+      62: aload_0
+      63: aload         6
+      65: invokestatic  #14                 // Method canUpdateOnError:(Lorg/apache/hadoop/hbase/HRegionLocation;Lorg/apache/hadoop/hbase/HRegionLocation;)Z
+      68: ifne          72
+      71: return
+      72: aload_1
+      73: invokestatic  #15                 // Method org/apache/hadoop/hbase/exceptions/ClientExceptionsUtil.findException:(Ljava/lang/Object;)Ljava/lang/Throwable;
+      76: astore        7
+      78: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+      81: invokeinterface #8,  1            // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      86: ifeq          115
+      89: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+      92: ldc           #16                 // String The actual exception when updating {} is {}
+      94: aload_0
+      95: aload         7
+      97: ifnull        108
+     100: aload         7
+     102: invokevirtual #11                 // Method java/lang/Throwable.toString:()Ljava/lang/String;
+     105: goto          110
+     108: ldc           #12                 // String none
+     110: invokeinterface #17,  4           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     115: aload         7
+     117: ifnull        128
+     120: aload         7
+     122: invokestatic  #18                 // Method org/apache/hadoop/hbase/exceptions/ClientExceptionsUtil.isMetaClearingException:(Ljava/lang/Throwable;)Z
+     125: ifne          140
+     128: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+     131: ldc           #19                 // String Will not update {} because the exception is null or not the one we care about
+     133: aload_0
+     134: invokeinterface #20,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     139: return
+     140: aload         7
+     142: instanceof    #21                 // class org/apache/hadoop/hbase/exceptions/RegionMovedException
+     145: ifeq          220
+     148: aload         7
+     150: checkcast     #21                 // class org/apache/hadoop/hbase/exceptions/RegionMovedException
+     153: astore        8
+     155: new           #6                  // class org/apache/hadoop/hbase/HRegionLocation
+     158: dup
+     159: aload_0
+     160: invokevirtual #22                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     163: aload         8
+     165: invokevirtual #23                 // Method org/apache/hadoop/hbase/exceptions/RegionMovedException.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     168: aload         8
+     170: invokevirtual #24                 // Method org/apache/hadoop/hbase/exceptions/RegionMovedException.getLocationSeqNum:()J
+     173: invokespecial #25                 // Method org/apache/hadoop/hbase/HRegionLocation."<init>":(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;J)V
+     176: astore        9
+     178: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+     181: ldc           #26                 // String Try updating {} with the new location {} constructed by {}
+     183: iconst_3
+     184: anewarray     #10                 // class java/lang/Object
+     187: dup
+     188: iconst_0
+     189: aload_0
+     190: aastore
+     191: dup
+     192: iconst_1
+     193: aload         9
+     195: aastore
+     196: dup
+     197: iconst_2
+     198: aload         8
+     200: invokevirtual #27                 // Method org/apache/hadoop/hbase/exceptions/RegionMovedException.toString:()Ljava/lang/String;
+     203: aastore
+     204: invokeinterface #13,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;[Ljava/lang/Object;)V
+     209: aload_3
+     210: aload         9
+     212: invokeinterface #28,  2           // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+     217: goto          250
+     220: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+     223: ldc           #29                 // String Try removing {} from cache
+     225: aload_0
+     226: invokeinterface #20,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     231: aload         5
+     233: aload_1
+     234: invokedynamic #30,  0             // InvokeDynamic #0:accept:(Ljava/lang/Throwable;)Ljava/util/function/Consumer;
+     239: invokevirtual #31                 // Method java/util/Optional.ifPresent:(Ljava/util/function/Consumer;)V
+     242: aload         4
+     244: aload_0
+     245: invokeinterface #28,  2           // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+     250: return
+
+  static org.apache.hadoop.hbase.RegionLocations createRegionLocations(org.apache.hadoop.hbase.HRegionLocation);
+    Code:
+       0: aload_0
+       1: invokevirtual #22                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: invokeinterface #32,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getReplicaId:()I
+       9: istore_1
+      10: iload_1
+      11: iconst_1
+      12: iadd
+      13: anewarray     #6                  // class org/apache/hadoop/hbase/HRegionLocation
+      16: astore_2
+      17: aload_2
+      18: iload_1
+      19: aload_0
+      20: aastore
+      21: new           #33                 // class org/apache/hadoop/hbase/RegionLocations
+      24: dup
+      25: aload_2
+      26: invokespecial #34                 // Method org/apache/hadoop/hbase/RegionLocations."<init>":([Lorg/apache/hadoop/hbase/HRegionLocation;)V
+      29: areturn
+
+  static org.apache.hadoop.hbase.RegionLocations replaceRegionLocation(org.apache.hadoop.hbase.RegionLocations, org.apache.hadoop.hbase.HRegionLocation);
+    Code:
+       0: aload_1
+       1: invokevirtual #22                 // Method org/apache/hadoop/hbase/HRegionLocation.getRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: invokeinterface #32,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getReplicaId:()I
+       9: istore_2
+      10: aload_0
+      11: invokevirtual #35                 // Method org/apache/hadoop/hbase/RegionLocations.getRegionLocations:()[Lorg/apache/hadoop/hbase/HRegionLocation;
+      14: astore_3
+      15: aload_3
+      16: iload_2
+      17: iconst_1
+      18: iadd
+      19: aload_3
+      20: arraylength
+      21: invokestatic  #36                 // Method java/lang/Math.max:(II)I
+      24: invokestatic  #37                 // Method java/util/Arrays.copyOf:([Ljava/lang/Object;I)[Ljava/lang/Object;
+      27: checkcast     #38                 // class "[Lorg/apache/hadoop/hbase/HRegionLocation;"
+      30: astore_3
+      31: aload_3
+      32: iload_2
+      33: aload_1
+      34: aastore
+      35: new           #33                 // class org/apache/hadoop/hbase/RegionLocations
+      38: dup
+      39: aload_3
+      40: invokespecial #34                 // Method org/apache/hadoop/hbase/RegionLocations."<init>":([Lorg/apache/hadoop/hbase/HRegionLocation;)V
+      43: areturn
+
+  static org.apache.hadoop.hbase.RegionLocations removeRegionLocation(org.apache.hadoop.hbase.RegionLocations, int);
+    Code:
+       0: aload_0
+       1: invokevirtual #35                 // Method org/apache/hadoop/hbase/RegionLocations.getRegionLocations:()[Lorg/apache/hadoop/hbase/HRegionLocation;
+       4: astore_2
+       5: aload_2
+       6: arraylength
+       7: iload_1
+       8: iconst_1
+       9: iadd
+      10: if_icmpge     15
+      13: aload_0
+      14: areturn
+      15: aload_2
+      16: aload_2
+      17: arraylength
+      18: invokestatic  #37                 // Method java/util/Arrays.copyOf:([Ljava/lang/Object;I)[Ljava/lang/Object;
+      21: checkcast     #38                 // class "[Lorg/apache/hadoop/hbase/HRegionLocation;"
+      24: astore_2
+      25: aload_2
+      26: iload_1
+      27: aconst_null
+      28: aastore
+      29: aload_2
+      30: invokestatic  #39                 // Method org/apache/commons/lang3/ObjectUtils.firstNonNull:([Ljava/lang/Object;)Ljava/lang/Object;
+      33: ifnull        45
+      36: new           #33                 // class org/apache/hadoop/hbase/RegionLocations
+      39: dup
+      40: aload_2
+      41: invokespecial #34                 // Method org/apache/hadoop/hbase/RegionLocations."<init>":([Lorg/apache/hadoop/hbase/HRegionLocation;)V
+      44: areturn
+      45: aconst_null
+      46: areturn
+
+  static boolean isGood(org.apache.hadoop.hbase.RegionLocations, int);
+    Code:
+       0: aload_0
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_0
+       7: iload_1
+       8: invokevirtual #40                 // Method org/apache/hadoop/hbase/RegionLocations.getRegionLocation:(I)Lorg/apache/hadoop/hbase/HRegionLocation;
+      11: astore_2
+      12: aload_2
+      13: ifnull        27
+      16: aload_2
+      17: invokevirtual #3                  // Method org/apache/hadoop/hbase/HRegionLocation.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      20: ifnull        27
+      23: iconst_1
+      24: goto          28
+      27: iconst_0
+      28: ireturn
+
+  static {};
+    Code:
+       0: ldc           #42                 // class org/apache/hadoop/hbase/client/AsyncRegionLocatorHelper
+       2: invokestatic  #43                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

@@ -1,0 +1,943 @@
+Compiled from "MultiThreadedAction.java"
+public abstract class org.apache.hadoop.hbase.util.MultiThreadedAction {
+  protected final org.apache.hadoop.hbase.TableName tableName;
+
+  protected final org.apache.hadoop.conf.Configuration conf;
+
+  protected final org.apache.hadoop.hbase.client.ClusterConnection connection;
+
+  protected int numThreads;
+
+  protected long startKey;
+
+  protected long endKey;
+
+  protected java.util.concurrent.atomic.AtomicInteger numThreadsWorking;
+
+  protected java.util.concurrent.atomic.AtomicLong numKeys;
+
+  protected java.util.concurrent.atomic.AtomicLong numCols;
+
+  protected java.util.concurrent.atomic.AtomicLong totalOpTimeMs;
+
+  protected boolean verbose;
+
+  protected org.apache.hadoop.hbase.util.test.LoadTestDataGenerator dataGenerator;
+
+  public static final int REPORTING_INTERVAL_MS;
+
+  public org.apache.hadoop.hbase.util.MultiThreadedAction(org.apache.hadoop.hbase.util.test.LoadTestDataGenerator, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.TableName, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_1
+       6: putfield      #5                  // Field numThreads:I
+       9: aload_0
+      10: lconst_0
+      11: putfield      #6                  // Field startKey:J
+      14: aload_0
+      15: lconst_1
+      16: putfield      #7                  // Field endKey:J
+      19: aload_0
+      20: new           #8                  // class java/util/concurrent/atomic/AtomicInteger
+      23: dup
+      24: invokespecial #9                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":()V
+      27: putfield      #10                 // Field numThreadsWorking:Ljava/util/concurrent/atomic/AtomicInteger;
+      30: aload_0
+      31: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      34: dup
+      35: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":()V
+      38: putfield      #13                 // Field numKeys:Ljava/util/concurrent/atomic/AtomicLong;
+      41: aload_0
+      42: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      45: dup
+      46: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":()V
+      49: putfield      #14                 // Field numCols:Ljava/util/concurrent/atomic/AtomicLong;
+      52: aload_0
+      53: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      56: dup
+      57: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":()V
+      60: putfield      #15                 // Field totalOpTimeMs:Ljava/util/concurrent/atomic/AtomicLong;
+      63: aload_0
+      64: iconst_0
+      65: putfield      #16                 // Field verbose:Z
+      68: aload_0
+      69: aconst_null
+      70: putfield      #17                 // Field dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+      73: aload_0
+      74: aload_2
+      75: putfield      #18                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      78: aload_0
+      79: aload_1
+      80: putfield      #17                 // Field dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+      83: aload_0
+      84: aload_3
+      85: putfield      #19                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      88: aload_0
+      89: aload         4
+      91: putfield      #20                 // Field actionLetter:Ljava/lang/String;
+      94: aload_0
+      95: aload_2
+      96: invokestatic  #21                 // Method org/apache/hadoop/hbase/client/ConnectionFactory.createConnection:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/Connection;
+      99: checkcast     #22                 // class org/apache/hadoop/hbase/client/ClusterConnection
+     102: putfield      #23                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     105: return
+
+  public void start(long, long, int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: lload_1
+       2: putfield      #6                  // Field startKey:J
+       5: aload_0
+       6: lload_3
+       7: putfield      #7                  // Field endKey:J
+      10: aload_0
+      11: iload         5
+      13: putfield      #5                  // Field numThreads:I
+      16: new           #24                 // class java/lang/Thread
+      19: dup
+      20: new           #25                 // class org/apache/hadoop/hbase/util/MultiThreadedAction$ProgressReporter
+      23: dup
+      24: aload_0
+      25: aload_0
+      26: getfield      #20                 // Field actionLetter:Ljava/lang/String;
+      29: invokespecial #26                 // Method org/apache/hadoop/hbase/util/MultiThreadedAction$ProgressReporter."<init>":(Lorg/apache/hadoop/hbase/util/MultiThreadedAction;Ljava/lang/String;)V
+      32: new           #27                 // class java/lang/StringBuilder
+      35: dup
+      36: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      39: ldc           #29                 // String MultiThreadedAction-ProgressReporter-
+      41: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: invokestatic  #31                 // Method java/lang/System.currentTimeMillis:()J
+      47: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      50: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      53: invokespecial #34                 // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;Ljava/lang/String;)V
+      56: invokevirtual #35                 // Method java/lang/Thread.start:()V
+      59: return
+
+  public void close();
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       4: ifnull        47
+       7: aload_0
+       8: getfield      #23                 // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      11: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.close:()V
+      16: goto          47
+      19: astore_1
+      20: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      23: new           #27                 // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #50                 // String Could not close the connection:
+      32: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload_1
+      36: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      39: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      42: invokeinterface #52,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      47: return
+    Exception table:
+       from    to  target type
+           7    16    19   Class java/lang/Exception
+
+  public void waitForFinish();
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field numThreadsWorking:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #53                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ifeq          19
+      10: ldc2_w        #40                 // long 1000l
+      13: invokestatic  #54                 // Method org/apache/hadoop/hbase/util/Threads.sleepWithoutInterrupt:(J)V
+      16: goto          0
+      19: aload_0
+      20: invokevirtual #55                 // Method close:()V
+      23: return
+
+  public boolean isDone();
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field numThreadsWorking:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #53                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ifne          14
+      10: iconst_1
+      11: goto          15
+      14: iconst_0
+      15: ireturn
+
+  protected void startThreads(java.util.Collection<? extends java.lang.Thread>);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field numThreadsWorking:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: aload_1
+       5: invokeinterface #56,  1           // InterfaceMethod java/util/Collection.size:()I
+      10: invokevirtual #57                 // Method java/util/concurrent/atomic/AtomicInteger.addAndGet:(I)I
+      13: pop
+      14: aload_1
+      15: invokeinterface #58,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      20: astore_2
+      21: aload_2
+      22: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      27: ifeq          47
+      30: aload_2
+      31: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #24                 // class java/lang/Thread
+      39: astore_3
+      40: aload_3
+      41: invokevirtual #35                 // Method java/lang/Thread.start:()V
+      44: goto          21
+      47: return
+
+  public long getEndKey();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field endKey:J
+       4: lreturn
+
+  protected abstract java.lang.String progressInfo();
+
+  protected static void appendToStatus(java.lang.StringBuilder, java.lang.String, long);
+    Code:
+       0: lload_2
+       1: lconst_0
+       2: lcmp
+       3: ifne          7
+       6: return
+       7: aload_0
+       8: ldc           #61                 // String ,
+      10: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      13: pop
+      14: aload_0
+      15: aload_1
+      16: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: pop
+      20: aload_0
+      21: ldc           #62                 // String =
+      23: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      26: pop
+      27: aload_0
+      28: lload_2
+      29: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      32: pop
+      33: return
+
+  protected static void appendToStatus(java.lang.StringBuilder, java.lang.String, java.lang.String);
+    Code:
+       0: aload_0
+       1: ldc           #61                 // String ,
+       3: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+       6: pop
+       7: aload_0
+       8: aload_1
+       9: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: pop
+      13: aload_0
+      14: ldc           #62                 // String =
+      16: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: pop
+      20: aload_0
+      21: aload_2
+      22: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: pop
+      26: return
+
+  public boolean verifyResultAgainstDataGenerator(org.apache.hadoop.hbase.client.Result, boolean);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: iconst_0
+       4: invokevirtual #63                 // Method verifyResultAgainstDataGenerator:(Lorg/apache/hadoop/hbase/client/Result;ZZ)Z
+       7: ireturn
+
+  public boolean verifyResultAgainstDataGenerator(org.apache.hadoop.hbase.client.Result, boolean, boolean);
+    Code:
+       0: aload_1
+       1: invokevirtual #64                 // Method org/apache/hadoop/hbase/client/Result.getRow:()[B
+       4: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+       7: astore        4
+       9: aload_1
+      10: invokevirtual #66                 // Method org/apache/hadoop/hbase/client/Result.isEmpty:()Z
+      13: ifeq          56
+      16: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      19: new           #27                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      26: ldc           #67                 // String Error checking data for key [
+      28: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: aload         4
+      33: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      36: ldc           #68                 // String ], no data returned
+      38: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      41: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      44: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+      49: aload_0
+      50: aload_1
+      51: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+      54: iconst_0
+      55: ireturn
+      56: iload_2
+      57: ifne          66
+      60: iload_3
+      61: ifne          66
+      64: iconst_1
+      65: ireturn
+      66: aload_0
+      67: getfield      #17                 // Field dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+      70: invokevirtual #71                 // Method org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.getColumnFamilies:()[[B
+      73: astore        5
+      75: iload_3
+      76: ifeq          146
+      79: aload         5
+      81: arraylength
+      82: aload_1
+      83: invokevirtual #72                 // Method org/apache/hadoop/hbase/client/Result.getMap:()Ljava/util/NavigableMap;
+      86: invokeinterface #73,  1           // InterfaceMethod java/util/NavigableMap.size:()I
+      91: if_icmpeq     146
+      94: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      97: new           #27                 // class java/lang/StringBuilder
+     100: dup
+     101: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     104: ldc           #67                 // String Error checking data for key [
+     106: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     109: aload         4
+     111: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     114: ldc           #74                 // String ], bad family count:
+     116: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     119: aload_1
+     120: invokevirtual #72                 // Method org/apache/hadoop/hbase/client/Result.getMap:()Ljava/util/NavigableMap;
+     123: invokeinterface #73,  1           // InterfaceMethod java/util/NavigableMap.size:()I
+     128: invokevirtual #75                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     131: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     134: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     139: aload_0
+     140: aload_1
+     141: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+     144: iconst_0
+     145: ireturn
+     146: aload_1
+     147: invokevirtual #72                 // Method org/apache/hadoop/hbase/client/Result.getMap:()Ljava/util/NavigableMap;
+     150: invokeinterface #76,  1           // InterfaceMethod java/util/NavigableMap.keySet:()Ljava/util/Set;
+     155: invokeinterface #77,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     160: astore        6
+     162: aload         6
+     164: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     169: ifeq          1603
+     172: aload         6
+     174: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     179: checkcast     #78                 // class "[B"
+     182: astore        7
+     184: aload         7
+     186: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     189: astore        8
+     191: aload_1
+     192: aload         7
+     194: invokevirtual #79                 // Method org/apache/hadoop/hbase/client/Result.getFamilyMap:([B)Ljava/util/NavigableMap;
+     197: astore        9
+     199: aload         9
+     201: ifnonnull     254
+     204: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     207: new           #27                 // class java/lang/StringBuilder
+     210: dup
+     211: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     214: ldc           #67                 // String Error checking data for key [
+     216: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     219: aload         4
+     221: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     224: ldc           #80                 // String ], no data for family [
+     226: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     229: aload         8
+     231: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     234: ldc           #81                 // String ]]
+     236: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     239: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     242: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     247: aload_0
+     248: aload_1
+     249: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+     252: iconst_0
+     253: ireturn
+     254: aconst_null
+     255: astore        10
+     257: iload_3
+     258: ifne          265
+     261: iload_2
+     262: ifeq          1600
+     265: aload         9
+     267: getstatic     #82                 // Field org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.MUTATE_INFO:[B
+     270: invokeinterface #83,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     275: ifne          342
+     278: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     281: new           #27                 // class java/lang/StringBuilder
+     284: dup
+     285: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     288: ldc           #67                 // String Error checking data for key [
+     290: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     293: aload         4
+     295: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     298: ldc           #84                 // String ], column family [
+     300: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     303: aload         8
+     305: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     308: ldc           #85                 // String ], column [
+     310: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     313: getstatic     #82                 // Field org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.MUTATE_INFO:[B
+     316: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     319: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     322: ldc           #86                 // String ]; value is not found
+     324: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     327: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     330: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     335: aload_0
+     336: aload_1
+     337: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+     340: iconst_0
+     341: ireturn
+     342: aload         7
+     344: invokestatic  #87                 // Method java/util/Arrays.hashCode:([B)I
+     347: i2l
+     348: lstore        11
+     350: aload         9
+     352: getstatic     #82                 // Field org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.MUTATE_INFO:[B
+     355: invokeinterface #88,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     360: checkcast     #78                 // class "[B"
+     363: astore        13
+     365: aload_0
+     366: aload         13
+     368: invokespecial #89                 // Method parseMutateInfo:([B)Ljava/util/Map;
+     371: astore        10
+     373: aload         10
+     375: invokeinterface #90,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+     380: invokeinterface #77,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     385: astore        14
+     387: aload         14
+     389: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     394: ifeq          565
+     397: aload         14
+     399: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     404: checkcast     #91                 // class java/util/Map$Entry
+     407: astore        15
+     409: aload         15
+     411: invokeinterface #92,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     416: getstatic     #93                 // Field org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto$MutationType.DELETE:Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto$MutationType;
+     419: if_acmpne     562
+     422: aload         15
+     424: invokeinterface #94,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     429: checkcast     #95                 // class java/lang/String
+     432: invokestatic  #96                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     435: astore        16
+     437: aload         16
+     439: invokestatic  #87                 // Method java/util/Arrays.hashCode:([B)I
+     442: i2l
+     443: lstore        17
+     445: lload         11
+     447: lload         17
+     449: ladd
+     450: lstore        19
+     452: lload         19
+     454: ldc2_w        #97                 // long 2l
+     457: lrem
+     458: lconst_0
+     459: lcmp
+     460: ifne          562
+     463: aload         9
+     465: aload         16
+     467: invokeinterface #83,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     472: ifeq          543
+     475: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     478: new           #27                 // class java/lang/StringBuilder
+     481: dup
+     482: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     485: ldc           #67                 // String Error checking data for key [
+     487: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     490: aload         4
+     492: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     495: ldc           #84                 // String ], column family [
+     497: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     500: aload         8
+     502: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     505: ldc           #85                 // String ], column [
+     507: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     510: aload         15
+     512: invokeinterface #94,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     517: checkcast     #95                 // class java/lang/String
+     520: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     523: ldc           #99                 // String ]; should be deleted
+     525: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     528: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     531: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     536: aload_0
+     537: aload_1
+     538: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+     541: iconst_0
+     542: ireturn
+     543: lload         19
+     545: invokestatic  #100                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(J)[B
+     548: astore        21
+     550: aload         9
+     552: aload         16
+     554: aload         21
+     556: invokeinterface #101,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     561: pop
+     562: goto          387
+     565: aload         9
+     567: getstatic     #102                // Field org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.INCREMENT:[B
+     570: invokeinterface #83,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     575: ifne          642
+     578: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     581: new           #27                 // class java/lang/StringBuilder
+     584: dup
+     585: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     588: ldc           #67                 // String Error checking data for key [
+     590: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     593: aload         4
+     595: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     598: ldc           #84                 // String ], column family [
+     600: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     603: aload         8
+     605: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     608: ldc           #85                 // String ], column [
+     610: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     613: getstatic     #102                // Field org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.INCREMENT:[B
+     616: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     619: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     622: ldc           #86                 // String ]; value is not found
+     624: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     627: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     630: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     635: aload_0
+     636: aload_1
+     637: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+     640: iconst_0
+     641: ireturn
+     642: aload         9
+     644: getstatic     #102                // Field org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.INCREMENT:[B
+     647: invokeinterface #88,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     652: checkcast     #78                 // class "[B"
+     655: invokestatic  #103                // Method org/apache/hadoop/hbase/util/Bytes.toLong:([B)J
+     658: lstore        14
+     660: iload_2
+     661: ifeq          864
+     664: aload         10
+     666: invokeinterface #104,  1          // InterfaceMethod java/util/Map.isEmpty:()Z
+     671: ifeq          678
+     674: lconst_0
+     675: goto          680
+     678: lload         11
+     680: lstore        16
+     682: aload_1
+     683: invokevirtual #64                 // Method org/apache/hadoop/hbase/client/Result.getRow:()[B
+     686: invokestatic  #87                 // Method java/util/Arrays.hashCode:([B)I
+     689: i2l
+     690: lstore        18
+     692: lload         14
+     694: lload         18
+     696: lsub
+     697: lstore        20
+     699: lload         20
+     701: lconst_0
+     702: lcmp
+     703: ifeq          793
+     706: lload         16
+     708: lconst_0
+     709: lcmp
+     710: ifeq          723
+     713: lload         20
+     715: lload         16
+     717: lrem
+     718: lconst_0
+     719: lcmp
+     720: ifeq          793
+     723: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     726: new           #27                 // class java/lang/StringBuilder
+     729: dup
+     730: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     733: ldc           #67                 // String Error checking data for key [
+     735: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     738: aload         4
+     740: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     743: ldc           #84                 // String ], column family [
+     745: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     748: aload         8
+     750: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     753: ldc           #105                // String ], column [increment], extra [
+     755: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     758: lload         20
+     760: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     763: ldc           #106                // String ], amount [
+     765: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     768: lload         16
+     770: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     773: ldc           #107                // String ]
+     775: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     778: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     781: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     786: aload_0
+     787: aload_1
+     788: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+     791: iconst_0
+     792: ireturn
+     793: lload         16
+     795: lconst_0
+     796: lcmp
+     797: ifeq          864
+     800: lload         20
+     802: lload         16
+     804: lcmp
+     805: ifeq          864
+     808: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     811: new           #27                 // class java/lang/StringBuilder
+     814: dup
+     815: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     818: ldc           #108                // String Warning checking data for key [
+     820: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     823: aload         4
+     825: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     828: ldc           #84                 // String ], column family [
+     830: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     833: aload         8
+     835: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     838: ldc           #109                // String ], column [increment], incremented [
+     840: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     843: lload         20
+     845: lload         16
+     847: ldiv
+     848: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     851: ldc           #110                // String ] times
+     853: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     856: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     859: invokeinterface #52,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     864: iload_3
+     865: ifeq          1054
+     868: aload_0
+     869: getfield      #17                 // Field dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+     872: aload_1
+     873: invokevirtual #64                 // Method org/apache/hadoop/hbase/client/Result.getRow:()[B
+     876: aload         7
+     878: aload         9
+     880: invokeinterface #111,  1          // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+     885: invokevirtual #112                // Method org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.verify:([B[BLjava/util/Set;)Z
+     888: ifne          1054
+     891: ldc           #113                // String
+     893: astore        16
+     895: aload         9
+     897: invokeinterface #111,  1          // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+     902: invokeinterface #77,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     907: astore        17
+     909: aload         17
+     911: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     916: ifeq          999
+     919: aload         17
+     921: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     926: checkcast     #78                 // class "[B"
+     929: astore        18
+     931: aload         16
+     933: invokevirtual #114                // Method java/lang/String.length:()I
+     936: ifle          961
+     939: new           #27                 // class java/lang/StringBuilder
+     942: dup
+     943: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     946: aload         16
+     948: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     951: ldc           #61                 // String ,
+     953: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     956: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     959: astore        16
+     961: new           #27                 // class java/lang/StringBuilder
+     964: dup
+     965: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     968: aload         16
+     970: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     973: ldc           #115                // String [
+     975: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     978: aload         18
+     980: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     983: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     986: ldc           #107                // String ]
+     988: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     991: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     994: astore        16
+     996: goto          909
+     999: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+    1002: new           #27                 // class java/lang/StringBuilder
+    1005: dup
+    1006: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+    1009: ldc           #67                 // String Error checking data for key [
+    1011: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1014: aload         4
+    1016: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1019: ldc           #116                // String ], bad columns for family [
+    1021: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1024: aload         8
+    1026: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1029: ldc           #117                // String ]:
+    1031: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1034: aload         16
+    1036: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1039: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1042: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+    1047: aload_0
+    1048: aload_1
+    1049: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+    1052: iconst_0
+    1053: ireturn
+    1054: iload_2
+    1055: ifeq          1600
+    1058: aload         9
+    1060: invokeinterface #90,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+    1065: invokeinterface #77,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+    1070: astore        16
+    1072: aload         16
+    1074: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+    1079: ifeq          1600
+    1082: aload         16
+    1084: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+    1089: checkcast     #91                 // class java/util/Map$Entry
+    1092: astore        17
+    1094: aload         17
+    1096: invokeinterface #94,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1101: checkcast     #78                 // class "[B"
+    1104: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+    1107: astore        18
+    1109: aload         10
+    1111: aload         18
+    1113: invokeinterface #118,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+    1118: checkcast     #119                // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto$MutationType
+    1121: astore        19
+    1123: iconst_1
+    1124: istore        20
+    1126: aload         17
+    1128: invokeinterface #92,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+    1133: checkcast     #78                 // class "[B"
+    1136: astore        21
+    1138: aload         19
+    1140: ifnull        1488
+    1143: iconst_1
+    1144: istore        22
+    1146: aload         17
+    1148: invokeinterface #94,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1153: checkcast     #78                 // class "[B"
+    1156: invokestatic  #87                 // Method java/util/Arrays.hashCode:([B)I
+    1159: i2l
+    1160: lstore        23
+    1162: lload         11
+    1164: lload         23
+    1166: ladd
+    1167: lstore        25
+    1169: lload         25
+    1171: invokestatic  #100                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(J)[B
+    1174: astore        27
+    1176: aload         19
+    1178: getstatic     #120                // Field org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto$MutationType.APPEND:Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto$MutationType;
+    1181: if_acmpne     1370
+    1184: aload         21
+    1186: arraylength
+    1187: aload         27
+    1189: arraylength
+    1190: isub
+    1191: istore        28
+    1193: iload         28
+    1195: ifle          1221
+    1198: aload         27
+    1200: iconst_0
+    1201: aload         27
+    1203: arraylength
+    1204: aload         21
+    1206: iload         28
+    1208: aload         27
+    1210: arraylength
+    1211: invokestatic  #121                // Method org/apache/hadoop/hbase/util/Bytes.equals:([BII[BII)Z
+    1214: ifeq          1221
+    1217: iconst_1
+    1218: goto          1222
+    1221: iconst_0
+    1222: istore        22
+    1224: iload         22
+    1226: ifeq          1367
+    1229: iconst_1
+    1230: istore        29
+    1232: iload         28
+    1234: aload         27
+    1236: arraylength
+    1237: isub
+    1238: istore        30
+    1240: iload         30
+    1242: iflt          1277
+    1245: aload         27
+    1247: iconst_0
+    1248: aload         27
+    1250: arraylength
+    1251: aload         21
+    1253: iload         30
+    1255: aload         27
+    1257: arraylength
+    1258: invokestatic  #121                // Method org/apache/hadoop/hbase/util/Bytes.equals:([BII[BII)Z
+    1261: ifne          1267
+    1264: goto          1277
+    1267: iload         30
+    1269: istore        28
+    1271: iinc          29, 1
+    1274: goto          1232
+    1277: iload         29
+    1279: iconst_1
+    1280: if_icmple     1346
+    1283: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+    1286: new           #27                 // class java/lang/StringBuilder
+    1289: dup
+    1290: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+    1293: ldc           #108                // String Warning checking data for key [
+    1295: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1298: aload         4
+    1300: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1303: ldc           #84                 // String ], column family [
+    1305: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1308: aload         8
+    1310: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1313: ldc           #85                 // String ], column [
+    1315: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1318: aload         18
+    1320: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1323: ldc           #122                // String ], appended [
+    1325: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1328: iload         29
+    1330: invokevirtual #75                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1333: ldc           #110                // String ] times
+    1335: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1338: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1341: invokeinterface #52,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+    1346: iload         28
+    1348: newarray       byte
+    1350: astore        30
+    1352: aload         21
+    1354: iconst_0
+    1355: aload         30
+    1357: iconst_0
+    1358: iload         28
+    1360: invokestatic  #123                // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+    1363: aload         30
+    1365: astore        21
+    1367: goto          1393
+    1370: lload         25
+    1372: ldc2_w        #97                 // long 2l
+    1375: lrem
+    1376: lconst_0
+    1377: lcmp
+    1378: ifne          1393
+    1381: aload         21
+    1383: aload         27
+    1385: invokestatic  #124                // Method org/apache/hadoop/hbase/util/Bytes.equals:([B[B)Z
+    1388: istore        22
+    1390: iconst_0
+    1391: istore        20
+    1393: iload         22
+    1395: ifne          1488
+    1398: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+    1401: new           #27                 // class java/lang/StringBuilder
+    1404: dup
+    1405: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+    1408: ldc           #67                 // String Error checking data for key [
+    1410: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1413: aload         4
+    1415: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1418: ldc           #125                // String ], mutation checking failed for column family [
+    1420: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1423: aload         8
+    1425: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1428: ldc           #85                 // String ], column [
+    1430: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1433: aload         18
+    1435: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1438: ldc           #126                // String ]; mutation [
+    1440: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1443: aload         19
+    1445: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    1448: ldc           #127                // String ], hashCode [
+    1450: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1453: lload         25
+    1455: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+    1458: ldc           #128                // String ], verificationNeeded [
+    1460: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1463: iload         20
+    1465: invokevirtual #129                // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+    1468: ldc           #107                // String ]
+    1470: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1473: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1476: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+    1481: aload_0
+    1482: aload_1
+    1483: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+    1486: iconst_0
+    1487: ireturn
+    1488: iload         20
+    1490: ifeq          1597
+    1493: aload_0
+    1494: getfield      #17                 // Field dataGenerator:Lorg/apache/hadoop/hbase/util/test/LoadTestDataGenerator;
+    1497: aload_1
+    1498: invokevirtual #64                 // Method org/apache/hadoop/hbase/client/Result.getRow:()[B
+    1501: aload         7
+    1503: aload         17
+    1505: invokeinterface #94,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+    1510: checkcast     #78                 // class "[B"
+    1513: aload         21
+    1515: invokevirtual #130                // Method org/apache/hadoop/hbase/util/test/LoadTestDataGenerator.verify:([B[B[B[B)Z
+    1518: ifne          1597
+    1521: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+    1524: new           #27                 // class java/lang/StringBuilder
+    1527: dup
+    1528: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+    1531: ldc           #67                 // String Error checking data for key [
+    1533: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1536: aload         4
+    1538: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1541: ldc           #84                 // String ], column family [
+    1543: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1546: aload         8
+    1548: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1551: ldc           #85                 // String ], column [
+    1553: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1556: aload         18
+    1558: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1561: ldc           #131                // String ], mutation [
+    1563: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1566: aload         19
+    1568: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+    1571: ldc           #132                // String ]; value of length
+    1573: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1576: aload         21
+    1578: arraylength
+    1579: invokevirtual #75                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1582: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1585: invokeinterface #69,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+    1590: aload_0
+    1591: aload_1
+    1592: invokespecial #70                 // Method printLocations:(Lorg/apache/hadoop/hbase/client/Result;)V
+    1595: iconst_0
+    1596: ireturn
+    1597: goto          1072
+    1600: goto          162
+    1603: iconst_1
+    1604: ireturn
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static java.lang.String access$100(long);
+    Code:
+       0: lload_0
+       1: invokestatic  #2                  // Method formatTime:(J)Ljava/lang/String;
+       4: areturn
+
+  static boolean access$200(org.apache.hadoop.hbase.util.MultiThreadedAction);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field streamingCounters:Z
+       4: ireturn
+
+  static {};
+    Code:
+       0: ldc           #165                // class org/apache/hadoop/hbase/util/MultiThreadedAction
+       2: invokestatic  #166                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

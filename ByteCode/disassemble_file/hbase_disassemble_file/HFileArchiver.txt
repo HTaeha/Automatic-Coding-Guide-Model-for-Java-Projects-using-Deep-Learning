@@ -1,0 +1,540 @@
+Compiled from "HFileArchiver.java"
+public class org.apache.hadoop.hbase.backup.HFileArchiver {
+  public static boolean exists(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.client.RegionInfo) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokestatic  #2                  // Method org/apache/hadoop/hbase/util/FSUtils.getRootDir:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+       4: astore_3
+       5: aload_3
+       6: aload_2
+       7: invokestatic  #3                  // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionDir:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/fs/Path;
+      10: astore        4
+      12: aload_1
+      13: aload         4
+      15: invokevirtual #4                  // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      18: ireturn
+
+  public static void archiveRegion(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.client.RegionInfo) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokestatic  #2                  // Method org/apache/hadoop/hbase/util/FSUtils.getRootDir:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+       4: astore_3
+       5: aload_1
+       6: aload_3
+       7: aload_3
+       8: aload_2
+       9: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      14: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/FSUtils.getTableDir:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/fs/Path;
+      17: aload_3
+      18: aload_2
+      19: invokestatic  #3                  // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionDir:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/fs/Path;
+      22: invokestatic  #7                  // Method archiveRegion:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)Z
+      25: pop
+      26: return
+
+  public static boolean archiveRegion(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: ifnull        8
+       4: aload_3
+       5: ifnonnull     57
+       8: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      11: new           #9                  // class java/lang/StringBuilder
+      14: dup
+      15: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+      18: ldc           #11                 // String No archive directory could be found because tabledir (
+      20: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      23: aload_2
+      24: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      27: ldc           #14                 // String ) or regiondir (
+      29: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: aload_3
+      33: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      36: ldc           #15                 // String was null. Deleting files instead.
+      38: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      41: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      44: invokeinterface #17,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+      49: aload_0
+      50: aload_3
+      51: invokestatic  #18                 // Method deleteRegionWithoutArchiving:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Z
+      54: pop
+      55: iconst_0
+      56: ireturn
+      57: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      60: ldc           #19                 // String ARCHIVING {}
+      62: aload_3
+      63: invokeinterface #20,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+      68: aload_3
+      69: invokevirtual #21                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+      72: aload_2
+      73: invokevirtual #21                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+      76: invokevirtual #22                 // Method java/lang/String.startsWith:(Ljava/lang/String;)Z
+      79: invokestatic  #23                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkArgument:(Z)V
+      82: aload_1
+      83: aload_2
+      84: invokestatic  #24                 // Method org/apache/hadoop/hbase/util/FSUtils.getTableName:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/TableName;
+      87: aload_3
+      88: invokevirtual #25                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+      91: invokestatic  #26                 // Method org/apache/hadoop/hbase/util/HFileArchiveUtil.getRegionArchiveDir:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      94: astore        4
+      96: new           #27                 // class org/apache/hadoop/hbase/backup/HFileArchiver$FileStatusConverter
+      99: dup
+     100: aload_0
+     101: invokespecial #28                 // Method org/apache/hadoop/hbase/backup/HFileArchiver$FileStatusConverter."<init>":(Lorg/apache/hadoop/fs/FileSystem;)V
+     104: astore        5
+     106: new           #29                 // class java/util/ArrayList
+     109: dup
+     110: invokespecial #30                 // Method java/util/ArrayList."<init>":()V
+     113: astore        6
+     115: new           #31                 // class org/apache/hadoop/hbase/util/FSUtils$DirFilter
+     118: dup
+     119: aload_0
+     120: invokespecial #32                 // Method org/apache/hadoop/hbase/util/FSUtils$DirFilter."<init>":(Lorg/apache/hadoop/fs/FileSystem;)V
+     123: astore        7
+     125: new           #33                 // class org/apache/hadoop/hbase/backup/HFileArchiver$2
+     128: dup
+     129: aload         7
+     131: invokespecial #34                 // Method org/apache/hadoop/hbase/backup/HFileArchiver$2."<init>":(Lorg/apache/hadoop/fs/PathFilter;)V
+     134: astore        8
+     136: aload_0
+     137: aload_3
+     138: aload         8
+     140: invokestatic  #35                 // Method org/apache/hadoop/hbase/util/FSUtils.listStatus:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/PathFilter;)[Lorg/apache/hadoop/fs/FileStatus;
+     143: astore        9
+     145: aload         9
+     147: ifnonnull     167
+     150: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+     153: ldc           #36                 // String Directory {} empty.
+     155: aload_3
+     156: invokeinterface #20,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     161: aload_0
+     162: aload_3
+     163: invokestatic  #18                 // Method deleteRegionWithoutArchiving:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Z
+     166: ireturn
+     167: aload         9
+     169: invokestatic  #37                 // InterfaceMethod java/util/stream/Stream.of:([Ljava/lang/Object;)Ljava/util/stream/Stream;
+     172: aload         5
+     174: invokeinterface #38,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+     179: aload         6
+     181: dup
+     182: invokevirtual #39                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     185: pop
+     186: invokedynamic #40,  0             // InvokeDynamic #0:accept:(Ljava/util/Collection;)Ljava/util/function/Consumer;
+     191: invokeinterface #41,  2           // InterfaceMethod java/util/stream/Stream.forEachOrdered:(Ljava/util/function/Consumer;)V
+     196: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+     199: new           #9                  // class java/lang/StringBuilder
+     202: dup
+     203: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+     206: ldc           #42                 // String Archiving
+     208: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     211: aload         6
+     213: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     216: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     219: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     224: aload_0
+     225: aload         4
+     227: aload         6
+     229: invokestatic  #44                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     232: invokestatic  #45                 // Method resolveAndArchive:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/util/Collection;J)Ljava/util/List;
+     235: astore        10
+     237: aload         10
+     239: invokeinterface #46,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     244: ifne          318
+     247: new           #47                 // class org/apache/hadoop/hbase/backup/FailedArchiveException
+     250: dup
+     251: new           #9                  // class java/lang/StringBuilder
+     254: dup
+     255: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+     258: ldc           #48                 // String Failed to archive/delete all the files for region:
+     260: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     263: aload_3
+     264: invokevirtual #25                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     267: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     270: ldc           #49                 // String  into
+     272: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     275: aload         4
+     277: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     280: ldc           #50                 // String . Something is probably awry on the filesystem.
+     282: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     285: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     288: aload         10
+     290: invokeinterface #51,  1           // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+     295: getstatic     #52                 // Field FUNC_FILE_TO_PATH:Ljava/util/function/Function;
+     298: invokeinterface #38,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+     303: invokestatic  #53                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+     306: invokeinterface #54,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+     311: checkcast     #55                 // class java/util/Collection
+     314: invokespecial #56                 // Method org/apache/hadoop/hbase/backup/FailedArchiveException."<init>":(Ljava/lang/String;Ljava/util/Collection;)V
+     317: athrow
+     318: aload_0
+     319: aload_3
+     320: invokestatic  #18                 // Method deleteRegionWithoutArchiving:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Z
+     323: ireturn
+
+  public static void archiveRegions(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path, java.util.List<org.apache.hadoop.fs.Path>) throws java.io.IOException;
+    Code:
+       0: new           #29                 // class java/util/ArrayList
+       3: dup
+       4: aload         4
+       6: invokeinterface #57,  1           // InterfaceMethod java/util/List.size:()I
+      11: invokespecial #58                 // Method java/util/ArrayList."<init>":(I)V
+      14: astore        5
+      16: aload         4
+      18: invokeinterface #59,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      23: astore        6
+      25: aload         6
+      27: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      32: ifeq          79
+      35: aload         6
+      37: invokeinterface #61,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      42: checkcast     #62                 // class org/apache/hadoop/fs/Path
+      45: astore        7
+      47: aload_0
+      48: invokestatic  #63                 // Method getArchiveExecutor:(Lorg/apache/hadoop/conf/Configuration;)Ljava/util/concurrent/ThreadPoolExecutor;
+      51: aload_1
+      52: aload_2
+      53: aload_3
+      54: aload         7
+      56: invokedynamic #64,  0             // InvokeDynamic #1:call:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)Ljava/util/concurrent/Callable;
+      61: invokevirtual #65                 // Method java/util/concurrent/ThreadPoolExecutor.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+      64: astore        8
+      66: aload         5
+      68: aload         8
+      70: invokeinterface #66,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      75: pop
+      76: goto          25
+      79: aload         5
+      81: invokeinterface #59,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      86: astore        6
+      88: aload         6
+      90: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      95: ifeq          121
+      98: aload         6
+     100: invokeinterface #61,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     105: checkcast     #67                 // class java/util/concurrent/Future
+     108: astore        7
+     110: aload         7
+     112: invokeinterface #68,  1           // InterfaceMethod java/util/concurrent/Future.get:()Ljava/lang/Object;
+     117: pop
+     118: goto          88
+     121: goto          154
+     124: astore        6
+     126: new           #70                 // class java/io/InterruptedIOException
+     129: dup
+     130: aload         6
+     132: invokevirtual #71                 // Method java/lang/InterruptedException.getMessage:()Ljava/lang/String;
+     135: invokespecial #72                 // Method java/io/InterruptedIOException."<init>":(Ljava/lang/String;)V
+     138: athrow
+     139: astore        6
+     141: new           #74                 // class java/io/IOException
+     144: dup
+     145: aload         6
+     147: invokevirtual #75                 // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+     150: invokespecial #76                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+     153: athrow
+     154: return
+    Exception table:
+       from    to  target type
+          79   121   124   Class java/lang/InterruptedException
+          79   121   139   Class java/util/concurrent/ExecutionException
+
+  public static void archiveFamily(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.fs.Path, byte[]) throws java.io.IOException;
+    Code:
+       0: new           #62                 // class org/apache/hadoop/fs/Path
+       3: dup
+       4: aload_3
+       5: new           #62                 // class org/apache/hadoop/fs/Path
+       8: dup
+       9: aload_2
+      10: invokeinterface #92,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      15: aload         4
+      17: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      20: invokespecial #94                 // Method org/apache/hadoop/fs/Path."<init>":(Ljava/lang/String;Ljava/lang/String;)V
+      23: invokespecial #95                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)V
+      26: astore        5
+      28: aload_0
+      29: aload_1
+      30: aload_2
+      31: aload         5
+      33: aload         4
+      35: invokestatic  #96                 // Method archiveFamilyByFamilyDir:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/fs/Path;[B)V
+      38: return
+
+  public static void archiveFamilyByFamilyDir(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.fs.Path, byte[]) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_3
+       2: invokestatic  #97                 // Method org/apache/hadoop/hbase/util/FSUtils.listStatus:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+       5: astore        5
+       7: aload         5
+       9: ifnonnull     34
+      12: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      15: ldc           #98                 // String No files to dispose of in {}, family={}
+      17: aload_2
+      18: invokeinterface #99,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+      23: aload         4
+      25: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      28: invokeinterface #100,  4          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      33: return
+      34: new           #27                 // class org/apache/hadoop/hbase/backup/HFileArchiver$FileStatusConverter
+      37: dup
+      38: aload_0
+      39: invokespecial #28                 // Method org/apache/hadoop/hbase/backup/HFileArchiver$FileStatusConverter."<init>":(Lorg/apache/hadoop/fs/FileSystem;)V
+      42: astore        6
+      44: aload         5
+      46: invokestatic  #37                 // InterfaceMethod java/util/stream/Stream.of:([Ljava/lang/Object;)Ljava/util/stream/Stream;
+      49: aload         6
+      51: invokeinterface #38,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      56: invokestatic  #53                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      59: invokeinterface #54,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      64: checkcast     #55                 // class java/util/Collection
+      67: astore        7
+      69: aload_1
+      70: aload_2
+      71: aload         4
+      73: invokestatic  #101                // Method org/apache/hadoop/hbase/util/HFileArchiveUtil.getStoreArchivePath:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/RegionInfo;[B)Lorg/apache/hadoop/fs/Path;
+      76: astore        8
+      78: aload_0
+      79: aload         8
+      81: aload         7
+      83: invokestatic  #44                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      86: invokestatic  #45                 // Method resolveAndArchive:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/util/Collection;J)Ljava/util/List;
+      89: astore        9
+      91: aload         9
+      93: invokeinterface #46,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      98: ifne          190
+     101: new           #47                 // class org/apache/hadoop/hbase/backup/FailedArchiveException
+     104: dup
+     105: new           #9                  // class java/lang/StringBuilder
+     108: dup
+     109: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+     112: ldc           #48                 // String Failed to archive/delete all the files for region:
+     114: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: aload_2
+     118: invokeinterface #102,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionName:()[B
+     123: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     126: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     129: ldc           #103                // String , family:
+     131: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     134: aload         4
+     136: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     139: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     142: ldc           #49                 // String  into
+     144: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     147: aload         8
+     149: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     152: ldc           #50                 // String . Something is probably awry on the filesystem.
+     154: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     157: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     160: aload         9
+     162: invokeinterface #51,  1           // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+     167: getstatic     #52                 // Field FUNC_FILE_TO_PATH:Ljava/util/function/Function;
+     170: invokeinterface #38,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+     175: invokestatic  #53                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+     178: invokeinterface #54,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+     183: checkcast     #55                 // class java/util/Collection
+     186: invokespecial #56                 // Method org/apache/hadoop/hbase/backup/FailedArchiveException."<init>":(Ljava/lang/String;Ljava/util/Collection;)V
+     189: athrow
+     190: return
+
+  public static void archiveStoreFiles(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.fs.Path, byte[], java.util.Collection<org.apache.hadoop.hbase.regionserver.HStoreFile>) throws java.io.IOException, org.apache.hadoop.hbase.backup.FailedArchiveException;
+    Code:
+       0: aload_1
+       1: ifnonnull     34
+       4: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+       7: ldc           #104                // String Passed filesystem is null, so just deleting files without archiving for {},family={}
+       9: aload_2
+      10: invokeinterface #102,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionName:()[B
+      15: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      18: aload         4
+      20: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      23: invokeinterface #105,  4          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      28: aload         5
+      30: invokestatic  #106                // Method deleteStoreFilesWithoutArchiving:(Ljava/util/Collection;)V
+      33: return
+      34: aload         5
+      36: invokeinterface #107,  1          // InterfaceMethod java/util/Collection.isEmpty:()Z
+      41: ifeq          55
+      44: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      47: ldc           #108                // String No files to dispose of, done!
+      49: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      54: return
+      55: aload_2
+      56: ifnull        64
+      59: aload         4
+      61: ifnonnull     74
+      64: new           #74                 // class java/io/IOException
+      67: dup
+      68: ldc           #109                // String Need to have a region and a family to archive from.
+      70: invokespecial #110                // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      73: athrow
+      74: aload_0
+      75: aload_2
+      76: aload_3
+      77: aload         4
+      79: invokestatic  #111                // Method org/apache/hadoop/hbase/util/HFileArchiveUtil.getStoreArchivePath:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/fs/Path;[B)Lorg/apache/hadoop/fs/Path;
+      82: astore        6
+      84: aload_1
+      85: aload         6
+      87: invokevirtual #112                // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+      90: ifne          139
+      93: new           #74                 // class java/io/IOException
+      96: dup
+      97: new           #9                  // class java/lang/StringBuilder
+     100: dup
+     101: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+     104: ldc           #113                // String Could not make archive directory (
+     106: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     109: aload         6
+     111: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     114: ldc           #114                // String ) for store:
+     116: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     119: aload         4
+     121: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     124: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     127: ldc           #115                // String , deleting compacted files instead.
+     129: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     132: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     135: invokespecial #110                // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     138: athrow
+     139: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+     142: ldc           #116                // String Archiving compacted files.
+     144: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     149: new           #117                // class org/apache/hadoop/hbase/backup/HFileArchiver$StoreToFile
+     152: dup
+     153: aload_1
+     154: invokespecial #118                // Method org/apache/hadoop/hbase/backup/HFileArchiver$StoreToFile."<init>":(Lorg/apache/hadoop/fs/FileSystem;)V
+     157: astore        7
+     159: aload         5
+     161: invokeinterface #119,  1          // InterfaceMethod java/util/Collection.stream:()Ljava/util/stream/Stream;
+     166: aload         7
+     168: invokeinterface #38,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+     173: invokestatic  #53                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+     176: invokeinterface #54,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+     181: checkcast     #55                 // class java/util/Collection
+     184: astore        8
+     186: aload_1
+     187: aload         6
+     189: aload         8
+     191: invokestatic  #44                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     194: invokestatic  #45                 // Method resolveAndArchive:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/util/Collection;J)Ljava/util/List;
+     197: astore        9
+     199: aload         9
+     201: invokeinterface #46,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     206: ifne          298
+     209: new           #47                 // class org/apache/hadoop/hbase/backup/FailedArchiveException
+     212: dup
+     213: new           #9                  // class java/lang/StringBuilder
+     216: dup
+     217: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+     220: ldc           #48                 // String Failed to archive/delete all the files for region:
+     222: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     225: aload_2
+     226: invokeinterface #102,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionName:()[B
+     231: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     234: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     237: ldc           #103                // String , family:
+     239: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     242: aload         4
+     244: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     247: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     250: ldc           #49                 // String  into
+     252: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     255: aload         6
+     257: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     260: ldc           #50                 // String . Something is probably awry on the filesystem.
+     262: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     265: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     268: aload         9
+     270: invokeinterface #51,  1           // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+     275: getstatic     #52                 // Field FUNC_FILE_TO_PATH:Ljava/util/function/Function;
+     278: invokeinterface #38,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+     283: invokestatic  #53                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+     286: invokeinterface #54,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+     291: checkcast     #55                 // class java/util/Collection
+     294: invokespecial #56                 // Method org/apache/hadoop/hbase/backup/FailedArchiveException."<init>":(Ljava/lang/String;Ljava/util/Collection;)V
+     297: athrow
+     298: return
+
+  public static void archiveStoreFile(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.fs.Path, byte[], org.apache.hadoop.fs.Path) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_2
+       2: aload_3
+       3: aload         4
+       5: invokestatic  #111                // Method org/apache/hadoop/hbase/util/HFileArchiveUtil.getStoreArchivePath:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/fs/Path;[B)Lorg/apache/hadoop/fs/Path;
+       8: astore        6
+      10: aload_1
+      11: aload         6
+      13: invokevirtual #112                // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+      16: ifne          65
+      19: new           #74                 // class java/io/IOException
+      22: dup
+      23: new           #9                  // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #113                // String Could not make archive directory (
+      32: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload         6
+      37: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      40: ldc           #114                // String ) for store:
+      42: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      45: aload         4
+      47: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      50: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: ldc           #115                // String , deleting compacted files instead.
+      55: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      58: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      61: invokespecial #110                // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      64: athrow
+      65: invokestatic  #44                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      68: lstore        7
+      70: new           #120                // class org/apache/hadoop/hbase/backup/HFileArchiver$FileablePath
+      73: dup
+      74: aload_1
+      75: aload         5
+      77: invokespecial #121                // Method org/apache/hadoop/hbase/backup/HFileArchiver$FileablePath."<init>":(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+      80: astore        9
+      82: aload         6
+      84: aload         9
+      86: lload         7
+      88: invokestatic  #122                // Method java/lang/Long.toString:(J)Ljava/lang/String;
+      91: invokestatic  #123                // Method resolveAndArchiveFile:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/backup/HFileArchiver$File;Ljava/lang/String;)Z
+      94: ifne          157
+      97: new           #74                 // class java/io/IOException
+     100: dup
+     101: new           #9                  // class java/lang/StringBuilder
+     104: dup
+     105: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+     108: ldc           #124                // String Failed to archive/delete the file for region:
+     110: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     113: aload_2
+     114: invokeinterface #99,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+     119: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     122: ldc           #103                // String , family:
+     124: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     127: aload         4
+     129: invokestatic  #93                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     132: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     135: ldc           #49                 // String  into
+     137: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     140: aload         6
+     142: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     145: ldc           #50                 // String . Something is probably awry on the filesystem.
+     147: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     150: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     153: invokespecial #110                // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     156: athrow
+     157: return
+
+  static {};
+    Code:
+       0: ldc           #146                // class org/apache/hadoop/hbase/backup/HFileArchiver
+       2: invokestatic  #176                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+       8: new           #177                // class org/apache/hadoop/hbase/backup/HFileArchiver$1
+      11: dup
+      12: invokespecial #178                // Method org/apache/hadoop/hbase/backup/HFileArchiver$1."<init>":()V
+      15: putstatic     #52                 // Field FUNC_FILE_TO_PATH:Ljava/util/function/Function;
+      18: return
+}

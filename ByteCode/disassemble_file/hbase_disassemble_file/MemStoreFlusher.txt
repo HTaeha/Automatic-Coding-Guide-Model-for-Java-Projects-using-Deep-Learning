@@ -1,0 +1,811 @@
+Compiled from "MemStoreFlusher.java"
+class org.apache.hadoop.hbase.regionserver.MemStoreFlusher implements org.apache.hadoop.hbase.regionserver.FlushRequester {
+  public org.apache.hadoop.hbase.regionserver.MemStoreFlusher(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.regionserver.HRegionServer);
+    Code:
+       0: aload_0
+       1: invokespecial #13                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #14                 // class java/util/concurrent/DelayQueue
+       8: dup
+       9: invokespecial #15                 // Method java/util/concurrent/DelayQueue."<init>":()V
+      12: putfield      #9                  // Field flushQueue:Ljava/util/concurrent/BlockingQueue;
+      15: aload_0
+      16: new           #16                 // class java/util/HashMap
+      19: dup
+      20: invokespecial #17                 // Method java/util/HashMap."<init>":()V
+      23: putfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+      26: aload_0
+      27: new           #18                 // class java/util/concurrent/atomic/AtomicBoolean
+      30: dup
+      31: invokespecial #19                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":()V
+      34: putfield      #11                 // Field wakeupPending:Ljava/util/concurrent/atomic/AtomicBoolean;
+      37: aload_0
+      38: new           #20                 // class java/util/concurrent/locks/ReentrantReadWriteLock
+      41: dup
+      42: invokespecial #21                 // Method java/util/concurrent/locks/ReentrantReadWriteLock."<init>":()V
+      45: putfield      #22                 // Field lock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      48: aload_0
+      49: new           #23                 // class java/lang/Object
+      52: dup
+      53: invokespecial #13                 // Method java/lang/Object."<init>":()V
+      56: putfield      #24                 // Field blockSignal:Ljava/lang/Object;
+      59: aload_0
+      60: new           #25                 // class java/util/concurrent/atomic/LongAdder
+      63: dup
+      64: invokespecial #26                 // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+      67: putfield      #27                 // Field updatesBlockedMsHighWater:Ljava/util/concurrent/atomic/LongAdder;
+      70: aload_0
+      71: new           #28                 // class java/util/ArrayList
+      74: dup
+      75: iconst_1
+      76: invokespecial #29                 // Method java/util/ArrayList."<init>":(I)V
+      79: putfield      #30                 // Field flushRequestListeners:Ljava/util/List;
+      82: aload_0
+      83: aload_1
+      84: putfield      #31                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      87: aload_0
+      88: aload_2
+      89: putfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      92: aload_0
+      93: aload_1
+      94: ldc           #33                 // String hbase.server.thread.wakefrequency
+      96: ldc2_w        #34                 // long 10000l
+      99: invokevirtual #36                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+     102: putfield      #10                 // Field threadWakeFrequency:J
+     105: aload_0
+     106: aload_1
+     107: ldc           #37                 // String hbase.hstore.blockingWaitTime
+     109: ldc           #38                 // int 90000
+     111: invokevirtual #39                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     114: i2l
+     115: putfield      #40                 // Field blockingWaitTime:J
+     118: aload_1
+     119: ldc           #41                 // String hbase.hstore.flusher.count
+     121: iconst_2
+     122: invokevirtual #39                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     125: istore_3
+     126: aload_0
+     127: iload_3
+     128: anewarray     #42                 // class org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler
+     131: putfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+     134: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     137: new           #44                 // class java/lang/StringBuilder
+     140: dup
+     141: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+     144: ldc           #46                 // String globalMemStoreLimit=
+     146: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     149: aload_0
+     150: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     153: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     156: invokevirtual #49                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalMemStoreLimit:()J
+     159: ldc           #50                 // String
+     161: iconst_1
+     162: invokestatic  #51                 // Method org/apache/hadoop/util/StringUtils$TraditionalBinaryPrefix.long2String:(JLjava/lang/String;I)Ljava/lang/String;
+     165: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     168: ldc           #52                 // String , globalMemStoreLimitLowMark=
+     170: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     173: aload_0
+     174: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     177: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     180: invokevirtual #53                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalMemStoreLimitLowMark:()J
+     183: ldc           #50                 // String
+     185: iconst_1
+     186: invokestatic  #51                 // Method org/apache/hadoop/util/StringUtils$TraditionalBinaryPrefix.long2String:(JLjava/lang/String;I)Ljava/lang/String;
+     189: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     192: ldc           #54                 // String , Offheap=
+     194: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     197: aload_0
+     198: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     201: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     204: invokevirtual #55                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.isOffheap:()Z
+     207: invokevirtual #56                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     210: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     213: invokeinterface #58,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     218: return
+
+  public java.util.concurrent.atomic.LongAdder getUpdatesBlockedMsHighWater();
+    Code:
+       0: aload_0
+       1: getfield      #27                 // Field updatesBlockedMsHighWater:Ljava/util/concurrent/atomic/LongAdder;
+       4: areturn
+
+  public void setFlushType(org.apache.hadoop.hbase.regionserver.FlushType);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #59                 // Field flushType:Lorg/apache/hadoop/hbase/regionserver/FlushType;
+       5: return
+
+  public boolean requestFlush(org.apache.hadoop.hbase.regionserver.HRegion, boolean, org.apache.hadoop.hbase.regionserver.FlushLifeCycleTracker);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+       4: dup
+       5: astore        4
+       7: monitorenter
+       8: aload_0
+       9: getfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+      12: aload_1
+      13: invokeinterface #132,  2          // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      18: ifne          67
+      21: new           #133                // class org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushRegionEntry
+      24: dup
+      25: aload_1
+      26: iload_2
+      27: aload_3
+      28: invokespecial #134                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushRegionEntry."<init>":(Lorg/apache/hadoop/hbase/regionserver/HRegion;ZLorg/apache/hadoop/hbase/regionserver/FlushLifeCycleTracker;)V
+      31: astore        5
+      33: aload_0
+      34: getfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+      37: aload_1
+      38: aload         5
+      40: invokeinterface #135,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      45: pop
+      46: aload_0
+      47: getfield      #9                  // Field flushQueue:Ljava/util/concurrent/BlockingQueue;
+      50: aload         5
+      52: invokeinterface #110,  2          // InterfaceMethod java/util/concurrent/BlockingQueue.add:(Ljava/lang/Object;)Z
+      57: pop
+      58: aload_1
+      59: invokevirtual #136                // Method org/apache/hadoop/hbase/regionserver/HRegion.incrementFlushesQueuedCount:()V
+      62: iconst_1
+      63: aload         4
+      65: monitorexit
+      66: ireturn
+      67: aload_3
+      68: new           #44                 // class java/lang/StringBuilder
+      71: dup
+      72: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+      75: ldc           #137                // String Flush already requested on
+      77: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      80: aload_1
+      81: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      84: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      87: invokeinterface #138,  2          // InterfaceMethod org/apache/hadoop/hbase/regionserver/FlushLifeCycleTracker.notExecuted:(Ljava/lang/String;)V
+      92: iconst_0
+      93: aload         4
+      95: monitorexit
+      96: ireturn
+      97: astore        6
+      99: aload         4
+     101: monitorexit
+     102: aload         6
+     104: athrow
+    Exception table:
+       from    to  target type
+           8    66    97   any
+          67    96    97   any
+          97   102    97   any
+
+  public boolean requestDelayedFlush(org.apache.hadoop.hbase.regionserver.HRegion, long, boolean);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+       4: dup
+       5: astore        5
+       7: monitorenter
+       8: aload_0
+       9: getfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+      12: aload_1
+      13: invokeinterface #132,  2          // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      18: ifne          77
+      21: new           #133                // class org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushRegionEntry
+      24: dup
+      25: aload_1
+      26: iload         4
+      28: getstatic     #105                // Field org/apache/hadoop/hbase/regionserver/FlushLifeCycleTracker.DUMMY:Lorg/apache/hadoop/hbase/regionserver/FlushLifeCycleTracker;
+      31: invokespecial #134                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushRegionEntry."<init>":(Lorg/apache/hadoop/hbase/regionserver/HRegion;ZLorg/apache/hadoop/hbase/regionserver/FlushLifeCycleTracker;)V
+      34: astore        6
+      36: aload         6
+      38: lload_2
+      39: invokevirtual #139                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushRegionEntry.requeue:(J)Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushRegionEntry;
+      42: pop
+      43: aload_0
+      44: getfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+      47: aload_1
+      48: aload         6
+      50: invokeinterface #135,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      55: pop
+      56: aload_0
+      57: getfield      #9                  // Field flushQueue:Ljava/util/concurrent/BlockingQueue;
+      60: aload         6
+      62: invokeinterface #110,  2          // InterfaceMethod java/util/concurrent/BlockingQueue.add:(Ljava/lang/Object;)Z
+      67: pop
+      68: aload_1
+      69: invokevirtual #136                // Method org/apache/hadoop/hbase/regionserver/HRegion.incrementFlushesQueuedCount:()V
+      72: iconst_1
+      73: aload         5
+      75: monitorexit
+      76: ireturn
+      77: iconst_0
+      78: aload         5
+      80: monitorexit
+      81: ireturn
+      82: astore        7
+      84: aload         5
+      86: monitorexit
+      87: aload         7
+      89: athrow
+    Exception table:
+       from    to  target type
+           8    76    82   any
+          77    81    82   any
+          82    87    82   any
+
+  public int getFlushQueueSize();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field flushQueue:Ljava/util/concurrent/BlockingQueue;
+       4: invokeinterface #140,  1          // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+       9: ireturn
+
+  void interruptIfNecessary();
+    Code:
+       0: aload_0
+       1: getfield      #22                 // Field lock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+       4: invokevirtual #141                // Method java/util/concurrent/locks/ReentrantReadWriteLock.writeLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+       7: invokevirtual #142                // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.lock:()V
+      10: aload_0
+      11: getfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+      14: astore_1
+      15: aload_1
+      16: arraylength
+      17: istore_2
+      18: iconst_0
+      19: istore_3
+      20: iload_3
+      21: iload_2
+      22: if_icmpge     46
+      25: aload_1
+      26: iload_3
+      27: aaload
+      28: astore        4
+      30: aload         4
+      32: ifnull        40
+      35: aload         4
+      37: invokevirtual #143                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler.interrupt:()V
+      40: iinc          3, 1
+      43: goto          20
+      46: aload_0
+      47: getfield      #22                 // Field lock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      50: invokevirtual #141                // Method java/util/concurrent/locks/ReentrantReadWriteLock.writeLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      53: invokevirtual #144                // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.unlock:()V
+      56: goto          74
+      59: astore        5
+      61: aload_0
+      62: getfield      #22                 // Field lock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      65: invokevirtual #141                // Method java/util/concurrent/locks/ReentrantReadWriteLock.writeLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      68: invokevirtual #144                // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.unlock:()V
+      71: aload         5
+      73: athrow
+      74: return
+    Exception table:
+       from    to  target type
+          10    46    59   any
+          59    61    59   any
+
+  synchronized void start(java.lang.Thread$UncaughtExceptionHandler);
+    Code:
+       0: new           #44                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+       7: aload_0
+       8: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      11: invokevirtual #145                // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      14: invokevirtual #146                // Method org/apache/hadoop/hbase/ServerName.toShortString:()Ljava/lang/String;
+      17: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      20: ldc           #147                // String -MemStoreFlusher
+      22: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      28: aload_1
+      29: invokestatic  #148                // Method org/apache/hadoop/hbase/util/Threads.newDaemonThreadFactory:(Ljava/lang/String;Ljava/lang/Thread$UncaughtExceptionHandler;)Ljava/util/concurrent/ThreadFactory;
+      32: astore_2
+      33: iconst_0
+      34: istore_3
+      35: iload_3
+      36: aload_0
+      37: getfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+      40: arraylength
+      41: if_icmpge     106
+      44: aload_0
+      45: getfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+      48: iload_3
+      49: new           #42                 // class org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler
+      52: dup
+      53: aload_0
+      54: new           #44                 // class java/lang/StringBuilder
+      57: dup
+      58: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+      61: ldc           #149                // String MemStoreFlusher.
+      63: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: iload_3
+      67: invokevirtual #150                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      70: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      73: aconst_null
+      74: invokespecial #151                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler."<init>":(Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher;Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$1;)V
+      77: aastore
+      78: aload_2
+      79: aload_0
+      80: getfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+      83: iload_3
+      84: aaload
+      85: invokeinterface #152,  2          // InterfaceMethod java/util/concurrent/ThreadFactory.newThread:(Ljava/lang/Runnable;)Ljava/lang/Thread;
+      90: pop
+      91: aload_0
+      92: getfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+      95: iload_3
+      96: aaload
+      97: invokevirtual #153                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler.start:()V
+     100: iinc          3, 1
+     103: goto          35
+     106: return
+
+  boolean isAlive();
+    Code:
+       0: aload_0
+       1: getfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+       4: astore_1
+       5: aload_1
+       6: arraylength
+       7: istore_2
+       8: iconst_0
+       9: istore_3
+      10: iload_3
+      11: iload_2
+      12: if_icmpge     41
+      15: aload_1
+      16: iload_3
+      17: aaload
+      18: astore        4
+      20: aload         4
+      22: ifnull        35
+      25: aload         4
+      27: invokevirtual #154                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler.isAlive:()Z
+      30: ifeq          35
+      33: iconst_1
+      34: ireturn
+      35: iinc          3, 1
+      38: goto          10
+      41: iconst_0
+      42: ireturn
+
+  void join();
+    Code:
+       0: aload_0
+       1: getfield      #43                 // Field flushHandlers:[Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler;
+       4: astore_1
+       5: aload_1
+       6: arraylength
+       7: istore_2
+       8: iconst_0
+       9: istore_3
+      10: iload_3
+      11: iload_2
+      12: if_icmpge     39
+      15: aload_1
+      16: iload_3
+      17: aaload
+      18: astore        4
+      20: aload         4
+      22: ifnull        33
+      25: aload         4
+      27: invokevirtual #155                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushHandler.getThread:()Ljava/lang/Thread;
+      30: invokestatic  #156                // Method org/apache/hadoop/hbase/util/Threads.shutdown:(Ljava/lang/Thread;)V
+      33: iinc          3, 1
+      36: goto          10
+      39: return
+
+  public void reclaimMemStoreMemory();
+    Code:
+       0: ldc           #215                // String MemStoreFluser.reclaimMemStoreMemory
+       2: invokestatic  #216                // Method org/apache/hadoop/hbase/trace/TraceUtil.createTrace:(Ljava/lang/String;)Lorg/apache/htrace/core/TraceScope;
+       5: astore_1
+       6: aconst_null
+       7: astore_2
+       8: aload_0
+       9: invokespecial #204                // Method isAboveHighWaterMark:()Lorg/apache/hadoop/hbase/regionserver/FlushType;
+      12: astore_3
+      13: aload_3
+      14: getstatic     #217                // Field org/apache/hadoop/hbase/regionserver/FlushType.NORMAL:Lorg/apache/hadoop/hbase/regionserver/FlushType;
+      17: if_acmpeq     421
+      20: ldc           #218                // String Force Flush. We're above high water mark.
+      22: invokestatic  #219                // Method org/apache/hadoop/hbase/trace/TraceUtil.addTimelineAnnotation:(Ljava/lang/String;)V
+      25: invokestatic  #161                // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      28: lstore        4
+      30: lload         4
+      32: lstore        6
+      34: aload_0
+      35: getfield      #24                 // Field blockSignal:Ljava/lang/Object;
+      38: dup
+      39: astore        8
+      41: monitorenter
+      42: iconst_0
+      43: istore        9
+      45: lconst_0
+      46: lstore        10
+      48: iconst_0
+      49: istore        12
+      51: aload_0
+      52: invokespecial #204                // Method isAboveHighWaterMark:()Lorg/apache/hadoop/hbase/regionserver/FlushType;
+      55: astore_3
+      56: aload_3
+      57: getstatic     #217                // Field org/apache/hadoop/hbase/regionserver/FlushType.NORMAL:Lorg/apache/hadoop/hbase/regionserver/FlushType;
+      60: if_acmpeq     312
+      63: aload_0
+      64: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      67: invokevirtual #220                // Method org/apache/hadoop/hbase/regionserver/HRegionServer.isStopped:()Z
+      70: ifne          312
+      73: aload_0
+      74: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      77: getfield      #221                // Field org/apache/hadoop/hbase/regionserver/HRegionServer.cacheFlusher:Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher;
+      80: aload_3
+      81: invokevirtual #222                // Method setFlushType:(Lorg/apache/hadoop/hbase/regionserver/FlushType;)V
+      84: iload         9
+      86: ifne          230
+      89: invokestatic  #161                // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      92: lstore        10
+      94: aload_0
+      95: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      98: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     101: invokevirtual #55                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.isOffheap:()Z
+     104: ifne          136
+     107: aload_0
+     108: ldc           #223                // String global memstore heapsize
+     110: aload_0
+     111: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     114: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     117: invokevirtual #94                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalMemStoreHeapSize:()J
+     120: aload_0
+     121: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     124: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     127: invokevirtual #49                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalMemStoreLimit:()J
+     130: invokespecial #224                // Method logMsg:(Ljava/lang/String;JJ)V
+     133: goto          230
+     136: getstatic     #60                 // Field org/apache/hadoop/hbase/regionserver/MemStoreFlusher$2.$SwitchMap$org$apache$hadoop$hbase$regionserver$FlushType:[I
+     139: aload_3
+     140: invokevirtual #61                 // Method org/apache/hadoop/hbase/regionserver/FlushType.ordinal:()I
+     143: iaload
+     144: lookupswitch  { // 2
+                     1: 172
+                     3: 201
+               default: 230
+          }
+     172: aload_0
+     173: ldc           #225                // String the global offheap memstore datasize
+     175: aload_0
+     176: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     179: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     182: invokevirtual #92                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalMemStoreOffHeapSize:()J
+     185: aload_0
+     186: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     189: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     192: invokevirtual #49                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalMemStoreLimit:()J
+     195: invokespecial #224                // Method logMsg:(Ljava/lang/String;JJ)V
+     198: goto          230
+     201: aload_0
+     202: ldc           #223                // String global memstore heapsize
+     204: aload_0
+     205: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     208: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     211: invokevirtual #94                 // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalMemStoreHeapSize:()J
+     214: aload_0
+     215: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     218: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+     221: invokevirtual #226                // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.getGlobalOnHeapMemStoreLimit:()J
+     224: invokespecial #224                // Method logMsg:(Ljava/lang/String;JJ)V
+     227: goto          230
+     230: iconst_1
+     231: istore        9
+     233: aload_0
+     234: invokespecial #3                  // Method wakeupFlushThread:()V
+     237: aload_0
+     238: getfield      #24                 // Field blockSignal:Ljava/lang/Object;
+     241: ldc2_w        #227                // long 5000l
+     244: invokevirtual #229                // Method java/lang/Object.wait:(J)V
+     247: goto          265
+     250: astore        13
+     252: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     255: ldc           #231                // String Interrupted while waiting
+     257: invokeinterface #232,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     262: iconst_1
+     263: istore        12
+     265: invokestatic  #161                // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     268: lstore        13
+     270: lload         13
+     272: lload         6
+     274: lcmp
+     275: iflt          304
+     278: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     281: ldc           #233                // String Memstore is above high water mark and block {} ms
+     283: lload         13
+     285: lload         4
+     287: lsub
+     288: invokestatic  #170                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     291: invokeinterface #234,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+     296: lload         13
+     298: ldc2_w        #235                // long 1000l
+     301: ladd
+     302: lstore        6
+     304: aload_0
+     305: invokespecial #204                // Method isAboveHighWaterMark:()Lorg/apache/hadoop/hbase/regionserver/FlushType;
+     308: astore_3
+     309: goto          56
+     312: iload         12
+     314: ifeq          342
+     317: invokestatic  #174                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     320: invokevirtual #237                // Method java/lang/Thread.interrupt:()V
+     323: goto          342
+     326: astore        15
+     328: iload         12
+     330: ifeq          339
+     333: invokestatic  #174                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     336: invokevirtual #237                // Method java/lang/Thread.interrupt:()V
+     339: aload         15
+     341: athrow
+     342: iload         9
+     344: ifeq          404
+     347: invokestatic  #161                // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     350: lload         10
+     352: lsub
+     353: lstore        13
+     355: lload         13
+     357: lconst_0
+     358: lcmp
+     359: ifle          371
+     362: aload_0
+     363: getfield      #27                 // Field updatesBlockedMsHighWater:Ljava/util/concurrent/atomic/LongAdder;
+     366: lload         13
+     368: invokevirtual #238                // Method java/util/concurrent/atomic/LongAdder.add:(J)V
+     371: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     374: new           #44                 // class java/lang/StringBuilder
+     377: dup
+     378: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+     381: ldc           #239                // String Unblocking updates for server
+     383: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     386: aload_0
+     387: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     390: invokevirtual #240                // Method org/apache/hadoop/hbase/regionserver/HRegionServer.toString:()Ljava/lang/String;
+     393: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     396: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     399: invokeinterface #58,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     404: aload         8
+     406: monitorexit
+     407: goto          418
+     410: astore        16
+     412: aload         8
+     414: monitorexit
+     415: aload         16
+     417: athrow
+     418: goto          448
+     421: aload_0
+     422: invokespecial #7                  // Method isAboveLowWaterMark:()Lorg/apache/hadoop/hbase/regionserver/FlushType;
+     425: astore_3
+     426: aload_3
+     427: getstatic     #217                // Field org/apache/hadoop/hbase/regionserver/FlushType.NORMAL:Lorg/apache/hadoop/hbase/regionserver/FlushType;
+     430: if_acmpeq     448
+     433: aload_0
+     434: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     437: getfield      #221                // Field org/apache/hadoop/hbase/regionserver/HRegionServer.cacheFlusher:Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher;
+     440: aload_3
+     441: invokevirtual #222                // Method setFlushType:(Lorg/apache/hadoop/hbase/regionserver/FlushType;)V
+     444: aload_0
+     445: invokespecial #3                  // Method wakeupFlushThread:()V
+     448: aload_1
+     449: ifnull        519
+     452: aload_2
+     453: ifnull        472
+     456: aload_1
+     457: invokevirtual #241                // Method org/apache/htrace/core/TraceScope.close:()V
+     460: goto          519
+     463: astore_3
+     464: aload_2
+     465: aload_3
+     466: invokevirtual #243                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     469: goto          519
+     472: aload_1
+     473: invokevirtual #241                // Method org/apache/htrace/core/TraceScope.close:()V
+     476: goto          519
+     479: astore_3
+     480: aload_3
+     481: astore_2
+     482: aload_3
+     483: athrow
+     484: astore        17
+     486: aload_1
+     487: ifnull        516
+     490: aload_2
+     491: ifnull        512
+     494: aload_1
+     495: invokevirtual #241                // Method org/apache/htrace/core/TraceScope.close:()V
+     498: goto          516
+     501: astore        18
+     503: aload_2
+     504: aload         18
+     506: invokevirtual #243                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     509: goto          516
+     512: aload_1
+     513: invokevirtual #241                // Method org/apache/htrace/core/TraceScope.close:()V
+     516: aload         17
+     518: athrow
+     519: return
+    Exception table:
+       from    to  target type
+         237   247   250   Class java/lang/InterruptedException
+          51   312   326   any
+         326   328   326   any
+          42   407   410   any
+         410   415   410   any
+         456   460   463   Class java/lang/Throwable
+           8   448   479   Class java/lang/Throwable
+           8   448   484   any
+         494   498   501   Class java/lang/Throwable
+         479   486   484   any
+
+  public java.lang.String toString();
+    Code:
+       0: new           #44                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #246                // String flush_queue=
+       9: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: getfield      #9                  // Field flushQueue:Ljava/util/concurrent/BlockingQueue;
+      16: invokeinterface #140,  1          // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      21: invokevirtual #150                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      24: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      27: areturn
+
+  public java.lang.String dumpQueue();
+    Code:
+       0: new           #44                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: ldc           #247                // String Flush Queue Queue dump:\n
+      11: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      14: pop
+      15: aload_1
+      16: ldc           #248                // String   Flush Queue:\n
+      18: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      21: pop
+      22: aload_0
+      23: getfield      #9                  // Field flushQueue:Ljava/util/concurrent/BlockingQueue;
+      26: invokeinterface #249,  1          // InterfaceMethod java/util/concurrent/BlockingQueue.iterator:()Ljava/util/Iterator;
+      31: astore_2
+      32: aload_2
+      33: invokeinterface #113,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      38: ifeq          86
+      41: aload_1
+      42: new           #44                 // class java/lang/StringBuilder
+      45: dup
+      46: invokespecial #45                 // Method java/lang/StringBuilder."<init>":()V
+      49: ldc           #250                // String
+      51: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      54: aload_2
+      55: invokeinterface #114,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      60: checkcast     #251                // class org/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushQueueEntry
+      63: invokevirtual #252                // Method java/lang/Object.toString:()Ljava/lang/String;
+      66: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      72: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: pop
+      76: aload_1
+      77: ldc           #253                // String \n
+      79: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      82: pop
+      83: goto          32
+      86: aload_1
+      87: invokevirtual #57                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      90: areturn
+
+  public void registerFlushRequestListener(org.apache.hadoop.hbase.regionserver.FlushRequestListener);
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field flushRequestListeners:Ljava/util/List;
+       4: aload_1
+       5: invokeinterface #254,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      10: pop
+      11: return
+
+  public boolean unregisterFlushRequestListener(org.apache.hadoop.hbase.regionserver.FlushRequestListener);
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field flushRequestListeners:Ljava/util/List;
+       4: aload_1
+       5: invokeinterface #255,  2          // InterfaceMethod java/util/List.remove:(Ljava/lang/Object;)Z
+      10: ireturn
+
+  public void setGlobalMemStoreLimit(long);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       4: invokevirtual #48                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerAccounting:()Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+       7: lload_1
+       8: invokevirtual #256                // Method org/apache/hadoop/hbase/regionserver/RegionServerAccounting.setGlobalMemStoreLimits:(J)V
+      11: aload_0
+      12: invokevirtual #257                // Method reclaimMemStoreMemory:()V
+      15: return
+
+  static org.apache.hadoop.hbase.regionserver.HRegionServer access$000(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       4: areturn
+
+  static java.util.concurrent.atomic.AtomicBoolean access$100(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field wakeupPending:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: areturn
+
+  static long access$200(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field threadWakeFrequency:J
+       4: lreturn
+
+  static java.util.concurrent.BlockingQueue access$300(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field flushQueue:Ljava/util/concurrent/BlockingQueue;
+       4: areturn
+
+  static org.apache.hadoop.hbase.regionserver.MemStoreFlusher$FlushQueueEntry access$400();
+    Code:
+       0: getstatic     #8                  // Field WAKEUPFLUSH_INSTANCE:Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushQueueEntry;
+       3: areturn
+
+  static org.apache.hadoop.hbase.regionserver.FlushType access$500(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method isAboveLowWaterMark:()Lorg/apache/hadoop/hbase/regionserver/FlushType;
+       4: areturn
+
+  static org.slf4j.Logger access$600();
+    Code:
+       0: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static boolean access$700(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: invokespecial #5                  // Method flushOneForGlobalPressure:()Z
+       4: ireturn
+
+  static void access$800(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method wakeUpIfBlocking:()V
+       4: return
+
+  static void access$900(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method wakeupFlushThread:()V
+       4: return
+
+  static boolean access$1000(org.apache.hadoop.hbase.regionserver.MemStoreFlusher, org.apache.hadoop.hbase.regionserver.MemStoreFlusher$FlushRegionEntry);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #2                  // Method flushRegion:(Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushRegionEntry;)Z
+       5: ireturn
+
+  static java.util.Map access$1100(org.apache.hadoop.hbase.regionserver.MemStoreFlusher);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field regionsInQueue:Ljava/util/Map;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc_w         #258                // class org/apache/hadoop/hbase/regionserver/MemStoreFlusher
+       3: invokestatic  #259                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       6: putstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+       9: new           #260                // class org/apache/hadoop/hbase/regionserver/MemStoreFlusher$1
+      12: dup
+      13: invokespecial #261                // Method org/apache/hadoop/hbase/regionserver/MemStoreFlusher$1."<init>":()V
+      16: putstatic     #8                  // Field WAKEUPFLUSH_INSTANCE:Lorg/apache/hadoop/hbase/regionserver/MemStoreFlusher$FlushQueueEntry;
+      19: return
+}

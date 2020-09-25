@@ -1,0 +1,461 @@
+Compiled from "BlockingRpcConnection.java"
+class org.apache.hadoop.hbase.ipc.BlockingRpcConnection extends org.apache.hadoop.hbase.ipc.RpcConnection implements java.lang.Runnable {
+  protected java.net.Socket socket;
+
+  static final boolean $assertionsDisabled;
+
+  org.apache.hadoop.hbase.ipc.BlockingRpcConnection(org.apache.hadoop.hbase.ipc.BlockingRpcClient, org.apache.hadoop.hbase.ipc.ConnectionId) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: getfield      #9                  // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.conf:Lorg/apache/hadoop/conf/Configuration;
+       5: getstatic     #10                 // Field org/apache/hadoop/hbase/ipc/AbstractRpcClient.WHEEL_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+       8: aload_2
+       9: aload_1
+      10: getfield      #11                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.clusterId:Ljava/lang/String;
+      13: aload_1
+      14: getfield      #12                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+      17: invokevirtual #13                 // Method org/apache/hadoop/hbase/security/UserProvider.isHBaseSecurityEnabled:()Z
+      20: aload_1
+      21: getfield      #14                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.codec:Lorg/apache/hadoop/hbase/codec/Codec;
+      24: aload_1
+      25: getfield      #15                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.compressor:Lorg/apache/hadoop/io/compress/CompressionCodec;
+      28: invokespecial #16                 // Method org/apache/hadoop/hbase/ipc/RpcConnection."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;Lorg/apache/hadoop/hbase/ipc/ConnectionId;Ljava/lang/String;ZLorg/apache/hadoop/hbase/codec/Codec;Lorg/apache/hadoop/io/compress/CompressionCodec;)V
+      31: aload_0
+      32: aconst_null
+      33: putfield      #17                 // Field socket:Ljava/net/Socket;
+      36: aload_0
+      37: new           #18                 // class java/util/concurrent/ConcurrentHashMap
+      40: dup
+      41: invokespecial #19                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      44: putfield      #8                  // Field calls:Ljava/util/concurrent/ConcurrentMap;
+      47: aload_0
+      48: iconst_0
+      49: putfield      #7                  // Field closed:Z
+      52: aload_0
+      53: iconst_0
+      54: putfield      #20                 // Field waitingConnectionHeaderResponse:Z
+      57: aload_0
+      58: aload_1
+      59: putfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      62: aload_2
+      63: invokevirtual #22                 // Method org/apache/hadoop/hbase/ipc/ConnectionId.getAddress:()Ljava/net/InetSocketAddress;
+      66: invokevirtual #23                 // Method java/net/InetSocketAddress.isUnresolved:()Z
+      69: ifeq          105
+      72: new           #24                 // class java/net/UnknownHostException
+      75: dup
+      76: new           #25                 // class java/lang/StringBuilder
+      79: dup
+      80: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      83: ldc           #27                 // String unknown host:
+      85: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      88: aload_2
+      89: invokevirtual #22                 // Method org/apache/hadoop/hbase/ipc/ConnectionId.getAddress:()Ljava/net/InetSocketAddress;
+      92: invokevirtual #29                 // Method java/net/InetSocketAddress.getHostName:()Ljava/lang/String;
+      95: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      98: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     101: invokespecial #31                 // Method java/net/UnknownHostException."<init>":(Ljava/lang/String;)V
+     104: athrow
+     105: aload_0
+     106: aload_0
+     107: invokevirtual #32                 // Method getConnectionHeaderPreamble:()[B
+     110: putfield      #33                 // Field connectionHeaderPreamble:[B
+     113: aload_0
+     114: invokevirtual #34                 // Method getConnectionHeader:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeader;
+     117: astore_3
+     118: new           #35                 // class org/apache/hadoop/hbase/io/ByteArrayOutputStream
+     121: dup
+     122: iconst_4
+     123: aload_3
+     124: invokevirtual #36                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeader.getSerializedSize:()I
+     127: iadd
+     128: invokespecial #37                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream."<init>":(I)V
+     131: astore        4
+     133: new           #38                 // class java/io/DataOutputStream
+     136: dup
+     137: aload         4
+     139: invokespecial #39                 // Method java/io/DataOutputStream."<init>":(Ljava/io/OutputStream;)V
+     142: astore        5
+     144: aload         5
+     146: aload_3
+     147: invokevirtual #36                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeader.getSerializedSize:()I
+     150: invokevirtual #40                 // Method java/io/DataOutputStream.writeInt:(I)V
+     153: aload_3
+     154: aload         5
+     156: invokevirtual #41                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeader.writeTo:(Ljava/io/OutputStream;)V
+     159: getstatic     #42                 // Field $assertionsDisabled:Z
+     162: ifne          187
+     165: aload         4
+     167: invokevirtual #43                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+     170: iconst_4
+     171: aload_3
+     172: invokevirtual #36                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeader.getSerializedSize:()I
+     175: iadd
+     176: if_icmpeq     187
+     179: new           #44                 // class java/lang/AssertionError
+     182: dup
+     183: invokespecial #45                 // Method java/lang/AssertionError."<init>":()V
+     186: athrow
+     187: aload_0
+     188: aload         4
+     190: invokevirtual #46                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.getBuffer:()[B
+     193: putfield      #47                 // Field connectionHeaderWithLength:[B
+     196: aload_2
+     197: getfield      #48                 // Field org/apache/hadoop/hbase/ipc/ConnectionId.ticket:Lorg/apache/hadoop/hbase/security/User;
+     200: invokevirtual #49                 // Method org/apache/hadoop/hbase/security/User.getUGI:()Lorg/apache/hadoop/security/UserGroupInformation;
+     203: astore        6
+     205: aload_0
+     206: new           #25                 // class java/lang/StringBuilder
+     209: dup
+     210: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     213: ldc           #50                 // String IPC Client (
+     215: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     218: aload_0
+     219: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+     222: getfield      #51                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.socketFactory:Ljavax/net/SocketFactory;
+     225: invokevirtual #52                 // Method java/lang/Object.hashCode:()I
+     228: invokevirtual #53                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     231: ldc           #54                 // String ) connection to
+     233: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     236: aload_2
+     237: invokevirtual #22                 // Method org/apache/hadoop/hbase/ipc/ConnectionId.getAddress:()Ljava/net/InetSocketAddress;
+     240: invokevirtual #55                 // Method java/net/InetSocketAddress.toString:()Ljava/lang/String;
+     243: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     246: aload         6
+     248: ifnonnull     256
+     251: ldc           #56                 // String  from an unknown user
+     253: goto          279
+     256: new           #25                 // class java/lang/StringBuilder
+     259: dup
+     260: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     263: ldc           #57                 // String  from
+     265: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     268: aload         6
+     270: invokevirtual #58                 // Method org/apache/hadoop/security/UserGroupInformation.getUserName:()Ljava/lang/String;
+     273: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     276: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     279: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     282: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     285: putfield      #59                 // Field threadName:Ljava/lang/String;
+     288: aload_0
+     289: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+     292: getfield      #9                  // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.conf:Lorg/apache/hadoop/conf/Configuration;
+     295: ldc           #61                 // String hbase.ipc.client.specificThreadForWriting
+     297: iconst_0
+     298: invokevirtual #62                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     301: ifeq          337
+     304: aload_0
+     305: new           #63                 // class org/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender
+     308: dup
+     309: aload_0
+     310: aload_0
+     311: getfield      #59                 // Field threadName:Ljava/lang/String;
+     314: aload_0
+     315: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+     318: getfield      #9                  // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.conf:Lorg/apache/hadoop/conf/Configuration;
+     321: invokespecial #64                 // Method org/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender."<init>":(Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection;Ljava/lang/String;Lorg/apache/hadoop/conf/Configuration;)V
+     324: putfield      #1                  // Field callSender:Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender;
+     327: aload_0
+     328: getfield      #1                  // Field callSender:Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender;
+     331: invokevirtual #65                 // Method org/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender.start:()V
+     334: goto          342
+     337: aload_0
+     338: aconst_null
+     339: putfield      #1                  // Field callSender:Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender;
+     342: return
+
+  protected void setupConnection() throws java.io.IOException;
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: aload_0
+       5: aload_0
+       6: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+       9: getfield      #51                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.socketFactory:Ljavax/net/SocketFactory;
+      12: invokevirtual #66                 // Method javax/net/SocketFactory.createSocket:()Ljava/net/Socket;
+      15: putfield      #17                 // Field socket:Ljava/net/Socket;
+      18: aload_0
+      19: getfield      #17                 // Field socket:Ljava/net/Socket;
+      22: aload_0
+      23: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      26: invokevirtual #67                 // Method org/apache/hadoop/hbase/ipc/BlockingRpcClient.isTcpNoDelay:()Z
+      29: invokevirtual #68                 // Method java/net/Socket.setTcpNoDelay:(Z)V
+      32: aload_0
+      33: getfield      #17                 // Field socket:Ljava/net/Socket;
+      36: aload_0
+      37: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      40: getfield      #69                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.tcpKeepAlive:Z
+      43: invokevirtual #70                 // Method java/net/Socket.setKeepAlive:(Z)V
+      46: aload_0
+      47: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      50: getfield      #71                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.localAddr:Ljava/net/SocketAddress;
+      53: ifnull        70
+      56: aload_0
+      57: getfield      #17                 // Field socket:Ljava/net/Socket;
+      60: aload_0
+      61: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      64: getfield      #71                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.localAddr:Ljava/net/SocketAddress;
+      67: invokevirtual #72                 // Method java/net/Socket.bind:(Ljava/net/SocketAddress;)V
+      70: aload_0
+      71: getfield      #17                 // Field socket:Ljava/net/Socket;
+      74: aload_0
+      75: getfield      #73                 // Field remoteId:Lorg/apache/hadoop/hbase/ipc/ConnectionId;
+      78: invokevirtual #22                 // Method org/apache/hadoop/hbase/ipc/ConnectionId.getAddress:()Ljava/net/InetSocketAddress;
+      81: aload_0
+      82: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      85: getfield      #74                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.connectTO:I
+      88: invokestatic  #75                 // Method org/apache/hadoop/net/NetUtils.connect:(Ljava/net/Socket;Ljava/net/SocketAddress;I)V
+      91: aload_0
+      92: getfield      #17                 // Field socket:Ljava/net/Socket;
+      95: aload_0
+      96: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      99: getfield      #76                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.readTO:I
+     102: invokevirtual #77                 // Method java/net/Socket.setSoTimeout:(I)V
+     105: return
+     106: astore_3
+     107: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+     110: invokeinterface #79,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     115: ifeq          148
+     118: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+     121: new           #25                 // class java/lang/StringBuilder
+     124: dup
+     125: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     128: ldc           #80                 // String Received exception in connection setup.\n
+     130: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     133: aload_3
+     134: invokestatic  #81                 // Method org/apache/hadoop/util/StringUtils.stringifyException:(Ljava/lang/Throwable;)Ljava/lang/String;
+     137: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     140: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     143: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     148: aload_0
+     149: iload_2
+     150: iload_2
+     151: iconst_1
+     152: iadd
+     153: i2s
+     154: istore_2
+     155: aload_0
+     156: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+     159: getfield      #83                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.maxRetries:I
+     162: aload_3
+     163: invokespecial #84                 // Method handleConnectionFailure:(IILjava/io/IOException;)V
+     166: goto          4
+     169: astore_3
+     170: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+     173: invokeinterface #79,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     178: ifeq          211
+     181: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+     184: new           #25                 // class java/lang/StringBuilder
+     187: dup
+     188: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     191: ldc           #80                 // String Received exception in connection setup.\n
+     193: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     196: aload_3
+     197: invokestatic  #81                 // Method org/apache/hadoop/util/StringUtils.stringifyException:(Ljava/lang/Throwable;)Ljava/lang/String;
+     200: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     203: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     206: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     211: aload_0
+     212: iload_1
+     213: iload_1
+     214: iconst_1
+     215: iadd
+     216: i2s
+     217: istore_1
+     218: aload_0
+     219: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+     222: getfield      #83                 // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.maxRetries:I
+     225: aload_3
+     226: invokespecial #84                 // Method handleConnectionFailure:(IILjava/io/IOException;)V
+     229: goto          4
+    Exception table:
+       from    to  target type
+           4   105   106   Class java/net/SocketTimeoutException
+           4   105   169   Class java/io/IOException
+
+  public void run();
+    Code:
+       0: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       3: invokeinterface #110,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+       8: ifeq          54
+      11: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+      14: new           #25                 // class java/lang/StringBuilder
+      17: dup
+      18: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      21: aload_0
+      22: getfield      #59                 // Field threadName:Ljava/lang/String;
+      25: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      28: ldc           #111                // String : starting, connections
+      30: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload_0
+      34: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+      37: getfield      #112                // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+      40: invokevirtual #113                // Method org/apache/hadoop/hbase/util/PoolMap.size:()I
+      43: invokevirtual #53                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      46: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      49: invokeinterface #114,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      54: aload_0
+      55: invokespecial #115                // Method waitForWork:()Z
+      58: ifeq          68
+      61: aload_0
+      62: invokespecial #116                // Method readResponse:()V
+      65: goto          54
+      68: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+      71: invokeinterface #110,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      76: ifeq          122
+      79: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+      82: new           #25                 // class java/lang/StringBuilder
+      85: dup
+      86: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      89: aload_0
+      90: getfield      #59                 // Field threadName:Ljava/lang/String;
+      93: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: ldc           #117                // String : stopped, connections
+      98: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     101: aload_0
+     102: getfield      #21                 // Field rpcClient:Lorg/apache/hadoop/hbase/ipc/BlockingRpcClient;
+     105: getfield      #112                // Field org/apache/hadoop/hbase/ipc/BlockingRpcClient.connections:Lorg/apache/hadoop/hbase/util/PoolMap;
+     108: invokevirtual #113                // Method org/apache/hadoop/hbase/util/PoolMap.size:()I
+     111: invokevirtual #53                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     114: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     117: invokeinterface #114,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     122: return
+
+  protected synchronized void callTimeout(org.apache.hadoop.hbase.ipc.Call);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field calls:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: getfield      #228                // Field org/apache/hadoop/hbase/ipc/Call.id:I
+       8: invokestatic  #229                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      11: invokeinterface #241,  2          // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      16: pop
+      17: return
+
+  public synchronized void shutdown();
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #7                  // Field closed:Z
+       5: aload_0
+       6: getfield      #1                  // Field callSender:Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender;
+       9: ifnull        19
+      12: aload_0
+      13: getfield      #1                  // Field callSender:Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender;
+      16: invokevirtual #275                // Method org/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender.interrupt:()V
+      19: aload_0
+      20: new           #85                 // class java/io/IOException
+      23: dup
+      24: new           #25                 // class java/lang/StringBuilder
+      27: dup
+      28: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      31: ldc_w         #276                // String connection to
+      34: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: aload_0
+      38: getfield      #73                 // Field remoteId:Lorg/apache/hadoop/hbase/ipc/ConnectionId;
+      41: getfield      #141                // Field org/apache/hadoop/hbase/ipc/ConnectionId.address:Ljava/net/InetSocketAddress;
+      44: invokevirtual #94                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      47: ldc_w         #277                // String  closed
+      50: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      56: invokespecial #107                // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      59: invokespecial #4                  // Method closeConn:(Ljava/io/IOException;)V
+      62: return
+
+  public void cleanupConnection();
+    Code:
+       0: return
+
+  public synchronized void sendRequest(org.apache.hadoop.hbase.ipc.Call, org.apache.hadoop.hbase.ipc.HBaseRpcController) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: new           #278                // class org/apache/hadoop/hbase/ipc/BlockingRpcConnection$3
+       4: dup
+       5: aload_0
+       6: aload_1
+       7: invokespecial #279                // Method org/apache/hadoop/hbase/ipc/BlockingRpcConnection$3."<init>":(Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection;Lorg/apache/hadoop/hbase/ipc/Call;)V
+      10: new           #280                // class org/apache/hadoop/hbase/ipc/BlockingRpcConnection$4
+      13: dup
+      14: aload_0
+      15: aload_1
+      16: invokespecial #281                // Method org/apache/hadoop/hbase/ipc/BlockingRpcConnection$4."<init>":(Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection;Lorg/apache/hadoop/hbase/ipc/Call;)V
+      19: invokeinterface #282,  3          // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.notifyOnCancel:(Lorg/apache/hbase/thirdparty/com/google/protobuf/RpcCallback;Lorg/apache/hadoop/hbase/ipc/HBaseRpcController$CancellationCallback;)V
+      24: return
+
+  public synchronized boolean isActive();
+    Code:
+       0: aload_0
+       1: getfield      #102                // Field thread:Ljava/lang/Thread;
+       4: ifnull        11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+
+  static java.util.concurrent.ConcurrentMap access$000(org.apache.hadoop.hbase.ipc.BlockingRpcConnection);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field calls:Ljava/util/concurrent/ConcurrentMap;
+       4: areturn
+
+  static boolean access$100(org.apache.hadoop.hbase.ipc.BlockingRpcConnection);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field closed:Z
+       4: ireturn
+
+  static void access$200(org.apache.hadoop.hbase.ipc.BlockingRpcConnection, org.apache.hadoop.hbase.ipc.Call) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #6                  // Method tracedWriteRequest:(Lorg/apache/hadoop/hbase/ipc/Call;)V
+       5: return
+
+  static org.slf4j.Logger access$300();
+    Code:
+       0: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static void access$400(org.apache.hadoop.hbase.ipc.BlockingRpcConnection, java.io.IOException);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #4                  // Method closeConn:(Ljava/io/IOException;)V
+       5: return
+
+  static void access$500(org.apache.hadoop.hbase.ipc.BlockingRpcConnection);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method disposeSasl:()V
+       4: return
+
+  static boolean access$600(org.apache.hadoop.hbase.ipc.BlockingRpcConnection, java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #2                  // Method setupSaslConnection:(Ljava/io/InputStream;Ljava/io/OutputStream;)Z
+       6: ireturn
+
+  static org.apache.hadoop.hbase.ipc.BlockingRpcConnection$CallSender access$700(org.apache.hadoop.hbase.ipc.BlockingRpcConnection);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field callSender:Lorg/apache/hadoop/hbase/ipc/BlockingRpcConnection$CallSender;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc_w         #283                // class org/apache/hadoop/hbase/ipc/BlockingRpcConnection
+       3: invokevirtual #284                // Method java/lang/Class.desiredAssertionStatus:()Z
+       6: ifne          13
+       9: iconst_1
+      10: goto          14
+      13: iconst_0
+      14: putstatic     #42                 // Field $assertionsDisabled:Z
+      17: ldc_w         #283                // class org/apache/hadoop/hbase/ipc/BlockingRpcConnection
+      20: invokestatic  #285                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      23: putstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+      26: return
+}

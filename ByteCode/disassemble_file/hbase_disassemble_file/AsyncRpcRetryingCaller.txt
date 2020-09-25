@@ -1,0 +1,278 @@
+Compiled from "AsyncRpcRetryingCaller.java"
+public abstract class org.apache.hadoop.hbase.client.AsyncRpcRetryingCaller<T> {
+  protected final long operationTimeoutNs;
+
+  protected final org.apache.hadoop.hbase.client.AsyncConnectionImpl conn;
+
+  protected final java.util.concurrent.CompletableFuture<T> future;
+
+  protected final org.apache.hadoop.hbase.ipc.HBaseRpcController controller;
+
+  public org.apache.hadoop.hbase.client.AsyncRpcRetryingCaller(org.apache.hbase.thirdparty.io.netty.util.Timer, org.apache.hadoop.hbase.client.AsyncConnectionImpl, int, long, long, int, long, long, int);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_1
+       6: putfield      #2                  // Field tries:I
+       9: aload_0
+      10: aload_1
+      11: putfield      #3                  // Field retryTimer:Lorg/apache/hbase/thirdparty/io/netty/util/Timer;
+      14: aload_0
+      15: aload_2
+      16: putfield      #4                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      19: aload_0
+      20: iload_3
+      21: putfield      #5                  // Field priority:I
+      24: aload_0
+      25: lload         4
+      27: putfield      #6                  // Field pauseNs:J
+      30: aload_0
+      31: lload         6
+      33: putfield      #7                  // Field pauseForCQTBENs:J
+      36: aload_0
+      37: iload         8
+      39: putfield      #8                  // Field maxAttempts:I
+      42: aload_0
+      43: lload         9
+      45: putfield      #9                  // Field operationTimeoutNs:J
+      48: aload_0
+      49: lload         11
+      51: putfield      #10                 // Field rpcTimeoutNs:J
+      54: aload_0
+      55: iload         13
+      57: putfield      #11                 // Field startLogErrorsCnt:I
+      60: aload_0
+      61: new           #12                 // class java/util/concurrent/CompletableFuture
+      64: dup
+      65: invokespecial #13                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      68: putfield      #14                 // Field future:Ljava/util/concurrent/CompletableFuture;
+      71: aload_0
+      72: aload_2
+      73: getfield      #15                 // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      76: invokevirtual #16                 // Method org/apache/hadoop/hbase/ipc/RpcControllerFactory.newController:()Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      79: putfield      #17                 // Field controller:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      82: aload_0
+      83: getfield      #17                 // Field controller:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      86: iload_3
+      87: invokeinterface #18,  2           // InterfaceMethod org/apache/hadoop/hbase/ipc/HBaseRpcController.setPriority:(I)V
+      92: aload_0
+      93: new           #19                 // class java/util/ArrayList
+      96: dup
+      97: invokespecial #20                 // Method java/util/ArrayList."<init>":()V
+     100: putfield      #21                 // Field exceptions:Ljava/util/List;
+     103: aload_0
+     104: invokestatic  #22                 // Method java/lang/System.nanoTime:()J
+     107: putfield      #23                 // Field startNs:J
+     110: return
+
+  protected final long remainingTimeNs();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field operationTimeoutNs:J
+       4: invokestatic  #22                 // Method java/lang/System.nanoTime:()J
+       7: aload_0
+       8: getfield      #23                 // Field startNs:J
+      11: lsub
+      12: lsub
+      13: lreturn
+
+  protected final void completeExceptionally();
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field future:Ljava/util/concurrent/CompletableFuture;
+       4: new           #26                 // class org/apache/hadoop/hbase/client/RetriesExhaustedException
+       7: dup
+       8: aload_0
+       9: getfield      #2                  // Field tries:I
+      12: iconst_1
+      13: isub
+      14: aload_0
+      15: getfield      #21                 // Field exceptions:Ljava/util/List;
+      18: invokespecial #27                 // Method org/apache/hadoop/hbase/client/RetriesExhaustedException."<init>":(ILjava/util/List;)V
+      21: invokevirtual #28                 // Method java/util/concurrent/CompletableFuture.completeExceptionally:(Ljava/lang/Throwable;)Z
+      24: pop
+      25: return
+
+  protected final void resetCallTimeout();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field operationTimeoutNs:J
+       4: lconst_0
+       5: lcmp
+       6: ifle          37
+       9: aload_0
+      10: invokevirtual #29                 // Method remainingTimeNs:()J
+      13: lstore_1
+      14: lload_1
+      15: lconst_0
+      16: lcmp
+      17: ifgt          25
+      20: aload_0
+      21: invokevirtual #30                 // Method completeExceptionally:()V
+      24: return
+      25: lload_1
+      26: aload_0
+      27: getfield      #10                 // Field rpcTimeoutNs:J
+      30: invokestatic  #31                 // Method java/lang/Math.min:(JJ)J
+      33: lstore_1
+      34: goto          42
+      37: aload_0
+      38: getfield      #10                 // Field rpcTimeoutNs:J
+      41: lstore_1
+      42: aload_0
+      43: getfield      #17                 // Field controller:Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;
+      46: lload_1
+      47: aload_0
+      48: getfield      #5                  // Field priority:I
+      51: invokestatic  #32                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.resetController:(Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;JI)V
+      54: return
+
+  protected java.util.Optional<org.apache.hadoop.hbase.TableName> getTableName();
+    Code:
+       0: invokestatic  #38                 // Method java/util/Optional.empty:()Ljava/util/Optional;
+       3: areturn
+
+  protected final void onError(java.lang.Throwable, java.util.function.Supplier<java.lang.String>, java.util.function.Consumer<java.lang.Throwable>);
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field future:Ljava/util/concurrent/CompletableFuture;
+       4: invokevirtual #39                 // Method java/util/concurrent/CompletableFuture.isDone:()Z
+       7: ifeq          31
+      10: getstatic     #40                 // Field LOG:Lorg/slf4j/Logger;
+      13: ldc           #41                 // String The future is already done, canceled={}, give up retrying
+      15: aload_0
+      16: getfield      #14                 // Field future:Ljava/util/concurrent/CompletableFuture;
+      19: invokevirtual #42                 // Method java/util/concurrent/CompletableFuture.isCancelled:()Z
+      22: invokestatic  #43                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      25: invokeinterface #44,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+      30: return
+      31: aload_1
+      32: invokestatic  #45                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.translateException:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+      35: astore        4
+      37: aload         4
+      39: instanceof    #46                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      42: ifeq          64
+      45: aload         4
+      47: instanceof    #47                 // class org/apache/hadoop/hbase/exceptions/ScannerResetException
+      50: ifne          64
+      53: aload_0
+      54: getfield      #14                 // Field future:Ljava/util/concurrent/CompletableFuture;
+      57: aload         4
+      59: invokevirtual #28                 // Method java/util/concurrent/CompletableFuture.completeExceptionally:(Ljava/lang/Throwable;)Z
+      62: pop
+      63: return
+      64: aload_0
+      65: getfield      #2                  // Field tries:I
+      68: aload_0
+      69: getfield      #11                 // Field startLogErrorsCnt:I
+      72: if_icmple     166
+      75: getstatic     #40                 // Field LOG:Lorg/slf4j/Logger;
+      78: new           #48                 // class java/lang/StringBuilder
+      81: dup
+      82: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
+      85: aload_2
+      86: invokeinterface #50,  1           // InterfaceMethod java/util/function/Supplier.get:()Ljava/lang/Object;
+      91: checkcast     #51                 // class java/lang/String
+      94: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      97: ldc           #53                 // String , tries =
+      99: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     102: aload_0
+     103: getfield      #2                  // Field tries:I
+     106: invokevirtual #54                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     109: ldc           #55                 // String , maxAttempts =
+     111: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     114: aload_0
+     115: getfield      #8                  // Field maxAttempts:I
+     118: invokevirtual #54                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     121: ldc           #56                 // String , timeout =
+     123: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     126: getstatic     #24                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+     129: aload_0
+     130: getfield      #9                  // Field operationTimeoutNs:J
+     133: invokevirtual #25                 // Method java/util/concurrent/TimeUnit.toMillis:(J)J
+     136: invokevirtual #57                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     139: ldc           #58                 // String  ms, time elapsed =
+     141: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     144: aload_0
+     145: invokespecial #59                 // Method elapsedMs:()J
+     148: invokevirtual #57                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     151: ldc           #60                 // String  ms
+     153: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     156: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     159: aload         4
+     161: invokeinterface #62,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     166: aload_3
+     167: aload         4
+     169: invokeinterface #63,  2           // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+     174: new           #64                 // class org/apache/hadoop/hbase/client/RetriesExhaustedException$ThrowableWithExtraContext
+     177: dup
+     178: aload         4
+     180: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     183: ldc           #66                 // String
+     185: invokespecial #67                 // Method org/apache/hadoop/hbase/client/RetriesExhaustedException$ThrowableWithExtraContext."<init>":(Ljava/lang/Throwable;JLjava/lang/String;)V
+     188: astore        5
+     190: aload_0
+     191: getfield      #21                 // Field exceptions:Ljava/util/List;
+     194: aload         5
+     196: invokeinterface #68,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     201: pop
+     202: aload_0
+     203: getfield      #2                  // Field tries:I
+     206: aload_0
+     207: getfield      #8                  // Field maxAttempts:I
+     210: if_icmplt     218
+     213: aload_0
+     214: invokevirtual #30                 // Method completeExceptionally:()V
+     217: return
+     218: aload         4
+     220: instanceof    #69                 // class org/apache/hadoop/hbase/NotServingRegionException
+     223: ifne          234
+     226: aload         4
+     228: instanceof    #70                 // class org/apache/hadoop/hbase/client/RegionOfflineException
+     231: ifeq          293
+     234: aload_0
+     235: invokevirtual #71                 // Method getTableName:()Ljava/util/Optional;
+     238: astore        6
+     240: aload         6
+     242: invokevirtual #72                 // Method java/util/Optional.isPresent:()Z
+     245: ifeq          284
+     248: aload_0
+     249: getfield      #4                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+     252: invokevirtual #73                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getAdmin:()Lorg/apache/hadoop/hbase/client/AsyncAdmin;
+     255: aload         6
+     257: invokevirtual #74                 // Method java/util/Optional.get:()Ljava/lang/Object;
+     260: checkcast     #75                 // class org/apache/hadoop/hbase/TableName
+     263: invokeinterface #76,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncAdmin.isTableDisabled:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+     268: aload_0
+     269: aload         4
+     271: aload         6
+     273: invokedynamic #77,  0             // InvokeDynamic #1:accept:(Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCaller;Ljava/lang/Throwable;Ljava/util/Optional;)Ljava/util/function/BiConsumer;
+     278: invokestatic  #78                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+     281: goto          290
+     284: aload_0
+     285: aload         4
+     287: invokespecial #79                 // Method tryScheduleRetry:(Ljava/lang/Throwable;)V
+     290: goto          299
+     293: aload_0
+     294: aload         4
+     296: invokespecial #79                 // Method tryScheduleRetry:(Ljava/lang/Throwable;)V
+     299: return
+
+  protected abstract void doCall();
+
+  java.util.concurrent.CompletableFuture<T> call();
+    Code:
+       0: aload_0
+       1: invokevirtual #80                 // Method doCall:()V
+       4: aload_0
+       5: getfield      #14                 // Field future:Ljava/util/concurrent/CompletableFuture;
+       8: areturn
+
+  static {};
+    Code:
+       0: ldc           #85                 // class org/apache/hadoop/hbase/client/AsyncRpcRetryingCaller
+       2: invokestatic  #86                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #40                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

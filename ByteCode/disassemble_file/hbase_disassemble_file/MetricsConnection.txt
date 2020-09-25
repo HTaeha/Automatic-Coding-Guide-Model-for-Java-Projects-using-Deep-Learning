@@ -1,0 +1,807 @@
+Compiled from "MetricsConnection.java"
+public class org.apache.hadoop.hbase.client.MetricsConnection implements org.apache.hadoop.hbase.client.StatisticTrackable {
+  public static final java.lang.String CLIENT_SIDE_METRICS_ENABLED_KEY;
+
+  protected java.util.concurrent.ConcurrentHashMap<org.apache.hadoop.hbase.ServerName, java.util.concurrent.ConcurrentMap<byte[], org.apache.hadoop.hbase.client.MetricsConnection$RegionStats>> serverStats;
+
+  protected final com.codahale.metrics.Counter metaCacheHits;
+
+  protected final com.codahale.metrics.Counter metaCacheMisses;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$CallTracker getTracker;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$CallTracker scanTracker;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$CallTracker appendTracker;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$CallTracker deleteTracker;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$CallTracker incrementTracker;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$CallTracker putTracker;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$CallTracker multiTracker;
+
+  protected final org.apache.hadoop.hbase.client.MetricsConnection$RunnerStats runnerStats;
+
+  protected final com.codahale.metrics.Counter metaCacheNumClearServer;
+
+  protected final com.codahale.metrics.Counter metaCacheNumClearRegion;
+
+  protected final com.codahale.metrics.Counter hedgedReadOps;
+
+  protected final com.codahale.metrics.Counter hedgedReadWin;
+
+  protected final com.codahale.metrics.Histogram concurrentCallsPerServerHist;
+
+  protected final com.codahale.metrics.Histogram numActionsPerServerHist;
+
+  protected final java.util.concurrent.ConcurrentMap<java.lang.String, com.codahale.metrics.Timer> rpcTimers;
+
+  protected final java.util.concurrent.ConcurrentMap<java.lang.String, com.codahale.metrics.Histogram> rpcHistograms;
+
+  static final boolean $assertionsDisabled;
+
+  public void updateServerStats(org.apache.hadoop.hbase.ServerName, byte[], java.lang.Object);
+    Code:
+       0: aload_3
+       1: instanceof    #3                  // class org/apache/hadoop/hbase/client/Result
+       4: ifne          8
+       7: return
+       8: aload_3
+       9: checkcast     #3                  // class org/apache/hadoop/hbase/client/Result
+      12: astore        4
+      14: aload         4
+      16: invokevirtual #4                  // Method org/apache/hadoop/hbase/client/Result.getStats:()Lorg/apache/hadoop/hbase/client/RegionLoadStats;
+      19: astore        5
+      21: aload         5
+      23: ifnonnull     27
+      26: return
+      27: aload_0
+      28: aload_1
+      29: aload_2
+      30: aload         5
+      32: invokevirtual #5                  // Method updateRegionStats:(Lorg/apache/hadoop/hbase/ServerName;[BLorg/apache/hadoop/hbase/client/RegionLoadStats;)V
+      35: return
+
+  public void updateRegionStats(org.apache.hadoop.hbase.ServerName, byte[], org.apache.hadoop.hbase.client.RegionLoadStats);
+    Code:
+       0: new           #6                  // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       7: aload_1
+       8: invokevirtual #8                  // Method org/apache/hadoop/hbase/ServerName.getServerName:()Ljava/lang/String;
+      11: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      14: ldc           #10                 // String ,
+      16: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: aload_2
+      20: invokestatic  #11                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+      23: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      26: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      29: astore        4
+      31: aload_0
+      32: getfield      #13                 // Field serverStats:Ljava/util/concurrent/ConcurrentHashMap;
+      35: aload_1
+      36: invokedynamic #14,  0             // InvokeDynamic #0:get:()Ljava/util/function/Supplier;
+      41: invokestatic  #15                 // Method org/apache/hadoop/hbase/util/ConcurrentMapUtils.computeIfAbsent:(Ljava/util/concurrent/ConcurrentMap;Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;
+      44: checkcast     #16                 // class java/util/concurrent/ConcurrentMap
+      47: astore        5
+      49: aload         5
+      51: aload_2
+      52: aload_0
+      53: aload         4
+      55: invokedynamic #17,  0             // InvokeDynamic #1:get:(Lorg/apache/hadoop/hbase/client/MetricsConnection;Ljava/lang/String;)Ljava/util/function/Supplier;
+      60: invokestatic  #15                 // Method org/apache/hadoop/hbase/util/ConcurrentMapUtils.computeIfAbsent:(Ljava/util/concurrent/ConcurrentMap;Ljava/lang/Object;Ljava/util/function/Supplier;)Ljava/lang/Object;
+      63: checkcast     #18                 // class org/apache/hadoop/hbase/client/MetricsConnection$RegionStats
+      66: astore        6
+      68: aload         6
+      70: aload_3
+      71: invokevirtual #19                 // Method org/apache/hadoop/hbase/client/MetricsConnection$RegionStats.update:(Lorg/apache/hadoop/hbase/client/RegionLoadStats;)V
+      74: return
+
+  org.apache.hadoop.hbase.client.MetricsConnection(java.lang.String, java.util.function.Supplier<java.util.concurrent.ThreadPoolExecutor>, java.util.function.Supplier<java.util.concurrent.ThreadPoolExecutor>);
+    Code:
+       0: aload_0
+       1: invokespecial #20                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #21                 // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #22                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #13                 // Field serverStats:Ljava/util/concurrent/ConcurrentHashMap;
+      15: aload_0
+      16: new           #23                 // class org/apache/hadoop/hbase/client/MetricsConnection$1
+      19: dup
+      20: aload_0
+      21: invokespecial #24                 // Method org/apache/hadoop/hbase/client/MetricsConnection$1."<init>":(Lorg/apache/hadoop/hbase/client/MetricsConnection;)V
+      24: putfield      #25                 // Field timerFactory:Lorg/apache/hadoop/hbase/client/MetricsConnection$NewMetric;
+      27: aload_0
+      28: new           #26                 // class org/apache/hadoop/hbase/client/MetricsConnection$2
+      31: dup
+      32: aload_0
+      33: invokespecial #27                 // Method org/apache/hadoop/hbase/client/MetricsConnection$2."<init>":(Lorg/apache/hadoop/hbase/client/MetricsConnection;)V
+      36: putfield      #28                 // Field histogramFactory:Lorg/apache/hadoop/hbase/client/MetricsConnection$NewMetric;
+      39: aload_0
+      40: new           #29                 // class org/apache/hadoop/hbase/client/MetricsConnection$3
+      43: dup
+      44: aload_0
+      45: invokespecial #30                 // Method org/apache/hadoop/hbase/client/MetricsConnection$3."<init>":(Lorg/apache/hadoop/hbase/client/MetricsConnection;)V
+      48: putfield      #31                 // Field counterFactory:Lorg/apache/hadoop/hbase/client/MetricsConnection$NewMetric;
+      51: aload_0
+      52: new           #21                 // class java/util/concurrent/ConcurrentHashMap
+      55: dup
+      56: bipush        50
+      58: ldc           #33                 // float 0.75f
+      60: sipush        256
+      63: invokespecial #34                 // Method java/util/concurrent/ConcurrentHashMap."<init>":(IFI)V
+      66: putfield      #35                 // Field rpcTimers:Ljava/util/concurrent/ConcurrentMap;
+      69: aload_0
+      70: new           #21                 // class java/util/concurrent/ConcurrentHashMap
+      73: dup
+      74: bipush        100
+      76: ldc           #33                 // float 0.75f
+      78: sipush        256
+      81: invokespecial #34                 // Method java/util/concurrent/ConcurrentHashMap."<init>":(IFI)V
+      84: putfield      #36                 // Field rpcHistograms:Ljava/util/concurrent/ConcurrentMap;
+      87: aload_0
+      88: new           #21                 // class java/util/concurrent/ConcurrentHashMap
+      91: dup
+      92: bipush        50
+      94: ldc           #33                 // float 0.75f
+      96: sipush        256
+      99: invokespecial #34                 // Method java/util/concurrent/ConcurrentHashMap."<init>":(IFI)V
+     102: putfield      #37                 // Field cacheDroppingExceptions:Ljava/util/concurrent/ConcurrentMap;
+     105: aload_0
+     106: aload_1
+     107: putfield      #38                 // Field scope:Ljava/lang/String;
+     110: aload_0
+     111: new           #39                 // class com/codahale/metrics/MetricRegistry
+     114: dup
+     115: invokespecial #40                 // Method com/codahale/metrics/MetricRegistry."<init>":()V
+     118: putfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     121: aload_0
+     122: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     125: aload_0
+     126: invokevirtual #41                 // Method getExecutorPoolName:()Ljava/lang/String;
+     129: new           #42                 // class org/apache/hadoop/hbase/client/MetricsConnection$4
+     132: dup
+     133: aload_0
+     134: aload_2
+     135: invokespecial #43                 // Method org/apache/hadoop/hbase/client/MetricsConnection$4."<init>":(Lorg/apache/hadoop/hbase/client/MetricsConnection;Ljava/util/function/Supplier;)V
+     138: invokevirtual #44                 // Method com/codahale/metrics/MetricRegistry.register:(Ljava/lang/String;Lcom/codahale/metrics/Metric;)Lcom/codahale/metrics/Metric;
+     141: pop
+     142: aload_0
+     143: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     146: aload_0
+     147: invokevirtual #45                 // Method getMetaPoolName:()Ljava/lang/String;
+     150: new           #46                 // class org/apache/hadoop/hbase/client/MetricsConnection$5
+     153: dup
+     154: aload_0
+     155: aload_3
+     156: invokespecial #47                 // Method org/apache/hadoop/hbase/client/MetricsConnection$5."<init>":(Lorg/apache/hadoop/hbase/client/MetricsConnection;Ljava/util/function/Supplier;)V
+     159: invokevirtual #44                 // Method com/codahale/metrics/MetricRegistry.register:(Ljava/lang/String;Lcom/codahale/metrics/Metric;)Lcom/codahale/metrics/Metric;
+     162: pop
+     163: aload_0
+     164: aload_0
+     165: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     168: aload_0
+     169: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     172: iconst_2
+     173: anewarray     #49                 // class java/lang/String
+     176: dup
+     177: iconst_0
+     178: ldc           #50                 // String metaCacheHits
+     180: aastore
+     181: dup
+     182: iconst_1
+     183: aload_1
+     184: aastore
+     185: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     188: invokevirtual #52                 // Method com/codahale/metrics/MetricRegistry.counter:(Ljava/lang/String;)Lcom/codahale/metrics/Counter;
+     191: putfield      #53                 // Field metaCacheHits:Lcom/codahale/metrics/Counter;
+     194: aload_0
+     195: aload_0
+     196: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     199: aload_0
+     200: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     203: iconst_2
+     204: anewarray     #49                 // class java/lang/String
+     207: dup
+     208: iconst_0
+     209: ldc           #54                 // String metaCacheMisses
+     211: aastore
+     212: dup
+     213: iconst_1
+     214: aload_1
+     215: aastore
+     216: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     219: invokevirtual #52                 // Method com/codahale/metrics/MetricRegistry.counter:(Ljava/lang/String;)Lcom/codahale/metrics/Counter;
+     222: putfield      #55                 // Field metaCacheMisses:Lcom/codahale/metrics/Counter;
+     225: aload_0
+     226: aload_0
+     227: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     230: aload_0
+     231: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     234: iconst_2
+     235: anewarray     #49                 // class java/lang/String
+     238: dup
+     239: iconst_0
+     240: ldc           #56                 // String metaCacheNumClearServer
+     242: aastore
+     243: dup
+     244: iconst_1
+     245: aload_1
+     246: aastore
+     247: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     250: invokevirtual #52                 // Method com/codahale/metrics/MetricRegistry.counter:(Ljava/lang/String;)Lcom/codahale/metrics/Counter;
+     253: putfield      #57                 // Field metaCacheNumClearServer:Lcom/codahale/metrics/Counter;
+     256: aload_0
+     257: aload_0
+     258: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     261: aload_0
+     262: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     265: iconst_2
+     266: anewarray     #49                 // class java/lang/String
+     269: dup
+     270: iconst_0
+     271: ldc           #58                 // String metaCacheNumClearRegion
+     273: aastore
+     274: dup
+     275: iconst_1
+     276: aload_1
+     277: aastore
+     278: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     281: invokevirtual #52                 // Method com/codahale/metrics/MetricRegistry.counter:(Ljava/lang/String;)Lcom/codahale/metrics/Counter;
+     284: putfield      #59                 // Field metaCacheNumClearRegion:Lcom/codahale/metrics/Counter;
+     287: aload_0
+     288: aload_0
+     289: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     292: aload_0
+     293: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     296: iconst_2
+     297: anewarray     #49                 // class java/lang/String
+     300: dup
+     301: iconst_0
+     302: ldc           #60                 // String hedgedReadOps
+     304: aastore
+     305: dup
+     306: iconst_1
+     307: aload_1
+     308: aastore
+     309: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     312: invokevirtual #52                 // Method com/codahale/metrics/MetricRegistry.counter:(Ljava/lang/String;)Lcom/codahale/metrics/Counter;
+     315: putfield      #61                 // Field hedgedReadOps:Lcom/codahale/metrics/Counter;
+     318: aload_0
+     319: aload_0
+     320: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     323: aload_0
+     324: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     327: iconst_2
+     328: anewarray     #49                 // class java/lang/String
+     331: dup
+     332: iconst_0
+     333: ldc           #62                 // String hedgedReadWin
+     335: aastore
+     336: dup
+     337: iconst_1
+     338: aload_1
+     339: aastore
+     340: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     343: invokevirtual #52                 // Method com/codahale/metrics/MetricRegistry.counter:(Ljava/lang/String;)Lcom/codahale/metrics/Counter;
+     346: putfield      #63                 // Field hedgedReadWin:Lcom/codahale/metrics/Counter;
+     349: aload_0
+     350: new           #64                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallTracker
+     353: dup
+     354: aload_0
+     355: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     358: ldc           #65                 // String Get
+     360: aload_1
+     361: aconst_null
+     362: invokespecial #66                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker."<init>":(Lcom/codahale/metrics/MetricRegistry;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection$1;)V
+     365: putfield      #67                 // Field getTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     368: aload_0
+     369: new           #64                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallTracker
+     372: dup
+     373: aload_0
+     374: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     377: ldc           #68                 // String Scan
+     379: aload_1
+     380: aconst_null
+     381: invokespecial #66                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker."<init>":(Lcom/codahale/metrics/MetricRegistry;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection$1;)V
+     384: putfield      #69                 // Field scanTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     387: aload_0
+     388: new           #64                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallTracker
+     391: dup
+     392: aload_0
+     393: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     396: ldc           #70                 // String Mutate
+     398: ldc           #71                 // String Append
+     400: aload_1
+     401: aconst_null
+     402: invokespecial #72                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker."<init>":(Lcom/codahale/metrics/MetricRegistry;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection$1;)V
+     405: putfield      #73                 // Field appendTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     408: aload_0
+     409: new           #64                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallTracker
+     412: dup
+     413: aload_0
+     414: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     417: ldc           #70                 // String Mutate
+     419: ldc           #74                 // String Delete
+     421: aload_1
+     422: aconst_null
+     423: invokespecial #72                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker."<init>":(Lcom/codahale/metrics/MetricRegistry;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection$1;)V
+     426: putfield      #75                 // Field deleteTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     429: aload_0
+     430: new           #64                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallTracker
+     433: dup
+     434: aload_0
+     435: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     438: ldc           #70                 // String Mutate
+     440: ldc           #76                 // String Increment
+     442: aload_1
+     443: aconst_null
+     444: invokespecial #72                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker."<init>":(Lcom/codahale/metrics/MetricRegistry;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection$1;)V
+     447: putfield      #77                 // Field incrementTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     450: aload_0
+     451: new           #64                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallTracker
+     454: dup
+     455: aload_0
+     456: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     459: ldc           #70                 // String Mutate
+     461: ldc           #78                 // String Put
+     463: aload_1
+     464: aconst_null
+     465: invokespecial #72                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker."<init>":(Lcom/codahale/metrics/MetricRegistry;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection$1;)V
+     468: putfield      #79                 // Field putTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     471: aload_0
+     472: new           #64                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallTracker
+     475: dup
+     476: aload_0
+     477: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     480: ldc           #80                 // String Multi
+     482: aload_1
+     483: aconst_null
+     484: invokespecial #66                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker."<init>":(Lcom/codahale/metrics/MetricRegistry;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/client/MetricsConnection$1;)V
+     487: putfield      #81                 // Field multiTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     490: aload_0
+     491: new           #82                 // class org/apache/hadoop/hbase/client/MetricsConnection$RunnerStats
+     494: dup
+     495: aload_0
+     496: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     499: invokespecial #83                 // Method org/apache/hadoop/hbase/client/MetricsConnection$RunnerStats."<init>":(Lcom/codahale/metrics/MetricRegistry;)V
+     502: putfield      #84                 // Field runnerStats:Lorg/apache/hadoop/hbase/client/MetricsConnection$RunnerStats;
+     505: aload_0
+     506: aload_0
+     507: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     510: ldc           #32                 // class org/apache/hadoop/hbase/client/MetricsConnection
+     512: iconst_2
+     513: anewarray     #49                 // class java/lang/String
+     516: dup
+     517: iconst_0
+     518: ldc           #85                 // String concurrentCallsPerServer
+     520: aastore
+     521: dup
+     522: iconst_1
+     523: aload_1
+     524: aastore
+     525: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     528: invokevirtual #86                 // Method com/codahale/metrics/MetricRegistry.histogram:(Ljava/lang/String;)Lcom/codahale/metrics/Histogram;
+     531: putfield      #87                 // Field concurrentCallsPerServerHist:Lcom/codahale/metrics/Histogram;
+     534: aload_0
+     535: aload_0
+     536: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     539: ldc           #32                 // class org/apache/hadoop/hbase/client/MetricsConnection
+     541: iconst_2
+     542: anewarray     #49                 // class java/lang/String
+     545: dup
+     546: iconst_0
+     547: ldc           #88                 // String numActionsPerServer
+     549: aastore
+     550: dup
+     551: iconst_1
+     552: aload_1
+     553: aastore
+     554: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+     557: invokevirtual #86                 // Method com/codahale/metrics/MetricRegistry.histogram:(Ljava/lang/String;)Lcom/codahale/metrics/Histogram;
+     560: putfield      #89                 // Field numActionsPerServerHist:Lcom/codahale/metrics/Histogram;
+     563: aload_0
+     564: aload_0
+     565: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+     568: invokestatic  #90                 // Method com/codahale/metrics/JmxReporter.forRegistry:(Lcom/codahale/metrics/MetricRegistry;)Lcom/codahale/metrics/JmxReporter$Builder;
+     571: invokevirtual #91                 // Method com/codahale/metrics/JmxReporter$Builder.build:()Lcom/codahale/metrics/JmxReporter;
+     574: putfield      #92                 // Field reporter:Lcom/codahale/metrics/JmxReporter;
+     577: aload_0
+     578: getfield      #92                 // Field reporter:Lcom/codahale/metrics/JmxReporter;
+     581: invokevirtual #93                 // Method com/codahale/metrics/JmxReporter.start:()V
+     584: return
+
+  final java.lang.String getExecutorPoolName();
+    Code:
+       0: aload_0
+       1: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       4: iconst_2
+       5: anewarray     #49                 // class java/lang/String
+       8: dup
+       9: iconst_0
+      10: ldc           #94                 // String executorPoolActiveThreads
+      12: aastore
+      13: dup
+      14: iconst_1
+      15: aload_0
+      16: getfield      #38                 // Field scope:Ljava/lang/String;
+      19: aastore
+      20: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+      23: areturn
+
+  final java.lang.String getMetaPoolName();
+    Code:
+       0: aload_0
+       1: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       4: iconst_2
+       5: anewarray     #49                 // class java/lang/String
+       8: dup
+       9: iconst_0
+      10: ldc           #95                 // String metaPoolActiveThreads
+      12: aastore
+      13: dup
+      14: iconst_1
+      15: aload_0
+      16: getfield      #38                 // Field scope:Ljava/lang/String;
+      19: aastore
+      20: invokestatic  #51                 // Method com/codahale/metrics/MetricRegistry.name:(Ljava/lang/Class;[Ljava/lang/String;)Ljava/lang/String;
+      23: areturn
+
+  com.codahale.metrics.MetricRegistry getMetricRegistry();
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+       4: areturn
+
+  public void shutdown();
+    Code:
+       0: aload_0
+       1: getfield      #92                 // Field reporter:Lcom/codahale/metrics/JmxReporter;
+       4: invokevirtual #96                 // Method com/codahale/metrics/JmxReporter.stop:()V
+       7: return
+
+  public static org.apache.hadoop.hbase.client.MetricsConnection$CallStats newCallStats();
+    Code:
+       0: new           #97                 // class org/apache/hadoop/hbase/client/MetricsConnection$CallStats
+       3: dup
+       4: invokespecial #98                 // Method org/apache/hadoop/hbase/client/MetricsConnection$CallStats."<init>":()V
+       7: areturn
+
+  public void incrMetaCacheHit();
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field metaCacheHits:Lcom/codahale/metrics/Counter;
+       4: invokevirtual #99                 // Method com/codahale/metrics/Counter.inc:()V
+       7: return
+
+  public void incrMetaCacheMiss();
+    Code:
+       0: aload_0
+       1: getfield      #55                 // Field metaCacheMisses:Lcom/codahale/metrics/Counter;
+       4: invokevirtual #99                 // Method com/codahale/metrics/Counter.inc:()V
+       7: return
+
+  public void incrMetaCacheNumClearServer();
+    Code:
+       0: aload_0
+       1: getfield      #57                 // Field metaCacheNumClearServer:Lcom/codahale/metrics/Counter;
+       4: invokevirtual #99                 // Method com/codahale/metrics/Counter.inc:()V
+       7: return
+
+  public void incrMetaCacheNumClearRegion();
+    Code:
+       0: aload_0
+       1: getfield      #59                 // Field metaCacheNumClearRegion:Lcom/codahale/metrics/Counter;
+       4: invokevirtual #99                 // Method com/codahale/metrics/Counter.inc:()V
+       7: return
+
+  public void incrMetaCacheNumClearRegion(int);
+    Code:
+       0: aload_0
+       1: getfield      #59                 // Field metaCacheNumClearRegion:Lcom/codahale/metrics/Counter;
+       4: iload_1
+       5: i2l
+       6: invokevirtual #100                // Method com/codahale/metrics/Counter.inc:(J)V
+       9: return
+
+  public void incrHedgedReadOps();
+    Code:
+       0: aload_0
+       1: getfield      #61                 // Field hedgedReadOps:Lcom/codahale/metrics/Counter;
+       4: invokevirtual #99                 // Method com/codahale/metrics/Counter.inc:()V
+       7: return
+
+  public void incrHedgedReadWin();
+    Code:
+       0: aload_0
+       1: getfield      #63                 // Field hedgedReadWin:Lcom/codahale/metrics/Counter;
+       4: invokevirtual #99                 // Method com/codahale/metrics/Counter.inc:()V
+       7: return
+
+  public void incrNormalRunners();
+    Code:
+       0: aload_0
+       1: getfield      #84                 // Field runnerStats:Lorg/apache/hadoop/hbase/client/MetricsConnection$RunnerStats;
+       4: invokevirtual #101                // Method org/apache/hadoop/hbase/client/MetricsConnection$RunnerStats.incrNormalRunners:()V
+       7: return
+
+  public void incrDelayRunnersAndUpdateDelayInterval(long);
+    Code:
+       0: aload_0
+       1: getfield      #84                 // Field runnerStats:Lorg/apache/hadoop/hbase/client/MetricsConnection$RunnerStats;
+       4: invokevirtual #102                // Method org/apache/hadoop/hbase/client/MetricsConnection$RunnerStats.incrDelayRunners:()V
+       7: aload_0
+       8: getfield      #84                 // Field runnerStats:Lorg/apache/hadoop/hbase/client/MetricsConnection$RunnerStats;
+      11: lload_1
+      12: invokevirtual #103                // Method org/apache/hadoop/hbase/client/MetricsConnection$RunnerStats.updateDelayInterval:(J)V
+      15: return
+
+  public void updateRpc(org.apache.hbase.thirdparty.com.google.protobuf.Descriptors$MethodDescriptor, org.apache.hbase.thirdparty.com.google.protobuf.Message, org.apache.hadoop.hbase.client.MetricsConnection$CallStats);
+    Code:
+       0: aload_3
+       1: invokevirtual #121                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallStats.getConcurrentCallsPerServer:()I
+       4: istore        4
+       6: iload         4
+       8: ifle          20
+      11: aload_0
+      12: getfield      #87                 // Field concurrentCallsPerServerHist:Lcom/codahale/metrics/Histogram;
+      15: iload         4
+      17: invokevirtual #122                // Method com/codahale/metrics/Histogram.update:(I)V
+      20: aload_1
+      21: invokevirtual #105                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getService:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$ServiceDescriptor;
+      24: invokestatic  #123                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService.getDescriptor:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$ServiceDescriptor;
+      27: if_acmpne     501
+      30: aload_1
+      31: invokevirtual #124                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getIndex:()I
+      34: tableswitch   { // 0 to 8
+                     0: 84
+                     1: 119
+                     2: 260
+                     3: 295
+                     4: 321
+                     5: 347
+                     6: 373
+                     7: 399
+                     8: 425
+               default: 471
+          }
+      84: getstatic     #125                // Field $assertionsDisabled:Z
+      87: ifne          110
+      90: ldc           #65                 // String Get
+      92: aload_1
+      93: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+      96: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      99: ifne          110
+     102: new           #127                // class java/lang/AssertionError
+     105: dup
+     106: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     109: athrow
+     110: aload_0
+     111: getfield      #67                 // Field getTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     114: aload_3
+     115: invokevirtual #129                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker.updateRpc:(Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     118: return
+     119: getstatic     #125                // Field $assertionsDisabled:Z
+     122: ifne          145
+     125: ldc           #70                 // String Mutate
+     127: aload_1
+     128: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     131: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     134: ifne          145
+     137: new           #127                // class java/lang/AssertionError
+     140: dup
+     141: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     144: athrow
+     145: aload_2
+     146: checkcast     #130                // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutateRequest
+     149: invokevirtual #131                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutateRequest.getMutation:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto;
+     152: invokevirtual #132                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto.getMutateType:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto$MutationType;
+     155: astore        5
+     157: getstatic     #133                // Field org/apache/hadoop/hbase/client/MetricsConnection$6.$SwitchMap$org$apache$hadoop$hbase$shaded$protobuf$generated$ClientProtos$MutationProto$MutationType:[I
+     160: aload         5
+     162: invokevirtual #134                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$MutationProto$MutationType.ordinal:()I
+     165: iaload
+     166: tableswitch   { // 1 to 4
+                     1: 196
+                     2: 205
+                     3: 214
+                     4: 223
+               default: 232
+          }
+     196: aload_0
+     197: getfield      #73                 // Field appendTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     200: aload_3
+     201: invokevirtual #129                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker.updateRpc:(Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     204: return
+     205: aload_0
+     206: getfield      #75                 // Field deleteTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     209: aload_3
+     210: invokevirtual #129                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker.updateRpc:(Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     213: return
+     214: aload_0
+     215: getfield      #77                 // Field incrementTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     218: aload_3
+     219: invokevirtual #129                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker.updateRpc:(Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     222: return
+     223: aload_0
+     224: getfield      #79                 // Field putTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     227: aload_3
+     228: invokevirtual #129                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker.updateRpc:(Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     231: return
+     232: new           #135                // class java/lang/RuntimeException
+     235: dup
+     236: new           #6                  // class java/lang/StringBuilder
+     239: dup
+     240: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+     243: ldc           #136                // String Unrecognized mutation type
+     245: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     248: aload         5
+     250: invokevirtual #137                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     253: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     256: invokespecial #138                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     259: athrow
+     260: getstatic     #125                // Field $assertionsDisabled:Z
+     263: ifne          286
+     266: ldc           #68                 // String Scan
+     268: aload_1
+     269: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     272: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     275: ifne          286
+     278: new           #127                // class java/lang/AssertionError
+     281: dup
+     282: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     285: athrow
+     286: aload_0
+     287: getfield      #69                 // Field scanTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     290: aload_3
+     291: invokevirtual #129                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker.updateRpc:(Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     294: return
+     295: getstatic     #125                // Field $assertionsDisabled:Z
+     298: ifne          501
+     301: ldc           #139                // String BulkLoadHFile
+     303: aload_1
+     304: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     307: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     310: ifne          501
+     313: new           #127                // class java/lang/AssertionError
+     316: dup
+     317: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     320: athrow
+     321: getstatic     #125                // Field $assertionsDisabled:Z
+     324: ifne          501
+     327: ldc           #140                // String PrepareBulkLoad
+     329: aload_1
+     330: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     333: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     336: ifne          501
+     339: new           #127                // class java/lang/AssertionError
+     342: dup
+     343: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     346: athrow
+     347: getstatic     #125                // Field $assertionsDisabled:Z
+     350: ifne          501
+     353: ldc           #141                // String CleanupBulkLoad
+     355: aload_1
+     356: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     359: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     362: ifne          501
+     365: new           #127                // class java/lang/AssertionError
+     368: dup
+     369: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     372: athrow
+     373: getstatic     #125                // Field $assertionsDisabled:Z
+     376: ifne          501
+     379: ldc           #142                // String ExecService
+     381: aload_1
+     382: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     385: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     388: ifne          501
+     391: new           #127                // class java/lang/AssertionError
+     394: dup
+     395: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     398: athrow
+     399: getstatic     #125                // Field $assertionsDisabled:Z
+     402: ifne          501
+     405: ldc           #143                // String ExecRegionServerService
+     407: aload_1
+     408: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     411: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     414: ifne          501
+     417: new           #127                // class java/lang/AssertionError
+     420: dup
+     421: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     424: athrow
+     425: getstatic     #125                // Field $assertionsDisabled:Z
+     428: ifne          451
+     431: ldc           #80                 // String Multi
+     433: aload_1
+     434: invokevirtual #108                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+     437: invokevirtual #126                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     440: ifne          451
+     443: new           #127                // class java/lang/AssertionError
+     446: dup
+     447: invokespecial #128                // Method java/lang/AssertionError."<init>":()V
+     450: athrow
+     451: aload_0
+     452: getfield      #89                 // Field numActionsPerServerHist:Lcom/codahale/metrics/Histogram;
+     455: aload_3
+     456: invokevirtual #144                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallStats.getNumActionsPerServer:()I
+     459: invokevirtual #122                // Method com/codahale/metrics/Histogram.update:(I)V
+     462: aload_0
+     463: getfield      #81                 // Field multiTracker:Lorg/apache/hadoop/hbase/client/MetricsConnection$CallTracker;
+     466: aload_3
+     467: invokevirtual #129                // Method org/apache/hadoop/hbase/client/MetricsConnection$CallTracker.updateRpc:(Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     470: return
+     471: new           #135                // class java/lang/RuntimeException
+     474: dup
+     475: new           #6                  // class java/lang/StringBuilder
+     478: dup
+     479: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+     482: ldc           #145                // String Unrecognized ClientService RPC type
+     484: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     487: aload_1
+     488: invokevirtual #146                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getFullName:()Ljava/lang/String;
+     491: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     494: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     497: invokespecial #138                // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     500: athrow
+     501: aload_0
+     502: aload_1
+     503: aload_3
+     504: invokespecial #147                // Method updateRpcGeneric:(Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;Lorg/apache/hadoop/hbase/client/MetricsConnection$CallStats;)V
+     507: return
+
+  public void incrCacheDroppingExceptions(java.lang.Object);
+    Code:
+       0: aload_0
+       1: new           #6                  // class java/lang/StringBuilder
+       4: dup
+       5: invokespecial #7                  // Method java/lang/StringBuilder."<init>":()V
+       8: ldc           #148                // String cacheDroppingExceptions_
+      10: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      13: aload_1
+      14: ifnonnull     22
+      17: ldc           #149                // String UnknownException
+      19: goto          29
+      22: aload_1
+      23: invokevirtual #48                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      26: invokevirtual #150                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      29: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: invokevirtual #12                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      35: aload_0
+      36: getfield      #37                 // Field cacheDroppingExceptions:Ljava/util/concurrent/ConcurrentMap;
+      39: aload_0
+      40: getfield      #31                 // Field counterFactory:Lorg/apache/hadoop/hbase/client/MetricsConnection$NewMetric;
+      43: invokespecial #110                // Method getMetric:(Ljava/lang/String;Ljava/util/concurrent/ConcurrentMap;Lorg/apache/hadoop/hbase/client/MetricsConnection$NewMetric;)Ljava/lang/Object;
+      46: checkcast     #151                // class com/codahale/metrics/Counter
+      49: invokevirtual #99                 // Method com/codahale/metrics/Counter.inc:()V
+      52: return
+
+  static java.lang.String access$000();
+    Code:
+       0: getstatic     #2                  // Field CLIENT_SVC:Ljava/lang/String;
+       3: areturn
+
+  static com.codahale.metrics.MetricRegistry access$100(org.apache.hadoop.hbase.client.MetricsConnection);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field registry:Lcom/codahale/metrics/MetricRegistry;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #32                 // class org/apache/hadoop/hbase/client/MetricsConnection
+       2: invokevirtual #157                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #125                // Field $assertionsDisabled:Z
+      16: invokestatic  #123                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService.getDescriptor:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$ServiceDescriptor;
+      19: invokevirtual #106                // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$ServiceDescriptor.getName:()Ljava/lang/String;
+      22: putstatic     #2                  // Field CLIENT_SVC:Ljava/lang/String;
+      25: return
+}

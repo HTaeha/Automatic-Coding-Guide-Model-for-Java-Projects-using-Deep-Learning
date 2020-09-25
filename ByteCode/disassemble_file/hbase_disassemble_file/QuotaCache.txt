@@ -1,0 +1,277 @@
+Compiled from "QuotaCache.java"
+public class org.apache.hadoop.hbase.quotas.QuotaCache implements org.apache.hadoop.hbase.Stoppable {
+  public static final java.lang.String REFRESH_CONF_KEY;
+
+  static boolean TEST_FORCE_REFRESH;
+
+  public org.apache.hadoop.hbase.quotas.QuotaCache(org.apache.hadoop.hbase.regionserver.RegionServerServices);
+    Code:
+       0: aload_0
+       1: invokespecial #10                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #11                 // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #12                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #7                  // Field namespaceQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+      15: aload_0
+      16: new           #11                 // class java/util/concurrent/ConcurrentHashMap
+      19: dup
+      20: invokespecial #12                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      23: putfield      #8                  // Field tableQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+      26: aload_0
+      27: new           #11                 // class java/util/concurrent/ConcurrentHashMap
+      30: dup
+      31: invokespecial #12                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      34: putfield      #3                  // Field userQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+      37: aload_0
+      38: new           #11                 // class java/util/concurrent/ConcurrentHashMap
+      41: dup
+      42: invokespecial #12                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      45: putfield      #6                  // Field regionServerQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+      48: aload_0
+      49: iconst_0
+      50: putfield      #2                  // Field exceedThrottleQuotaEnabled:Z
+      53: aload_0
+      54: dconst_1
+      55: putfield      #5                  // Field machineQuotaFactor:D
+      58: aload_0
+      59: new           #11                 // class java/util/concurrent/ConcurrentHashMap
+      62: dup
+      63: invokespecial #12                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      66: putfield      #4                  // Field tableMachineQuotaFactors:Ljava/util/concurrent/ConcurrentHashMap;
+      69: aload_0
+      70: iconst_1
+      71: putfield      #13                 // Field stopped:Z
+      74: aload_0
+      75: aload_1
+      76: putfield      #9                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      79: return
+
+  public void start() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #13                 // Field stopped:Z
+       5: aload_0
+       6: getfield      #9                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+       9: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      14: astore_1
+      15: aload_1
+      16: ldc           #16                 // String hbase.quota.refresh.period
+      18: ldc           #17                 // int 300000
+      20: invokevirtual #18                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      23: istore_2
+      24: aload_0
+      25: new           #19                 // class org/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore
+      28: dup
+      29: aload_0
+      30: iload_2
+      31: aload_0
+      32: invokespecial #20                 // Method org/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore."<init>":(Lorg/apache/hadoop/hbase/quotas/QuotaCache;ILorg/apache/hadoop/hbase/Stoppable;)V
+      35: putfield      #21                 // Field refreshChore:Lorg/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore;
+      38: aload_0
+      39: getfield      #9                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      42: invokeinterface #22,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/RegionServerServices.getChoreService:()Lorg/apache/hadoop/hbase/ChoreService;
+      47: aload_0
+      48: getfield      #21                 // Field refreshChore:Lorg/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore;
+      51: invokevirtual #23                 // Method org/apache/hadoop/hbase/ChoreService.scheduleChore:(Lorg/apache/hadoop/hbase/ScheduledChore;)Z
+      54: pop
+      55: return
+
+  public void stop(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field refreshChore:Lorg/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore;
+       4: ifnull        25
+       7: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      10: ldc           #24                 // String Stopping QuotaRefresherChore chore.
+      12: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      17: aload_0
+      18: getfield      #21                 // Field refreshChore:Lorg/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore;
+      21: iconst_1
+      22: invokevirtual #26                 // Method org/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore.cancel:(Z)V
+      25: aload_0
+      26: iconst_1
+      27: putfield      #13                 // Field stopped:Z
+      30: return
+
+  public boolean isStopped();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field stopped:Z
+       4: ireturn
+
+  public org.apache.hadoop.hbase.quotas.QuotaLimiter getUserLimiter(org.apache.hadoop.security.UserGroupInformation, org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_2
+       1: invokevirtual #27                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+       4: ifeq          11
+       7: invokestatic  #28                 // Method org/apache/hadoop/hbase/quotas/NoopQuotaLimiter.get:()Lorg/apache/hadoop/hbase/quotas/QuotaLimiter;
+      10: areturn
+      11: aload_0
+      12: aload_1
+      13: invokevirtual #29                 // Method getUserQuotaState:(Lorg/apache/hadoop/security/UserGroupInformation;)Lorg/apache/hadoop/hbase/quotas/UserQuotaState;
+      16: aload_2
+      17: invokevirtual #30                 // Method org/apache/hadoop/hbase/quotas/UserQuotaState.getTableLimiter:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaLimiter;
+      20: areturn
+
+  public org.apache.hadoop.hbase.quotas.UserQuotaState getUserQuotaState(org.apache.hadoop.security.UserGroupInformation);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field userQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: aload_1
+       5: invokevirtual #31                 // Method org/apache/hadoop/security/UserGroupInformation.getShortUserName:()Ljava/lang/String;
+       8: invokedynamic #32,  0             // InvokeDynamic #0:get:()Ljava/util/function/Supplier;
+      13: aload_0
+      14: invokedynamic #33,  0             // InvokeDynamic #1:run:(Lorg/apache/hadoop/hbase/quotas/QuotaCache;)Ljava/lang/Runnable;
+      19: invokestatic  #34                 // Method org/apache/hadoop/hbase/util/ConcurrentMapUtils.computeIfAbsent:(Ljava/util/concurrent/ConcurrentMap;Ljava/lang/Object;Ljava/util/function/Supplier;Ljava/lang/Runnable;)Ljava/lang/Object;
+      22: checkcast     #35                 // class org/apache/hadoop/hbase/quotas/UserQuotaState
+      25: areturn
+
+  public org.apache.hadoop.hbase.quotas.QuotaLimiter getTableLimiter(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #8                  // Field tableQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       5: aload_1
+       6: invokespecial #36                 // Method getQuotaState:(Ljava/util/concurrent/ConcurrentHashMap;Ljava/lang/Object;)Lorg/apache/hadoop/hbase/quotas/QuotaState;
+       9: invokevirtual #37                 // Method org/apache/hadoop/hbase/quotas/QuotaState.getGlobalLimiter:()Lorg/apache/hadoop/hbase/quotas/QuotaLimiter;
+      12: areturn
+
+  public org.apache.hadoop.hbase.quotas.QuotaLimiter getNamespaceLimiter(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #7                  // Field namespaceQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       5: aload_1
+       6: invokespecial #36                 // Method getQuotaState:(Ljava/util/concurrent/ConcurrentHashMap;Ljava/lang/Object;)Lorg/apache/hadoop/hbase/quotas/QuotaState;
+       9: invokevirtual #37                 // Method org/apache/hadoop/hbase/quotas/QuotaState.getGlobalLimiter:()Lorg/apache/hadoop/hbase/quotas/QuotaLimiter;
+      12: areturn
+
+  public org.apache.hadoop.hbase.quotas.QuotaLimiter getRegionServerQuotaLimiter(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #6                  // Field regionServerQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       5: aload_1
+       6: invokespecial #36                 // Method getQuotaState:(Ljava/util/concurrent/ConcurrentHashMap;Ljava/lang/Object;)Lorg/apache/hadoop/hbase/quotas/QuotaState;
+       9: invokevirtual #37                 // Method org/apache/hadoop/hbase/quotas/QuotaState.getGlobalLimiter:()Lorg/apache/hadoop/hbase/quotas/QuotaLimiter;
+      12: areturn
+
+  protected boolean isExceedThrottleQuotaEnabled();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field exceedThrottleQuotaEnabled:Z
+       4: ireturn
+
+  void triggerCacheRefresh();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field refreshChore:Lorg/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore;
+       4: invokevirtual #40                 // Method org/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore.triggerNow:()Z
+       7: pop
+       8: return
+
+  long getLastUpdate();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field refreshChore:Lorg/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore;
+       4: invokestatic  #41                 // Method org/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore.access$000:(Lorg/apache/hadoop/hbase/quotas/QuotaCache$QuotaRefresherChore;)J
+       7: lreturn
+
+  java.util.Map<java.lang.String, org.apache.hadoop.hbase.quotas.QuotaState> getNamespaceQuotaCache();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field namespaceQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  java.util.Map<java.lang.String, org.apache.hadoop.hbase.quotas.QuotaState> getRegionServerQuotaCache();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field regionServerQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  java.util.Map<org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.QuotaState> getTableQuotaCache();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field tableQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  java.util.Map<java.lang.String, org.apache.hadoop.hbase.quotas.UserQuotaState> getUserQuotaCache();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field userQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static org.apache.hadoop.hbase.regionserver.RegionServerServices access$100(org.apache.hadoop.hbase.quotas.QuotaCache);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field rsServices:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+       4: areturn
+
+  static java.util.concurrent.ConcurrentHashMap access$200(org.apache.hadoop.hbase.quotas.QuotaCache);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field tableQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static java.util.concurrent.ConcurrentHashMap access$300(org.apache.hadoop.hbase.quotas.QuotaCache);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field namespaceQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static java.util.concurrent.ConcurrentHashMap access$400(org.apache.hadoop.hbase.quotas.QuotaCache);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field regionServerQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static double access$500(org.apache.hadoop.hbase.quotas.QuotaCache);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field machineQuotaFactor:D
+       4: dreturn
+
+  static java.util.concurrent.ConcurrentHashMap access$600(org.apache.hadoop.hbase.quotas.QuotaCache);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field tableMachineQuotaFactors:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static java.util.concurrent.ConcurrentHashMap access$700(org.apache.hadoop.hbase.quotas.QuotaCache);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field userQuotaCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static boolean access$802(org.apache.hadoop.hbase.quotas.QuotaCache, boolean);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: dup_x1
+       3: putfield      #2                  // Field exceedThrottleQuotaEnabled:Z
+       6: ireturn
+
+  static org.slf4j.Logger access$900();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static double access$502(org.apache.hadoop.hbase.quotas.QuotaCache, double);
+    Code:
+       0: aload_0
+       1: dload_1
+       2: dup2_x1
+       3: putfield      #5                  // Field machineQuotaFactor:D
+       6: dreturn
+
+  static {};
+    Code:
+       0: ldc           #15                 // class org/apache/hadoop/hbase/quotas/QuotaCache
+       2: invokestatic  #42                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: iconst_0
+       9: putstatic     #43                 // Field TEST_FORCE_REFRESH:Z
+      12: return
+}

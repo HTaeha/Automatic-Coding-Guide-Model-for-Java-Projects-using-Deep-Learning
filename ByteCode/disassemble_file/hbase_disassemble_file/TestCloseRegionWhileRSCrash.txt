@@ -1,0 +1,259 @@
+Compiled from "TestCloseRegionWhileRSCrash.java"
+public class org.apache.hadoop.hbase.master.assignment.TestCloseRegionWhileRSCrash {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.apache.hadoop.hbase.master.assignment.TestCloseRegionWhileRSCrash();
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void setUp() throws java.lang.Exception;
+    Code:
+       0: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #5                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: ldc           #7                  // String hbase.master.wait.on.regionservers.mintostart
+       8: iconst_1
+       9: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      12: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      15: iconst_3
+      16: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      19: pop
+      20: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      23: getstatic     #10                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      26: getstatic     #11                 // Field CF:[B
+      29: invokevirtual #12                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.createTable:(Lorg/apache/hadoop/hbase/TableName;[B)Lorg/apache/hadoop/hbase/client/Table;
+      32: pop
+      33: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      36: invokevirtual #13                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      39: iconst_0
+      40: iconst_1
+      41: invokeinterface #14,  3           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.balancerSwitch:(ZZ)Z
+      46: pop
+      47: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      50: getstatic     #10                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      53: invokevirtual #15                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getRSForFirstRegionInTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      56: astore_0
+      57: aload_0
+      58: getstatic     #16                 // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      61: invokevirtual #17                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      64: invokeinterface #18,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      69: ifne          137
+      72: aload_0
+      73: getstatic     #16                 // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      76: invokevirtual #17                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      79: iconst_0
+      80: invokeinterface #19,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      85: checkcast     #20                 // class org/apache/hadoop/hbase/regionserver/HRegion
+      88: invokevirtual #21                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      91: astore_1
+      92: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      95: aload_0
+      96: invokevirtual #22                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getOtherRegionServer:(Lorg/apache/hadoop/hbase/regionserver/HRegionServer;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      99: astore_2
+     100: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     103: invokevirtual #13                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     106: aload_1
+     107: invokeinterface #23,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+     112: aload_2
+     113: invokevirtual #24                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+     116: invokeinterface #25,  3           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.move:([BLorg/apache/hadoop/hbase/ServerName;)V
+     121: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     124: ldc2_w        #26                 // long 30000l
+     127: aload_2
+     128: invokedynamic #28,  0             // InvokeDynamic #0:evaluate:(Lorg/apache/hadoop/hbase/regionserver/HRegionServer;)Lorg/apache/hadoop/hbase/Waiter$Predicate;
+     133: invokevirtual #29                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitFor:(JLorg/apache/hadoop/hbase/Waiter$Predicate;)J
+     136: pop2
+     137: return
+
+  public static void tearDown() throws java.lang.Exception;
+    Code:
+       0: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #30                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+       6: return
+
+  public void testRetryBackoff() throws java.io.IOException, java.lang.InterruptedException;
+    Code:
+       0: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: getstatic     #10                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       6: invokevirtual #15                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getRSForFirstRegionInTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       9: astore_1
+      10: aload_1
+      11: getstatic     #10                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      14: invokevirtual #17                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      17: iconst_0
+      18: invokeinterface #19,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      23: checkcast     #20                 // class org/apache/hadoop/hbase/regionserver/HRegion
+      26: invokevirtual #21                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      29: astore_2
+      30: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      33: aload_1
+      34: invokevirtual #22                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getOtherRegionServer:(Lorg/apache/hadoop/hbase/regionserver/HRegionServer;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      37: astore_3
+      38: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      41: invokevirtual #31                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      44: invokevirtual #32                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      47: invokevirtual #33                 // Method org/apache/hadoop/hbase/master/HMaster.getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      50: astore        4
+      52: aload         4
+      54: new           #34                 // class org/apache/hadoop/hbase/master/assignment/TestCloseRegionWhileRSCrash$DummyServerProcedure
+      57: dup
+      58: aload_1
+      59: invokevirtual #24                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      62: invokespecial #35                 // Method org/apache/hadoop/hbase/master/assignment/TestCloseRegionWhileRSCrash$DummyServerProcedure."<init>":(Lorg/apache/hadoop/hbase/ServerName;)V
+      65: invokevirtual #36                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)J
+      68: pop2
+      69: getstatic     #2                  // Field ARRIVE:Ljava/util/concurrent/CountDownLatch;
+      72: invokevirtual #37                 // Method java/util/concurrent/CountDownLatch.await:()V
+      75: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      78: invokevirtual #31                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      81: aload_1
+      82: invokevirtual #24                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      85: invokevirtual #38                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.killRegionServer:(Lorg/apache/hadoop/hbase/ServerName;)V
+      88: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      91: ldc2_w        #26                 // long 30000l
+      94: aload         4
+      96: invokedynamic #39,  0             // InvokeDynamic #1:evaluate:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;)Lorg/apache/hadoop/hbase/Waiter$Predicate;
+     101: invokevirtual #29                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitFor:(JLorg/apache/hadoop/hbase/Waiter$Predicate;)J
+     104: pop2
+     105: new           #40                 // class java/lang/Thread
+     108: dup
+     109: aload_2
+     110: aload_3
+     111: invokedynamic #41,  0             // InvokeDynamic #2:run:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/regionserver/HRegionServer;)Ljava/lang/Runnable;
+     116: invokespecial #42                 // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;)V
+     119: astore        5
+     121: aload         5
+     123: invokevirtual #43                 // Method java/lang/Thread.start:()V
+     126: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     129: ldc           #44                 // class org/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure
+     131: ldc2_w        #26                 // long 30000l
+     134: invokestatic  #45                 // Method org/apache/hadoop/hbase/ProcedureTestUtil.waitUntilProcedureWaitingTimeout:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;Ljava/lang/Class;J)V
+     137: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     140: ldc           #44                 // class org/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure
+     142: iconst_3
+     143: invokestatic  #46                 // Method org/apache/hadoop/hbase/ProcedureTestUtil.waitUntilProcedureTimeoutIncrease:(Lorg/apache/hadoop/hbase/HBaseTestingUtility;Ljava/lang/Class;I)V
+     146: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     149: invokevirtual #31                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     152: invokevirtual #32                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+     155: astore        6
+     157: aload         6
+     159: invokevirtual #47                 // Method org/apache/hadoop/hbase/master/HMaster.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     162: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     167: getstatic     #1                  // Field RESUME:Ljava/util/concurrent/CountDownLatch;
+     170: invokevirtual #49                 // Method java/util/concurrent/CountDownLatch.countDown:()V
+     173: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     176: ldc2_w        #26                 // long 30000l
+     179: aload         6
+     181: invokedynamic #50,  0             // InvokeDynamic #3:evaluate:(Lorg/apache/hadoop/hbase/master/HMaster;)Lorg/apache/hadoop/hbase/Waiter$Predicate;
+     186: invokevirtual #29                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitFor:(JLorg/apache/hadoop/hbase/Waiter$Predicate;)J
+     189: pop2
+     190: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     193: invokevirtual #31                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     196: invokevirtual #51                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.startMaster:()Lorg/apache/hadoop/hbase/util/JVMClusterUtil$MasterThread;
+     199: pop
+     200: aload         5
+     202: invokevirtual #52                 // Method java/lang/Thread.join:()V
+     205: getstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     208: invokevirtual #53                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     211: getstatic     #10                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     214: invokeinterface #54,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     219: astore        7
+     221: aconst_null
+     222: astore        8
+     224: aload         7
+     226: new           #55                 // class org/apache/hadoop/hbase/client/Put
+     229: dup
+     230: iconst_1
+     231: invokestatic  #56                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     234: invokespecial #57                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     237: getstatic     #11                 // Field CF:[B
+     240: ldc           #58                 // String cq
+     242: invokestatic  #59                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     245: iconst_1
+     246: invokestatic  #56                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     249: invokevirtual #60                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     252: invokeinterface #61,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+     257: aload         7
+     259: ifnull        352
+     262: aload         8
+     264: ifnull        289
+     267: aload         7
+     269: invokeinterface #62,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     274: goto          352
+     277: astore        9
+     279: aload         8
+     281: aload         9
+     283: invokevirtual #64                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     286: goto          352
+     289: aload         7
+     291: invokeinterface #62,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     296: goto          352
+     299: astore        9
+     301: aload         9
+     303: astore        8
+     305: aload         9
+     307: athrow
+     308: astore        10
+     310: aload         7
+     312: ifnull        349
+     315: aload         8
+     317: ifnull        342
+     320: aload         7
+     322: invokeinterface #62,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     327: goto          349
+     330: astore        11
+     332: aload         8
+     334: aload         11
+     336: invokevirtual #64                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     339: goto          349
+     342: aload         7
+     344: invokeinterface #62,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     349: aload         10
+     351: athrow
+     352: return
+    Exception table:
+       from    to  target type
+         267   274   277   Class java/lang/Throwable
+         224   257   299   Class java/lang/Throwable
+         224   257   308   any
+         320   327   330   Class java/lang/Throwable
+         299   310   308   any
+
+  static java.util.concurrent.CountDownLatch access$000();
+    Code:
+       0: getstatic     #2                  // Field ARRIVE:Ljava/util/concurrent/CountDownLatch;
+       3: areturn
+
+  static java.util.concurrent.CountDownLatch access$100();
+    Code:
+       0: getstatic     #1                  // Field RESUME:Ljava/util/concurrent/CountDownLatch;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #72                 // class org/apache/hadoop/hbase/master/assignment/TestCloseRegionWhileRSCrash
+       2: invokestatic  #73                 // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #74                 // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: new           #75                 // class org/apache/hadoop/hbase/HBaseTestingUtility
+      11: dup
+      12: invokespecial #76                 // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      15: putstatic     #4                  // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      18: ldc           #77                 // String Backoff
+      20: invokestatic  #78                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      23: putstatic     #10                 // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      26: ldc           #79                 // String cf
+      28: invokestatic  #59                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: putstatic     #11                 // Field CF:[B
+      34: new           #80                 // class java/util/concurrent/CountDownLatch
+      37: dup
+      38: iconst_1
+      39: invokespecial #81                 // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+      42: putstatic     #2                  // Field ARRIVE:Ljava/util/concurrent/CountDownLatch;
+      45: new           #80                 // class java/util/concurrent/CountDownLatch
+      48: dup
+      49: iconst_1
+      50: invokespecial #81                 // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+      53: putstatic     #1                  // Field RESUME:Ljava/util/concurrent/CountDownLatch;
+      56: return
+}

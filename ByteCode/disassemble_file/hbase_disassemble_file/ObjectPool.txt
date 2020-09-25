@@ -1,0 +1,169 @@
+Compiled from "ObjectPool.java"
+public abstract class org.apache.hadoop.hbase.util.ObjectPool<K, V> {
+  protected final java.lang.ref.ReferenceQueue<V> staleRefQueue;
+
+  protected final java.util.concurrent.ConcurrentMap<K, java.lang.ref.Reference<V>> referenceCache;
+
+  public static final int DEFAULT_INITIAL_CAPACITY;
+
+  public static final int DEFAULT_CONCURRENCY_LEVEL;
+
+  public org.apache.hadoop.hbase.util.ObjectPool(org.apache.hadoop.hbase.util.ObjectPool$ObjectFactory<K, V>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: bipush        16
+       4: bipush        16
+       6: invokespecial #2                  // Method "<init>":(Lorg/apache/hadoop/hbase/util/ObjectPool$ObjectFactory;II)V
+       9: return
+
+  public org.apache.hadoop.hbase.util.ObjectPool(org.apache.hadoop.hbase.util.ObjectPool$ObjectFactory<K, V>, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: bipush        16
+       5: invokespecial #2                  // Method "<init>":(Lorg/apache/hadoop/hbase/util/ObjectPool$ObjectFactory;II)V
+       8: return
+
+  public org.apache.hadoop.hbase.util.ObjectPool(org.apache.hadoop.hbase.util.ObjectPool$ObjectFactory<K, V>, int, int);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #4                  // class java/lang/ref/ReferenceQueue
+       8: dup
+       9: invokespecial #5                  // Method java/lang/ref/ReferenceQueue."<init>":()V
+      12: putfield      #6                  // Field staleRefQueue:Ljava/lang/ref/ReferenceQueue;
+      15: aload_0
+      16: new           #7                  // class java/util/concurrent/locks/ReentrantLock
+      19: dup
+      20: invokespecial #8                  // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+      23: putfield      #9                  // Field purgeLock:Ljava/util/concurrent/locks/Lock;
+      26: aload_1
+      27: ifnonnull     40
+      30: new           #10                 // class java/lang/NullPointerException
+      33: dup
+      34: ldc           #11                 // String Given object factory instance is NULL
+      36: invokespecial #12                 // Method java/lang/NullPointerException."<init>":(Ljava/lang/String;)V
+      39: athrow
+      40: aload_0
+      41: aload_1
+      42: putfield      #13                 // Field objectFactory:Lorg/apache/hadoop/hbase/util/ObjectPool$ObjectFactory;
+      45: aload_0
+      46: new           #14                 // class java/util/concurrent/ConcurrentHashMap
+      49: dup
+      50: iload_2
+      51: ldc           #15                 // float 0.75f
+      53: iload_3
+      54: invokespecial #16                 // Method java/util/concurrent/ConcurrentHashMap."<init>":(IFI)V
+      57: putfield      #17                 // Field referenceCache:Ljava/util/concurrent/ConcurrentMap;
+      60: return
+
+  public void purge();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field purgeLock:Ljava/util/concurrent/locks/Lock;
+       4: invokeinterface #18,  1           // InterfaceMethod java/util/concurrent/locks/Lock.tryLock:()Z
+       9: ifeq          70
+      12: aload_0
+      13: getfield      #6                  // Field staleRefQueue:Ljava/lang/ref/ReferenceQueue;
+      16: invokevirtual #19                 // Method java/lang/ref/ReferenceQueue.poll:()Ljava/lang/ref/Reference;
+      19: astore_1
+      20: aload_1
+      21: ifnonnull     27
+      24: goto          46
+      27: aload_0
+      28: getfield      #17                 // Field referenceCache:Ljava/util/concurrent/ConcurrentMap;
+      31: aload_0
+      32: aload_1
+      33: invokevirtual #20                 // Method getReferenceKey:(Ljava/lang/ref/Reference;)Ljava/lang/Object;
+      36: aload_1
+      37: invokeinterface #21,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+      42: pop
+      43: goto          12
+      46: aload_0
+      47: getfield      #9                  // Field purgeLock:Ljava/util/concurrent/locks/Lock;
+      50: invokeinterface #22,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      55: goto          70
+      58: astore_2
+      59: aload_0
+      60: getfield      #9                  // Field purgeLock:Ljava/util/concurrent/locks/Lock;
+      63: invokeinterface #22,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      68: aload_2
+      69: athrow
+      70: return
+    Exception table:
+       from    to  target type
+          12    46    58   any
+
+  public abstract java.lang.ref.Reference<V> createReference(K, V);
+
+  public abstract K getReferenceKey(java.lang.ref.Reference<V>);
+
+  public V get(K);
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field referenceCache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #23,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #24                 // class java/lang/ref/Reference
+      13: astore_2
+      14: aload_2
+      15: ifnull        41
+      18: aload_2
+      19: invokevirtual #25                 // Method java/lang/ref/Reference.get:()Ljava/lang/Object;
+      22: astore_3
+      23: aload_3
+      24: ifnull        29
+      27: aload_3
+      28: areturn
+      29: aload_0
+      30: getfield      #17                 // Field referenceCache:Ljava/util/concurrent/ConcurrentMap;
+      33: aload_1
+      34: aload_2
+      35: invokeinterface #21,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+      40: pop
+      41: aload_0
+      42: getfield      #13                 // Field objectFactory:Lorg/apache/hadoop/hbase/util/ObjectPool$ObjectFactory;
+      45: aload_1
+      46: invokeinterface #26,  2           // InterfaceMethod org/apache/hadoop/hbase/util/ObjectPool$ObjectFactory.createObject:(Ljava/lang/Object;)Ljava/lang/Object;
+      51: astore_3
+      52: aload_0
+      53: aload_1
+      54: aload_3
+      55: invokevirtual #27                 // Method createReference:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/ref/Reference;
+      58: astore        4
+      60: aload_0
+      61: getfield      #17                 // Field referenceCache:Ljava/util/concurrent/ConcurrentMap;
+      64: aload_1
+      65: aload         4
+      67: invokeinterface #28,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      72: checkcast     #24                 // class java/lang/ref/Reference
+      75: astore        5
+      77: aload         5
+      79: ifnonnull     84
+      82: aload_3
+      83: areturn
+      84: aload         5
+      86: invokevirtual #25                 // Method java/lang/ref/Reference.get:()Ljava/lang/Object;
+      89: astore        6
+      91: aload         6
+      93: ifnull        99
+      96: aload         6
+      98: areturn
+      99: aload_0
+     100: getfield      #17                 // Field referenceCache:Ljava/util/concurrent/ConcurrentMap;
+     103: aload_1
+     104: aload         5
+     106: invokeinterface #21,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     111: pop
+     112: goto          60
+
+  public int size();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field referenceCache:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #29,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.size:()I
+       9: ireturn
+}

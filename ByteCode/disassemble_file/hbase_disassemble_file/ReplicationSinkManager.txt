@@ -1,0 +1,203 @@
+Compiled from "ReplicationSinkManager.java"
+public class org.apache.hadoop.hbase.replication.regionserver.ReplicationSinkManager {
+  static final int DEFAULT_BAD_SINK_THRESHOLD;
+
+  static final float DEFAULT_REPLICATION_SOURCE_RATIO;
+
+  public org.apache.hadoop.hbase.replication.regionserver.ReplicationSinkManager(org.apache.hadoop.hbase.client.ClusterConnection, java.lang.String, org.apache.hadoop.hbase.replication.HBaseReplicationEndpoint, org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: invokestatic  #2                  // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:()Ljava/util/ArrayList;
+       8: putfield      #3                  // Field sinks:Ljava/util/List;
+      11: aload_0
+      12: aload_1
+      13: putfield      #4                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      16: aload_0
+      17: aload_2
+      18: putfield      #5                  // Field peerClusterId:Ljava/lang/String;
+      21: aload_0
+      22: aload_3
+      23: putfield      #6                  // Field endpoint:Lorg/apache/hadoop/hbase/replication/HBaseReplicationEndpoint;
+      26: aload_0
+      27: invokestatic  #7                  // Method org/apache/hbase/thirdparty/com/google/common/collect/Maps.newHashMap:()Ljava/util/HashMap;
+      30: putfield      #8                  // Field badReportCounts:Ljava/util/Map;
+      33: aload_0
+      34: aload         4
+      36: ldc           #9                  // String replication.source.ratio
+      38: ldc           #11                 // float 0.5f
+      40: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      43: putfield      #13                 // Field ratio:F
+      46: aload_0
+      47: aload         4
+      49: ldc           #14                 // String replication.bad.sink.threshold
+      51: iconst_3
+      52: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      55: putfield      #16                 // Field badSinkThreshold:I
+      58: aload_0
+      59: new           #17                 // class java/util/Random
+      62: dup
+      63: invokespecial #18                 // Method java/util/Random."<init>":()V
+      66: putfield      #19                 // Field random:Ljava/util/Random;
+      69: return
+
+  public synchronized org.apache.hadoop.hbase.replication.regionserver.ReplicationSinkManager$SinkPeer getReplicationSink() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field endpoint:Lorg/apache/hadoop/hbase/replication/HBaseReplicationEndpoint;
+       4: invokevirtual #20                 // Method org/apache/hadoop/hbase/replication/HBaseReplicationEndpoint.getLastRegionServerUpdate:()J
+       7: aload_0
+       8: getfield      #21                 // Field lastUpdateToPeers:J
+      11: lcmp
+      12: ifgt          27
+      15: aload_0
+      16: getfield      #3                  // Field sinks:Ljava/util/List;
+      19: invokeinterface #22,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      24: ifeq          41
+      27: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      30: ldc           #24                 // String Current list of sinks is out of date or empty, updating
+      32: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      37: aload_0
+      38: invokevirtual #26                 // Method chooseSinks:()V
+      41: aload_0
+      42: getfield      #3                  // Field sinks:Ljava/util/List;
+      45: invokeinterface #22,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      50: ifeq          63
+      53: new           #27                 // class java/io/IOException
+      56: dup
+      57: ldc           #28                 // String No replication sinks are available
+      59: invokespecial #29                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      62: athrow
+      63: aload_0
+      64: getfield      #3                  // Field sinks:Ljava/util/List;
+      67: aload_0
+      68: getfield      #19                 // Field random:Ljava/util/Random;
+      71: aload_0
+      72: getfield      #3                  // Field sinks:Ljava/util/List;
+      75: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+      80: invokevirtual #31                 // Method java/util/Random.nextInt:(I)I
+      83: invokeinterface #32,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      88: checkcast     #33                 // class org/apache/hadoop/hbase/ServerName
+      91: astore_1
+      92: new           #34                 // class org/apache/hadoop/hbase/replication/regionserver/ReplicationSinkManager$SinkPeer
+      95: dup
+      96: aload_1
+      97: aload_0
+      98: getfield      #4                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+     101: checkcast     #35                 // class org/apache/hadoop/hbase/client/ClusterConnection
+     104: aload_1
+     105: invokeinterface #36,  2           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getAdmin:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$BlockingInterface;
+     110: invokespecial #37                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSinkManager$SinkPeer."<init>":(Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$AdminService$BlockingInterface;)V
+     113: areturn
+
+  public synchronized void reportBadSink(org.apache.hadoop.hbase.replication.regionserver.ReplicationSinkManager$SinkPeer);
+    Code:
+       0: aload_1
+       1: invokevirtual #38                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSinkManager$SinkPeer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+       4: astore_2
+       5: aload_0
+       6: getfield      #8                  // Field badReportCounts:Ljava/util/Map;
+       9: aload_2
+      10: invokeinterface #39,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      15: ifeq          37
+      18: aload_0
+      19: getfield      #8                  // Field badReportCounts:Ljava/util/Map;
+      22: aload_2
+      23: invokeinterface #40,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      28: checkcast     #41                 // class java/lang/Integer
+      31: invokevirtual #42                 // Method java/lang/Integer.intValue:()I
+      34: goto          38
+      37: iconst_0
+      38: iconst_1
+      39: iadd
+      40: istore_3
+      41: aload_0
+      42: getfield      #8                  // Field badReportCounts:Ljava/util/Map;
+      45: aload_2
+      46: iload_3
+      47: invokestatic  #43                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      50: invokeinterface #44,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      55: pop
+      56: iload_3
+      57: aload_0
+      58: getfield      #16                 // Field badSinkThreshold:I
+      61: if_icmple     91
+      64: aload_0
+      65: getfield      #3                  // Field sinks:Ljava/util/List;
+      68: aload_2
+      69: invokeinterface #45,  2           // InterfaceMethod java/util/List.remove:(Ljava/lang/Object;)Z
+      74: pop
+      75: aload_0
+      76: getfield      #3                  // Field sinks:Ljava/util/List;
+      79: invokeinterface #22,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      84: ifeq          91
+      87: aload_0
+      88: invokevirtual #26                 // Method chooseSinks:()V
+      91: return
+
+  public synchronized void reportSinkSuccess(org.apache.hadoop.hbase.replication.regionserver.ReplicationSinkManager$SinkPeer);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field badReportCounts:Ljava/util/Map;
+       4: aload_1
+       5: invokevirtual #38                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSinkManager$SinkPeer.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+       8: invokeinterface #46,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      13: pop
+      14: return
+
+  public synchronized void chooseSinks();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field endpoint:Lorg/apache/hadoop/hbase/replication/HBaseReplicationEndpoint;
+       4: invokevirtual #47                 // Method org/apache/hadoop/hbase/replication/HBaseReplicationEndpoint.getRegionServers:()Ljava/util/List;
+       7: astore_1
+       8: aload_1
+       9: aload_0
+      10: getfield      #19                 // Field random:Ljava/util/Random;
+      13: invokestatic  #48                 // Method java/util/Collections.shuffle:(Ljava/util/List;Ljava/util/Random;)V
+      16: aload_1
+      17: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+      22: i2f
+      23: aload_0
+      24: getfield      #13                 // Field ratio:F
+      27: fmul
+      28: f2d
+      29: invokestatic  #49                 // Method java/lang/Math.ceil:(D)D
+      32: d2i
+      33: istore_2
+      34: aload_0
+      35: aload_1
+      36: iconst_0
+      37: iload_2
+      38: invokeinterface #50,  3           // InterfaceMethod java/util/List.subList:(II)Ljava/util/List;
+      43: putfield      #3                  // Field sinks:Ljava/util/List;
+      46: aload_0
+      47: invokestatic  #51                 // Method java/lang/System.currentTimeMillis:()J
+      50: putfield      #21                 // Field lastUpdateToPeers:J
+      53: aload_0
+      54: getfield      #8                  // Field badReportCounts:Ljava/util/Map;
+      57: invokeinterface #52,  1           // InterfaceMethod java/util/Map.clear:()V
+      62: return
+
+  public synchronized int getNumSinks();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field sinks:Ljava/util/List;
+       4: invokeinterface #30,  1           // InterfaceMethod java/util/List.size:()I
+       9: ireturn
+
+  protected java.util.List<org.apache.hadoop.hbase.ServerName> getSinksForTesting();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field sinks:Ljava/util/List;
+       4: invokestatic  #53                 // Method java/util/Collections.unmodifiableList:(Ljava/util/List;)Ljava/util/List;
+       7: areturn
+
+  static {};
+    Code:
+       0: ldc           #10                 // class org/apache/hadoop/hbase/replication/regionserver/ReplicationSinkManager
+       2: invokestatic  #54                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

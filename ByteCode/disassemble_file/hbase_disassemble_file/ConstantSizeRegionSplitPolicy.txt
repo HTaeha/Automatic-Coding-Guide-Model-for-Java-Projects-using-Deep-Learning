@@ -1,0 +1,151 @@
+Compiled from "ConstantSizeRegionSplitPolicy.java"
+public class org.apache.hadoop.hbase.regionserver.ConstantSizeRegionSplitPolicy extends org.apache.hadoop.hbase.regionserver.RegionSplitPolicy {
+  public org.apache.hadoop.hbase.regionserver.ConstantSizeRegionSplitPolicy();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/regionserver/RegionSplitPolicy."<init>":()V
+       4: return
+
+  protected void configureForRegion(org.apache.hadoop.hbase.regionserver.HRegion);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #2                  // Method org/apache/hadoop/hbase/regionserver/RegionSplitPolicy.configureForRegion:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+       5: aload_0
+       6: invokevirtual #3                  // Method getConf:()Lorg/apache/hadoop/conf/Configuration;
+       9: astore_2
+      10: aload_1
+      11: invokevirtual #4                  // Method org/apache/hadoop/hbase/regionserver/HRegion.getTableDescriptor:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      14: astore_3
+      15: aload_3
+      16: ifnull        29
+      19: aload_0
+      20: aload_3
+      21: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getMaxFileSize:()J
+      26: putfield      #6                  // Field desiredMaxFileSize:J
+      29: aload_0
+      30: getfield      #6                  // Field desiredMaxFileSize:J
+      33: lconst_0
+      34: lcmp
+      35: ifgt          51
+      38: aload_0
+      39: aload_2
+      40: ldc           #8                  // String hbase.hregion.max.filesize
+      42: ldc2_w        #9                  // long 10737418240l
+      45: invokevirtual #11                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      48: putfield      #6                  // Field desiredMaxFileSize:J
+      51: aload_2
+      52: ldc           #12                 // String hbase.hregion.max.filesize.jitter
+      54: ldc2_w        #13                 // double 0.25d
+      57: invokevirtual #15                 // Method org/apache/hadoop/conf/Configuration.getDouble:(Ljava/lang/String;D)D
+      60: dstore        4
+      62: aload_0
+      63: getstatic     #16                 // Field RANDOM:Ljava/util/Random;
+      66: invokevirtual #17                 // Method java/util/Random.nextFloat:()F
+      69: f2d
+      70: ldc2_w        #18                 // double 0.5d
+      73: dsub
+      74: dload         4
+      76: dmul
+      77: putfield      #20                 // Field jitterRate:D
+      80: aload_0
+      81: getfield      #6                  // Field desiredMaxFileSize:J
+      84: l2d
+      85: aload_0
+      86: getfield      #20                 // Field jitterRate:D
+      89: dmul
+      90: d2l
+      91: lstore        6
+      93: aload_0
+      94: getfield      #20                 // Field jitterRate:D
+      97: dconst_0
+      98: dcmpl
+      99: ifle          126
+     102: lload         6
+     104: ldc2_w        #22                 // long 9223372036854775807l
+     107: aload_0
+     108: getfield      #6                  // Field desiredMaxFileSize:J
+     111: lsub
+     112: lcmp
+     113: ifle          126
+     116: aload_0
+     117: ldc2_w        #22                 // long 9223372036854775807l
+     120: putfield      #6                  // Field desiredMaxFileSize:J
+     123: goto          137
+     126: aload_0
+     127: dup
+     128: getfield      #6                  // Field desiredMaxFileSize:J
+     131: lload         6
+     133: ladd
+     134: putfield      #6                  // Field desiredMaxFileSize:J
+     137: return
+
+  protected boolean shouldSplit();
+    Code:
+       0: aload_0
+       1: getfield      #24                 // Field region:Lorg/apache/hadoop/hbase/regionserver/HRegion;
+       4: invokevirtual #25                 // Method org/apache/hadoop/hbase/regionserver/HRegion.shouldForceSplit:()Z
+       7: istore_1
+       8: iconst_0
+       9: istore_2
+      10: aload_0
+      11: getfield      #24                 // Field region:Lorg/apache/hadoop/hbase/regionserver/HRegion;
+      14: invokevirtual #26                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getStores:()Ljava/util/List;
+      17: invokeinterface #27,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      22: astore_3
+      23: aload_3
+      24: invokeinterface #28,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      29: ifeq          71
+      32: aload_3
+      33: invokeinterface #29,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      38: checkcast     #30                 // class org/apache/hadoop/hbase/regionserver/HStore
+      41: astore        4
+      43: aload         4
+      45: invokevirtual #31                 // Method org/apache/hadoop/hbase/regionserver/HStore.canSplit:()Z
+      48: ifne          53
+      51: iconst_0
+      52: ireturn
+      53: aload         4
+      55: invokevirtual #32                 // Method org/apache/hadoop/hbase/regionserver/HStore.getSize:()J
+      58: aload_0
+      59: getfield      #6                  // Field desiredMaxFileSize:J
+      62: lcmp
+      63: ifle          68
+      66: iconst_1
+      67: istore_2
+      68: goto          23
+      71: iload_2
+      72: ifne          79
+      75: iload_1
+      76: ifeq          83
+      79: iconst_1
+      80: goto          84
+      83: iconst_0
+      84: ireturn
+
+  long getDesiredMaxFileSize();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field desiredMaxFileSize:J
+       4: lreturn
+
+  public boolean positiveJitterRate();
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field jitterRate:D
+       4: dconst_0
+       5: dcmpl
+       6: ifle          13
+       9: iconst_1
+      10: goto          14
+      13: iconst_0
+      14: ireturn
+
+  static {};
+    Code:
+       0: new           #33                 // class java/util/Random
+       3: dup
+       4: invokespecial #34                 // Method java/util/Random."<init>":()V
+       7: putstatic     #16                 // Field RANDOM:Ljava/util/Random;
+      10: return
+}

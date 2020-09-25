@@ -1,0 +1,178 @@
+Compiled from "MultiHConnection.java"
+public class org.apache.hadoop.hbase.util.MultiHConnection {
+  public org.apache.hadoop.hbase.util.MultiHConnection(org.apache.hadoop.conf.Configuration, int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/lang/Object
+       8: dup
+       9: invokespecial #1                  // Method java/lang/Object."<init>":()V
+      12: putfield      #3                  // Field connectionsLock:Ljava/lang/Object;
+      15: aload_0
+      16: iload_2
+      17: putfield      #4                  // Field noOfConnections:I
+      20: aload_0
+      21: getfield      #3                  // Field connectionsLock:Ljava/lang/Object;
+      24: dup
+      25: astore_3
+      26: monitorenter
+      27: aload_0
+      28: iload_2
+      29: anewarray     #5                  // class org/apache/hadoop/hbase/client/Connection
+      32: putfield      #6                  // Field connections:[Lorg/apache/hadoop/hbase/client/Connection;
+      35: iconst_0
+      36: istore        4
+      38: iload         4
+      40: iload_2
+      41: if_icmpge     65
+      44: aload_1
+      45: invokestatic  #7                  // Method org/apache/hadoop/hbase/client/ConnectionFactory.createConnection:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/Connection;
+      48: astore        5
+      50: aload_0
+      51: getfield      #6                  // Field connections:[Lorg/apache/hadoop/hbase/client/Connection;
+      54: iload         4
+      56: aload         5
+      58: aastore
+      59: iinc          4, 1
+      62: goto          38
+      65: aload_3
+      66: monitorexit
+      67: goto          77
+      70: astore        6
+      72: aload_3
+      73: monitorexit
+      74: aload         6
+      76: athrow
+      77: aload_0
+      78: aload_1
+      79: invokespecial #8                  // Method createBatchPool:(Lorg/apache/hadoop/conf/Configuration;)V
+      82: return
+    Exception table:
+       from    to  target type
+          27    67    70   any
+          70    74    70   any
+
+  public void close();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field connectionsLock:Ljava/lang/Object;
+       4: dup
+       5: astore_1
+       6: monitorenter
+       7: aload_0
+       8: getfield      #6                  // Field connections:[Lorg/apache/hadoop/hbase/client/Connection;
+      11: ifnull        94
+      14: aload_0
+      15: getfield      #6                  // Field connections:[Lorg/apache/hadoop/hbase/client/Connection;
+      18: astore_2
+      19: aload_2
+      20: arraylength
+      21: istore_3
+      22: iconst_0
+      23: istore        4
+      25: iload         4
+      27: iload_3
+      28: if_icmpge     89
+      31: aload_2
+      32: iload         4
+      34: aaload
+      35: astore        5
+      37: aload         5
+      39: ifnull        83
+      42: aload         5
+      44: invokeinterface #9,  1            // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+      49: aconst_null
+      50: astore        5
+      52: goto          83
+      55: astore        6
+      57: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+      60: ldc           #12                 // String Got exception in closing connection
+      62: aload         6
+      64: invokeinterface #13,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      69: aconst_null
+      70: astore        5
+      72: goto          83
+      75: astore        7
+      77: aconst_null
+      78: astore        5
+      80: aload         7
+      82: athrow
+      83: iinc          4, 1
+      86: goto          25
+      89: aload_0
+      90: aconst_null
+      91: putfield      #6                  // Field connections:[Lorg/apache/hadoop/hbase/client/Connection;
+      94: aload_1
+      95: monitorexit
+      96: goto          106
+      99: astore        8
+     101: aload_1
+     102: monitorexit
+     103: aload         8
+     105: athrow
+     106: aload_0
+     107: getfield      #14                 // Field batchPool:Ljava/util/concurrent/ExecutorService;
+     110: ifnull        176
+     113: aload_0
+     114: getfield      #14                 // Field batchPool:Ljava/util/concurrent/ExecutorService;
+     117: invokeinterface #15,  1           // InterfaceMethod java/util/concurrent/ExecutorService.isShutdown:()Z
+     122: ifne          176
+     125: aload_0
+     126: getfield      #14                 // Field batchPool:Ljava/util/concurrent/ExecutorService;
+     129: invokeinterface #16,  1           // InterfaceMethod java/util/concurrent/ExecutorService.shutdown:()V
+     134: aload_0
+     135: getfield      #14                 // Field batchPool:Ljava/util/concurrent/ExecutorService;
+     138: ldc2_w        #17                 // long 10l
+     141: getstatic     #19                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     144: invokeinterface #20,  4           // InterfaceMethod java/util/concurrent/ExecutorService.awaitTermination:(JLjava/util/concurrent/TimeUnit;)Z
+     149: ifne          162
+     152: aload_0
+     153: getfield      #14                 // Field batchPool:Ljava/util/concurrent/ExecutorService;
+     156: invokeinterface #21,  1           // InterfaceMethod java/util/concurrent/ExecutorService.shutdownNow:()Ljava/util/List;
+     161: pop
+     162: goto          176
+     165: astore_1
+     166: aload_0
+     167: getfield      #14                 // Field batchPool:Ljava/util/concurrent/ExecutorService;
+     170: invokeinterface #21,  1           // InterfaceMethod java/util/concurrent/ExecutorService.shutdownNow:()Ljava/util/List;
+     175: pop
+     176: return
+    Exception table:
+       from    to  target type
+          42    49    55   Class java/io/IOException
+          42    49    75   any
+          55    69    75   any
+          75    77    75   any
+           7    96    99   any
+          99   103    99   any
+         134   162   165   Class java/lang/InterruptedException
+
+  public <R> void processBatchCallback(java.util.List<? extends org.apache.hadoop.hbase.client.Row>, org.apache.hadoop.hbase.TableName, java.lang.Object[], org.apache.hadoop.hbase.client.coprocessor.Batch$Callback<R>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field connections:[Lorg/apache/hadoop/hbase/client/Connection;
+       4: invokestatic  #23                 // Method java/util/concurrent/ThreadLocalRandom.current:()Ljava/util/concurrent/ThreadLocalRandom;
+       7: aload_0
+       8: getfield      #4                  // Field noOfConnections:I
+      11: invokevirtual #24                 // Method java/util/concurrent/ThreadLocalRandom.nextInt:(I)I
+      14: aaload
+      15: checkcast     #25                 // class org/apache/hadoop/hbase/client/ClusterConnection
+      18: astore        5
+      20: aload_1
+      21: aload_3
+      22: aload         4
+      24: aload         5
+      26: aload_0
+      27: getfield      #14                 // Field batchPool:Ljava/util/concurrent/ExecutorService;
+      30: aload_2
+      31: invokestatic  #26                 // Method org/apache/hadoop/hbase/client/HTable.doBatchWithCallback:(Ljava/util/List;[Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/coprocessor/Batch$Callback;Lorg/apache/hadoop/hbase/client/ClusterConnection;Ljava/util/concurrent/ExecutorService;Lorg/apache/hadoop/hbase/TableName;)V
+      34: return
+
+  static {};
+    Code:
+       0: ldc           #44                 // class org/apache/hadoop/hbase/util/MultiHConnection
+       2: invokestatic  #45                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

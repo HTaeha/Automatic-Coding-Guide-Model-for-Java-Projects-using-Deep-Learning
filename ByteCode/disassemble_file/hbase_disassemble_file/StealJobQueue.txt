@@ -1,0 +1,178 @@
+Compiled from "StealJobQueue.java"
+public class org.apache.hadoop.hbase.util.StealJobQueue<T> extends java.util.concurrent.PriorityBlockingQueue<T> {
+  public org.apache.hadoop.hbase.util.StealJobQueue(java.util.Comparator<? super T>);
+    Code:
+       0: aload_0
+       1: bipush        11
+       3: bipush        11
+       5: aload_1
+       6: invokespecial #3                  // Method "<init>":(IILjava/util/Comparator;)V
+       9: return
+
+  public org.apache.hadoop.hbase.util.StealJobQueue(int, int, java.util.Comparator<? super T>);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: aload_3
+       3: invokespecial #4                  // Method java/util/concurrent/PriorityBlockingQueue."<init>":(ILjava/util/Comparator;)V
+       6: aload_0
+       7: new           #5                  // class java/util/concurrent/locks/ReentrantLock
+      10: dup
+      11: invokespecial #6                  // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+      14: putfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      17: aload_0
+      18: aload_0
+      19: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      22: invokeinterface #7,  1            // InterfaceMethod java/util/concurrent/locks/Lock.newCondition:()Ljava/util/concurrent/locks/Condition;
+      27: putfield      #1                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+      30: aload_0
+      31: new           #8                  // class org/apache/hadoop/hbase/util/StealJobQueue$1
+      34: dup
+      35: aload_0
+      36: iload_2
+      37: aload_3
+      38: invokespecial #9                  // Method org/apache/hadoop/hbase/util/StealJobQueue$1."<init>":(Lorg/apache/hadoop/hbase/util/StealJobQueue;ILjava/util/Comparator;)V
+      41: putfield      #10                 // Field stealFromQueue:Ljava/util/concurrent/BlockingQueue;
+      44: return
+
+  public java.util.concurrent.BlockingQueue<T> getStealFromQueue();
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field stealFromQueue:Ljava/util/concurrent/BlockingQueue;
+       4: areturn
+
+  public boolean offer(T);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: invokeinterface #11,  1           // InterfaceMethod java/util/concurrent/locks/Lock.lock:()V
+       9: aload_0
+      10: getfield      #1                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+      13: invokeinterface #12,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signal:()V
+      18: aload_0
+      19: aload_1
+      20: invokespecial #13                 // Method java/util/concurrent/PriorityBlockingQueue.offer:(Ljava/lang/Object;)Z
+      23: istore_2
+      24: aload_0
+      25: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      28: invokeinterface #14,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      33: iload_2
+      34: ireturn
+      35: astore_3
+      36: aload_0
+      37: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      40: invokeinterface #14,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      45: aload_3
+      46: athrow
+    Exception table:
+       from    to  target type
+           9    24    35   any
+
+  public T take() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: invokeinterface #15,  1           // InterfaceMethod java/util/concurrent/locks/Lock.lockInterruptibly:()V
+       9: aload_0
+      10: invokevirtual #16                 // Method poll:()Ljava/lang/Object;
+      13: astore_1
+      14: aload_1
+      15: ifnonnull     28
+      18: aload_0
+      19: getfield      #10                 // Field stealFromQueue:Ljava/util/concurrent/BlockingQueue;
+      22: invokeinterface #17,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.poll:()Ljava/lang/Object;
+      27: astore_1
+      28: aload_1
+      29: ifnonnull     44
+      32: aload_0
+      33: getfield      #1                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+      36: invokeinterface #18,  1           // InterfaceMethod java/util/concurrent/locks/Condition.await:()V
+      41: goto          57
+      44: aload_1
+      45: astore_2
+      46: aload_0
+      47: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      50: invokeinterface #14,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      55: aload_2
+      56: areturn
+      57: goto          9
+      60: astore_3
+      61: aload_0
+      62: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      65: invokeinterface #14,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      70: aload_3
+      71: athrow
+    Exception table:
+       from    to  target type
+           9    46    60   any
+          57    61    60   any
+
+  public T poll(long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
+    Code:
+       0: aload_3
+       1: lload_1
+       2: invokevirtual #19                 // Method java/util/concurrent/TimeUnit.toNanos:(J)J
+       5: lstore        4
+       7: aload_0
+       8: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      11: invokeinterface #15,  1           // InterfaceMethod java/util/concurrent/locks/Lock.lockInterruptibly:()V
+      16: aload_0
+      17: invokevirtual #16                 // Method poll:()Ljava/lang/Object;
+      20: astore        6
+      22: aload         6
+      24: ifnonnull     38
+      27: aload_0
+      28: getfield      #10                 // Field stealFromQueue:Ljava/util/concurrent/BlockingQueue;
+      31: invokeinterface #17,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.poll:()Ljava/lang/Object;
+      36: astore        6
+      38: aload         6
+      40: ifnonnull     81
+      43: lload         4
+      45: lconst_0
+      46: lcmp
+      47: ifgt          65
+      50: aconst_null
+      51: astore        7
+      53: aload_0
+      54: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      57: invokeinterface #14,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      62: aload         7
+      64: areturn
+      65: aload_0
+      66: getfield      #1                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+      69: lload         4
+      71: invokeinterface #20,  3           // InterfaceMethod java/util/concurrent/locks/Condition.awaitNanos:(J)J
+      76: lstore        4
+      78: goto          97
+      81: aload         6
+      83: astore        7
+      85: aload_0
+      86: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      89: invokeinterface #14,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      94: aload         7
+      96: areturn
+      97: goto          16
+     100: astore        8
+     102: aload_0
+     103: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+     106: invokeinterface #14,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     111: aload         8
+     113: athrow
+    Exception table:
+       from    to  target type
+          16    53   100   any
+          65    85   100   any
+          97   102   100   any
+
+  static java.util.concurrent.locks.Lock access$000(org.apache.hadoop.hbase.util.StealJobQueue);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: areturn
+
+  static java.util.concurrent.locks.Condition access$100(org.apache.hadoop.hbase.util.StealJobQueue);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+       4: areturn
+}

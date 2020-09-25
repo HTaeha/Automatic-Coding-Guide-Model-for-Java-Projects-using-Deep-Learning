@@ -1,0 +1,370 @@
+Compiled from "SyncReplicationWALProvider.java"
+public class org.apache.hadoop.hbase.wal.SyncReplicationWALProvider implements org.apache.hadoop.hbase.wal.WALProvider,org.apache.hadoop.hbase.replication.regionserver.PeerActionListener {
+  public static final java.lang.String DUAL_WAL_IMPL;
+
+  org.apache.hadoop.hbase.wal.SyncReplicationWALProvider(org.apache.hadoop.hbase.wal.WALProvider);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/apache/hadoop/hbase/wal/SyncReplicationWALProvider$DefaultSyncReplicationPeerInfoProvider
+       8: dup
+       9: aconst_null
+      10: invokespecial #3                  // Method org/apache/hadoop/hbase/wal/SyncReplicationWALProvider$DefaultSyncReplicationPeerInfoProvider."<init>":(Lorg/apache/hadoop/hbase/wal/SyncReplicationWALProvider$1;)V
+      13: putfield      #4                  // Field peerInfoProvider:Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider;
+      16: aload_0
+      17: new           #5                  // class java/util/ArrayList
+      20: dup
+      21: invokespecial #6                  // Method java/util/ArrayList."<init>":()V
+      24: putfield      #7                  // Field listeners:Ljava/util/List;
+      27: aload_0
+      28: new           #8                  // class java/util/concurrent/atomic/AtomicBoolean
+      31: dup
+      32: iconst_0
+      33: invokespecial #9                  // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      36: putfield      #10                 // Field initialized:Ljava/util/concurrent/atomic/AtomicBoolean;
+      39: aload_0
+      40: new           #11                 // class java/util/concurrent/ConcurrentHashMap
+      43: dup
+      44: invokespecial #12                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      47: putfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+      50: aload_0
+      51: new           #14                 // class org/apache/hadoop/hbase/util/KeyLocker
+      54: dup
+      55: invokespecial #15                 // Method org/apache/hadoop/hbase/util/KeyLocker."<init>":()V
+      58: putfield      #16                 // Field createLock:Lorg/apache/hadoop/hbase/util/KeyLocker;
+      61: aload_0
+      62: aload_1
+      63: putfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      66: return
+
+  public void setPeerInfoProvider(org.apache.hadoop.hbase.replication.regionserver.SyncReplicationPeerInfoProvider);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #4                  // Field peerInfoProvider:Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider;
+       5: return
+
+  public void init(org.apache.hadoop.hbase.wal.WALFactory, org.apache.hadoop.conf.Configuration, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field initialized:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: iconst_0
+       5: iconst_1
+       6: invokevirtual #18                 // Method java/util/concurrent/atomic/AtomicBoolean.compareAndSet:(ZZ)Z
+       9: ifne          22
+      12: new           #19                 // class java/lang/IllegalStateException
+      15: dup
+      16: ldc           #20                 // String WALProvider.init should only be called once.
+      18: invokespecial #21                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      21: athrow
+      22: aload_0
+      23: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      26: aload_1
+      27: aload_2
+      28: aload_3
+      29: invokeinterface #22,  4           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.init:(Lorg/apache/hadoop/hbase/wal/WALFactory;Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;)V
+      34: aload_0
+      35: aload_2
+      36: putfield      #23                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      39: aload_0
+      40: aload_1
+      41: putfield      #24                 // Field factory:Lorg/apache/hadoop/hbase/wal/WALFactory;
+      44: aload_2
+      45: invokestatic  #25                 // Method org/apache/hadoop/hbase/wal/NettyAsyncFSWALConfigHelper.getEventLoopConfig:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/util/Pair;
+      48: astore        4
+      50: aload_0
+      51: aload         4
+      53: invokevirtual #26                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+      56: checkcast     #27                 // class org/apache/hbase/thirdparty/io/netty/channel/EventLoopGroup
+      59: putfield      #28                 // Field eventLoopGroup:Lorg/apache/hbase/thirdparty/io/netty/channel/EventLoopGroup;
+      62: aload_0
+      63: aload         4
+      65: invokevirtual #29                 // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+      68: checkcast     #30                 // class java/lang/Class
+      71: putfield      #31                 // Field channelClass:Ljava/lang/Class;
+      74: return
+
+  public org.apache.hadoop.hbase.wal.WAL getWAL(org.apache.hadoop.hbase.client.RegionInfo) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: ifnonnull     15
+       4: aload_0
+       5: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+       8: aconst_null
+       9: invokeinterface #81,  2           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.getWAL:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/wal/WAL;
+      14: areturn
+      15: aconst_null
+      16: astore_2
+      17: aload_0
+      18: getfield      #4                  // Field peerInfoProvider:Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider;
+      21: aload_1
+      22: invokeinterface #82,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      27: invokeinterface #83,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider.getPeerIdAndRemoteWALDir:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/Optional;
+      32: astore_3
+      33: aload_3
+      34: invokevirtual #84                 // Method java/util/Optional.isPresent:()Z
+      37: ifeq          70
+      40: aload_3
+      41: invokevirtual #85                 // Method java/util/Optional.get:()Ljava/lang/Object;
+      44: checkcast     #86                 // class org/apache/hadoop/hbase/util/Pair
+      47: astore        4
+      49: aload_0
+      50: aload         4
+      52: invokevirtual #26                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+      55: checkcast     #87                 // class java/lang/String
+      58: aload         4
+      60: invokevirtual #29                 // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+      63: checkcast     #87                 // class java/lang/String
+      66: invokespecial #88                 // Method getWAL:(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/wal/DualAsyncFSWAL;
+      69: astore_2
+      70: aload_2
+      71: ifnull        78
+      74: aload_2
+      75: goto          88
+      78: aload_0
+      79: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      82: aload_1
+      83: invokeinterface #81,  2           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.getWAL:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/wal/WAL;
+      88: areturn
+
+  public java.util.List<org.apache.hadoop.hbase.wal.WAL> getWALs();
+    Code:
+       0: aload_0
+       1: invokespecial #99                 // Method getWALStream:()Ljava/util/stream/Stream;
+       4: invokestatic  #100                // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+       7: invokeinterface #101,  2          // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      12: checkcast     #102                // class java/util/List
+      15: areturn
+
+  public void shutdown() throws java.io.IOException;
+    Code:
+       0: aconst_null
+       1: astore_1
+       2: aload_0
+       3: getfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+       6: invokeinterface #90,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+      11: invokeinterface #103,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      16: astore_2
+      17: aload_2
+      18: invokeinterface #104,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      23: ifeq          76
+      26: aload_2
+      27: invokeinterface #105,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      32: checkcast     #72                 // class java/util/Optional
+      35: astore_3
+      36: aload_3
+      37: invokevirtual #84                 // Method java/util/Optional.isPresent:()Z
+      40: ifeq          73
+      43: aload_3
+      44: invokevirtual #85                 // Method java/util/Optional.get:()Ljava/lang/Object;
+      47: checkcast     #42                 // class org/apache/hadoop/hbase/regionserver/wal/DualAsyncFSWAL
+      50: invokevirtual #106                // Method org/apache/hadoop/hbase/regionserver/wal/DualAsyncFSWAL.shutdown:()V
+      53: goto          73
+      56: astore        4
+      58: getstatic     #107                // Field LOG:Lorg/slf4j/Logger;
+      61: ldc           #108                // String Shutdown WAL failed
+      63: aload         4
+      65: invokeinterface #109,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      70: aload         4
+      72: astore_1
+      73: goto          17
+      76: aload_0
+      77: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      80: invokeinterface #110,  1          // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.shutdown:()V
+      85: aload_1
+      86: ifnull        91
+      89: aload_1
+      90: athrow
+      91: return
+    Exception table:
+       from    to  target type
+          43    53    56   Class java/io/IOException
+
+  public void close() throws java.io.IOException;
+    Code:
+       0: aconst_null
+       1: astore_1
+       2: aload_0
+       3: getfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+       6: invokeinterface #90,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+      11: invokeinterface #103,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      16: astore_2
+      17: aload_2
+      18: invokeinterface #104,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      23: ifeq          76
+      26: aload_2
+      27: invokeinterface #105,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      32: checkcast     #72                 // class java/util/Optional
+      35: astore_3
+      36: aload_3
+      37: invokevirtual #84                 // Method java/util/Optional.isPresent:()Z
+      40: ifeq          73
+      43: aload_3
+      44: invokevirtual #85                 // Method java/util/Optional.get:()Ljava/lang/Object;
+      47: checkcast     #42                 // class org/apache/hadoop/hbase/regionserver/wal/DualAsyncFSWAL
+      50: invokevirtual #78                 // Method org/apache/hadoop/hbase/regionserver/wal/DualAsyncFSWAL.close:()V
+      53: goto          73
+      56: astore        4
+      58: getstatic     #107                // Field LOG:Lorg/slf4j/Logger;
+      61: ldc           #111                // String Close WAL failed
+      63: aload         4
+      65: invokeinterface #109,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      70: aload         4
+      72: astore_1
+      73: goto          17
+      76: aload_0
+      77: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      80: invokeinterface #112,  1          // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.close:()V
+      85: aload_1
+      86: ifnull        91
+      89: aload_1
+      90: athrow
+      91: return
+    Exception table:
+       from    to  target type
+          43    53    56   Class java/io/IOException
+
+  public long getNumLogFiles();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #113,  1          // InterfaceMethod java/util/concurrent/ConcurrentMap.size:()I
+       9: i2l
+      10: aload_0
+      11: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      14: invokeinterface #114,  1          // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.getNumLogFiles:()J
+      19: ladd
+      20: lreturn
+
+  public long getLogFileSize();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #90,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+       9: invokeinterface #91,  1           // InterfaceMethod java/util/Collection.stream:()Ljava/util/stream/Stream;
+      14: invokedynamic #92,  0             // InvokeDynamic #0:test:()Ljava/util/function/Predicate;
+      19: invokeinterface #93,  2           // InterfaceMethod java/util/stream/Stream.filter:(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;
+      24: invokedynamic #94,  0             // InvokeDynamic #1:apply:()Ljava/util/function/Function;
+      29: invokeinterface #95,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      34: invokedynamic #115,  0            // InvokeDynamic #2:applyAsLong:()Ljava/util/function/ToLongFunction;
+      39: invokeinterface #116,  2          // InterfaceMethod java/util/stream/Stream.mapToLong:(Ljava/util/function/ToLongFunction;)Ljava/util/stream/LongStream;
+      44: invokeinterface #117,  1          // InterfaceMethod java/util/stream/LongStream.sum:()J
+      49: aload_0
+      50: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      53: invokeinterface #118,  1          // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.getLogFileSize:()J
+      58: ladd
+      59: lreturn
+
+  public void addWALActionsListener(org.apache.hadoop.hbase.regionserver.wal.WALActionsListener);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field listeners:Ljava/util/List;
+       4: aload_1
+       5: invokeinterface #120,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      10: pop
+      11: aload_0
+      12: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+      15: aload_1
+      16: invokeinterface #121,  2          // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.addWALActionsListener:(Lorg/apache/hadoop/hbase/regionserver/wal/WALActionsListener;)V
+      21: return
+
+  public void peerSyncReplicationStateChange(java.lang.String, org.apache.hadoop.hbase.replication.SyncReplicationState, org.apache.hadoop.hbase.replication.SyncReplicationState, int);
+    Code:
+       0: aload_2
+       1: getstatic     #122                // Field org/apache/hadoop/hbase/replication/SyncReplicationState.ACTIVE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+       4: if_acmpne     123
+       7: iload         4
+       9: ifne          95
+      12: aload_0
+      13: getfield      #16                 // Field createLock:Lorg/apache/hadoop/hbase/util/KeyLocker;
+      16: aload_1
+      17: invokevirtual #74                 // Method org/apache/hadoop/hbase/util/KeyLocker.acquireLock:(Ljava/lang/Object;)Ljava/util/concurrent/locks/ReentrantLock;
+      20: astore        5
+      22: aload_0
+      23: getfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+      26: aload_1
+      27: invokeinterface #71,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      32: checkcast     #72                 // class java/util/Optional
+      35: astore        6
+      37: aload         6
+      39: ifnull        56
+      42: aload         6
+      44: aload_3
+      45: invokedynamic #123,  0            // InvokeDynamic #3:accept:(Lorg/apache/hadoop/hbase/replication/SyncReplicationState;)Ljava/util/function/Consumer;
+      50: invokevirtual #124                // Method java/util/Optional.ifPresent:(Ljava/util/function/Consumer;)V
+      53: goto          70
+      56: aload_0
+      57: getfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+      60: aload_1
+      61: invokestatic  #125                // Method java/util/Optional.empty:()Ljava/util/Optional;
+      64: invokeinterface #80,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      69: pop
+      70: aload         5
+      72: invokeinterface #75,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      77: goto          92
+      80: astore        7
+      82: aload         5
+      84: invokeinterface #75,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      89: aload         7
+      91: athrow
+      92: goto          123
+      95: iload         4
+      97: iconst_1
+      98: if_icmpne     123
+     101: aload_0
+     102: getfield      #13                 // Field peerId2WAL:Ljava/util/concurrent/ConcurrentMap;
+     105: aload_1
+     106: invokeinterface #126,  2          // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     111: checkcast     #72                 // class java/util/Optional
+     114: aload_0
+     115: invokedynamic #127,  0            // InvokeDynamic #4:accept:(Lorg/apache/hadoop/hbase/wal/SyncReplicationWALProvider;)Ljava/util/function/Consumer;
+     120: invokevirtual #124                // Method java/util/Optional.ifPresent:(Ljava/util/function/Consumer;)V
+     123: return
+    Exception table:
+       from    to  target type
+          22    70    80   any
+          80    82    80   any
+
+  public static java.util.Optional<java.lang.String> getSyncReplicationPeerIdFromWALName(java.lang.String);
+    Code:
+       0: aload_0
+       1: ldc           #61                 // String .syncrep
+       3: invokevirtual #128                // Method java/lang/String.endsWith:(Ljava/lang/String;)Z
+       6: ifne          13
+       9: invokestatic  #125                // Method java/util/Optional.empty:()Ljava/util/Optional;
+      12: areturn
+      13: aload_0
+      14: invokestatic  #129                // Method org/apache/hadoop/hbase/wal/AbstractFSWALProvider.getWALPrefixFromWALName:(Ljava/lang/String;)Ljava/lang/String;
+      17: astore_1
+      18: getstatic     #130                // Field LOG_PREFIX_PATTERN:Ljava/util/regex/Pattern;
+      21: aload_1
+      22: invokevirtual #131                // Method java/util/regex/Pattern.matcher:(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
+      25: astore_2
+      26: aload_2
+      27: invokevirtual #132                // Method java/util/regex/Matcher.matches:()Z
+      30: ifeq          42
+      33: aload_2
+      34: iconst_1
+      35: invokevirtual #133                // Method java/util/regex/Matcher.group:(I)Ljava/lang/String;
+      38: invokestatic  #79                 // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+      41: areturn
+      42: invokestatic  #125                // Method java/util/Optional.empty:()Ljava/util/Optional;
+      45: areturn
+
+  org.apache.hadoop.hbase.wal.WALProvider getWrappedProvider();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field provider:Lorg/apache/hadoop/hbase/wal/WALProvider;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #40                 // class org/apache/hadoop/hbase/wal/SyncReplicationWALProvider
+       2: invokestatic  #136                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #107                // Field LOG:Lorg/slf4j/Logger;
+       8: ldc           #137                // String .*-\d+-(.+)
+      10: invokestatic  #138                // Method java/util/regex/Pattern.compile:(Ljava/lang/String;)Ljava/util/regex/Pattern;
+      13: putstatic     #130                // Field LOG_PREFIX_PATTERN:Ljava/util/regex/Pattern;
+      16: return
+}

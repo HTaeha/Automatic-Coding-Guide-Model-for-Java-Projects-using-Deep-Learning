@@ -1,0 +1,1658 @@
+Compiled from "TestLoadIncrementalHFiles.java"
+public class org.apache.hadoop.hbase.tool.TestLoadIncrementalHFiles {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.junit.rules.TestName tn;
+
+  static final java.lang.String EXPECTED_MSG_FOR_NON_EXISTING_FAMILY;
+
+  static final int MAX_FILES_PER_REGION_PER_FAMILY;
+
+  static org.apache.hadoop.hbase.HBaseTestingUtility util;
+
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.tool.TestLoadIncrementalHFiles();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/junit/rules/TestName
+       8: dup
+       9: invokespecial #3                  // Method org/junit/rules/TestName."<init>":()V
+      12: putfield      #4                  // Field tn:Lorg/junit/rules/TestName;
+      15: return
+
+  public static void setUpBeforeClass() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: ldc           #8                  // String hbase.coprocessor.region.classes
+       8: ldc           #9                  // String
+      10: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      13: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      16: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      19: ldc           #12                 // String hbase.mapreduce.bulkload.max.hfiles.perRegion.perFamily
+      21: iconst_4
+      22: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      25: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      28: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      31: ldc           #16                 // String hbase.client.rpc.codec
+      33: ldc           #17                 // class org/apache/hadoop/hbase/codec/KeyValueCodecWithTags
+      35: invokevirtual #18                 // Method java/lang/Class.getCanonicalName:()Ljava/lang/String;
+      38: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      41: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      44: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      47: pop
+      48: invokestatic  #20                 // Method setupNamespace:()V
+      51: return
+
+  protected static void setupNamespace() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #21                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: ldc           #22                 // String bulkNS
+       8: invokestatic  #23                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.create:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/NamespaceDescriptor$Builder;
+      11: invokevirtual #24                 // Method org/apache/hadoop/hbase/NamespaceDescriptor$Builder.build:()Lorg/apache/hadoop/hbase/NamespaceDescriptor;
+      14: invokeinterface #25,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.createNamespace:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)V
+      19: return
+
+  public static void tearDownAfterClass() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #26                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+       6: return
+
+  public void testSimpleLoadWithMap() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #27                 // String testSimpleLoadWithMap
+       3: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       6: iconst_2
+       7: anewarray     #29                 // class "[[B"
+      10: dup
+      11: iconst_0
+      12: iconst_2
+      13: anewarray     #30                 // class "[B"
+      16: dup
+      17: iconst_0
+      18: ldc           #31                 // String aaaa
+      20: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: aastore
+      24: dup
+      25: iconst_1
+      26: ldc           #33                 // String cccc
+      28: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: aastore
+      32: aastore
+      33: dup
+      34: iconst_1
+      35: iconst_2
+      36: anewarray     #30                 // class "[B"
+      39: dup
+      40: iconst_0
+      41: ldc           #34                 // String ddd
+      43: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      46: aastore
+      47: dup
+      48: iconst_1
+      49: ldc           #35                 // String ooo
+      51: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      54: aastore
+      55: aastore
+      56: iconst_1
+      57: invokespecial #36                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/BloomType;[[[BZ)V
+      60: return
+
+  public void testSimpleLoad() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #37                 // String testSimpleLoad
+       3: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       6: iconst_2
+       7: anewarray     #29                 // class "[[B"
+      10: dup
+      11: iconst_0
+      12: iconst_2
+      13: anewarray     #30                 // class "[B"
+      16: dup
+      17: iconst_0
+      18: ldc           #31                 // String aaaa
+      20: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: aastore
+      24: dup
+      25: iconst_1
+      26: ldc           #33                 // String cccc
+      28: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: aastore
+      32: aastore
+      33: dup
+      34: iconst_1
+      35: iconst_2
+      36: anewarray     #30                 // class "[B"
+      39: dup
+      40: iconst_0
+      41: ldc           #34                 // String ddd
+      43: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      46: aastore
+      47: dup
+      48: iconst_1
+      49: ldc           #35                 // String ooo
+      51: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      54: aastore
+      55: aastore
+      56: invokespecial #38                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/BloomType;[[[B)V
+      59: return
+
+  public void testSimpleLoadWithFileCopy() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field tn:Lorg/junit/rules/TestName;
+       4: invokevirtual #39                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+       7: astore_1
+       8: new           #40                 // class java/lang/StringBuilder
+      11: dup
+      12: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+      15: ldc           #42                 // String mytable_
+      17: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      20: aload_1
+      21: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      27: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      30: astore_2
+      31: aload_0
+      32: aload_1
+      33: aload_0
+      34: aload_2
+      35: invokestatic  #45                 // Method org/apache/hadoop/hbase/TableName.valueOf:([B)Lorg/apache/hadoop/hbase/TableName;
+      38: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+      41: invokespecial #46                 // Method buildHTD:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/regionserver/BloomType;)Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      44: iconst_0
+      45: aconst_null
+      46: checkcast     #29                 // class "[[B"
+      49: iconst_2
+      50: anewarray     #29                 // class "[[B"
+      53: dup
+      54: iconst_0
+      55: iconst_2
+      56: anewarray     #30                 // class "[B"
+      59: dup
+      60: iconst_0
+      61: ldc           #31                 // String aaaa
+      63: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      66: aastore
+      67: dup
+      68: iconst_1
+      69: ldc           #33                 // String cccc
+      71: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      74: aastore
+      75: aastore
+      76: dup
+      77: iconst_1
+      78: iconst_2
+      79: anewarray     #30                 // class "[B"
+      82: dup
+      83: iconst_0
+      84: ldc           #34                 // String ddd
+      86: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      89: aastore
+      90: dup
+      91: iconst_1
+      92: ldc           #35                 // String ooo
+      94: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      97: aastore
+      98: aastore
+      99: iconst_0
+     100: iconst_1
+     101: iconst_2
+     102: invokespecial #47                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/client/TableDescriptor;Z[[B[[[BZZI)V
+     105: return
+
+  public void testRegionCrossingLoad() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #48                 // String testRegionCrossingLoad
+       3: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       6: iconst_2
+       7: anewarray     #29                 // class "[[B"
+      10: dup
+      11: iconst_0
+      12: iconst_2
+      13: anewarray     #30                 // class "[B"
+      16: dup
+      17: iconst_0
+      18: ldc           #31                 // String aaaa
+      20: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: aastore
+      24: dup
+      25: iconst_1
+      26: ldc           #49                 // String eee
+      28: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: aastore
+      32: aastore
+      33: dup
+      34: iconst_1
+      35: iconst_2
+      36: anewarray     #30                 // class "[B"
+      39: dup
+      40: iconst_0
+      41: ldc           #50                 // String fff
+      43: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      46: aastore
+      47: dup
+      48: iconst_1
+      49: ldc           #51                 // String zzz
+      51: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      54: aastore
+      55: aastore
+      56: invokespecial #38                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/BloomType;[[[B)V
+      59: return
+
+  public void testRegionCrossingRowBloom() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #52                 // String testRegionCrossingLoadRowBloom
+       3: getstatic     #53                 // Field org/apache/hadoop/hbase/regionserver/BloomType.ROW:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       6: iconst_2
+       7: anewarray     #29                 // class "[[B"
+      10: dup
+      11: iconst_0
+      12: iconst_2
+      13: anewarray     #30                 // class "[B"
+      16: dup
+      17: iconst_0
+      18: ldc           #31                 // String aaaa
+      20: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: aastore
+      24: dup
+      25: iconst_1
+      26: ldc           #49                 // String eee
+      28: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: aastore
+      32: aastore
+      33: dup
+      34: iconst_1
+      35: iconst_2
+      36: anewarray     #30                 // class "[B"
+      39: dup
+      40: iconst_0
+      41: ldc           #50                 // String fff
+      43: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      46: aastore
+      47: dup
+      48: iconst_1
+      49: ldc           #51                 // String zzz
+      51: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      54: aastore
+      55: aastore
+      56: invokespecial #38                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/BloomType;[[[B)V
+      59: return
+
+  public void testRegionCrossingRowColBloom() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #54                 // String testRegionCrossingLoadRowColBloom
+       3: getstatic     #55                 // Field org/apache/hadoop/hbase/regionserver/BloomType.ROWCOL:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       6: iconst_2
+       7: anewarray     #29                 // class "[[B"
+      10: dup
+      11: iconst_0
+      12: iconst_2
+      13: anewarray     #30                 // class "[B"
+      16: dup
+      17: iconst_0
+      18: ldc           #31                 // String aaaa
+      20: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: aastore
+      24: dup
+      25: iconst_1
+      26: ldc           #49                 // String eee
+      28: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: aastore
+      32: aastore
+      33: dup
+      34: iconst_1
+      35: iconst_2
+      36: anewarray     #30                 // class "[B"
+      39: dup
+      40: iconst_0
+      41: ldc           #50                 // String fff
+      43: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      46: aastore
+      47: dup
+      48: iconst_1
+      49: ldc           #51                 // String zzz
+      51: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      54: aastore
+      55: aastore
+      56: invokespecial #38                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/BloomType;[[[B)V
+      59: return
+
+  public void testSimpleHFileSplit() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #56                 // String testHFileSplit
+       3: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       6: bipush        6
+       8: anewarray     #30                 // class "[B"
+      11: dup
+      12: iconst_0
+      13: ldc           #57                 // String aaa
+      15: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: ldc           #50                 // String fff
+      23: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      26: aastore
+      27: dup
+      28: iconst_2
+      29: ldc           #58                 // String jjj
+      31: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      34: aastore
+      35: dup
+      36: iconst_3
+      37: ldc           #59                 // String ppp
+      39: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      42: aastore
+      43: dup
+      44: iconst_4
+      45: ldc           #60                 // String uuu
+      47: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      50: aastore
+      51: dup
+      52: iconst_5
+      53: ldc           #51                 // String zzz
+      55: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      58: aastore
+      59: iconst_2
+      60: anewarray     #29                 // class "[[B"
+      63: dup
+      64: iconst_0
+      65: iconst_2
+      66: anewarray     #30                 // class "[B"
+      69: dup
+      70: iconst_0
+      71: ldc           #31                 // String aaaa
+      73: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      76: aastore
+      77: dup
+      78: iconst_1
+      79: ldc           #61                 // String lll
+      81: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      84: aastore
+      85: aastore
+      86: dup
+      87: iconst_1
+      88: iconst_2
+      89: anewarray     #30                 // class "[B"
+      92: dup
+      93: iconst_0
+      94: ldc           #62                 // String mmm
+      96: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      99: aastore
+     100: dup
+     101: iconst_1
+     102: ldc           #51                 // String zzz
+     104: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     107: aastore
+     108: aastore
+     109: invokespecial #63                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/BloomType;[[B[[[B)V
+     112: return
+
+  public void testRegionCrossingHFileSplit() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       4: invokespecial #64                 // Method testRegionCrossingHFileSplit:(Lorg/apache/hadoop/hbase/regionserver/BloomType;)V
+       7: return
+
+  public void testRegionCrossingHFileSplitRowBloom() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getstatic     #53                 // Field org/apache/hadoop/hbase/regionserver/BloomType.ROW:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       4: invokespecial #64                 // Method testRegionCrossingHFileSplit:(Lorg/apache/hadoop/hbase/regionserver/BloomType;)V
+       7: return
+
+  public void testRegionCrossingHFileSplitRowColBloom() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getstatic     #55                 // Field org/apache/hadoop/hbase/regionserver/BloomType.ROWCOL:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       4: invokespecial #64                 // Method testRegionCrossingHFileSplit:(Lorg/apache/hadoop/hbase/regionserver/BloomType;)V
+       7: return
+
+  public void testSplitALot() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #65                 // String testSplitALot
+       3: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+       6: bipush        21
+       8: anewarray     #30                 // class "[B"
+      11: dup
+      12: iconst_0
+      13: ldc           #31                 // String aaaa
+      15: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: ldc           #66                 // String bbb
+      23: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      26: aastore
+      27: dup
+      28: iconst_2
+      29: ldc           #67                 // String ccc
+      31: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      34: aastore
+      35: dup
+      36: iconst_3
+      37: ldc           #34                 // String ddd
+      39: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      42: aastore
+      43: dup
+      44: iconst_4
+      45: ldc           #49                 // String eee
+      47: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      50: aastore
+      51: dup
+      52: iconst_5
+      53: ldc           #50                 // String fff
+      55: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      58: aastore
+      59: dup
+      60: bipush        6
+      62: ldc           #68                 // String ggg
+      64: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      67: aastore
+      68: dup
+      69: bipush        7
+      71: ldc           #69                 // String hhh
+      73: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      76: aastore
+      77: dup
+      78: bipush        8
+      80: ldc           #70                 // String iii
+      82: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      85: aastore
+      86: dup
+      87: bipush        9
+      89: ldc           #61                 // String lll
+      91: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      94: aastore
+      95: dup
+      96: bipush        10
+      98: ldc           #62                 // String mmm
+     100: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     103: aastore
+     104: dup
+     105: bipush        11
+     107: ldc           #71                 // String nnn
+     109: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     112: aastore
+     113: dup
+     114: bipush        12
+     116: ldc           #35                 // String ooo
+     118: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     121: aastore
+     122: dup
+     123: bipush        13
+     125: ldc           #59                 // String ppp
+     127: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     130: aastore
+     131: dup
+     132: bipush        14
+     134: ldc           #72                 // String qqq
+     136: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     139: aastore
+     140: dup
+     141: bipush        15
+     143: ldc           #73                 // String rrr
+     145: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     148: aastore
+     149: dup
+     150: bipush        16
+     152: ldc           #74                 // String sss
+     154: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     157: aastore
+     158: dup
+     159: bipush        17
+     161: ldc           #75                 // String ttt
+     163: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     166: aastore
+     167: dup
+     168: bipush        18
+     170: ldc           #60                 // String uuu
+     172: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     175: aastore
+     176: dup
+     177: bipush        19
+     179: ldc           #76                 // String vvv
+     181: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     184: aastore
+     185: dup
+     186: bipush        20
+     188: ldc           #51                 // String zzz
+     190: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     193: aastore
+     194: iconst_1
+     195: anewarray     #29                 // class "[[B"
+     198: dup
+     199: iconst_0
+     200: iconst_2
+     201: anewarray     #30                 // class "[B"
+     204: dup
+     205: iconst_0
+     206: ldc           #31                 // String aaaa
+     208: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     211: aastore
+     212: dup
+     213: iconst_1
+     214: ldc           #51                 // String zzz
+     216: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     219: aastore
+     220: aastore
+     221: invokespecial #63                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/BloomType;[[B[[[B)V
+     224: return
+
+  public static int loadHFiles(java.lang.String, org.apache.hadoop.hbase.client.TableDescriptor, org.apache.hadoop.hbase.HBaseTestingUtility, byte[], byte[], boolean, byte[][], byte[][][], boolean, boolean, boolean, int, int) throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: iload         5
+       8: aload         6
+      10: aload         7
+      12: iload         8
+      14: iload         9
+      16: iload         10
+      18: iload         11
+      20: iload         12
+      22: iconst_2
+      23: invokestatic  #90                 // Method loadHFiles:(Ljava/lang/String;Lorg/apache/hadoop/hbase/client/TableDescriptor;Lorg/apache/hadoop/hbase/HBaseTestingUtility;[B[BZ[[B[[[BZZZIII)I
+      26: ireturn
+
+  public static int loadHFiles(java.lang.String, org.apache.hadoop.hbase.client.TableDescriptor, org.apache.hadoop.hbase.HBaseTestingUtility, byte[], byte[], boolean, byte[][], byte[][][], boolean, boolean, boolean, int, int, int) throws java.lang.Exception;
+    Code:
+       0: aload_2
+       1: aload_0
+       2: invokevirtual #91                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:(Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       5: astore        14
+       7: aload_2
+       8: invokevirtual #92                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      11: astore        15
+      13: aload         14
+      15: aload         15
+      17: invokevirtual #93                 // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+      20: aload         15
+      22: invokevirtual #94                 // Method org/apache/hadoop/fs/FileSystem.getWorkingDirectory:()Lorg/apache/hadoop/fs/Path;
+      25: invokevirtual #95                 // Method org/apache/hadoop/fs/Path.makeQualified:(Ljava/net/URI;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      28: astore        14
+      30: aload         14
+      32: astore        16
+      34: iload         13
+      36: iconst_3
+      37: if_icmpne     72
+      40: getstatic     #96                 // Field $assertionsDisabled:Z
+      43: ifne          59
+      46: iload         8
+      48: ifeq          59
+      51: new           #97                 // class java/lang/AssertionError
+      54: dup
+      55: invokespecial #98                 // Method java/lang/AssertionError."<init>":()V
+      58: athrow
+      59: new           #99                 // class org/apache/hadoop/fs/Path
+      62: dup
+      63: aload         14
+      65: ldc           #100                // String someRegion
+      67: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      70: astore        16
+      72: new           #99                 // class org/apache/hadoop/fs/Path
+      75: dup
+      76: aload         16
+      78: aload_3
+      79: invokestatic  #102                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      82: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      85: astore        17
+      87: iconst_0
+      88: istore        18
+      90: aconst_null
+      91: astore        19
+      93: aconst_null
+      94: astore        20
+      96: iload         8
+      98: ifne          106
+     101: iload         10
+     103: ifeq          115
+     106: new           #103                // class java/util/ArrayList
+     109: dup
+     110: invokespecial #104                // Method java/util/ArrayList."<init>":()V
+     113: astore        20
+     115: iload         8
+     117: ifeq          143
+     120: new           #105                // class java/util/TreeMap
+     123: dup
+     124: getstatic     #106                // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+     127: invokespecial #107                // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+     130: astore        19
+     132: aload         19
+     134: aload_3
+     135: aload         20
+     137: invokeinterface #108,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     142: pop
+     143: aconst_null
+     144: astore        21
+     146: aload         7
+     148: astore        22
+     150: aload         22
+     152: arraylength
+     153: istore        23
+     155: iconst_0
+     156: istore        24
+     158: iload         24
+     160: iload         23
+     162: if_icmpge     263
+     165: aload         22
+     167: iload         24
+     169: aaload
+     170: astore        25
+     172: aload         25
+     174: iconst_0
+     175: aaload
+     176: astore        26
+     178: aload         25
+     180: iconst_1
+     181: aaload
+     182: astore        27
+     184: new           #99                 // class org/apache/hadoop/fs/Path
+     187: dup
+     188: aload         17
+     190: new           #40                 // class java/lang/StringBuilder
+     193: dup
+     194: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+     197: ldc           #109                // String hfile_
+     199: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     202: iload         18
+     204: iinc          18, 1
+     207: invokevirtual #88                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     210: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     213: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     216: astore        28
+     218: aload_2
+     219: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     222: aload         15
+     224: aload         28
+     226: aload_3
+     227: aload         4
+     229: aload         26
+     231: aload         27
+     233: iload         12
+     235: invokestatic  #110                // Method org/apache/hadoop/hbase/util/HFileTestUtil.createHFile:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;[B[B[B[BI)V
+     238: iload         8
+     240: ifeq          257
+     243: aload         28
+     245: astore        21
+     247: aload         20
+     249: aload         28
+     251: invokeinterface #111,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     256: pop
+     257: iinc          24, 1
+     260: goto          158
+     263: iload         18
+     265: iload         12
+     267: imul
+     268: istore        22
+     270: aload_1
+     271: invokeinterface #112,  1          // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+     276: astore        23
+     278: aload_2
+     279: invokevirtual #21                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     282: aload         23
+     284: invokeinterface #113,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.tableExists:(Lorg/apache/hadoop/hbase/TableName;)Z
+     289: ifne          314
+     292: iload         5
+     294: ifne          302
+     297: aload         19
+     299: ifnull        314
+     302: aload_2
+     303: invokevirtual #21                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     306: aload_1
+     307: aload         6
+     309: invokeinterface #114,  3          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.createTable:(Lorg/apache/hadoop/hbase/client/TableDescriptor;[[B)V
+     314: aload_2
+     315: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     318: astore        24
+     320: iload         10
+     322: ifeq          333
+     325: aload         24
+     327: ldc           #115                // String always.copy.files
+     329: iconst_1
+     330: invokevirtual #116                // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+     333: new           #117                // class org/apache/hadoop/hbase/tool/BulkLoadHFilesTool
+     336: dup
+     337: aload         24
+     339: invokespecial #118                // Method org/apache/hadoop/hbase/tool/BulkLoadHFilesTool."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     342: astore        25
+     344: iconst_2
+     345: anewarray     #119                // class java/lang/String
+     348: dup
+     349: iconst_0
+     350: aload         14
+     352: invokevirtual #120                // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     355: aastore
+     356: dup
+     357: iconst_1
+     358: aload         23
+     360: invokevirtual #121                // Method org/apache/hadoop/hbase/TableName.toString:()Ljava/lang/String;
+     363: aastore
+     364: invokestatic  #122                // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:([Ljava/lang/Object;)Ljava/util/ArrayList;
+     367: astore        26
+     369: iload         13
+     371: iconst_3
+     372: if_icmpne     385
+     375: aload         26
+     377: ldc           #123                // String -loadTable
+     379: invokeinterface #111,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     384: pop
+     385: iload         8
+     387: ifeq          510
+     390: iload         9
+     392: ifeq          404
+     395: aload         15
+     397: aload         21
+     399: iconst_1
+     400: invokevirtual #124                // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+     403: pop
+     404: aload         25
+     406: aload         23
+     408: aload         19
+     410: invokevirtual #125                // Method org/apache/hadoop/hbase/tool/BulkLoadHFilesTool.bulkLoad:(Lorg/apache/hadoop/hbase/TableName;Ljava/util/Map;)Ljava/util/Map;
+     413: astore        27
+     415: iload         9
+     417: ifeq          507
+     420: iinc_w        22, -1000
+     426: aload         27
+     428: invokeinterface #126,  1          // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+     433: invokeinterface #127,  1          // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     438: astore        28
+     440: aload         28
+     442: invokeinterface #128,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     447: ifeq          507
+     450: aload         28
+     452: invokeinterface #129,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     457: checkcast     #130                // class org/apache/hadoop/hbase/tool/BulkLoadHFiles$LoadQueueItem
+     460: astore        29
+     462: aload         29
+     464: invokevirtual #131                // Method org/apache/hadoop/hbase/tool/BulkLoadHFiles$LoadQueueItem.getFilePath:()Lorg/apache/hadoop/fs/Path;
+     467: invokevirtual #132                // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     470: aload         21
+     472: invokevirtual #132                // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     475: invokevirtual #133                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     478: ifeq          504
+     481: new           #40                 // class java/lang/StringBuilder
+     484: dup
+     485: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+     488: aload         21
+     490: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     493: ldc           #134                // String  should be missing
+     495: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     498: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     501: invokestatic  #135                // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     504: goto          440
+     507: goto          530
+     510: aload         25
+     512: aload         26
+     514: iconst_0
+     515: anewarray     #119                // class java/lang/String
+     518: invokeinterface #136,  2          // InterfaceMethod java/util/List.toArray:([Ljava/lang/Object;)[Ljava/lang/Object;
+     523: checkcast     #137                // class "[Ljava/lang/String;"
+     526: invokevirtual #138                // Method org/apache/hadoop/hbase/tool/BulkLoadHFilesTool.run:([Ljava/lang/String;)I
+     529: pop
+     530: iload         10
+     532: ifeq          599
+     535: aload         20
+     537: invokeinterface #139,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     542: astore        27
+     544: aload         27
+     546: invokeinterface #128,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     551: ifeq          599
+     554: aload         27
+     556: invokeinterface #129,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     561: checkcast     #99                 // class org/apache/hadoop/fs/Path
+     564: astore        28
+     566: new           #40                 // class java/lang/StringBuilder
+     569: dup
+     570: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+     573: aload         28
+     575: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     578: ldc           #140                // String  should exist
+     580: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     583: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     586: aload         15
+     588: aload         28
+     590: invokevirtual #141                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     593: invokestatic  #142                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     596: goto          544
+     599: aload_2
+     600: invokevirtual #143                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     603: aload         23
+     605: invokeinterface #144,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     610: astore        27
+     612: iload         11
+     614: iload         22
+     616: iadd
+     617: i2l
+     618: aload_2
+     619: pop
+     620: aload         27
+     622: invokestatic  #145                // Method org/apache/hadoop/hbase/HBaseTestingUtility.countRows:(Lorg/apache/hadoop/hbase/client/Table;)I
+     625: i2l
+     626: invokestatic  #146                // Method org/junit/Assert.assertEquals:(JJ)V
+     629: aload         27
+     631: invokeinterface #147,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     636: goto          651
+     639: astore        30
+     641: aload         27
+     643: invokeinterface #147,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     648: aload         30
+     650: athrow
+     651: iload         22
+     653: ireturn
+    Exception table:
+       from    to  target type
+         612   629   639   any
+         639   641   639   any
+
+  public void testTagsSurviveBulkLoadSplit() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: aload_0
+       4: getfield      #4                  // Field tn:Lorg/junit/rules/TestName;
+       7: invokevirtual #39                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+      10: invokevirtual #91                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:(Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      13: astore_1
+      14: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      17: invokevirtual #92                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      20: astore_2
+      21: aload_1
+      22: aload_2
+      23: invokevirtual #93                 // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+      26: aload_2
+      27: invokevirtual #94                 // Method org/apache/hadoop/fs/FileSystem.getWorkingDirectory:()Lorg/apache/hadoop/fs/Path;
+      30: invokevirtual #95                 // Method org/apache/hadoop/fs/Path.makeQualified:(Ljava/net/URI;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      33: astore_1
+      34: new           #99                 // class org/apache/hadoop/fs/Path
+      37: dup
+      38: aload_1
+      39: getstatic     #80                 // Field FAMILY:[B
+      42: invokestatic  #102                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      45: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      48: astore_3
+      49: bipush        6
+      51: anewarray     #30                 // class "[B"
+      54: dup
+      55: iconst_0
+      56: ldc           #57                 // String aaa
+      58: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      61: aastore
+      62: dup
+      63: iconst_1
+      64: ldc           #50                 // String fff
+      66: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      69: aastore
+      70: dup
+      71: iconst_2
+      72: ldc           #58                 // String jjj
+      74: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      77: aastore
+      78: dup
+      79: iconst_3
+      80: ldc           #59                 // String ppp
+      82: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      85: aastore
+      86: dup
+      87: iconst_4
+      88: ldc           #60                 // String uuu
+      90: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      93: aastore
+      94: dup
+      95: iconst_5
+      96: ldc           #51                 // String zzz
+      98: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     101: aastore
+     102: astore        4
+     104: ldc           #34                 // String ddd
+     106: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     109: astore        5
+     111: ldc           #35                 // String ooo
+     113: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     116: astore        6
+     118: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     121: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     124: aload_2
+     125: new           #99                 // class org/apache/hadoop/fs/Path
+     128: dup
+     129: aload_3
+     130: new           #40                 // class java/lang/StringBuilder
+     133: dup
+     134: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+     137: aload_0
+     138: getfield      #4                  // Field tn:Lorg/junit/rules/TestName;
+     141: invokevirtual #39                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+     144: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     147: ldc           #157                // String _hfile
+     149: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     152: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     155: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     158: getstatic     #80                 // Field FAMILY:[B
+     161: getstatic     #148                // Field QUALIFIER:[B
+     164: aload         5
+     166: aload         6
+     168: sipush        1000
+     171: invokestatic  #158                // Method org/apache/hadoop/hbase/util/HFileTestUtil.createHFileWithTags:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;[B[B[B[BI)V
+     174: sipush        1000
+     177: istore        7
+     179: aload_0
+     180: getfield      #4                  // Field tn:Lorg/junit/rules/TestName;
+     183: invokevirtual #39                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+     186: invokestatic  #159                // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+     189: astore        8
+     191: aload_0
+     192: aload         8
+     194: getstatic     #28                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+     197: invokespecial #46                 // Method buildHTD:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/regionserver/BloomType;)Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     200: astore        9
+     202: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     205: invokevirtual #21                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     208: aload         9
+     210: aload         4
+     212: invokeinterface #114,  3          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.createTable:(Lorg/apache/hadoop/hbase/client/TableDescriptor;[[B)V
+     217: new           #11                 // class org/apache/hadoop/hbase/tool/LoadIncrementalHFiles
+     220: dup
+     221: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     224: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     227: invokespecial #160                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     230: astore        10
+     232: iconst_2
+     233: anewarray     #119                // class java/lang/String
+     236: dup
+     237: iconst_0
+     238: aload_1
+     239: invokevirtual #120                // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     242: aastore
+     243: dup
+     244: iconst_1
+     245: aload         8
+     247: invokevirtual #121                // Method org/apache/hadoop/hbase/TableName.toString:()Ljava/lang/String;
+     250: aastore
+     251: astore        11
+     253: aload         10
+     255: aload         11
+     257: invokevirtual #161                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.run:([Ljava/lang/String;)I
+     260: pop
+     261: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     264: invokevirtual #143                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     267: aload         8
+     269: invokeinterface #144,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     274: astore        12
+     276: iload         7
+     278: i2l
+     279: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     282: pop
+     283: aload         12
+     285: invokestatic  #145                // Method org/apache/hadoop/hbase/HBaseTestingUtility.countRows:(Lorg/apache/hadoop/hbase/client/Table;)I
+     288: i2l
+     289: invokestatic  #146                // Method org/junit/Assert.assertEquals:(JJ)V
+     292: aload         12
+     294: invokestatic  #162                // Method org/apache/hadoop/hbase/util/HFileTestUtil.verifyTags:(Lorg/apache/hadoop/hbase/client/Table;)V
+     297: aload         12
+     299: invokeinterface #147,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     304: goto          319
+     307: astore        13
+     309: aload         12
+     311: invokeinterface #147,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     316: aload         13
+     318: athrow
+     319: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     322: aload         8
+     324: invokevirtual #156                // Method org/apache/hadoop/hbase/HBaseTestingUtility.deleteTable:(Lorg/apache/hadoop/hbase/TableName;)V
+     327: return
+    Exception table:
+       from    to  target type
+         276   297   307   any
+         307   309   307   any
+
+  public void testNonexistentColumnFamilyLoad() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field tn:Lorg/junit/rules/TestName;
+       4: invokevirtual #39                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+       7: astore_1
+       8: iconst_2
+       9: anewarray     #29                 // class "[[B"
+      12: dup
+      13: iconst_0
+      14: iconst_2
+      15: anewarray     #30                 // class "[B"
+      18: dup
+      19: iconst_0
+      20: ldc           #57                 // String aaa
+      22: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      25: aastore
+      26: dup
+      27: iconst_1
+      28: ldc           #67                 // String ccc
+      30: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      33: aastore
+      34: aastore
+      35: dup
+      36: iconst_1
+      37: iconst_2
+      38: anewarray     #30                 // class "[B"
+      41: dup
+      42: iconst_0
+      43: ldc           #34                 // String ddd
+      45: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      48: aastore
+      49: dup
+      50: iconst_1
+      51: ldc           #35                 // String ooo
+      53: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      56: aastore
+      57: aastore
+      58: astore_2
+      59: new           #40                 // class java/lang/StringBuilder
+      62: dup
+      63: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+      66: ldc           #42                 // String mytable_
+      68: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      71: aload_1
+      72: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      78: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      81: astore_3
+      82: aload_3
+      83: invokestatic  #45                 // Method org/apache/hadoop/hbase/TableName.valueOf:([B)Lorg/apache/hadoop/hbase/TableName;
+      86: invokestatic  #79                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.newBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/TableDescriptorBuilder;
+      89: new           #119                // class java/lang/String
+      92: dup
+      93: getstatic     #80                 // Field FAMILY:[B
+      96: invokespecial #163                // Method java/lang/String."<init>":([B)V
+      99: getstatic     #164                // Field java/util/Locale.ROOT:Ljava/util/Locale;
+     102: invokevirtual #165                // Method java/lang/String.toUpperCase:(Ljava/util/Locale;)Ljava/lang/String;
+     105: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     108: invokestatic  #166                // Method org/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder.of:([B)Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;
+     111: invokevirtual #84                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.setColumnFamily:(Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;)Lorg/apache/hadoop/hbase/client/TableDescriptorBuilder;
+     114: invokevirtual #85                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.build:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     117: astore        4
+     119: aload_0
+     120: aload_1
+     121: aload         4
+     123: iconst_1
+     124: getstatic     #167                // Field SPLIT_KEYS:[[B
+     127: aload_2
+     128: iconst_0
+     129: iconst_0
+     130: iconst_2
+     131: invokespecial #47                 // Method runTest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/client/TableDescriptor;Z[[B[[[BZZI)V
+     134: ldc           #168                // String Loading into table with non-existent family should have failed
+     136: iconst_0
+     137: invokestatic  #142                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     140: goto          197
+     143: astore        5
+     145: ldc           #170                // String IOException expected
+     147: aload         5
+     149: instanceof    #171                // class java/io/IOException
+     152: invokestatic  #142                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     155: aload         5
+     157: invokevirtual #172                // Method java/lang/Exception.getMessage:()Ljava/lang/String;
+     160: astore        6
+     162: new           #40                 // class java/lang/StringBuilder
+     165: dup
+     166: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+     169: ldc           #173                // String Incorrect exception message, expected message: [Unmatched family names found], current message: [
+     171: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     174: aload         6
+     176: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     179: ldc           #174                // String ]
+     181: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     184: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     187: aload         6
+     189: ldc           #175                // String Unmatched family names found
+     191: invokevirtual #176                // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+     194: invokestatic  #142                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     197: return
+    Exception table:
+       from    to  target type
+         119   140   143   Class java/lang/Exception
+
+  public void testNonHfileFolderWithUnmatchedFamilyName() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #177                // String testNonHfileFolderWithUnmatchedFamilyName
+       3: iconst_1
+       4: invokespecial #178                // Method testNonHfileFolder:(Ljava/lang/String;Z)V
+       7: return
+
+  public void testNonHfileFolder() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: ldc           #179                // String testNonHfileFolder
+       3: iconst_0
+       4: invokespecial #178                // Method testNonHfileFolder:(Ljava/lang/String;Z)V
+       7: return
+
+  public void testSplitStoreFile() throws java.io.IOException;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: ldc           #194                // String testSplitHFile
+       5: invokevirtual #91                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:(Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       8: astore_1
+       9: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      12: invokevirtual #92                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      15: astore_2
+      16: new           #99                 // class org/apache/hadoop/fs/Path
+      19: dup
+      20: aload_1
+      21: ldc           #195                // String testhfile
+      23: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      26: astore_3
+      27: getstatic     #80                 // Field FAMILY:[B
+      30: invokestatic  #166                // Method org/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder.of:([B)Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;
+      33: astore        4
+      35: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      38: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      41: aload_2
+      42: aload_3
+      43: getstatic     #80                 // Field FAMILY:[B
+      46: getstatic     #148                // Field QUALIFIER:[B
+      49: ldc           #57                 // String aaa
+      51: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      54: ldc           #51                 // String zzz
+      56: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      59: sipush        1000
+      62: invokestatic  #110                // Method org/apache/hadoop/hbase/util/HFileTestUtil.createHFile:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;[B[B[B[BI)V
+      65: new           #99                 // class org/apache/hadoop/fs/Path
+      68: dup
+      69: aload_1
+      70: ldc           #196                // String bottom.out
+      72: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      75: astore        5
+      77: new           #99                 // class org/apache/hadoop/fs/Path
+      80: dup
+      81: aload_1
+      82: ldc           #197                // String top.out
+      84: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      87: astore        6
+      89: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      92: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      95: aload_3
+      96: aload         4
+      98: ldc           #68                 // String ggg
+     100: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     103: aload         5
+     105: aload         6
+     107: invokestatic  #198                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.splitStoreFile:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;[BLorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)V
+     110: aload_0
+     111: aload         5
+     113: invokespecial #199                // Method verifyHFile:(Lorg/apache/hadoop/fs/Path;)I
+     116: istore        7
+     118: iload         7
+     120: aload_0
+     121: aload         6
+     123: invokespecial #199                // Method verifyHFile:(Lorg/apache/hadoop/fs/Path;)I
+     126: iadd
+     127: istore        7
+     129: ldc2_w        #200                // long 1000l
+     132: iload         7
+     134: i2l
+     135: invokestatic  #146                // Method org/junit/Assert.assertEquals:(JJ)V
+     138: return
+
+  public void testSplitStoreFileWithNoneToNone() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getstatic     #202                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.NONE:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       4: getstatic     #202                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.NONE:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       7: invokespecial #203                // Method testSplitStoreFileWithDifferentEncoding:(Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)V
+      10: return
+
+  public void testSplitStoreFileWithEncodedToEncoded() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getstatic     #204                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.DIFF:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       4: getstatic     #204                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.DIFF:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       7: invokespecial #203                // Method testSplitStoreFileWithDifferentEncoding:(Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)V
+      10: return
+
+  public void testSplitStoreFileWithEncodedToNone() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getstatic     #204                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.DIFF:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       4: getstatic     #202                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.NONE:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       7: invokespecial #203                // Method testSplitStoreFileWithDifferentEncoding:(Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)V
+      10: return
+
+  public void testSplitStoreFileWithNoneToEncoded() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getstatic     #202                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.NONE:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       4: getstatic     #204                // Field org/apache/hadoop/hbase/io/encoding/DataBlockEncoding.DIFF:Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+       7: invokespecial #203                // Method testSplitStoreFileWithDifferentEncoding:(Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)V
+      10: return
+
+  public void testInferBoundaries();
+    Code:
+       0: new           #105                // class java/util/TreeMap
+       3: dup
+       4: getstatic     #106                // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+       7: invokespecial #107                // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+      10: astore_1
+      11: ldc           #224                // String a
+      13: astore_2
+      14: ldc           #225                // String e
+      16: astore_3
+      17: aload_0
+      18: aload_1
+      19: aload_2
+      20: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: aload_3
+      24: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      27: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+      30: ldc           #227                // String r
+      32: astore_2
+      33: ldc           #228                // String s
+      35: astore_3
+      36: aload_0
+      37: aload_1
+      38: aload_2
+      39: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      42: aload_3
+      43: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      46: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+      49: ldc           #229                // String o
+      51: astore_2
+      52: ldc           #230                // String p
+      54: astore_3
+      55: aload_0
+      56: aload_1
+      57: aload_2
+      58: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      61: aload_3
+      62: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      65: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+      68: ldc           #231                // String g
+      70: astore_2
+      71: ldc           #232                // String k
+      73: astore_3
+      74: aload_0
+      75: aload_1
+      76: aload_2
+      77: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      80: aload_3
+      81: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      84: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+      87: ldc           #233                // String v
+      89: astore_2
+      90: ldc           #234                // String x
+      92: astore_3
+      93: aload_0
+      94: aload_1
+      95: aload_2
+      96: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      99: aload_3
+     100: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     103: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+     106: ldc           #235                // String c
+     108: astore_2
+     109: ldc           #236                // String i
+     111: astore_3
+     112: aload_0
+     113: aload_1
+     114: aload_2
+     115: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     118: aload_3
+     119: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     122: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+     125: ldc           #237                // String m
+     127: astore_2
+     128: ldc           #238                // String q
+     130: astore_3
+     131: aload_0
+     132: aload_1
+     133: aload_2
+     134: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     137: aload_3
+     138: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     141: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+     144: ldc           #228                // String s
+     146: astore_2
+     147: ldc           #239                // String t
+     149: astore_3
+     150: aload_0
+     151: aload_1
+     152: aload_2
+     153: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     156: aload_3
+     157: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     160: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+     163: ldc           #240                // String u
+     165: astore_2
+     166: ldc           #241                // String w
+     168: astore_3
+     169: aload_0
+     170: aload_1
+     171: aload_2
+     172: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     175: aload_3
+     176: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     179: invokespecial #226                // Method addStartEndKeysForTest:(Ljava/util/TreeMap;[B[B)V
+     182: aload_1
+     183: invokestatic  #242                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.inferBoundaries:(Ljava/util/SortedMap;)[[B
+     186: astore        4
+     188: iconst_3
+     189: anewarray     #30                 // class "[B"
+     192: astore        5
+     194: aload         5
+     196: iconst_0
+     197: ldc           #237                // String m
+     199: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     202: aastore
+     203: aload         5
+     205: iconst_1
+     206: ldc           #227                // String r
+     208: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     211: aastore
+     212: aload         5
+     214: iconst_2
+     215: ldc           #240                // String u
+     217: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     220: aastore
+     221: ldc2_w        #243                // long 3l
+     224: aload         4
+     226: arraylength
+     227: i2l
+     228: invokestatic  #146                // Method org/junit/Assert.assertEquals:(JJ)V
+     231: iconst_0
+     232: istore        6
+     234: iload         6
+     236: aload         4
+     238: arraylength
+     239: if_icmpge     261
+     242: aload         4
+     244: iload         6
+     246: aaload
+     247: aload         5
+     249: iload         6
+     251: aaload
+     252: invokestatic  #245                // Method org/junit/Assert.assertArrayEquals:([B[B)V
+     255: iinc          6, 1
+     258: goto          234
+     261: return
+
+  public void testLoadTooMayHFiles() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: ldc           #246                // String testLoadTooMayHFiles
+       5: invokevirtual #91                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:(Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       8: astore_1
+       9: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      12: invokevirtual #92                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      15: astore_2
+      16: aload_1
+      17: aload_2
+      18: invokevirtual #93                 // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+      21: aload_2
+      22: invokevirtual #94                 // Method org/apache/hadoop/fs/FileSystem.getWorkingDirectory:()Lorg/apache/hadoop/fs/Path;
+      25: invokevirtual #95                 // Method org/apache/hadoop/fs/Path.makeQualified:(Ljava/net/URI;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      28: astore_1
+      29: new           #99                 // class org/apache/hadoop/fs/Path
+      32: dup
+      33: aload_1
+      34: getstatic     #80                 // Field FAMILY:[B
+      37: invokestatic  #102                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      40: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      43: astore_3
+      44: ldc           #181                // String begin
+      46: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      49: astore        4
+      51: ldc           #182                // String end
+      53: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      56: astore        5
+      58: iconst_0
+      59: istore        6
+      61: iload         6
+      63: iconst_4
+      64: if_icmpgt     124
+      67: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      70: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      73: aload_2
+      74: new           #99                 // class org/apache/hadoop/fs/Path
+      77: dup
+      78: aload_3
+      79: new           #40                 // class java/lang/StringBuilder
+      82: dup
+      83: invokespecial #41                 // Method java/lang/StringBuilder."<init>":()V
+      86: ldc           #109                // String hfile_
+      88: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      91: iload         6
+      93: invokevirtual #88                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      96: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      99: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     102: getstatic     #80                 // Field FAMILY:[B
+     105: getstatic     #148                // Field QUALIFIER:[B
+     108: aload         4
+     110: aload         5
+     112: sipush        1000
+     115: invokestatic  #110                // Method org/apache/hadoop/hbase/util/HFileTestUtil.createHFile:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;[B[B[B[BI)V
+     118: iinc          6, 1
+     121: goto          61
+     124: new           #11                 // class org/apache/hadoop/hbase/tool/LoadIncrementalHFiles
+     127: dup
+     128: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     131: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     134: invokespecial #160                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     137: astore        6
+     139: iconst_2
+     140: anewarray     #119                // class java/lang/String
+     143: dup
+     144: iconst_0
+     145: aload_1
+     146: invokevirtual #120                // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     149: aastore
+     150: dup
+     151: iconst_1
+     152: ldc           #247                // String mytable_testLoadTooMayHFiles
+     154: aastore
+     155: astore        7
+     157: aload         6
+     159: aload         7
+     161: invokevirtual #161                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.run:([Ljava/lang/String;)I
+     164: pop
+     165: ldc           #248                // String Bulk loading too many files should fail
+     167: invokestatic  #135                // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     170: goto          188
+     173: astore        8
+     175: aload         8
+     177: invokevirtual #249                // Method java/io/IOException.getMessage:()Ljava/lang/String;
+     180: ldc           #250                // String Trying to load more than 4 hfiles
+     182: invokevirtual #176                // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+     185: invokestatic  #216                // Method org/junit/Assert.assertTrue:(Z)V
+     188: return
+    Exception table:
+       from    to  target type
+         157   170   173   Class java/io/IOException
+
+  public void testWithoutAnExistingTableAndCreateTableSetToNo() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: astore_1
+       7: aload_1
+       8: ldc           #251                // String create.table
+      10: ldc           #252                // String no
+      12: invokevirtual #10                 // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      15: new           #11                 // class org/apache/hadoop/hbase/tool/LoadIncrementalHFiles
+      18: dup
+      19: aload_1
+      20: invokespecial #160                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+      23: astore_2
+      24: iconst_2
+      25: anewarray     #119                // class java/lang/String
+      28: dup
+      29: iconst_0
+      30: ldc           #253                // String directory
+      32: aastore
+      33: dup
+      34: iconst_1
+      35: ldc           #254                // String nonExistingTable
+      37: aastore
+      38: astore_3
+      39: aload_2
+      40: aload_3
+      41: invokevirtual #161                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.run:([Ljava/lang/String;)I
+      44: pop
+      45: return
+
+  public void testTableWithCFNameStartWithUnderScore() throws java.lang.Exception;
+    Code:
+       0: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: ldc           #255                // String cfNameStartWithUnderScore
+       5: invokevirtual #91                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDirOnTestFS:(Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       8: astore_1
+       9: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      12: invokevirtual #92                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      15: astore_2
+      16: aload_1
+      17: aload_2
+      18: invokevirtual #93                 // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+      21: aload_2
+      22: invokevirtual #94                 // Method org/apache/hadoop/fs/FileSystem.getWorkingDirectory:()Lorg/apache/hadoop/fs/Path;
+      25: invokevirtual #95                 // Method org/apache/hadoop/fs/Path.makeQualified:(Ljava/net/URI;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      28: astore_1
+      29: ldc_w         #256                // String _cf
+      32: astore_3
+      33: new           #99                 // class org/apache/hadoop/fs/Path
+      36: dup
+      37: aload_1
+      38: aload_3
+      39: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      42: astore        4
+      44: ldc           #181                // String begin
+      46: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      49: astore        5
+      51: ldc           #182                // String end
+      53: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      56: astore        6
+      58: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      61: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      64: astore        7
+      66: aload_0
+      67: getfield      #4                  // Field tn:Lorg/junit/rules/TestName;
+      70: invokevirtual #39                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+      73: astore        8
+      75: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      78: aload         8
+      80: invokestatic  #159                // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      83: aload_3
+      84: invokevirtual #257                // Method org/apache/hadoop/hbase/HBaseTestingUtility.createTable:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;)Lorg/apache/hadoop/hbase/client/Table;
+      87: astore        9
+      89: aload         7
+      91: aload_2
+      92: new           #99                 // class org/apache/hadoop/fs/Path
+      95: dup
+      96: aload         4
+      98: ldc_w         #258                // String hfile
+     101: invokespecial #101                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+     104: aload_3
+     105: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     108: getstatic     #148                // Field QUALIFIER:[B
+     111: aload         5
+     113: aload         6
+     115: sipush        1000
+     118: invokestatic  #110                // Method org/apache/hadoop/hbase/util/HFileTestUtil.createHFile:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;[B[B[B[BI)V
+     121: new           #11                 // class org/apache/hadoop/hbase/tool/LoadIncrementalHFiles
+     124: dup
+     125: aload         7
+     127: invokespecial #160                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     130: astore        10
+     132: iconst_2
+     133: anewarray     #119                // class java/lang/String
+     136: dup
+     137: iconst_0
+     138: aload_1
+     139: invokevirtual #120                // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     142: aastore
+     143: dup
+     144: iconst_1
+     145: aload         8
+     147: aastore
+     148: astore        11
+     150: aload         10
+     152: aload         11
+     154: invokevirtual #161                // Method org/apache/hadoop/hbase/tool/LoadIncrementalHFiles.run:([Ljava/lang/String;)I
+     157: pop
+     158: ldc2_w        #200                // long 1000l
+     161: getstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     164: pop
+     165: aload         9
+     167: invokestatic  #145                // Method org/apache/hadoop/hbase/HBaseTestingUtility.countRows:(Lorg/apache/hadoop/hbase/client/Table;)I
+     170: i2l
+     171: invokestatic  #146                // Method org/junit/Assert.assertEquals:(JJ)V
+     174: aconst_null
+     175: aload         9
+     177: if_acmpeq     208
+     180: aload         9
+     182: invokeinterface #147,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     187: goto          208
+     190: astore        12
+     192: aconst_null
+     193: aload         9
+     195: if_acmpeq     205
+     198: aload         9
+     200: invokeinterface #147,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     205: aload         12
+     207: athrow
+     208: return
+    Exception table:
+       from    to  target type
+         150   174   190   any
+         190   192   190   any
+
+  static {};
+    Code:
+       0: ldc           #13                 // class org/apache/hadoop/hbase/tool/TestLoadIncrementalHFiles
+       2: invokevirtual #259                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #96                 // Field $assertionsDisabled:Z
+      16: ldc           #13                 // class org/apache/hadoop/hbase/tool/TestLoadIncrementalHFiles
+      18: invokestatic  #260                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+      21: putstatic     #261                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+      24: ldc_w         #262                // String myqual
+      27: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      30: putstatic     #148                // Field QUALIFIER:[B
+      33: ldc_w         #263                // String myfam
+      36: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      39: putstatic     #80                 // Field FAMILY:[B
+      42: iconst_2
+      43: anewarray     #30                 // class "[B"
+      46: dup
+      47: iconst_0
+      48: ldc           #34                 // String ddd
+      50: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      53: aastore
+      54: dup
+      55: iconst_1
+      56: ldc           #59                 // String ppp
+      58: invokestatic  #32                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      61: aastore
+      62: putstatic     #167                // Field SPLIT_KEYS:[[B
+      65: new           #264                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      68: dup
+      69: invokespecial #265                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      72: putstatic     #5                  // Field util:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      75: return
+}

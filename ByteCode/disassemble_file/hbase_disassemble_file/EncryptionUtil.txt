@@ -1,0 +1,413 @@
+Compiled from "EncryptionUtil.java"
+public final class org.apache.hadoop.hbase.security.EncryptionUtil {
+  public static byte[] wrapKey(org.apache.hadoop.conf.Configuration, byte[], java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: ldc           #3                  // String hbase.crypto.master.key.name
+       4: invokestatic  #4                  // Method org/apache/hadoop/hbase/security/User.getCurrent:()Lorg/apache/hadoop/hbase/security/User;
+       7: invokevirtual #5                  // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      10: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      13: new           #7                  // class javax/crypto/spec/SecretKeySpec
+      16: dup
+      17: aload_1
+      18: aload_2
+      19: invokespecial #8                  // Method javax/crypto/spec/SecretKeySpec."<init>":([BLjava/lang/String;)V
+      22: invokestatic  #9                  // Method wrapKey:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;Ljava/security/Key;)[B
+      25: areturn
+
+  public static byte[] wrapKey(org.apache.hadoop.conf.Configuration, java.lang.String, java.security.Key) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: ldc           #10                 // String hbase.crypto.key.algorithm
+       3: ldc           #11                 // String AES
+       5: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+       8: astore_3
+       9: aload_0
+      10: aload_3
+      11: invokestatic  #12                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.getCipher:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;)Lorg/apache/hadoop/hbase/io/crypto/Cipher;
+      14: astore        4
+      16: aload         4
+      18: ifnonnull     53
+      21: new           #13                 // class java/lang/RuntimeException
+      24: dup
+      25: new           #14                 // class java/lang/StringBuilder
+      28: dup
+      29: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      32: ldc           #16                 // String Cipher '
+      34: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: aload_3
+      38: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      41: ldc           #18                 // String ' not available
+      43: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      49: invokespecial #20                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      52: athrow
+      53: invokestatic  #21                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder;
+      56: astore        5
+      58: aload         5
+      60: aload_2
+      61: invokeinterface #22,  1           // InterfaceMethod java/security/Key.getAlgorithm:()Ljava/lang/String;
+      66: invokevirtual #23                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder.setAlgorithm:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder;
+      69: pop
+      70: aconst_null
+      71: astore        6
+      73: aload         4
+      75: invokevirtual #24                 // Method org/apache/hadoop/hbase/io/crypto/Cipher.getIvLength:()I
+      78: ifle          109
+      81: aload         4
+      83: invokevirtual #24                 // Method org/apache/hadoop/hbase/io/crypto/Cipher.getIvLength:()I
+      86: newarray       byte
+      88: astore        6
+      90: getstatic     #25                 // Field RNG:Ljava/security/SecureRandom;
+      93: aload         6
+      95: invokevirtual #26                 // Method java/security/SecureRandom.nextBytes:([B)V
+      98: aload         5
+     100: aload         6
+     102: invokestatic  #27                 // Method org/apache/hbase/thirdparty/com/google/protobuf/UnsafeByteOperations.unsafeWrap:([B)Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+     105: invokevirtual #28                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder.setIv:(Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder;
+     108: pop
+     109: aload_2
+     110: invokeinterface #29,  1           // InterfaceMethod java/security/Key.getEncoded:()[B
+     115: astore        7
+     117: aload         5
+     119: aload         7
+     121: arraylength
+     122: invokevirtual #30                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder.setLength:(I)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder;
+     125: pop
+     126: aload         5
+     128: iconst_1
+     129: anewarray     #31                 // class "[B"
+     132: dup
+     133: iconst_0
+     134: aload         7
+     136: aastore
+     137: invokestatic  #32                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.hash128:([[B)[B
+     140: invokestatic  #27                 // Method org/apache/hbase/thirdparty/com/google/protobuf/UnsafeByteOperations.unsafeWrap:([B)Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+     143: invokevirtual #33                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder.setHash:(Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder;
+     146: pop
+     147: new           #34                 // class java/io/ByteArrayOutputStream
+     150: dup
+     151: invokespecial #35                 // Method java/io/ByteArrayOutputStream."<init>":()V
+     154: astore        8
+     156: aload         8
+     158: new           #36                 // class java/io/ByteArrayInputStream
+     161: dup
+     162: aload         7
+     164: invokespecial #37                 // Method java/io/ByteArrayInputStream."<init>":([B)V
+     167: aload_1
+     168: aload_0
+     169: aload         4
+     171: aload         6
+     173: invokestatic  #38                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.encryptWithSubjectKey:(Ljava/io/OutputStream;Ljava/io/InputStream;Ljava/lang/String;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/io/crypto/Cipher;[B)V
+     176: aload         5
+     178: aload         8
+     180: invokevirtual #39                 // Method java/io/ByteArrayOutputStream.toByteArray:()[B
+     183: invokestatic  #27                 // Method org/apache/hbase/thirdparty/com/google/protobuf/UnsafeByteOperations.unsafeWrap:([B)Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+     186: invokevirtual #40                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder.setData:(Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder;
+     189: pop
+     190: aload         8
+     192: invokevirtual #41                 // Method java/io/ByteArrayOutputStream.reset:()V
+     195: aload         5
+     197: invokevirtual #42                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey;
+     200: aload         8
+     202: invokevirtual #43                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey.writeDelimitedTo:(Ljava/io/OutputStream;)V
+     205: aload         8
+     207: invokevirtual #39                 // Method java/io/ByteArrayOutputStream.toByteArray:()[B
+     210: areturn
+
+  public static java.security.Key unwrapKey(org.apache.hadoop.conf.Configuration, java.lang.String, byte[]) throws java.io.IOException, java.security.KeyException;
+    Code:
+       0: getstatic     #44                 // Field org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey.PARSER:Lorg/apache/hbase/thirdparty/com/google/protobuf/Parser;
+       3: new           #36                 // class java/io/ByteArrayInputStream
+       6: dup
+       7: aload_2
+       8: invokespecial #37                 // Method java/io/ByteArrayInputStream."<init>":([B)V
+      11: invokeinterface #45,  2           // InterfaceMethod org/apache/hbase/thirdparty/com/google/protobuf/Parser.parseDelimitedFrom:(Ljava/io/InputStream;)Ljava/lang/Object;
+      16: checkcast     #46                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey
+      19: astore_3
+      20: aload_0
+      21: ldc           #10                 // String hbase.crypto.key.algorithm
+      23: ldc           #11                 // String AES
+      25: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      28: astore        4
+      30: aload_0
+      31: aload         4
+      33: invokestatic  #12                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.getCipher:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;)Lorg/apache/hadoop/hbase/io/crypto/Cipher;
+      36: astore        5
+      38: aload         5
+      40: ifnonnull     76
+      43: new           #13                 // class java/lang/RuntimeException
+      46: dup
+      47: new           #14                 // class java/lang/StringBuilder
+      50: dup
+      51: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      54: ldc           #16                 // String Cipher '
+      56: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: aload         4
+      61: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: ldc           #18                 // String ' not available
+      66: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      72: invokespecial #20                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      75: athrow
+      76: aload_0
+      77: aload_1
+      78: aload_3
+      79: aload         5
+      81: invokestatic  #47                 // Method getUnwrapKey:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey;Lorg/apache/hadoop/hbase/io/crypto/Cipher;)Ljava/security/Key;
+      84: areturn
+
+  public static java.security.Key unwrapWALKey(org.apache.hadoop.conf.Configuration, java.lang.String, byte[]) throws java.io.IOException, java.security.KeyException;
+    Code:
+       0: getstatic     #44                 // Field org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey.PARSER:Lorg/apache/hbase/thirdparty/com/google/protobuf/Parser;
+       3: new           #36                 // class java/io/ByteArrayInputStream
+       6: dup
+       7: aload_2
+       8: invokespecial #37                 // Method java/io/ByteArrayInputStream."<init>":([B)V
+      11: invokeinterface #45,  2           // InterfaceMethod org/apache/hbase/thirdparty/com/google/protobuf/Parser.parseDelimitedFrom:(Ljava/io/InputStream;)Ljava/lang/Object;
+      16: checkcast     #46                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey
+      19: astore_3
+      20: aload_0
+      21: ldc           #62                 // String hbase.crypto.wal.algorithm
+      23: ldc           #11                 // String AES
+      25: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      28: astore        4
+      30: aload_0
+      31: aload         4
+      33: invokestatic  #12                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.getCipher:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;)Lorg/apache/hadoop/hbase/io/crypto/Cipher;
+      36: astore        5
+      38: aload         5
+      40: ifnonnull     76
+      43: new           #13                 // class java/lang/RuntimeException
+      46: dup
+      47: new           #14                 // class java/lang/StringBuilder
+      50: dup
+      51: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      54: ldc           #16                 // String Cipher '
+      56: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: aload         4
+      61: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: ldc           #18                 // String ' not available
+      66: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      72: invokespecial #20                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      75: athrow
+      76: aload_0
+      77: aload_1
+      78: aload_3
+      79: aload         5
+      81: invokestatic  #47                 // Method getUnwrapKey:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/EncryptionProtos$WrappedKey;Lorg/apache/hadoop/hbase/io/crypto/Cipher;)Ljava/security/Key;
+      84: areturn
+
+  public static org.apache.hadoop.hbase.io.crypto.Encryption$Context createEncryptionContext(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.ColumnFamilyDescriptor) throws java.io.IOException;
+    Code:
+       0: getstatic     #63                 // Field org/apache/hadoop/hbase/io/crypto/Encryption$Context.NONE:Lorg/apache/hadoop/hbase/io/crypto/Encryption$Context;
+       3: astore_2
+       4: aload_1
+       5: invokeinterface #64,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ColumnFamilyDescriptor.getEncryptionType:()Ljava/lang/String;
+      10: astore_3
+      11: aload_3
+      12: ifnull        233
+      15: aload_1
+      16: invokeinterface #65,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ColumnFamilyDescriptor.getEncryptionKey:()[B
+      21: astore        6
+      23: aload         6
+      25: ifnull        163
+      28: aload_0
+      29: aload         6
+      31: invokestatic  #66                 // Method unwrapKey:(Lorg/apache/hadoop/conf/Configuration;[B)Ljava/security/Key;
+      34: astore        5
+      36: aload_0
+      37: aload         5
+      39: invokeinterface #22,  1           // InterfaceMethod java/security/Key.getAlgorithm:()Ljava/lang/String;
+      44: invokestatic  #12                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.getCipher:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;)Lorg/apache/hadoop/hbase/io/crypto/Cipher;
+      47: astore        4
+      49: aload         4
+      51: ifnonnull     92
+      54: new           #13                 // class java/lang/RuntimeException
+      57: dup
+      58: new           #14                 // class java/lang/StringBuilder
+      61: dup
+      62: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      65: ldc           #16                 // String Cipher '
+      67: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      70: aload         5
+      72: invokeinterface #22,  1           // InterfaceMethod java/security/Key.getAlgorithm:()Ljava/lang/String;
+      77: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      80: ldc           #67                 // String ' is not available
+      82: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      85: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      88: invokespecial #20                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      91: athrow
+      92: aload         4
+      94: invokevirtual #68                 // Method org/apache/hadoop/hbase/io/crypto/Cipher.getName:()Ljava/lang/String;
+      97: aload_3
+      98: invokevirtual #69                 // Method java/lang/String.equalsIgnoreCase:(Ljava/lang/String;)Z
+     101: ifne          214
+     104: new           #13                 // class java/lang/RuntimeException
+     107: dup
+     108: new           #14                 // class java/lang/StringBuilder
+     111: dup
+     112: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+     115: ldc           #70                 // String Encryption for family '
+     117: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     120: aload_1
+     121: invokeinterface #71,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ColumnFamilyDescriptor.getNameAsString:()Ljava/lang/String;
+     126: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     129: ldc           #72                 // String ' configured with type '
+     131: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     134: aload_3
+     135: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     138: ldc           #73                 // String ' but key specifies algorithm '
+     140: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     143: aload         4
+     145: invokevirtual #68                 // Method org/apache/hadoop/hbase/io/crypto/Cipher.getName:()Ljava/lang/String;
+     148: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     151: ldc           #74                 // String '
+     153: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     156: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     159: invokespecial #20                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     162: athrow
+     163: aload_0
+     164: aload_3
+     165: invokestatic  #12                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.getCipher:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;)Lorg/apache/hadoop/hbase/io/crypto/Cipher;
+     168: astore        4
+     170: aload         4
+     172: ifnonnull     207
+     175: new           #13                 // class java/lang/RuntimeException
+     178: dup
+     179: new           #14                 // class java/lang/StringBuilder
+     182: dup
+     183: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+     186: ldc           #16                 // String Cipher '
+     188: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     191: aload_3
+     192: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     195: ldc           #67                 // String ' is not available
+     197: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     200: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     203: invokespecial #20                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     206: athrow
+     207: aload         4
+     209: invokevirtual #75                 // Method org/apache/hadoop/hbase/io/crypto/Cipher.getRandomKey:()Ljava/security/Key;
+     212: astore        5
+     214: aload_0
+     215: invokestatic  #76                 // Method org/apache/hadoop/hbase/io/crypto/Encryption.newContext:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/io/crypto/Encryption$Context;
+     218: astore_2
+     219: aload_2
+     220: aload         4
+     222: invokevirtual #77                 // Method org/apache/hadoop/hbase/io/crypto/Encryption$Context.setCipher:(Lorg/apache/hadoop/hbase/io/crypto/Cipher;)Lorg/apache/hadoop/hbase/io/crypto/Encryption$Context;
+     225: pop
+     226: aload_2
+     227: aload         5
+     229: invokevirtual #78                 // Method org/apache/hadoop/hbase/io/crypto/Encryption$Context.setKey:(Ljava/security/Key;)Lorg/apache/hadoop/hbase/io/crypto/Encryption$Context;
+     232: pop
+     233: aload_2
+     234: areturn
+
+  public static java.security.Key unwrapKey(org.apache.hadoop.conf.Configuration, byte[]) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: ldc           #3                  // String hbase.crypto.master.key.name
+       3: invokestatic  #4                  // Method org/apache/hadoop/hbase/security/User.getCurrent:()Lorg/apache/hadoop/hbase/security/User;
+       6: invokevirtual #5                  // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+       9: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      12: astore_3
+      13: aload_0
+      14: aload_3
+      15: aload_1
+      16: invokestatic  #79                 // Method unwrapKey:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;[B)Ljava/security/Key;
+      19: astore_2
+      20: goto          114
+      23: astore        4
+      25: getstatic     #80                 // Field LOG:Lorg/slf4j/Logger;
+      28: invokeinterface #81,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      33: ifeq          68
+      36: getstatic     #80                 // Field LOG:Lorg/slf4j/Logger;
+      39: new           #14                 // class java/lang/StringBuilder
+      42: dup
+      43: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      46: ldc           #82                 // String Unable to unwrap key with current master key '
+      48: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: aload_3
+      52: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      55: ldc           #74                 // String '
+      57: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: invokevirtual #19                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      63: invokeinterface #83,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      68: aload_0
+      69: ldc           #84                 // String hbase.crypto.master.alternate.key.name
+      71: invokevirtual #85                 // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;)Ljava/lang/String;
+      74: astore        5
+      76: aload         5
+      78: ifnull        104
+      81: aload_0
+      82: aload         5
+      84: aload_1
+      85: invokestatic  #79                 // Method unwrapKey:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;[B)Ljava/security/Key;
+      88: astore_2
+      89: goto          114
+      92: astore        6
+      94: new           #86                 // class java/io/IOException
+      97: dup
+      98: aload         6
+     100: invokespecial #87                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+     103: athrow
+     104: new           #86                 // class java/io/IOException
+     107: dup
+     108: aload         4
+     110: invokespecial #87                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+     113: athrow
+     114: aload_2
+     115: areturn
+    Exception table:
+       from    to  target type
+          13    20    23   Class java/security/KeyException
+          81    89    92   Class java/security/KeyException
+
+  public static org.apache.hadoop.hbase.io.crypto.aes.CryptoAES createCryptoAES(org.apache.hadoop.hbase.shaded.protobuf.generated.RPCProtos$CryptoCipherMeta, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: new           #88                 // class java/util/Properties
+       3: dup
+       4: invokespecial #89                 // Method java/util/Properties."<init>":()V
+       7: astore_2
+       8: aload_2
+       9: ldc           #91                 // String commons.crypto.cipher.classes
+      11: aload_1
+      12: ldc           #92                 // String hbase.rpc.crypto.encryption.aes.cipher.class
+      14: ldc           #93                 // String org.apache.commons.crypto.cipher.JceCipher
+      16: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      19: invokevirtual #94                 // Method java/util/Properties.setProperty:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;
+      22: pop
+      23: new           #95                 // class org/apache/hadoop/hbase/io/crypto/aes/CryptoAES
+      26: dup
+      27: aload_0
+      28: invokevirtual #96                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$CryptoCipherMeta.getTransformation:()Ljava/lang/String;
+      31: aload_2
+      32: aload_0
+      33: invokevirtual #97                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$CryptoCipherMeta.getInKey:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      36: invokevirtual #50                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+      39: aload_0
+      40: invokevirtual #98                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$CryptoCipherMeta.getOutKey:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      43: invokevirtual #50                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+      46: aload_0
+      47: invokevirtual #99                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$CryptoCipherMeta.getInIv:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      50: invokevirtual #50                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+      53: aload_0
+      54: invokevirtual #100                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$CryptoCipherMeta.getOutIv:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      57: invokevirtual #50                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+      60: invokespecial #101                // Method org/apache/hadoop/hbase/io/crypto/aes/CryptoAES."<init>":(Ljava/lang/String;Ljava/util/Properties;[B[B[B[B)V
+      63: areturn
+
+  static {};
+    Code:
+       0: ldc           #102                // class org/apache/hadoop/hbase/security/EncryptionUtil
+       2: invokestatic  #103                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #80                 // Field LOG:Lorg/slf4j/Logger;
+       8: new           #104                // class java/security/SecureRandom
+      11: dup
+      12: invokespecial #105                // Method java/security/SecureRandom."<init>":()V
+      15: putstatic     #25                 // Field RNG:Ljava/security/SecureRandom;
+      18: return
+}

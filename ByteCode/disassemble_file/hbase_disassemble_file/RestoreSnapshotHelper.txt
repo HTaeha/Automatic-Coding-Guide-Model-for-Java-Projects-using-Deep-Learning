@@ -1,0 +1,422 @@
+Compiled from "RestoreSnapshotHelper.java"
+public class org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper {
+  public org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.snapshot.SnapshotManifest, org.apache.hadoop.hbase.client.TableDescriptor, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.errorhandling.ForeignExceptionDispatcher, org.apache.hadoop.hbase.monitoring.MonitoredTask);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: aload         7
+      12: iconst_1
+      13: invokespecial #7                  // Method "<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;Lorg/apache/hadoop/hbase/client/TableDescriptor;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/errorhandling/ForeignExceptionDispatcher;Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;Z)V
+      16: return
+
+  public org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.snapshot.SnapshotManifest, org.apache.hadoop.hbase.client.TableDescriptor, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.errorhandling.ForeignExceptionDispatcher, org.apache.hadoop.hbase.monitoring.MonitoredTask, boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #9                  // class java/util/TreeMap
+       8: dup
+       9: getstatic     #10                 // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+      12: invokespecial #11                 // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+      15: putfield      #12                 // Field regionsMap:Ljava/util/Map;
+      18: aload_0
+      19: new           #13                 // class java/util/HashMap
+      22: dup
+      23: invokespecial #14                 // Method java/util/HashMap."<init>":()V
+      26: putfield      #15                 // Field parentsMap:Ljava/util/Map;
+      29: aload_0
+      30: aload_2
+      31: putfield      #4                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      34: aload_0
+      35: aload_1
+      36: putfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      39: aload_0
+      40: aload_3
+      41: putfield      #16                 // Field snapshotManifest:Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;
+      44: aload_0
+      45: aload_3
+      46: invokevirtual #17                 // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.getSnapshotDescription:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+      49: putfield      #18                 // Field snapshotDesc:Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+      52: aload_0
+      53: aload_0
+      54: getfield      #18                 // Field snapshotDesc:Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+      57: invokevirtual #19                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getTable:()Ljava/lang/String;
+      60: invokestatic  #20                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      63: putfield      #21                 // Field snapshotTable:Lorg/apache/hadoop/hbase/TableName;
+      66: aload_0
+      67: aload         4
+      69: putfield      #22                 // Field tableDesc:Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      72: aload_0
+      73: aload         5
+      75: putfield      #23                 // Field rootDir:Lorg/apache/hadoop/fs/Path;
+      78: aload_0
+      79: aload         5
+      81: aload_0
+      82: getfield      #22                 // Field tableDesc:Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      85: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      90: invokestatic  #25                 // Method org/apache/hadoop/hbase/util/FSUtils.getTableDir:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/fs/Path;
+      93: putfield      #26                 // Field tableDir:Lorg/apache/hadoop/fs/Path;
+      96: aload_0
+      97: aload         6
+      99: putfield      #27                 // Field monitor:Lorg/apache/hadoop/hbase/errorhandling/ForeignExceptionDispatcher;
+     102: aload_0
+     103: aload         7
+     105: putfield      #28                 // Field status:Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;
+     108: aload_0
+     109: iload         8
+     111: putfield      #29                 // Field createBackRefs:Z
+     114: return
+
+  public org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper$RestoreMetaChanges restoreHdfsRegions() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: ldc           #30                 // String RestoreSnapshot
+       6: invokestatic  #31                 // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.createExecutor:(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;)Ljava/util/concurrent/ThreadPoolExecutor;
+       9: astore_1
+      10: aload_0
+      11: aload_1
+      12: invokespecial #32                 // Method restoreHdfsRegions:(Ljava/util/concurrent/ThreadPoolExecutor;)Lorg/apache/hadoop/hbase/snapshot/RestoreSnapshotHelper$RestoreMetaChanges;
+      15: astore_2
+      16: aload_1
+      17: invokevirtual #33                 // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+      20: aload_2
+      21: areturn
+      22: astore_3
+      23: aload_1
+      24: invokevirtual #33                 // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+      27: aload_3
+      28: athrow
+    Exception table:
+       from    to  target type
+          10    16    22   any
+
+  public org.apache.hadoop.hbase.client.RegionInfo cloneRegionInfo(org.apache.hadoop.hbase.client.RegionInfo);
+    Code:
+       0: aload_0
+       1: getfield      #22                 // Field tableDesc:Lorg/apache/hadoop/hbase/client/TableDescriptor;
+       4: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+       9: aload_1
+      10: invokestatic  #198                // Method cloneRegionInfo:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+      13: areturn
+
+  public static org.apache.hadoop.hbase.client.RegionInfo cloneRegionInfo(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.RegionInfo);
+    Code:
+       0: aload_0
+       1: invokestatic  #199                // Method org/apache/hadoop/hbase/client/RegionInfoBuilder.newBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/RegionInfoBuilder;
+       4: aload_1
+       5: invokeinterface #200,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getStartKey:()[B
+      10: invokevirtual #201                // Method org/apache/hadoop/hbase/client/RegionInfoBuilder.setStartKey:([B)Lorg/apache/hadoop/hbase/client/RegionInfoBuilder;
+      13: aload_1
+      14: invokeinterface #202,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEndKey:()[B
+      19: invokevirtual #203                // Method org/apache/hadoop/hbase/client/RegionInfoBuilder.setEndKey:([B)Lorg/apache/hadoop/hbase/client/RegionInfoBuilder;
+      22: aload_1
+      23: invokeinterface #204,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isSplit:()Z
+      28: invokevirtual #205                // Method org/apache/hadoop/hbase/client/RegionInfoBuilder.setSplit:(Z)Lorg/apache/hadoop/hbase/client/RegionInfoBuilder;
+      31: aload_1
+      32: invokeinterface #206,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionId:()J
+      37: invokevirtual #207                // Method org/apache/hadoop/hbase/client/RegionInfoBuilder.setRegionId:(J)Lorg/apache/hadoop/hbase/client/RegionInfoBuilder;
+      40: aload_1
+      41: invokeinterface #208,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isOffline:()Z
+      46: invokevirtual #209                // Method org/apache/hadoop/hbase/client/RegionInfoBuilder.setOffline:(Z)Lorg/apache/hadoop/hbase/client/RegionInfoBuilder;
+      49: invokevirtual #210                // Method org/apache/hadoop/hbase/client/RegionInfoBuilder.build:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      52: areturn
+
+  public static org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper$RestoreMetaChanges copySnapshotForScanner(org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_3
+       1: aload_0
+       2: invokevirtual #219                // Method org/apache/hadoop/fs/Path.getFileSystem:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+       5: invokevirtual #220                // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+       8: aload_2
+       9: aload_0
+      10: invokevirtual #219                // Method org/apache/hadoop/fs/Path.getFileSystem:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+      13: invokevirtual #220                // Method org/apache/hadoop/fs/FileSystem.getUri:()Ljava/net/URI;
+      16: invokevirtual #221                // Method java/net/URI.equals:(Ljava/lang/Object;)Z
+      19: ifne          32
+      22: new           #222                // class java/lang/IllegalArgumentException
+      25: dup
+      26: ldc           #223                // String Filesystems for restore directory and HBase root directory should be the same
+      28: invokespecial #224                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      31: athrow
+      32: aload_3
+      33: invokevirtual #225                // Method org/apache/hadoop/fs/Path.toUri:()Ljava/net/URI;
+      36: invokevirtual #226                // Method java/net/URI.getPath:()Ljava/lang/String;
+      39: new           #34                 // class java/lang/StringBuilder
+      42: dup
+      43: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+      46: aload_2
+      47: invokevirtual #225                // Method org/apache/hadoop/fs/Path.toUri:()Ljava/net/URI;
+      50: invokevirtual #226                // Method java/net/URI.getPath:()Ljava/lang/String;
+      53: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: ldc           #227                // String /
+      58: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      64: invokevirtual #228                // Method java/lang/String.startsWith:(Ljava/lang/String;)Z
+      67: ifeq          106
+      70: new           #222                // class java/lang/IllegalArgumentException
+      73: dup
+      74: new           #34                 // class java/lang/StringBuilder
+      77: dup
+      78: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+      81: ldc           #229                // String Restore directory cannot be a sub directory of HBase root directory. RootDir:
+      83: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: aload_2
+      87: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      90: ldc           #230                // String , restoreDir:
+      92: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      95: aload_3
+      96: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      99: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     102: invokespecial #224                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+     105: athrow
+     106: aload         4
+     108: aload_2
+     109: invokestatic  #231                // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.getCompletedSnapshotDir:(Ljava/lang/String;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+     112: astore        5
+     114: aload_1
+     115: aload         5
+     117: invokestatic  #232                // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.readSnapshotInfo:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+     120: astore        6
+     122: aload_0
+     123: aload_1
+     124: aload         5
+     126: aload         6
+     128: invokestatic  #233                // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.open:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;
+     131: astore        7
+     133: invokestatic  #234                // Method org/apache/hadoop/hbase/monitoring/TaskMonitor.get:()Lorg/apache/hadoop/hbase/monitoring/TaskMonitor;
+     136: new           #34                 // class java/lang/StringBuilder
+     139: dup
+     140: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     143: ldc           #235                // String Restoring  snapshot '
+     145: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     148: aload         4
+     150: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     153: ldc           #236                // String ' to directory
+     155: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     158: aload_3
+     159: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     162: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     165: invokevirtual #237                // Method org/apache/hadoop/hbase/monitoring/TaskMonitor.createStatus:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;
+     168: astore        8
+     170: new           #238                // class org/apache/hadoop/hbase/errorhandling/ForeignExceptionDispatcher
+     173: dup
+     174: invokespecial #239                // Method org/apache/hadoop/hbase/errorhandling/ForeignExceptionDispatcher."<init>":()V
+     177: astore        9
+     179: new           #240                // class org/apache/hadoop/hbase/snapshot/RestoreSnapshotHelper
+     182: dup
+     183: aload_0
+     184: aload_1
+     185: aload         7
+     187: aload         7
+     189: invokevirtual #51                 // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.getTableDescriptor:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     192: aload_3
+     193: aload         9
+     195: aload         8
+     197: iconst_0
+     198: invokespecial #7                  // Method "<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;Lorg/apache/hadoop/hbase/client/TableDescriptor;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/errorhandling/ForeignExceptionDispatcher;Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;Z)V
+     201: astore        10
+     203: aload         10
+     205: invokevirtual #241                // Method restoreHdfsRegions:()Lorg/apache/hadoop/hbase/snapshot/RestoreSnapshotHelper$RestoreMetaChanges;
+     208: astore        11
+     210: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     213: invokeinterface #242,  1          // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     218: ifeq          256
+     221: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     224: new           #34                 // class java/lang/StringBuilder
+     227: dup
+     228: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     231: ldc           #243                // String Restored table dir:
+     233: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     236: aload_3
+     237: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     240: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     243: invokeinterface #135,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     248: aload_1
+     249: aload_3
+     250: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     253: invokestatic  #244                // Method org/apache/hadoop/hbase/util/FSUtils.logFileSystemState:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/slf4j/Logger;)V
+     256: aload         11
+     258: areturn
+
+  public static void restoreSnapshotAcl(org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotDescription, org.apache.hadoop.hbase.TableName, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #245                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.hasUsersAndPermissions:()Z
+       4: ifeq          291
+       7: aload_0
+       8: invokevirtual #246                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getUsersAndPermissions:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AccessControlProtos$UsersAndPermissions;
+      11: ifnull        291
+      14: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+      17: new           #34                 // class java/lang/StringBuilder
+      20: dup
+      21: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+      24: ldc           #247                // String Restore snapshot acl to table. snapshot:
+      26: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      29: aload_0
+      30: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      33: ldc           #248                // String , table:
+      35: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: aload_1
+      39: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      42: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      45: invokeinterface #40,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      50: aload_0
+      51: invokevirtual #246                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription.getUsersAndPermissions:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AccessControlProtos$UsersAndPermissions;
+      54: invokestatic  #249                // Method org/apache/hadoop/hbase/security/access/ShadedAccessControlUtil.toUserTablePermissions:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AccessControlProtos$UsersAndPermissions;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ListMultimap;
+      57: astore_3
+      58: aload_2
+      59: invokestatic  #250                // Method org/apache/hadoop/hbase/client/ConnectionFactory.createConnection:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/Connection;
+      62: astore        4
+      64: aconst_null
+      65: astore        5
+      67: aload_3
+      68: invokeinterface #251,  1          // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/ListMultimap.entries:()Ljava/util/Collection;
+      73: invokeinterface #252,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      78: astore        6
+      80: aload         6
+      82: invokeinterface #68,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      87: ifeq          152
+      90: aload         6
+      92: invokeinterface #69,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      97: checkcast     #142                // class java/util/Map$Entry
+     100: astore        7
+     102: aload         7
+     104: invokeinterface #143,  1          // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     109: checkcast     #81                 // class java/lang/String
+     112: astore        8
+     114: aload         7
+     116: invokeinterface #148,  1          // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     121: checkcast     #253                // class org/apache/hadoop/hbase/security/access/TablePermission
+     124: astore        9
+     126: aload         4
+     128: aload_1
+     129: aload         8
+     131: aload         9
+     133: invokevirtual #254                // Method org/apache/hadoop/hbase/security/access/TablePermission.getFamily:()[B
+     136: aload         9
+     138: invokevirtual #255                // Method org/apache/hadoop/hbase/security/access/TablePermission.getQualifier:()[B
+     141: aload         9
+     143: invokevirtual #256                // Method org/apache/hadoop/hbase/security/access/TablePermission.getActions:()[Lorg/apache/hadoop/hbase/security/access/Permission$Action;
+     146: invokestatic  #257                // Method org/apache/hadoop/hbase/security/access/AccessControlClient.grant:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;[B[B[Lorg/apache/hadoop/hbase/security/access/Permission$Action;)V
+     149: goto          80
+     152: aload         4
+     154: ifnull        247
+     157: aload         5
+     159: ifnull        184
+     162: aload         4
+     164: invokeinterface #258,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     169: goto          247
+     172: astore        6
+     174: aload         5
+     176: aload         6
+     178: invokevirtual #260                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     181: goto          247
+     184: aload         4
+     186: invokeinterface #258,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     191: goto          247
+     194: astore        6
+     196: aload         6
+     198: astore        5
+     200: aload         6
+     202: athrow
+     203: astore        10
+     205: aload         4
+     207: ifnull        244
+     210: aload         5
+     212: ifnull        237
+     215: aload         4
+     217: invokeinterface #258,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     222: goto          244
+     225: astore        11
+     227: aload         5
+     229: aload         11
+     231: invokevirtual #260                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     234: goto          244
+     237: aload         4
+     239: invokeinterface #258,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     244: aload         10
+     246: athrow
+     247: goto          291
+     250: astore        4
+     252: new           #145                // class java/io/IOException
+     255: dup
+     256: new           #34                 // class java/lang/StringBuilder
+     259: dup
+     260: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     263: ldc_w         #261                // String Grant acl into newly creatd table failed. snapshot:
+     266: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     269: aload_0
+     270: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     273: ldc           #248                // String , table:
+     275: invokevirtual #37                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     278: aload_1
+     279: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     282: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     285: aload         4
+     287: invokespecial #262                // Method java/io/IOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     290: athrow
+     291: return
+    Exception table:
+       from    to  target type
+         162   169   172   Class java/lang/Throwable
+          67   152   194   Class java/lang/Throwable
+          67   152   203   any
+         215   222   225   Class java/lang/Throwable
+         194   205   203   any
+          58   247   250   Class java/lang/Throwable
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static org.apache.hadoop.conf.Configuration access$100(org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: areturn
+
+  static org.apache.hadoop.fs.FileSystem access$200(org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+       4: areturn
+
+  static void access$300(org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotRegionManifest) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #3                  // Method restoreRegion:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest;)V
+       6: return
+
+  static void access$400(org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotRegionManifest) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #2                  // Method restoreMobRegion:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest;)V
+       6: return
+
+  static void access$500(org.apache.hadoop.hbase.snapshot.RestoreSnapshotHelper, org.apache.hadoop.hbase.regionserver.HRegion, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.shaded.protobuf.generated.SnapshotProtos$SnapshotRegionManifest) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: invokespecial #1                  // Method cloneRegion:(Lorg/apache/hadoop/hbase/regionserver/HRegion;Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest;)V
+       7: return
+
+  static {};
+    Code:
+       0: ldc           #240                // class org/apache/hadoop/hbase/snapshot/RestoreSnapshotHelper
+       2: invokestatic  #263                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

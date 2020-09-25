@@ -1,0 +1,379 @@
+Compiled from "Canary.java"
+class org.apache.hadoop.hbase.tool.Canary$RegionMonitor extends org.apache.hadoop.hbase.tool.Canary$Monitor {
+  public org.apache.hadoop.hbase.tool.Canary$RegionMonitor(org.apache.hadoop.hbase.client.Connection, java.lang.String[], boolean, org.apache.hadoop.hbase.tool.Canary$Sink, java.util.concurrent.ExecutorService, boolean, org.apache.hadoop.hbase.TableName, boolean, java.util.HashMap<java.lang.String, java.lang.Long>, long, long);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: iload_3
+       4: aload         4
+       6: aload         5
+       8: iload         8
+      10: lload         12
+      12: invokespecial #2                  // Method org/apache/hadoop/hbase/tool/Canary$Monitor."<init>":(Lorg/apache/hadoop/hbase/client/Connection;[Ljava/lang/String;ZLorg/apache/hadoop/hbase/tool/Canary$Sink;Ljava/util/concurrent/ExecutorService;ZJ)V
+      15: aload_0
+      16: ldc2_w        #3                  // long -1l
+      19: putfield      #5                  // Field lastCheckTime:J
+      22: aload_1
+      23: invokeinterface #6,  1            // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      28: astore        14
+      30: aload_0
+      31: iload         6
+      33: putfield      #7                  // Field writeSniffing:Z
+      36: aload_0
+      37: aload         7
+      39: putfield      #8                  // Field writeTableName:Lorg/apache/hadoop/hbase/TableName;
+      42: aload_0
+      43: aload         14
+      45: ldc           #10                 // String hbase.canary.write.data.ttl
+      47: ldc           #12                 // int 86400
+      49: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      52: putfield      #14                 // Field writeDataTTL:I
+      55: aload_0
+      56: aload         14
+      58: ldc           #15                 // String hbase.canary.write.perserver.regions.lowerLimit
+      60: fconst_1
+      61: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      64: putfield      #17                 // Field regionsLowerLimit:F
+      67: aload_0
+      68: aload         14
+      70: ldc           #18                 // String hbase.canary.write.perserver.regions.upperLimit
+      72: ldc           #19                 // float 1.5f
+      74: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      77: putfield      #20                 // Field regionsUpperLimit:F
+      80: aload_0
+      81: aload         14
+      83: ldc           #21                 // String hbase.canary.write.table.check.period
+      85: ldc           #22                 // int 600000
+      87: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      90: putfield      #23                 // Field checkPeriod:I
+      93: aload_0
+      94: aload         14
+      96: ldc           #24                 // String hbase.canary.read.raw.enabled
+      98: iconst_0
+      99: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     102: putfield      #26                 // Field rawScanEnabled:Z
+     105: aload_0
+     106: new           #27                 // class java/util/HashMap
+     109: dup
+     110: aload         9
+     112: invokespecial #28                 // Method java/util/HashMap."<init>":(Ljava/util/Map;)V
+     115: putfield      #29                 // Field configuredReadTableTimeouts:Ljava/util/HashMap;
+     118: aload_0
+     119: lload         10
+     121: putfield      #30                 // Field configuredWriteTableTimeout:J
+     124: return
+
+  public void run();
+    Code:
+       0: aload_0
+       1: invokevirtual #36                 // Method initAdmin:()Z
+       4: ifeq          650
+       7: new           #37                 // class java/util/LinkedList
+      10: dup
+      11: invokespecial #38                 // Method java/util/LinkedList."<init>":()V
+      14: astore_1
+      15: aload_0
+      16: invokespecial #39                 // Method getSink:()Lorg/apache/hadoop/hbase/tool/Canary$RegionStdOutSink;
+      19: astore_2
+      20: aload_0
+      21: getfield      #40                 // Field targets:[Ljava/lang/String;
+      24: ifnull        166
+      27: aload_0
+      28: getfield      #40                 // Field targets:[Ljava/lang/String;
+      31: arraylength
+      32: ifle          166
+      35: aload_0
+      36: aload_0
+      37: getfield      #40                 // Field targets:[Ljava/lang/String;
+      40: invokespecial #41                 // Method generateMonitorTables:([Ljava/lang/String;)[Ljava/lang/String;
+      43: astore_3
+      44: new           #42                 // class java/util/HashSet
+      47: dup
+      48: aload_3
+      49: invokestatic  #43                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+      52: invokespecial #44                 // Method java/util/HashSet."<init>":(Ljava/util/Collection;)V
+      55: aload_0
+      56: getfield      #29                 // Field configuredReadTableTimeouts:Ljava/util/HashMap;
+      59: invokevirtual #45                 // Method java/util/HashMap.keySet:()Ljava/util/Set;
+      62: invokevirtual #46                 // Method java/util/HashSet.containsAll:(Ljava/util/Collection;)Z
+      65: ifne          89
+      68: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+      71: ldc           #48                 // String -readTableTimeouts can only specify read timeouts for monitor targets passed via command line.
+      73: invokeinterface #49,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+      78: aload_0
+      79: iconst_1
+      80: putfield      #50                 // Field errorCode:I
+      83: aload_0
+      84: iconst_1
+      85: putfield      #51                 // Field done:Z
+      88: return
+      89: aload_0
+      90: iconst_1
+      91: putfield      #52                 // Field initialized:Z
+      94: aload_3
+      95: astore        4
+      97: aload         4
+      99: arraylength
+     100: istore        5
+     102: iconst_0
+     103: istore        6
+     105: iload         6
+     107: iload         5
+     109: if_icmpge     163
+     112: aload         4
+     114: iload         6
+     116: aaload
+     117: astore        7
+     119: aload_2
+     120: aload         7
+     122: invokevirtual #53                 // Method org/apache/hadoop/hbase/tool/Canary$RegionStdOutSink.initializeAndGetReadLatencyForTable:(Ljava/lang/String;)Ljava/util/concurrent/atomic/LongAdder;
+     125: astore        8
+     127: aload_1
+     128: aload_0
+     129: getfield      #54                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+     132: aload_2
+     133: aload         7
+     135: aload_0
+     136: getfield      #55                 // Field executor:Ljava/util/concurrent/ExecutorService;
+     139: getstatic     #56                 // Field org/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType.READ:Lorg/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType;
+     142: aload_0
+     143: getfield      #26                 // Field rawScanEnabled:Z
+     146: aload         8
+     148: invokestatic  #57                 // Method org/apache/hadoop/hbase/tool/Canary.access$100:(Lorg/apache/hadoop/hbase/client/Admin;Lorg/apache/hadoop/hbase/tool/Canary$Sink;Ljava/lang/String;Ljava/util/concurrent/ExecutorService;Lorg/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType;ZLjava/util/concurrent/atomic/LongAdder;)Ljava/util/List;
+     151: invokeinterface #58,  2           // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+     156: pop
+     157: iinc          6, 1
+     160: goto          105
+     163: goto          181
+     166: aload_1
+     167: aload_0
+     168: getstatic     #56                 // Field org/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType.READ:Lorg/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType;
+     171: aload_2
+     172: invokespecial #59                 // Method sniff:(Lorg/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType;Lorg/apache/hadoop/hbase/tool/Canary$RegionStdOutSink;)Ljava/util/List;
+     175: invokeinterface #58,  2           // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+     180: pop
+     181: aload_0
+     182: getfield      #7                  // Field writeSniffing:Z
+     185: ifeq          280
+     188: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     191: aload_0
+     192: getfield      #5                  // Field lastCheckTime:J
+     195: lsub
+     196: aload_0
+     197: getfield      #23                 // Field checkPeriod:I
+     200: i2l
+     201: lcmp
+     202: ifle          231
+     205: aload_0
+     206: invokespecial #61                 // Method checkWriteTableDistribution:()V
+     209: goto          224
+     212: astore_3
+     213: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     216: ldc           #63                 // String Check canary table distribution failed!
+     218: aload_3
+     219: invokeinterface #64,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     224: aload_0
+     225: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     228: putfield      #5                  // Field lastCheckTime:J
+     231: aload_2
+     232: invokevirtual #65                 // Method org/apache/hadoop/hbase/tool/Canary$RegionStdOutSink.initializeWriteLatency:()V
+     235: aload_2
+     236: invokevirtual #66                 // Method org/apache/hadoop/hbase/tool/Canary$RegionStdOutSink.getWriteLatency:()Ljava/util/concurrent/atomic/LongAdder;
+     239: astore_3
+     240: aload_1
+     241: aload_0
+     242: getfield      #54                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+     245: aload_2
+     246: aload_0
+     247: getfield      #54                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+     250: aload_0
+     251: getfield      #8                  // Field writeTableName:Lorg/apache/hadoop/hbase/TableName;
+     254: invokeinterface #67,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getDescriptor:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     259: aload_0
+     260: getfield      #55                 // Field executor:Ljava/util/concurrent/ExecutorService;
+     263: getstatic     #68                 // Field org/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType.WRITE:Lorg/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType;
+     266: aload_0
+     267: getfield      #26                 // Field rawScanEnabled:Z
+     270: aload_3
+     271: invokestatic  #69                 // Method org/apache/hadoop/hbase/tool/Canary.access$200:(Lorg/apache/hadoop/hbase/client/Admin;Lorg/apache/hadoop/hbase/tool/Canary$Sink;Lorg/apache/hadoop/hbase/client/TableDescriptor;Ljava/util/concurrent/ExecutorService;Lorg/apache/hadoop/hbase/tool/Canary$RegionTask$TaskType;ZLjava/util/concurrent/atomic/LongAdder;)Ljava/util/List;
+     274: invokeinterface #58,  2           // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+     279: pop
+     280: aload_1
+     281: invokeinterface #70,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     286: astore_3
+     287: aload_3
+     288: invokeinterface #71,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     293: ifeq          335
+     296: aload_3
+     297: invokeinterface #72,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     302: checkcast     #73                 // class java/util/concurrent/Future
+     305: astore        4
+     307: aload         4
+     309: invokeinterface #74,  1           // InterfaceMethod java/util/concurrent/Future.get:()Ljava/lang/Object;
+     314: pop
+     315: goto          332
+     318: astore        5
+     320: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     323: ldc           #76                 // String Sniff region failed!
+     325: aload         5
+     327: invokeinterface #64,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     332: goto          287
+     335: aload_2
+     336: invokevirtual #77                 // Method org/apache/hadoop/hbase/tool/Canary$RegionStdOutSink.getReadLatencyMap:()Ljava/util/Map;
+     339: astore_3
+     340: aload_0
+     341: getfield      #29                 // Field configuredReadTableTimeouts:Ljava/util/HashMap;
+     344: invokevirtual #78                 // Method java/util/HashMap.entrySet:()Ljava/util/Set;
+     347: invokeinterface #79,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     352: astore        4
+     354: aload         4
+     356: invokeinterface #71,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     361: ifeq          523
+     364: aload         4
+     366: invokeinterface #72,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     371: checkcast     #80                 // class java/util/Map$Entry
+     374: astore        5
+     376: aload         5
+     378: invokeinterface #81,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     383: checkcast     #82                 // class java/lang/String
+     386: astore        6
+     388: aload_3
+     389: aload         6
+     391: invokeinterface #83,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     396: ifeq          508
+     399: aload_3
+     400: aload         6
+     402: invokeinterface #84,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     407: checkcast     #85                 // class java/util/concurrent/atomic/LongAdder
+     410: invokevirtual #86                 // Method java/util/concurrent/atomic/LongAdder.longValue:()J
+     413: invokestatic  #87                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     416: astore        7
+     418: aload         5
+     420: invokeinterface #88,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     425: checkcast     #89                 // class java/lang/Long
+     428: astore        8
+     430: aload         7
+     432: invokevirtual #90                 // Method java/lang/Long.longValue:()J
+     435: aload         8
+     437: invokevirtual #90                 // Method java/lang/Long.longValue:()J
+     440: lcmp
+     441: ifle          476
+     444: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     447: ldc           #91                 // String Read operation for {} took {}ms (Configured read timeout {}ms.
+     449: iconst_3
+     450: anewarray     #92                 // class java/lang/Object
+     453: dup
+     454: iconst_0
+     455: aload         6
+     457: aastore
+     458: dup
+     459: iconst_1
+     460: aload         7
+     462: aastore
+     463: dup
+     464: iconst_2
+     465: aload         8
+     467: aastore
+     468: invokeinterface #93,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;[Ljava/lang/Object;)V
+     473: goto          505
+     476: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     479: ldc           #91                 // String Read operation for {} took {}ms (Configured read timeout {}ms.
+     481: iconst_3
+     482: anewarray     #92                 // class java/lang/Object
+     485: dup
+     486: iconst_0
+     487: aload         6
+     489: aastore
+     490: dup
+     491: iconst_1
+     492: aload         7
+     494: aastore
+     495: dup
+     496: iconst_2
+     497: aload         8
+     499: aastore
+     500: invokeinterface #94,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     505: goto          520
+     508: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     511: ldc           #95                 // String Read operation for {} failed!
+     513: aload         6
+     515: invokeinterface #96,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;)V
+     520: goto          354
+     523: aload_0
+     524: getfield      #7                  // Field writeSniffing:Z
+     527: ifeq          607
+     530: aload_0
+     531: getfield      #8                  // Field writeTableName:Lorg/apache/hadoop/hbase/TableName;
+     534: invokevirtual #97                 // Method org/apache/hadoop/hbase/TableName.getNameAsString:()Ljava/lang/String;
+     537: astore        4
+     539: aload_2
+     540: invokevirtual #66                 // Method org/apache/hadoop/hbase/tool/Canary$RegionStdOutSink.getWriteLatency:()Ljava/util/concurrent/atomic/LongAdder;
+     543: invokevirtual #86                 // Method java/util/concurrent/atomic/LongAdder.longValue:()J
+     546: lstore        5
+     548: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     551: ldc           #98                 // String Write operation for {} took {}ms. Configured write timeout {}ms.
+     553: iconst_3
+     554: anewarray     #92                 // class java/lang/Object
+     557: dup
+     558: iconst_0
+     559: aload         4
+     561: aastore
+     562: dup
+     563: iconst_1
+     564: lload         5
+     566: invokestatic  #87                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     569: aastore
+     570: dup
+     571: iconst_2
+     572: aload_0
+     573: getfield      #30                 // Field configuredWriteTableTimeout:J
+     576: invokestatic  #87                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     579: aastore
+     580: invokeinterface #94,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     585: lload         5
+     587: aload_0
+     588: getfield      #30                 // Field configuredWriteTableTimeout:J
+     591: lcmp
+     592: ifle          607
+     595: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     598: ldc           #99                 // String Write operation for {} exceeded the configured write timeout.
+     600: aload         4
+     602: invokeinterface #96,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;)V
+     607: aload_0
+     608: iconst_1
+     609: putfield      #51                 // Field done:Z
+     612: goto          650
+     615: astore_1
+     616: invokestatic  #47                 // Method org/apache/hadoop/hbase/tool/Canary.access$000:()Lorg/slf4j/Logger;
+     619: ldc           #101                // String Run regionMonitor failed
+     621: aload_1
+     622: invokeinterface #64,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     627: aload_0
+     628: iconst_4
+     629: putfield      #50                 // Field errorCode:I
+     632: aload_0
+     633: iconst_1
+     634: putfield      #51                 // Field done:Z
+     637: goto          650
+     640: astore        9
+     642: aload_0
+     643: iconst_1
+     644: putfield      #51                 // Field done:Z
+     647: aload         9
+     649: athrow
+     650: aload_0
+     651: iconst_1
+     652: putfield      #51                 // Field done:Z
+     655: return
+    Exception table:
+       from    to  target type
+         205   209   212   Class java/io/IOException
+         307   315   318   Class java/util/concurrent/ExecutionException
+           7    83   615   Class java/lang/Exception
+          89   607   615   Class java/lang/Exception
+           7    83   640   any
+          89   607   640   any
+         615   632   640   any
+         640   642   640   any
+}

@@ -1,0 +1,445 @@
+Compiled from "RWQueueRpcExecutor.java"
+public class org.apache.hadoop.hbase.ipc.RWQueueRpcExecutor extends org.apache.hadoop.hbase.ipc.RpcExecutor {
+  public static final java.lang.String CALL_QUEUE_READ_SHARE_CONF_KEY;
+
+  public static final java.lang.String CALL_QUEUE_SCAN_SHARE_CONF_KEY;
+
+  public org.apache.hadoop.hbase.ipc.RWQueueRpcExecutor(java.lang.String, int, int, org.apache.hadoop.hbase.ipc.PriorityFunction, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.Abortable);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: iload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: invokespecial #1                  // Method org/apache/hadoop/hbase/ipc/RpcExecutor."<init>":(Ljava/lang/String;IILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+      13: aload_0
+      14: new           #2                  // class java/util/concurrent/atomic/AtomicInteger
+      17: dup
+      18: iconst_0
+      19: invokespecial #3                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      22: putfield      #4                  // Field activeWriteHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      25: aload_0
+      26: new           #2                  // class java/util/concurrent/atomic/AtomicInteger
+      29: dup
+      30: iconst_0
+      31: invokespecial #3                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      34: putfield      #5                  // Field activeReadHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      37: aload_0
+      38: new           #2                  // class java/util/concurrent/atomic/AtomicInteger
+      41: dup
+      42: iconst_0
+      43: invokespecial #3                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      46: putfield      #6                  // Field activeScanHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      49: aload         5
+      51: ldc           #8                  // String hbase.ipc.server.callqueue.read.ratio
+      53: fconst_0
+      54: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      57: fstore        7
+      59: aload         5
+      61: ldc           #10                 // String hbase.ipc.server.callqueue.scan.ratio
+      63: fconst_0
+      64: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      67: fstore        8
+      69: aload_0
+      70: aload_0
+      71: getfield      #11                 // Field numCallQueues:I
+      74: fload         7
+      76: invokestatic  #12                 // Method calcNumWriters:(IF)I
+      79: putfield      #13                 // Field numWriteQueues:I
+      82: aload_0
+      83: aload_0
+      84: getfield      #13                 // Field numWriteQueues:I
+      87: iload_2
+      88: fload         7
+      90: invokestatic  #12                 // Method calcNumWriters:(IF)I
+      93: invokestatic  #14                 // Method java/lang/Math.max:(II)I
+      96: putfield      #15                 // Field writeHandlersCount:I
+      99: aload_0
+     100: getfield      #11                 // Field numCallQueues:I
+     103: fload         7
+     105: invokestatic  #16                 // Method calcNumReaders:(IF)I
+     108: istore        9
+     110: iload         9
+     112: iload_2
+     113: fload         7
+     115: invokestatic  #16                 // Method calcNumReaders:(IF)I
+     118: invokestatic  #14                 // Method java/lang/Math.max:(II)I
+     121: istore        10
+     123: iconst_0
+     124: iload         9
+     126: i2f
+     127: fload         8
+     129: fmul
+     130: f2d
+     131: invokestatic  #17                 // Method java/lang/Math.floor:(D)D
+     134: d2i
+     135: invokestatic  #14                 // Method java/lang/Math.max:(II)I
+     138: istore        11
+     140: iconst_0
+     141: iload         10
+     143: i2f
+     144: fload         8
+     146: fmul
+     147: f2d
+     148: invokestatic  #17                 // Method java/lang/Math.floor:(D)D
+     151: d2i
+     152: invokestatic  #14                 // Method java/lang/Math.max:(II)I
+     155: istore        12
+     157: iload         9
+     159: iload         11
+     161: isub
+     162: ifle          182
+     165: iload         9
+     167: iload         11
+     169: isub
+     170: istore        9
+     172: iload         10
+     174: iload         12
+     176: isub
+     177: istore        10
+     179: goto          188
+     182: iconst_0
+     183: istore        11
+     185: iconst_0
+     186: istore        12
+     188: aload_0
+     189: iload         9
+     191: putfield      #18                 // Field numReadQueues:I
+     194: aload_0
+     195: iload         10
+     197: putfield      #19                 // Field readHandlersCount:I
+     200: aload_0
+     201: iload         11
+     203: putfield      #20                 // Field numScanQueues:I
+     206: aload_0
+     207: iload         12
+     209: putfield      #21                 // Field scanHandlersCount:I
+     212: aload_0
+     213: aload_0
+     214: getfield      #13                 // Field numWriteQueues:I
+     217: invokestatic  #22                 // Method getBalancer:(I)Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+     220: putfield      #23                 // Field writeBalancer:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+     223: aload_0
+     224: aload_0
+     225: getfield      #18                 // Field numReadQueues:I
+     228: invokestatic  #22                 // Method getBalancer:(I)Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+     231: putfield      #24                 // Field readBalancer:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+     234: aload_0
+     235: aload_0
+     236: getfield      #20                 // Field numScanQueues:I
+     239: ifle          252
+     242: aload_0
+     243: getfield      #20                 // Field numScanQueues:I
+     246: invokestatic  #22                 // Method getBalancer:(I)Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+     249: goto          253
+     252: aconst_null
+     253: putfield      #25                 // Field scanBalancer:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+     256: aload_0
+     257: aload_0
+     258: getfield      #13                 // Field numWriteQueues:I
+     261: invokevirtual #26                 // Method initializeQueues:(I)V
+     264: aload_0
+     265: aload_0
+     266: getfield      #18                 // Field numReadQueues:I
+     269: invokevirtual #26                 // Method initializeQueues:(I)V
+     272: aload_0
+     273: aload_0
+     274: getfield      #20                 // Field numScanQueues:I
+     277: invokevirtual #26                 // Method initializeQueues:(I)V
+     280: getstatic     #27                 // Field LOG:Lorg/slf4j/Logger;
+     283: new           #28                 // class java/lang/StringBuilder
+     286: dup
+     287: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     290: aload_0
+     291: invokevirtual #30                 // Method getName:()Ljava/lang/String;
+     294: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     297: ldc           #32                 // String  writeQueues=
+     299: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     302: aload_0
+     303: getfield      #13                 // Field numWriteQueues:I
+     306: invokevirtual #33                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     309: ldc           #34                 // String  writeHandlers=
+     311: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     314: aload_0
+     315: getfield      #15                 // Field writeHandlersCount:I
+     318: invokevirtual #33                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     321: ldc           #35                 // String  readQueues=
+     323: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     326: aload_0
+     327: getfield      #18                 // Field numReadQueues:I
+     330: invokevirtual #33                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     333: ldc           #36                 // String  readHandlers=
+     335: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     338: aload_0
+     339: getfield      #19                 // Field readHandlersCount:I
+     342: invokevirtual #33                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     345: ldc           #37                 // String  scanQueues=
+     347: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     350: aload_0
+     351: getfield      #20                 // Field numScanQueues:I
+     354: invokevirtual #33                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     357: ldc           #38                 // String  scanHandlers=
+     359: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     362: aload_0
+     363: getfield      #21                 // Field scanHandlersCount:I
+     366: invokevirtual #33                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     369: invokevirtual #39                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     372: invokeinterface #40,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     377: return
+
+  protected int computeNumCallQueues(int, float);
+    Code:
+       0: iconst_2
+       1: iload_1
+       2: i2f
+       3: fload_2
+       4: fmul
+       5: invokestatic  #41                 // Method java/lang/Math.round:(F)I
+       8: invokestatic  #14                 // Method java/lang/Math.max:(II)I
+      11: ireturn
+
+  protected void startHandlers(int);
+    Code:
+       0: aload_0
+       1: ldc           #42                 // String .write
+       3: aload_0
+       4: getfield      #15                 // Field writeHandlersCount:I
+       7: aload_0
+       8: getfield      #43                 // Field queues:Ljava/util/List;
+      11: iconst_0
+      12: aload_0
+      13: getfield      #13                 // Field numWriteQueues:I
+      16: iload_1
+      17: aload_0
+      18: getfield      #4                  // Field activeWriteHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      21: invokevirtual #44                 // Method startHandlers:(Ljava/lang/String;ILjava/util/List;IIILjava/util/concurrent/atomic/AtomicInteger;)V
+      24: aload_0
+      25: ldc           #45                 // String .read
+      27: aload_0
+      28: getfield      #19                 // Field readHandlersCount:I
+      31: aload_0
+      32: getfield      #43                 // Field queues:Ljava/util/List;
+      35: aload_0
+      36: getfield      #13                 // Field numWriteQueues:I
+      39: aload_0
+      40: getfield      #18                 // Field numReadQueues:I
+      43: iload_1
+      44: aload_0
+      45: getfield      #5                  // Field activeReadHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      48: invokevirtual #44                 // Method startHandlers:(Ljava/lang/String;ILjava/util/List;IIILjava/util/concurrent/atomic/AtomicInteger;)V
+      51: aload_0
+      52: getfield      #20                 // Field numScanQueues:I
+      55: ifle          90
+      58: aload_0
+      59: ldc           #46                 // String .scan
+      61: aload_0
+      62: getfield      #21                 // Field scanHandlersCount:I
+      65: aload_0
+      66: getfield      #43                 // Field queues:Ljava/util/List;
+      69: aload_0
+      70: getfield      #13                 // Field numWriteQueues:I
+      73: aload_0
+      74: getfield      #18                 // Field numReadQueues:I
+      77: iadd
+      78: aload_0
+      79: getfield      #20                 // Field numScanQueues:I
+      82: iload_1
+      83: aload_0
+      84: getfield      #6                  // Field activeScanHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      87: invokevirtual #44                 // Method startHandlers:(Ljava/lang/String;ILjava/util/List;IIILjava/util/concurrent/atomic/AtomicInteger;)V
+      90: return
+
+  public boolean dispatch(org.apache.hadoop.hbase.ipc.CallRunner) throws java.lang.InterruptedException;
+    Code:
+       0: aload_1
+       1: invokevirtual #47                 // Method org/apache/hadoop/hbase/ipc/CallRunner.getRpcCall:()Lorg/apache/hadoop/hbase/ipc/RpcCall;
+       4: astore_2
+       5: aload_0
+       6: aload_2
+       7: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getHeader:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$RequestHeader;
+      12: aload_2
+      13: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getParam:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;
+      18: invokespecial #50                 // Method isWriteRequest:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$RequestHeader;Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;)Z
+      21: ifeq          35
+      24: aload_0
+      25: getfield      #23                 // Field writeBalancer:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+      28: invokevirtual #51                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer.getNextQueue:()I
+      31: istore_3
+      32: goto          95
+      35: aload_0
+      36: getfield      #20                 // Field numScanQueues:I
+      39: ifle          82
+      42: aload_0
+      43: aload_2
+      44: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getHeader:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$RequestHeader;
+      49: aload_2
+      50: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getParam:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;
+      55: invokespecial #52                 // Method isScanRequest:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$RequestHeader;Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;)Z
+      58: ifeq          82
+      61: aload_0
+      62: getfield      #13                 // Field numWriteQueues:I
+      65: aload_0
+      66: getfield      #18                 // Field numReadQueues:I
+      69: iadd
+      70: aload_0
+      71: getfield      #25                 // Field scanBalancer:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+      74: invokevirtual #51                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer.getNextQueue:()I
+      77: iadd
+      78: istore_3
+      79: goto          95
+      82: aload_0
+      83: getfield      #13                 // Field numWriteQueues:I
+      86: aload_0
+      87: getfield      #24                 // Field readBalancer:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+      90: invokevirtual #51                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer.getNextQueue:()I
+      93: iadd
+      94: istore_3
+      95: aload_0
+      96: getfield      #43                 // Field queues:Ljava/util/List;
+      99: iload_3
+     100: invokeinterface #53,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     105: checkcast     #54                 // class java/util/concurrent/BlockingQueue
+     108: astore        4
+     110: aload         4
+     112: invokeinterface #55,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+     117: aload_0
+     118: getfield      #56                 // Field currentQueueLimit:I
+     121: if_icmplt     126
+     124: iconst_0
+     125: ireturn
+     126: aload         4
+     128: aload_1
+     129: invokeinterface #57,  2           // InterfaceMethod java/util/concurrent/BlockingQueue.offer:(Ljava/lang/Object;)Z
+     134: ireturn
+
+  public int getWriteQueueLength();
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iconst_0
+       3: istore_2
+       4: iload_2
+       5: aload_0
+       6: getfield      #13                 // Field numWriteQueues:I
+       9: if_icmpge     39
+      12: iload_1
+      13: aload_0
+      14: getfield      #43                 // Field queues:Ljava/util/List;
+      17: iload_2
+      18: invokeinterface #53,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      23: checkcast     #54                 // class java/util/concurrent/BlockingQueue
+      26: invokeinterface #55,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      31: iadd
+      32: istore_1
+      33: iinc          2, 1
+      36: goto          4
+      39: iload_1
+      40: ireturn
+
+  public int getReadQueueLength();
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: getfield      #13                 // Field numWriteQueues:I
+       6: istore_2
+       7: iload_2
+       8: aload_0
+       9: getfield      #13                 // Field numWriteQueues:I
+      12: aload_0
+      13: getfield      #18                 // Field numReadQueues:I
+      16: iadd
+      17: if_icmpge     47
+      20: iload_1
+      21: aload_0
+      22: getfield      #43                 // Field queues:Ljava/util/List;
+      25: iload_2
+      26: invokeinterface #53,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      31: checkcast     #54                 // class java/util/concurrent/BlockingQueue
+      34: invokeinterface #55,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      39: iadd
+      40: istore_1
+      41: iinc          2, 1
+      44: goto          7
+      47: iload_1
+      48: ireturn
+
+  public int getScanQueueLength();
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: getfield      #13                 // Field numWriteQueues:I
+       6: aload_0
+       7: getfield      #18                 // Field numReadQueues:I
+      10: iadd
+      11: istore_2
+      12: iload_2
+      13: aload_0
+      14: getfield      #13                 // Field numWriteQueues:I
+      17: aload_0
+      18: getfield      #18                 // Field numReadQueues:I
+      21: iadd
+      22: aload_0
+      23: getfield      #20                 // Field numScanQueues:I
+      26: iadd
+      27: if_icmpge     57
+      30: iload_1
+      31: aload_0
+      32: getfield      #43                 // Field queues:Ljava/util/List;
+      35: iload_2
+      36: invokeinterface #53,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      41: checkcast     #54                 // class java/util/concurrent/BlockingQueue
+      44: invokeinterface #55,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      49: iadd
+      50: istore_1
+      51: iinc          2, 1
+      54: goto          12
+      57: iload_1
+      58: ireturn
+
+  public int getActiveHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field activeWriteHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #58                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: aload_0
+       8: getfield      #5                  // Field activeReadHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      11: invokevirtual #58                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      14: iadd
+      15: aload_0
+      16: getfield      #6                  // Field activeScanHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      19: invokevirtual #58                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+      22: iadd
+      23: ireturn
+
+  public int getActiveWriteHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field activeWriteHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #58                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ireturn
+
+  public int getActiveReadHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field activeReadHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #58                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ireturn
+
+  public int getActiveScanHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field activeScanHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #58                 // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ireturn
+
+  static {};
+    Code:
+       0: ldc           #7                  // class org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor
+       2: invokestatic  #74                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #27                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

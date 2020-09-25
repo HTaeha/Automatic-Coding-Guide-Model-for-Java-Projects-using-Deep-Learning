@@ -1,0 +1,227 @@
+Compiled from "SnapshotFileCache.java"
+public class org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache implements org.apache.hadoop.hbase.Stoppable {
+  public org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache(org.apache.hadoop.conf.Configuration, long, java.lang.String, org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache$SnapshotFileInspector) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #5                  // Method org/apache/hadoop/hbase/util/FSUtils.getCurrentFileSystem:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+       5: aload_1
+       6: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/FSUtils.getRootDir:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+       9: lconst_0
+      10: lload_2
+      11: aload         4
+      13: aload         5
+      15: invokespecial #7                  // Method "<init>":(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;JJLjava/lang/String;Lorg/apache/hadoop/hbase/master/snapshot/SnapshotFileCache$SnapshotFileInspector;)V
+      18: return
+
+  public org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, long, long, java.lang.String, org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache$SnapshotFileInspector);
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #9                  // Field stop:Z
+       9: aload_0
+      10: new           #10                 // class java/util/HashSet
+      13: dup
+      14: invokespecial #11                 // Method java/util/HashSet."<init>":()V
+      17: putfield      #2                  // Field cache:Ljava/util/Set;
+      20: aload_0
+      21: new           #12                 // class java/util/HashMap
+      24: dup
+      25: invokespecial #13                 // Method java/util/HashMap."<init>":()V
+      28: putfield      #1                  // Field snapshots:Ljava/util/Map;
+      31: aload_0
+      32: aload_1
+      33: putfield      #14                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      36: aload_0
+      37: aload         8
+      39: putfield      #15                 // Field fileInspector:Lorg/apache/hadoop/hbase/master/snapshot/SnapshotFileCache$SnapshotFileInspector;
+      42: aload_0
+      43: aload_2
+      44: invokestatic  #16                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.getSnapshotsDir:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      47: putfield      #17                 // Field snapshotDir:Lorg/apache/hadoop/fs/Path;
+      50: aload_0
+      51: new           #18                 // class java/util/Timer
+      54: dup
+      55: aload         7
+      57: iconst_1
+      58: invokespecial #19                 // Method java/util/Timer."<init>":(Ljava/lang/String;Z)V
+      61: putfield      #20                 // Field refreshTimer:Ljava/util/Timer;
+      64: aload_0
+      65: getfield      #20                 // Field refreshTimer:Ljava/util/Timer;
+      68: new           #21                 // class org/apache/hadoop/hbase/master/snapshot/SnapshotFileCache$RefreshCacheTask
+      71: dup
+      72: aload_0
+      73: invokespecial #22                 // Method org/apache/hadoop/hbase/master/snapshot/SnapshotFileCache$RefreshCacheTask."<init>":(Lorg/apache/hadoop/hbase/master/snapshot/SnapshotFileCache;)V
+      76: lload         5
+      78: lload_3
+      79: invokevirtual #23                 // Method java/util/Timer.scheduleAtFixedRate:(Ljava/util/TimerTask;JJ)V
+      82: return
+
+  public synchronized void triggerCacheRefreshForTesting();
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method refreshCache:()V
+       4: goto          19
+       7: astore_1
+       8: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      11: ldc           #25                 // String Failed to refresh snapshot hfile cache!
+      13: aload_1
+      14: invokeinterface #26,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      19: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      22: new           #27                 // class java/lang/StringBuilder
+      25: dup
+      26: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      29: ldc           #29                 // String Current cache:
+      31: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: aload_0
+      35: getfield      #2                  // Field cache:Ljava/util/Set;
+      38: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      41: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      44: invokeinterface #33,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      49: return
+    Exception table:
+       from    to  target type
+           0     4     7   Class java/io/IOException
+
+  public synchronized java.lang.Iterable<org.apache.hadoop.fs.FileStatus> getUnreferencedFiles(java.lang.Iterable<org.apache.hadoop.fs.FileStatus>, org.apache.hadoop.hbase.master.snapshot.SnapshotManager) throws java.io.IOException;
+    Code:
+       0: invokestatic  #34                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:()Ljava/util/ArrayList;
+       3: astore_3
+       4: iconst_0
+       5: istore        4
+       7: aconst_null
+       8: astore        5
+      10: aload_2
+      11: ifnull        25
+      14: aload_2
+      15: invokevirtual #35                 // Method org/apache/hadoop/hbase/master/snapshot/SnapshotManager.getTakingSnapshotLock:()Ljava/util/concurrent/locks/ReadWriteLock;
+      18: invokeinterface #36,  1           // InterfaceMethod java/util/concurrent/locks/ReadWriteLock.writeLock:()Ljava/util/concurrent/locks/Lock;
+      23: astore        5
+      25: aload         5
+      27: ifnull        40
+      30: aload         5
+      32: invokeinterface #37,  1           // InterfaceMethod java/util/concurrent/locks/Lock.tryLock:()Z
+      37: ifeq          206
+      40: aload_2
+      41: ifnull        79
+      44: aload_2
+      45: invokevirtual #38                 // Method org/apache/hadoop/hbase/master/snapshot/SnapshotManager.isTakingAnySnapshot:()Z
+      48: ifeq          79
+      51: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      54: ldc           #39                 // String Not checking unreferenced files since snapshot is running, it will skip to clean the HFiles this time
+      56: invokeinterface #40,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      61: aload_3
+      62: astore        6
+      64: aload         5
+      66: ifnull        76
+      69: aload         5
+      71: invokeinterface #41,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      76: aload         6
+      78: areturn
+      79: aload_1
+      80: invokeinterface #42,  1           // InterfaceMethod java/lang/Iterable.iterator:()Ljava/util/Iterator;
+      85: astore        6
+      87: aload         6
+      89: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      94: ifeq          174
+      97: aload         6
+      99: invokeinterface #44,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     104: checkcast     #45                 // class org/apache/hadoop/fs/FileStatus
+     107: astore        7
+     109: aload         7
+     111: invokevirtual #46                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     114: invokevirtual #47                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     117: astore        8
+     119: iload         4
+     121: ifne          145
+     124: aload_0
+     125: getfield      #2                  // Field cache:Ljava/util/Set;
+     128: aload         8
+     130: invokeinterface #48,  2           // InterfaceMethod java/util/Set.contains:(Ljava/lang/Object;)Z
+     135: ifne          145
+     138: aload_0
+     139: invokespecial #4                  // Method refreshCache:()V
+     142: iconst_1
+     143: istore        4
+     145: aload_0
+     146: getfield      #2                  // Field cache:Ljava/util/Set;
+     149: aload         8
+     151: invokeinterface #48,  2           // InterfaceMethod java/util/Set.contains:(Ljava/lang/Object;)Z
+     156: ifeq          162
+     159: goto          87
+     162: aload_3
+     163: aload         7
+     165: invokeinterface #49,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     170: pop
+     171: goto          87
+     174: aload         5
+     176: ifnull        206
+     179: aload         5
+     181: invokeinterface #41,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     186: goto          206
+     189: astore        9
+     191: aload         5
+     193: ifnull        203
+     196: aload         5
+     198: invokeinterface #41,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     203: aload         9
+     205: athrow
+     206: aload_3
+     207: areturn
+    Exception table:
+       from    to  target type
+          40    64   189   any
+          79   174   189   any
+         189   191   189   any
+
+  public void stop(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field stop:Z
+       4: ifne          19
+       7: aload_0
+       8: iconst_1
+       9: putfield      #9                  // Field stop:Z
+      12: aload_0
+      13: getfield      #20                 // Field refreshTimer:Ljava/util/Timer;
+      16: invokevirtual #68                 // Method java/util/Timer.cancel:()V
+      19: return
+
+  public boolean isStopped();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field stop:Z
+       4: ireturn
+
+  static void access$000(org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method refreshCache:()V
+       4: return
+
+  static org.slf4j.Logger access$100();
+    Code:
+       0: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static java.util.Set access$200(org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field cache:Ljava/util/Set;
+       4: areturn
+
+  static java.util.Map access$300(org.apache.hadoop.hbase.master.snapshot.SnapshotFileCache);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field snapshots:Ljava/util/Map;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #72                 // class org/apache/hadoop/hbase/master/snapshot/SnapshotFileCache
+       2: invokestatic  #73                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

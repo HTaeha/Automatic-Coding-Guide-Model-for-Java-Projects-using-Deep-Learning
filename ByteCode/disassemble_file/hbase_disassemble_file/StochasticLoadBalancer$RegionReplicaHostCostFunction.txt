@@ -1,0 +1,275 @@
+Compiled from "StochasticLoadBalancer.java"
+class org.apache.hadoop.hbase.master.balancer.StochasticLoadBalancer$RegionReplicaHostCostFunction extends org.apache.hadoop.hbase.master.balancer.StochasticLoadBalancer$CostFunction {
+  long maxCost;
+
+  long[] costsPerGroup;
+
+  int[][] primariesOfRegionsPerGroup;
+
+  public org.apache.hadoop.hbase.master.balancer.StochasticLoadBalancer$RegionReplicaHostCostFunction(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+       5: aload_0
+       6: lconst_0
+       7: putfield      #2                  // Field maxCost:J
+      10: aload_0
+      11: aload_1
+      12: ldc           #4                  // String hbase.master.balancer.stochastic.regionReplicaHostCostKey
+      14: ldc           #5                  // float 100000.0f
+      16: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      19: invokevirtual #7                  // Method setMultiplier:(F)V
+      22: return
+
+  void init(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #8                  // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.init:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)V
+       5: aload_0
+       6: aload_1
+       7: getfield      #9                  // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.numHosts:I
+      10: iconst_1
+      11: if_icmple     22
+      14: aload_0
+      15: aload_1
+      16: invokevirtual #10                 // Method getMaxCost:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)J
+      19: goto          23
+      22: lconst_0
+      23: putfield      #2                  // Field maxCost:J
+      26: aload_0
+      27: aload_1
+      28: getfield      #9                  // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.numHosts:I
+      31: newarray       long
+      33: putfield      #11                 // Field costsPerGroup:[J
+      36: aload_0
+      37: aload_1
+      38: getfield      #12                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.multiServersPerHost:Z
+      41: ifeq          51
+      44: aload_1
+      45: getfield      #13                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.primariesOfRegionsPerHost:[[I
+      48: goto          55
+      51: aload_1
+      52: getfield      #14                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.primariesOfRegionsPerServer:[[I
+      55: putfield      #15                 // Field primariesOfRegionsPerGroup:[[I
+      58: iconst_0
+      59: istore_2
+      60: iload_2
+      61: aload_0
+      62: getfield      #15                 // Field primariesOfRegionsPerGroup:[[I
+      65: arraylength
+      66: if_icmpge     91
+      69: aload_0
+      70: getfield      #11                 // Field costsPerGroup:[J
+      73: iload_2
+      74: aload_0
+      75: aload_0
+      76: getfield      #15                 // Field primariesOfRegionsPerGroup:[[I
+      79: iload_2
+      80: aaload
+      81: invokevirtual #16                 // Method costPerGroup:([I)J
+      84: lastore
+      85: iinc          2, 1
+      88: goto          60
+      91: return
+
+  long getMaxCost(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster);
+    Code:
+       0: aload_1
+       1: getfield      #17                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.hasRegionReplicas:Z
+       4: ifne          9
+       7: lconst_0
+       8: lreturn
+       9: aload_1
+      10: getfield      #18                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.numRegions:I
+      13: newarray       int
+      15: astore_2
+      16: aload_1
+      17: getfield      #19                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.regionIndexToPrimaryIndex:[I
+      20: iconst_0
+      21: aload_2
+      22: iconst_0
+      23: aload_1
+      24: getfield      #20                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.regions:[Lorg/apache/hadoop/hbase/client/RegionInfo;
+      27: arraylength
+      28: invokestatic  #21                 // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      31: aload_2
+      32: invokestatic  #22                 // Method java/util/Arrays.sort:([I)V
+      35: aload_0
+      36: aload_2
+      37: invokevirtual #16                 // Method costPerGroup:([I)J
+      40: lreturn
+
+  boolean isNeeded();
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+       4: getfield      #17                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.hasRegionReplicas:Z
+       7: ireturn
+
+  double cost();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field maxCost:J
+       4: lconst_0
+       5: lcmp
+       6: ifgt          11
+       9: dconst_0
+      10: dreturn
+      11: lconst_0
+      12: lstore_1
+      13: iconst_0
+      14: istore_3
+      15: iload_3
+      16: aload_0
+      17: getfield      #11                 // Field costsPerGroup:[J
+      20: arraylength
+      21: if_icmpge     39
+      24: lload_1
+      25: aload_0
+      26: getfield      #11                 // Field costsPerGroup:[J
+      29: iload_3
+      30: laload
+      31: ladd
+      32: lstore_1
+      33: iinc          3, 1
+      36: goto          15
+      39: aload_0
+      40: dconst_0
+      41: aload_0
+      42: getfield      #2                  // Field maxCost:J
+      45: l2d
+      46: lload_1
+      47: l2d
+      48: invokevirtual #24                 // Method scale:(DDD)D
+      51: dreturn
+
+  protected long costPerGroup(int[]);
+    Code:
+       0: lconst_0
+       1: lstore_2
+       2: iconst_m1
+       3: istore        4
+       5: iconst_m1
+       6: istore        5
+       8: iconst_0
+       9: istore        6
+      11: iload         6
+      13: aload_1
+      14: arraylength
+      15: if_icmpgt     82
+      18: iload         6
+      20: aload_1
+      21: arraylength
+      22: if_icmpge     32
+      25: aload_1
+      26: iload         6
+      28: iaload
+      29: goto          33
+      32: iconst_m1
+      33: istore        7
+      35: iload         7
+      37: iload         4
+      39: if_icmpeq     76
+      42: iload         6
+      44: iload         5
+      46: isub
+      47: istore        8
+      49: iload         8
+      51: iconst_1
+      52: if_icmple     68
+      55: lload_2
+      56: iload         8
+      58: iconst_1
+      59: isub
+      60: iload         8
+      62: iconst_1
+      63: isub
+      64: imul
+      65: i2l
+      66: ladd
+      67: lstore_2
+      68: iload         7
+      70: istore        4
+      72: iload         6
+      74: istore        5
+      76: iinc          6, 1
+      79: goto          11
+      82: lload_2
+      83: lreturn
+
+  protected void regionMoved(int, int, int);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field maxCost:J
+       4: lconst_0
+       5: lcmp
+       6: ifgt          10
+       9: return
+      10: aload_0
+      11: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+      14: getfield      #12                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.multiServersPerHost:Z
+      17: ifeq          94
+      20: aload_0
+      21: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+      24: getfield      #25                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.serverIndexToHostIndex:[I
+      27: iload_2
+      28: iaload
+      29: istore        4
+      31: aload_0
+      32: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+      35: getfield      #25                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.serverIndexToHostIndex:[I
+      38: iload_3
+      39: iaload
+      40: istore        5
+      42: iload         5
+      44: iload         4
+      46: if_icmpeq     91
+      49: aload_0
+      50: getfield      #11                 // Field costsPerGroup:[J
+      53: iload         4
+      55: aload_0
+      56: aload_0
+      57: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+      60: getfield      #13                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.primariesOfRegionsPerHost:[[I
+      63: iload         4
+      65: aaload
+      66: invokevirtual #16                 // Method costPerGroup:([I)J
+      69: lastore
+      70: aload_0
+      71: getfield      #11                 // Field costsPerGroup:[J
+      74: iload         5
+      76: aload_0
+      77: aload_0
+      78: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+      81: getfield      #13                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.primariesOfRegionsPerHost:[[I
+      84: iload         5
+      86: aaload
+      87: invokevirtual #16                 // Method costPerGroup:([I)J
+      90: lastore
+      91: goto          132
+      94: aload_0
+      95: getfield      #11                 // Field costsPerGroup:[J
+      98: iload_2
+      99: aload_0
+     100: aload_0
+     101: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+     104: getfield      #14                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.primariesOfRegionsPerServer:[[I
+     107: iload_2
+     108: aaload
+     109: invokevirtual #16                 // Method costPerGroup:([I)J
+     112: lastore
+     113: aload_0
+     114: getfield      #11                 // Field costsPerGroup:[J
+     117: iload_3
+     118: aload_0
+     119: aload_0
+     120: getfield      #23                 // Field cluster:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;
+     123: getfield      #14                 // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.primariesOfRegionsPerServer:[[I
+     126: iload_3
+     127: aaload
+     128: invokevirtual #16                 // Method costPerGroup:([I)J
+     131: lastore
+     132: return
+}

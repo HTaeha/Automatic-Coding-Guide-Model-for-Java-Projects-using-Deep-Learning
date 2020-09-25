@@ -1,0 +1,806 @@
+Compiled from "TestAsyncBufferMutator.java"
+public class org.apache.hadoop.hbase.client.TestAsyncBufferMutator {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.apache.hadoop.hbase.client.TestAsyncBufferMutator();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void setUp() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: iconst_1
+       4: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       7: pop
+       8: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      11: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      14: getstatic     #5                  // Field CF:[B
+      17: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.createTable:(Lorg/apache/hadoop/hbase/TableName;[B)Lorg/apache/hadoop/hbase/client/Table;
+      20: pop
+      21: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      24: getstatic     #7                  // Field MULTI_REGION_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      27: getstatic     #5                  // Field CF:[B
+      30: invokevirtual #8                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.createMultiRegionTable:(Lorg/apache/hadoop/hbase/TableName;[B)Lorg/apache/hadoop/hbase/client/Table;
+      33: pop
+      34: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      37: invokevirtual #9                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      40: invokestatic  #10                 // Method org/apache/hadoop/hbase/client/ConnectionFactory.createAsyncConnection:(Lorg/apache/hadoop/conf/Configuration;)Ljava/util/concurrent/CompletableFuture;
+      43: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+      46: checkcast     #12                 // class org/apache/hadoop/hbase/client/AsyncConnection
+      49: putstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+      52: invokestatic  #14                 // Method java/util/concurrent/ThreadLocalRandom.current:()Ljava/util/concurrent/ThreadLocalRandom;
+      55: getstatic     #15                 // Field VALUE:[B
+      58: invokevirtual #16                 // Method java/util/concurrent/ThreadLocalRandom.nextBytes:([B)V
+      61: return
+
+  public static void tearDown() throws java.lang.Exception;
+    Code:
+       0: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+       3: invokeinterface #17,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.close:()V
+       8: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      11: invokevirtual #18                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+      14: return
+
+  public void testWithMultiRegionTable() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: getstatic     #7                  // Field MULTI_REGION_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       4: invokespecial #19                 // Method test:(Lorg/apache/hadoop/hbase/TableName;)V
+       7: return
+
+  public void testWithSingleRegionTable() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       4: invokespecial #19                 // Method test:(Lorg/apache/hadoop/hbase/TableName;)V
+       7: return
+
+  public void testClosedMutate() throws java.lang.InterruptedException;
+    Code:
+       0: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+       3: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       6: invokeinterface #58,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getBufferedMutator:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutator;
+      11: astore_1
+      12: aload_1
+      13: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.close:()V
+      18: new           #59                 // class org/apache/hadoop/hbase/client/Put
+      21: dup
+      22: iconst_0
+      23: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      26: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      29: getstatic     #5                  // Field CF:[B
+      32: getstatic     #62                 // Field CQ:[B
+      35: getstatic     #15                 // Field VALUE:[B
+      38: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      41: astore_2
+      42: aload_1
+      43: aload_2
+      44: invokeinterface #64,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+      49: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+      52: pop
+      53: ldc           #65                 // String Close check failed
+      55: invokestatic  #66                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+      58: goto          89
+      61: astore_3
+      62: aload_3
+      63: invokevirtual #68                 // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+      66: ldc           #69                 // class java/io/IOException
+      68: invokestatic  #70                 // Method org/hamcrest/CoreMatchers.instanceOf:(Ljava/lang/Class;)Lorg/hamcrest/Matcher;
+      71: invokestatic  #71                 // Method org/junit/Assert.assertThat:(Ljava/lang/Object;Lorg/hamcrest/Matcher;)V
+      74: aload_3
+      75: invokevirtual #68                 // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+      78: invokevirtual #72                 // Method java/lang/Throwable.getMessage:()Ljava/lang/String;
+      81: ldc           #73                 // String Already closed
+      83: invokevirtual #74                 // Method java/lang/String.startsWith:(Ljava/lang/String;)Z
+      86: invokestatic  #75                 // Method org/junit/Assert.assertTrue:(Z)V
+      89: aload_1
+      90: iconst_1
+      91: anewarray     #59                 // class org/apache/hadoop/hbase/client/Put
+      94: dup
+      95: iconst_0
+      96: aload_2
+      97: aastore
+      98: invokestatic  #76                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+     101: invokeinterface #34,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.mutate:(Ljava/util/List;)Ljava/util/List;
+     106: invokeinterface #77,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     111: astore_3
+     112: aload_3
+     113: invokeinterface #78,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     118: ifeq          180
+     121: aload_3
+     122: invokeinterface #79,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     127: checkcast     #40                 // class java/util/concurrent/CompletableFuture
+     130: astore        4
+     132: aload         4
+     134: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     137: pop
+     138: ldc           #65                 // String Close check failed
+     140: invokestatic  #66                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     143: goto          177
+     146: astore        5
+     148: aload         5
+     150: invokevirtual #68                 // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+     153: ldc           #69                 // class java/io/IOException
+     155: invokestatic  #70                 // Method org/hamcrest/CoreMatchers.instanceOf:(Ljava/lang/Class;)Lorg/hamcrest/Matcher;
+     158: invokestatic  #71                 // Method org/junit/Assert.assertThat:(Ljava/lang/Object;Lorg/hamcrest/Matcher;)V
+     161: aload         5
+     163: invokevirtual #68                 // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+     166: invokevirtual #72                 // Method java/lang/Throwable.getMessage:()Ljava/lang/String;
+     169: ldc           #73                 // String Already closed
+     171: invokevirtual #74                 // Method java/lang/String.startsWith:(Ljava/lang/String;)Z
+     174: invokestatic  #75                 // Method org/junit/Assert.assertTrue:(Z)V
+     177: goto          112
+     180: return
+    Exception table:
+       from    to  target type
+          42    58    61   Class java/util/concurrent/ExecutionException
+         132   143   146   Class java/util/concurrent/ExecutionException
+
+  public void testNoPeriodicFlush() throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+       3: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       6: invokeinterface #22,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getBufferedMutatorBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      11: invokeinterface #80,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.disableWriteBufferPeriodicFlush:()Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      16: invokeinterface #26,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.build:()Lorg/apache/hadoop/hbase/client/AsyncBufferedMutator;
+      21: astore_1
+      22: aconst_null
+      23: astore_2
+      24: new           #59                 // class org/apache/hadoop/hbase/client/Put
+      27: dup
+      28: iconst_0
+      29: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      32: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      35: getstatic     #5                  // Field CF:[B
+      38: getstatic     #62                 // Field CQ:[B
+      41: getstatic     #15                 // Field VALUE:[B
+      44: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      47: astore_3
+      48: aload_1
+      49: aload_3
+      50: invokeinterface #64,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+      55: astore        4
+      57: ldc2_w        #42                 // long 2000l
+      60: invokestatic  #44                 // Method java/lang/Thread.sleep:(J)V
+      63: aload         4
+      65: invokevirtual #46                 // Method java/util/concurrent/CompletableFuture.isDone:()Z
+      68: invokestatic  #47                 // Method org/junit/Assert.assertFalse:(Z)V
+      71: aload_1
+      72: invokeinterface #81,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.flush:()V
+      77: aload         4
+      79: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+      82: pop
+      83: aload_1
+      84: ifnull        162
+      87: aload_2
+      88: ifnull        109
+      91: aload_1
+      92: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.close:()V
+      97: goto          162
+     100: astore_3
+     101: aload_2
+     102: aload_3
+     103: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     106: goto          162
+     109: aload_1
+     110: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.close:()V
+     115: goto          162
+     118: astore_3
+     119: aload_3
+     120: astore_2
+     121: aload_3
+     122: athrow
+     123: astore        5
+     125: aload_1
+     126: ifnull        159
+     129: aload_2
+     130: ifnull        153
+     133: aload_1
+     134: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.close:()V
+     139: goto          159
+     142: astore        6
+     144: aload_2
+     145: aload         6
+     147: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     150: goto          159
+     153: aload_1
+     154: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.close:()V
+     159: aload         5
+     161: athrow
+     162: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+     165: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     168: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+     173: astore_1
+     174: getstatic     #15                 // Field VALUE:[B
+     177: aload_1
+     178: new           #82                 // class org/apache/hadoop/hbase/client/Get
+     181: dup
+     182: iconst_0
+     183: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     186: invokespecial #83                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+     189: invokeinterface #84,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTable.get:(Lorg/apache/hadoop/hbase/client/Get;)Ljava/util/concurrent/CompletableFuture;
+     194: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     197: checkcast     #85                 // class org/apache/hadoop/hbase/client/Result
+     200: getstatic     #5                  // Field CF:[B
+     203: getstatic     #62                 // Field CQ:[B
+     206: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+     209: invokestatic  #87                 // Method org/junit/Assert.assertArrayEquals:([B[B)V
+     212: return
+    Exception table:
+       from    to  target type
+          91    97   100   Class java/lang/Throwable
+          24    83   118   Class java/lang/Throwable
+          24    83   123   any
+         133   139   142   Class java/lang/Throwable
+         118   125   123   any
+
+  public void testPeriodicFlush() throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+       3: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       6: invokeinterface #22,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getBufferedMutatorBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      11: lconst_1
+      12: getstatic     #88                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      15: invokeinterface #89,  4           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.setWriteBufferPeriodicFlush:(JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      20: invokeinterface #26,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.build:()Lorg/apache/hadoop/hbase/client/AsyncBufferedMutator;
+      25: astore_1
+      26: new           #59                 // class org/apache/hadoop/hbase/client/Put
+      29: dup
+      30: iconst_0
+      31: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      34: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      37: getstatic     #5                  // Field CF:[B
+      40: getstatic     #62                 // Field CQ:[B
+      43: getstatic     #15                 // Field VALUE:[B
+      46: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      49: astore_2
+      50: aload_1
+      51: aload_2
+      52: invokeinterface #64,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutator.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+      57: astore_3
+      58: aload_3
+      59: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+      62: pop
+      63: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+      66: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      69: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+      74: astore        4
+      76: getstatic     #15                 // Field VALUE:[B
+      79: aload         4
+      81: new           #82                 // class org/apache/hadoop/hbase/client/Get
+      84: dup
+      85: iconst_0
+      86: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      89: invokespecial #83                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+      92: invokeinterface #84,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTable.get:(Lorg/apache/hadoop/hbase/client/Get;)Ljava/util/concurrent/CompletableFuture;
+      97: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     100: checkcast     #85                 // class org/apache/hadoop/hbase/client/Result
+     103: getstatic     #5                  // Field CF:[B
+     106: getstatic     #62                 // Field CQ:[B
+     109: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+     112: invokestatic  #87                 // Method org/junit/Assert.assertArrayEquals:([B[B)V
+     115: return
+
+  public void testCancelPeriodicFlush() throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: new           #59                 // class org/apache/hadoop/hbase/client/Put
+       3: dup
+       4: iconst_0
+       5: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+       8: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      11: getstatic     #5                  // Field CF:[B
+      14: getstatic     #62                 // Field CQ:[B
+      17: getstatic     #15                 // Field VALUE:[B
+      20: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      23: astore_1
+      24: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+      27: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      30: invokeinterface #22,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getBufferedMutatorBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      35: lconst_1
+      36: getstatic     #88                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      39: invokeinterface #89,  4           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.setWriteBufferPeriodicFlush:(JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      44: ldc2_w        #90                 // long 10l
+      47: aload_1
+      48: invokevirtual #92                 // Method org/apache/hadoop/hbase/client/Put.heapSize:()J
+      51: lmul
+      52: invokeinterface #25,  3           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.setWriteBufferSize:(J)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      57: invokeinterface #26,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.build:()Lorg/apache/hadoop/hbase/client/AsyncBufferedMutator;
+      62: checkcast     #93                 // class org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl
+      65: astore_2
+      66: aconst_null
+      67: astore_3
+      68: new           #20                 // class java/util/ArrayList
+      71: dup
+      72: invokespecial #21                 // Method java/util/ArrayList."<init>":()V
+      75: astore        4
+      77: aload         4
+      79: aload_2
+      80: aload_1
+      81: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+      84: invokeinterface #95,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      89: pop
+      90: aload_2
+      91: getfield      #96                 // Field org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.periodicFlushTask:Lorg/apache/hbase/thirdparty/io/netty/util/Timeout;
+      94: astore        5
+      96: aload         5
+      98: invokestatic  #97                 // Method org/junit/Assert.assertNotNull:(Ljava/lang/Object;)V
+     101: iconst_1
+     102: istore        6
+     104: aload         4
+     106: aload_2
+     107: new           #59                 // class org/apache/hadoop/hbase/client/Put
+     110: dup
+     111: iload         6
+     113: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     116: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     119: getstatic     #5                  // Field CF:[B
+     122: getstatic     #62                 // Field CQ:[B
+     125: getstatic     #15                 // Field VALUE:[B
+     128: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     131: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+     134: invokeinterface #95,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     139: pop
+     140: aload_2
+     141: getfield      #96                 // Field org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.periodicFlushTask:Lorg/apache/hbase/thirdparty/io/netty/util/Timeout;
+     144: ifnonnull     150
+     147: goto          156
+     150: iinc          6, 1
+     153: goto          104
+     156: aload         5
+     158: invokeinterface #98,  1           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/util/Timeout.isCancelled:()Z
+     163: invokestatic  #75                 // Method org/junit/Assert.assertTrue:(Z)V
+     166: aload         4
+     168: iconst_0
+     169: anewarray     #40                 // class java/util/concurrent/CompletableFuture
+     172: invokeinterface #99,  2           // InterfaceMethod java/util/List.toArray:([Ljava/lang/Object;)[Ljava/lang/Object;
+     177: checkcast     #100                // class "[Ljava/util/concurrent/CompletableFuture;"
+     180: invokestatic  #101                // Method java/util/concurrent/CompletableFuture.allOf:([Ljava/util/concurrent/CompletableFuture;)Ljava/util/concurrent/CompletableFuture;
+     183: invokevirtual #41                 // Method java/util/concurrent/CompletableFuture.join:()Ljava/lang/Object;
+     186: pop
+     187: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+     190: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     193: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+     198: astore        6
+     200: iconst_0
+     201: istore        7
+     203: iload         7
+     205: aload         4
+     207: invokeinterface #45,  1           // InterfaceMethod java/util/List.size:()I
+     212: if_icmpge     261
+     215: getstatic     #15                 // Field VALUE:[B
+     218: aload         6
+     220: new           #82                 // class org/apache/hadoop/hbase/client/Get
+     223: dup
+     224: iload         7
+     226: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     229: invokespecial #83                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+     232: invokeinterface #84,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTable.get:(Lorg/apache/hadoop/hbase/client/Get;)Ljava/util/concurrent/CompletableFuture;
+     237: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     240: checkcast     #85                 // class org/apache/hadoop/hbase/client/Result
+     243: getstatic     #5                  // Field CF:[B
+     246: getstatic     #62                 // Field CQ:[B
+     249: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+     252: invokestatic  #87                 // Method org/junit/Assert.assertArrayEquals:([B[B)V
+     255: iinc          7, 1
+     258: goto          203
+     261: aload_2
+     262: ifnull        337
+     265: aload_3
+     266: ifnull        287
+     269: aload_2
+     270: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     273: goto          337
+     276: astore        4
+     278: aload_3
+     279: aload         4
+     281: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     284: goto          337
+     287: aload_2
+     288: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     291: goto          337
+     294: astore        4
+     296: aload         4
+     298: astore_3
+     299: aload         4
+     301: athrow
+     302: astore        8
+     304: aload_2
+     305: ifnull        334
+     308: aload_3
+     309: ifnull        330
+     312: aload_2
+     313: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     316: goto          334
+     319: astore        9
+     321: aload_3
+     322: aload         9
+     324: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     327: goto          334
+     330: aload_2
+     331: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     334: aload         8
+     336: athrow
+     337: return
+    Exception table:
+       from    to  target type
+         269   273   276   Class java/lang/Throwable
+          68   261   294   Class java/lang/Throwable
+          68   261   302   any
+         312   316   319   Class java/lang/Throwable
+         294   304   302   any
+
+  public void testCancelPeriodicFlushByManuallyFlush() throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+       3: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       6: invokeinterface #22,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getBufferedMutatorBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      11: lconst_1
+      12: getstatic     #88                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      15: invokeinterface #89,  4           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.setWriteBufferPeriodicFlush:(JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      20: invokeinterface #26,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.build:()Lorg/apache/hadoop/hbase/client/AsyncBufferedMutator;
+      25: checkcast     #93                 // class org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl
+      28: astore_1
+      29: aconst_null
+      30: astore_2
+      31: aload_1
+      32: new           #59                 // class org/apache/hadoop/hbase/client/Put
+      35: dup
+      36: iconst_0
+      37: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      40: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      43: getstatic     #5                  // Field CF:[B
+      46: getstatic     #62                 // Field CQ:[B
+      49: getstatic     #15                 // Field VALUE:[B
+      52: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      55: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+      58: astore_3
+      59: aload_1
+      60: getfield      #96                 // Field org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.periodicFlushTask:Lorg/apache/hbase/thirdparty/io/netty/util/Timeout;
+      63: astore        4
+      65: aload         4
+      67: invokestatic  #97                 // Method org/junit/Assert.assertNotNull:(Ljava/lang/Object;)V
+      70: aload_1
+      71: invokevirtual #103                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.flush:()V
+      74: aload         4
+      76: invokeinterface #98,  1           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/util/Timeout.isCancelled:()Z
+      81: invokestatic  #75                 // Method org/junit/Assert.assertTrue:(Z)V
+      84: aload_3
+      85: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+      88: pop
+      89: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+      92: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      95: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+     100: astore        5
+     102: getstatic     #15                 // Field VALUE:[B
+     105: aload         5
+     107: new           #82                 // class org/apache/hadoop/hbase/client/Get
+     110: dup
+     111: iconst_0
+     112: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     115: invokespecial #83                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+     118: invokeinterface #84,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTable.get:(Lorg/apache/hadoop/hbase/client/Get;)Ljava/util/concurrent/CompletableFuture;
+     123: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     126: checkcast     #85                 // class org/apache/hadoop/hbase/client/Result
+     129: getstatic     #5                  // Field CF:[B
+     132: getstatic     #62                 // Field CQ:[B
+     135: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+     138: invokestatic  #87                 // Method org/junit/Assert.assertArrayEquals:([B[B)V
+     141: aload_1
+     142: ifnull        212
+     145: aload_2
+     146: ifnull        165
+     149: aload_1
+     150: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     153: goto          212
+     156: astore_3
+     157: aload_2
+     158: aload_3
+     159: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     162: goto          212
+     165: aload_1
+     166: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     169: goto          212
+     172: astore_3
+     173: aload_3
+     174: astore_2
+     175: aload_3
+     176: athrow
+     177: astore        6
+     179: aload_1
+     180: ifnull        209
+     183: aload_2
+     184: ifnull        205
+     187: aload_1
+     188: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     191: goto          209
+     194: astore        7
+     196: aload_2
+     197: aload         7
+     199: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     202: goto          209
+     205: aload_1
+     206: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     209: aload         6
+     211: athrow
+     212: return
+    Exception table:
+       from    to  target type
+         149   153   156   Class java/lang/Throwable
+          31   141   172   Class java/lang/Throwable
+          31   141   177   any
+         187   191   194   Class java/lang/Throwable
+         172   179   177   any
+
+  public void testCancelPeriodicFlushByClose() throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+       3: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       6: invokeinterface #22,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getBufferedMutatorBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      11: lconst_1
+      12: getstatic     #88                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      15: invokeinterface #89,  4           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.setWriteBufferPeriodicFlush:(JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder;
+      20: invokeinterface #26,  1           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncBufferedMutatorBuilder.build:()Lorg/apache/hadoop/hbase/client/AsyncBufferedMutator;
+      25: checkcast     #93                 // class org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl
+      28: astore_3
+      29: aconst_null
+      30: astore        4
+      32: aload_3
+      33: new           #59                 // class org/apache/hadoop/hbase/client/Put
+      36: dup
+      37: iconst_0
+      38: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+      41: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      44: getstatic     #5                  // Field CF:[B
+      47: getstatic     #62                 // Field CQ:[B
+      50: getstatic     #15                 // Field VALUE:[B
+      53: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      56: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+      59: astore_1
+      60: aload_3
+      61: getfield      #96                 // Field org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.periodicFlushTask:Lorg/apache/hbase/thirdparty/io/netty/util/Timeout;
+      64: astore_2
+      65: aload_2
+      66: invokestatic  #97                 // Method org/junit/Assert.assertNotNull:(Ljava/lang/Object;)V
+      69: aload_3
+      70: ifnull        150
+      73: aload         4
+      75: ifnull        97
+      78: aload_3
+      79: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+      82: goto          150
+      85: astore        5
+      87: aload         4
+      89: aload         5
+      91: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      94: goto          150
+      97: aload_3
+      98: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     101: goto          150
+     104: astore        5
+     106: aload         5
+     108: astore        4
+     110: aload         5
+     112: athrow
+     113: astore        6
+     115: aload_3
+     116: ifnull        147
+     119: aload         4
+     121: ifnull        143
+     124: aload_3
+     125: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     128: goto          147
+     131: astore        7
+     133: aload         4
+     135: aload         7
+     137: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     140: goto          147
+     143: aload_3
+     144: invokevirtual #102                // Method org/apache/hadoop/hbase/client/AsyncBufferedMutatorImpl.close:()V
+     147: aload         6
+     149: athrow
+     150: aload_2
+     151: invokeinterface #98,  1           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/util/Timeout.isCancelled:()Z
+     156: invokestatic  #75                 // Method org/junit/Assert.assertTrue:(Z)V
+     159: aload_1
+     160: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     163: pop
+     164: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+     167: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     170: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+     175: astore_3
+     176: getstatic     #15                 // Field VALUE:[B
+     179: aload_3
+     180: new           #82                 // class org/apache/hadoop/hbase/client/Get
+     183: dup
+     184: iconst_0
+     185: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     188: invokespecial #83                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+     191: invokeinterface #84,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTable.get:(Lorg/apache/hadoop/hbase/client/Get;)Ljava/util/concurrent/CompletableFuture;
+     196: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     199: checkcast     #85                 // class org/apache/hadoop/hbase/client/Result
+     202: getstatic     #5                  // Field CF:[B
+     205: getstatic     #62                 // Field CQ:[B
+     208: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+     211: invokestatic  #87                 // Method org/junit/Assert.assertArrayEquals:([B[B)V
+     214: return
+    Exception table:
+       from    to  target type
+          78    82    85   Class java/lang/Throwable
+          32    69   104   Class java/lang/Throwable
+          32    69   113   any
+         124   128   131   Class java/lang/Throwable
+         104   115   113   any
+
+  public void testRaceBetweenNormalFlushAndPeriodicFlush() throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: new           #59                 // class org/apache/hadoop/hbase/client/Put
+       3: dup
+       4: iconst_0
+       5: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+       8: invokespecial #61                 // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+      11: getstatic     #5                  // Field CF:[B
+      14: getstatic     #62                 // Field CQ:[B
+      17: getstatic     #15                 // Field VALUE:[B
+      20: invokevirtual #63                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      23: astore_1
+      24: new           #104                // class org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest
+      27: dup
+      28: getstatic     #105                // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.RETRY_TIMER:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+      31: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+      34: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      37: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+      42: ldc2_w        #90                 // long 10l
+      45: aload_1
+      46: invokevirtual #92                 // Method org/apache/hadoop/hbase/client/Put.heapSize:()J
+      49: lmul
+      50: getstatic     #106                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      53: ldc2_w        #107                // long 200l
+      56: invokevirtual #109                // Method java/util/concurrent/TimeUnit.toNanos:(J)J
+      59: ldc           #110                // int 1048576
+      61: invokespecial #111                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest."<init>":(Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;Lorg/apache/hadoop/hbase/client/AsyncTable;JJI)V
+      64: astore_2
+      65: aconst_null
+      66: astore_3
+      67: aload_2
+      68: aload_1
+      69: invokevirtual #112                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.mutate:(Lorg/apache/hadoop/hbase/client/Mutation;)Ljava/util/concurrent/CompletableFuture;
+      72: astore        4
+      74: aload_2
+      75: getfield      #113                // Field org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.periodicFlushTask:Lorg/apache/hbase/thirdparty/io/netty/util/Timeout;
+      78: astore        5
+      80: aload         5
+      82: invokestatic  #97                 // Method org/junit/Assert.assertNotNull:(Ljava/lang/Object;)V
+      85: aload_2
+      86: dup
+      87: astore        6
+      89: monitorenter
+      90: ldc2_w        #114                // long 500l
+      93: invokestatic  #44                 // Method java/lang/Thread.sleep:(J)V
+      96: aload         5
+      98: invokeinterface #116,  1          // InterfaceMethod org/apache/hbase/thirdparty/io/netty/util/Timeout.isExpired:()Z
+     103: invokestatic  #75                 // Method org/junit/Assert.assertTrue:(Z)V
+     106: lconst_0
+     107: aload_2
+     108: invokestatic  #117                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.access$000:(Lorg/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest;)I
+     111: i2l
+     112: invokestatic  #118                // Method org/junit/Assert.assertEquals:(JJ)V
+     115: aload         4
+     117: invokevirtual #46                 // Method java/util/concurrent/CompletableFuture.isDone:()Z
+     120: invokestatic  #47                 // Method org/junit/Assert.assertFalse:(Z)V
+     123: aload_2
+     124: invokevirtual #119                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.flush:()V
+     127: aload         6
+     129: monitorexit
+     130: goto          141
+     133: astore        7
+     135: aload         6
+     137: monitorexit
+     138: aload         7
+     140: athrow
+     141: aload         5
+     143: invokeinterface #98,  1           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/util/Timeout.isCancelled:()Z
+     148: invokestatic  #47                 // Method org/junit/Assert.assertFalse:(Z)V
+     151: aload         4
+     153: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     156: pop
+     157: getstatic     #13                 // Field CONN:Lorg/apache/hadoop/hbase/client/AsyncConnection;
+     160: getstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     163: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncConnection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+     168: astore        6
+     170: getstatic     #15                 // Field VALUE:[B
+     173: aload         6
+     175: new           #82                 // class org/apache/hadoop/hbase/client/Get
+     178: dup
+     179: iconst_0
+     180: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(I)[B
+     183: invokespecial #83                 // Method org/apache/hadoop/hbase/client/Get."<init>":([B)V
+     186: invokeinterface #84,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTable.get:(Lorg/apache/hadoop/hbase/client/Get;)Ljava/util/concurrent/CompletableFuture;
+     191: invokevirtual #11                 // Method java/util/concurrent/CompletableFuture.get:()Ljava/lang/Object;
+     194: checkcast     #85                 // class org/apache/hadoop/hbase/client/Result
+     197: getstatic     #5                  // Field CF:[B
+     200: getstatic     #62                 // Field CQ:[B
+     203: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/Result.getValue:([B[B)[B
+     206: invokestatic  #87                 // Method org/junit/Assert.assertArrayEquals:([B[B)V
+     209: lconst_1
+     210: aload_2
+     211: invokestatic  #117                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.access$000:(Lorg/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest;)I
+     214: i2l
+     215: invokestatic  #118                // Method org/junit/Assert.assertEquals:(JJ)V
+     218: aload_2
+     219: ifnull        294
+     222: aload_3
+     223: ifnull        244
+     226: aload_2
+     227: invokevirtual #120                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.close:()V
+     230: goto          294
+     233: astore        4
+     235: aload_3
+     236: aload         4
+     238: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     241: goto          294
+     244: aload_2
+     245: invokevirtual #120                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.close:()V
+     248: goto          294
+     251: astore        4
+     253: aload         4
+     255: astore_3
+     256: aload         4
+     258: athrow
+     259: astore        8
+     261: aload_2
+     262: ifnull        291
+     265: aload_3
+     266: ifnull        287
+     269: aload_2
+     270: invokevirtual #120                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.close:()V
+     273: goto          291
+     276: astore        9
+     278: aload_3
+     279: aload         9
+     281: invokevirtual #50                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     284: goto          291
+     287: aload_2
+     288: invokevirtual #120                // Method org/apache/hadoop/hbase/client/TestAsyncBufferMutator$AsyncBufferMutatorForTest.close:()V
+     291: aload         8
+     293: athrow
+     294: return
+    Exception table:
+       from    to  target type
+          90   130   133   any
+         133   138   133   any
+         226   230   233   Class java/lang/Throwable
+          67   218   251   Class java/lang/Throwable
+          67   218   259   any
+         269   273   276   Class java/lang/Throwable
+         251   261   259   any
+
+  static {};
+    Code:
+       0: ldc           #122                // class org/apache/hadoop/hbase/client/TestAsyncBufferMutator
+       2: invokestatic  #123                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #124                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: new           #125                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      11: dup
+      12: invokespecial #126                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      15: putstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      18: ldc           #127                // String async
+      20: invokestatic  #128                // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      23: putstatic     #4                  // Field TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      26: ldc           #129                // String async-multi-region
+      28: invokestatic  #128                // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      31: putstatic     #7                  // Field MULTI_REGION_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      34: ldc           #130                // String cf
+      36: invokestatic  #131                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      39: putstatic     #5                  // Field CF:[B
+      42: ldc           #132                // String cq
+      44: invokestatic  #131                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      47: putstatic     #62                 // Field CQ:[B
+      50: bipush        100
+      52: putstatic     #27                 // Field COUNT:I
+      55: sipush        1024
+      58: newarray       byte
+      60: putstatic     #15                 // Field VALUE:[B
+      63: return
+}

@@ -1,0 +1,193 @@
+Compiled from "Sleeper.java"
+public class org.apache.hadoop.hbase.util.Sleeper {
+  public org.apache.hadoop.hbase.util.Sleeper(int, org.apache.hadoop.hbase.Stoppable);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/lang/Object
+       8: dup
+       9: invokespecial #1                  // Method java/lang/Object."<init>":()V
+      12: putfield      #3                  // Field sleepLock:Ljava/lang/Object;
+      15: aload_0
+      16: iconst_0
+      17: putfield      #4                  // Field triggerWake:Z
+      20: aload_0
+      21: iload_1
+      22: putfield      #5                  // Field period:I
+      25: aload_0
+      26: aload_2
+      27: putfield      #6                  // Field stopper:Lorg/apache/hadoop/hbase/Stoppable;
+      30: return
+
+  public void skipSleepCycle();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field sleepLock:Ljava/lang/Object;
+       4: dup
+       5: astore_1
+       6: monitorenter
+       7: aload_0
+       8: iconst_1
+       9: putfield      #4                  // Field triggerWake:Z
+      12: aload_0
+      13: getfield      #3                  // Field sleepLock:Ljava/lang/Object;
+      16: invokevirtual #7                  // Method java/lang/Object.notifyAll:()V
+      19: aload_1
+      20: monitorexit
+      21: goto          29
+      24: astore_2
+      25: aload_1
+      26: monitorexit
+      27: aload_2
+      28: athrow
+      29: return
+    Exception table:
+       from    to  target type
+           7    21    24   any
+          24    27    24   any
+
+  public void sleep();
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #5                  // Field period:I
+       5: i2l
+       6: invokevirtual #8                  // Method sleep:(J)V
+       9: return
+
+  public void sleep(long);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field stopper:Lorg/apache/hadoop/hbase/Stoppable;
+       4: invokeinterface #9,  1            // InterfaceMethod org/apache/hadoop/hbase/Stoppable.isStopped:()Z
+       9: ifeq          13
+      12: return
+      13: invokestatic  #10                 // Method java/lang/System.currentTimeMillis:()J
+      16: lstore_3
+      17: lload_1
+      18: lstore        5
+      20: lload         5
+      22: lconst_0
+      23: lcmp
+      24: ifle          199
+      27: ldc2_w        #11                 // long -1l
+      30: lstore        7
+      32: aload_0
+      33: getfield      #3                  // Field sleepLock:Ljava/lang/Object;
+      36: dup
+      37: astore        9
+      39: monitorenter
+      40: aload_0
+      41: getfield      #4                  // Field triggerWake:Z
+      44: ifeq          53
+      47: aload         9
+      49: monitorexit
+      50: goto          199
+      53: aload_0
+      54: getfield      #3                  // Field sleepLock:Ljava/lang/Object;
+      57: lload         5
+      59: invokevirtual #13                 // Method java/lang/Object.wait:(J)V
+      62: aload         9
+      64: monitorexit
+      65: goto          76
+      68: astore        10
+      70: aload         9
+      72: monitorexit
+      73: aload         10
+      75: athrow
+      76: invokestatic  #10                 // Method java/lang/System.currentTimeMillis:()J
+      79: lstore        7
+      81: lload         7
+      83: lload_3
+      84: lsub
+      85: lstore        9
+      87: lload         9
+      89: aload_0
+      90: getfield      #5                  // Field period:I
+      93: i2l
+      94: lsub
+      95: ldc2_w        #15                 // long 10000l
+      98: lcmp
+      99: ifle          147
+     102: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+     105: new           #18                 // class java/lang/StringBuilder
+     108: dup
+     109: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     112: ldc           #20                 // String We slept
+     114: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: lload         9
+     119: invokevirtual #22                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     122: ldc           #23                 // String ms instead of
+     124: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     127: aload_0
+     128: getfield      #5                  // Field period:I
+     131: invokevirtual #24                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     134: ldc           #25                 // String ms, this is likely due to a long garbage collecting pause and it's usually bad, see http://hbase.apache.org/book.html#trouble.rs.runtime.zkexpired
+     136: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     139: invokevirtual #26                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     142: invokeinterface #27,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     147: goto          165
+     150: astore        9
+     152: aload_0
+     153: getfield      #6                  // Field stopper:Lorg/apache/hadoop/hbase/Stoppable;
+     156: invokeinterface #9,  1            // InterfaceMethod org/apache/hadoop/hbase/Stoppable.isStopped:()Z
+     161: ifeq          165
+     164: return
+     165: lload         7
+     167: ldc2_w        #11                 // long -1l
+     170: lcmp
+     171: ifne          180
+     174: invokestatic  #10                 // Method java/lang/System.currentTimeMillis:()J
+     177: goto          182
+     180: lload         7
+     182: lstore        7
+     184: aload_0
+     185: getfield      #5                  // Field period:I
+     188: i2l
+     189: lload         7
+     191: lload_3
+     192: lsub
+     193: lsub
+     194: lstore        5
+     196: goto          20
+     199: aload_0
+     200: getfield      #3                  // Field sleepLock:Ljava/lang/Object;
+     203: dup
+     204: astore        7
+     206: monitorenter
+     207: aload_0
+     208: iconst_0
+     209: putfield      #4                  // Field triggerWake:Z
+     212: aload         7
+     214: monitorexit
+     215: goto          226
+     218: astore        11
+     220: aload         7
+     222: monitorexit
+     223: aload         11
+     225: athrow
+     226: return
+    Exception table:
+       from    to  target type
+          40    50    68   any
+          53    65    68   any
+          68    73    68   any
+          32    50   150   Class java/lang/InterruptedException
+          53   147   150   Class java/lang/InterruptedException
+         207   215   218   any
+         218   223   218   any
+
+  public final int getPeriod();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field period:I
+       4: ireturn
+
+  static {};
+    Code:
+       0: ldc           #14                 // class org/apache/hadoop/hbase/util/Sleeper
+       2: invokestatic  #29                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

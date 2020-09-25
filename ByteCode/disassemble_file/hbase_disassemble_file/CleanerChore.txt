@@ -1,0 +1,384 @@
+Compiled from "CleanerChore.java"
+public abstract class org.apache.hadoop.hbase.master.cleaner.CleanerChore<T extends org.apache.hadoop.hbase.master.cleaner.FileCleanerDelegate> extends org.apache.hadoop.hbase.ScheduledChore implements org.apache.hadoop.hbase.conf.ConfigurationObserver {
+  public static final java.lang.String CHORE_POOL_SIZE;
+
+  protected final org.apache.hadoop.fs.FileSystem fs;
+
+  protected final java.util.Map<java.lang.String, java.lang.Object> params;
+
+  protected java.util.List<T> cleanersChain;
+
+  public static void initChorePool(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+       3: ifnonnull     17
+       6: new           #5                  // class org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool
+       9: dup
+      10: aload_0
+      11: invokespecial #6                  // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+      14: putstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      17: return
+
+  public static void shutDownChorePool();
+    Code:
+       0: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+       3: ifnull        16
+       6: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+       9: invokevirtual #7                  // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.shutDownNow:()V
+      12: aconst_null
+      13: putstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      16: return
+
+  public org.apache.hadoop.hbase.master.cleaner.CleanerChore(java.lang.String, int, org.apache.hadoop.hbase.Stoppable, org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: aload         7
+      12: aconst_null
+      13: invokespecial #8                  // Method "<init>":(Ljava/lang/String;ILorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Ljava/lang/String;Ljava/util/Map;)V
+      16: return
+
+  public org.apache.hadoop.hbase.master.cleaner.CleanerChore(java.lang.String, int, org.apache.hadoop.hbase.Stoppable, org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, java.lang.String, java.util.Map<java.lang.String, java.lang.Object>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_3
+       3: iload_2
+       4: invokespecial #9                  // Method org/apache/hadoop/hbase/ScheduledChore."<init>":(Ljava/lang/String;Lorg/apache/hadoop/hbase/Stoppable;I)V
+       7: aload_0
+       8: new           #10                 // class java/util/concurrent/atomic/AtomicBoolean
+      11: dup
+      12: iconst_1
+      13: invokespecial #11                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      16: putfield      #12                 // Field enabled:Ljava/util/concurrent/atomic/AtomicBoolean;
+      19: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      22: ldc           #13                 // String Chore's pool isn't initialized, please callCleanerChore.initChorePool(Configuration) before new a cleaner chore.
+      24: invokestatic  #14                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      27: pop
+      28: aload_0
+      29: aload         5
+      31: putfield      #15                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      34: aload_0
+      35: aload         6
+      37: putfield      #16                 // Field oldFileDir:Lorg/apache/hadoop/fs/Path;
+      40: aload_0
+      41: aload         4
+      43: putfield      #17                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      46: aload_0
+      47: aload         8
+      49: putfield      #18                 // Field params:Ljava/util/Map;
+      52: aload_0
+      53: aload         7
+      55: invokespecial #19                 // Method initCleanerChain:(Ljava/lang/String;)V
+      58: return
+
+  static int calculatePoolSize(java.lang.String);
+    Code:
+       0: aload_0
+       1: ldc           #20                 // String [1-9][0-9]*
+       3: invokevirtual #21                 // Method java/lang/String.matches:(Ljava/lang/String;)Z
+       6: ifeq          43
+       9: aload_0
+      10: invokestatic  #22                 // Method java/lang/Integer.parseInt:(Ljava/lang/String;)I
+      13: getstatic     #23                 // Field AVAIL_PROCESSORS:I
+      16: invokestatic  #24                 // Method java/lang/Math.min:(II)I
+      19: istore_1
+      20: iload_1
+      21: getstatic     #23                 // Field AVAIL_PROCESSORS:I
+      24: if_icmpne     41
+      27: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      30: ldc           #25                 // String Use full core processors to scan dir, size={}
+      32: iload_1
+      33: invokestatic  #26                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      36: invokeinterface #27,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+      41: iload_1
+      42: ireturn
+      43: aload_0
+      44: ldc           #28                 // String 0.[0-9]+|1.0
+      46: invokevirtual #21                 // Method java/lang/String.matches:(Ljava/lang/String;)Z
+      49: ifeq          89
+      52: getstatic     #23                 // Field AVAIL_PROCESSORS:I
+      55: i2d
+      56: aload_0
+      57: invokestatic  #29                 // Method java/lang/Double.valueOf:(Ljava/lang/String;)Ljava/lang/Double;
+      60: invokevirtual #30                 // Method java/lang/Double.doubleValue:()D
+      63: dmul
+      64: d2i
+      65: istore_1
+      66: iload_1
+      67: iconst_1
+      68: if_icmpge     87
+      71: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      74: ldc           #31                 // String Computed {} threads for CleanerChore, using 1 instead
+      76: iload_1
+      77: invokestatic  #26                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      80: invokeinterface #32,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+      85: iconst_1
+      86: ireturn
+      87: iload_1
+      88: ireturn
+      89: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      92: new           #33                 // class java/lang/StringBuilder
+      95: dup
+      96: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+      99: ldc           #35                 // String Unrecognized value:
+     101: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     104: aload_0
+     105: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     108: ldc           #37                 // String  for
+     110: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     113: ldc           #39                 // String hbase.cleaner.scan.dir.concurrent.size
+     115: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     118: ldc           #40                 // String , use default config:
+     120: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     123: ldc           #41                 // String 0.25
+     125: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     128: ldc           #42                 // String  instead.
+     130: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     133: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     136: invokeinterface #44,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     141: ldc           #41                 // String 0.25
+     143: invokestatic  #45                 // Method calculatePoolSize:(Ljava/lang/String;)I
+     146: ireturn
+
+  protected abstract boolean validate(org.apache.hadoop.fs.Path);
+
+  public void onConfigurationChange(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+       3: aload_1
+       4: invokevirtual #53                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.markUpdate:(Lorg/apache/hadoop/conf/Configuration;)V
+       7: return
+
+  protected void chore();
+    Code:
+       0: aload_0
+       1: invokevirtual #66                 // Method getEnabled:()Z
+       4: ifeq          113
+       7: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      10: invokevirtual #67                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.latchCountUp:()V
+      13: aload_0
+      14: invokevirtual #68                 // Method runCleaner:()Ljava/lang/Boolean;
+      17: invokevirtual #69                 // Method java/lang/Boolean.booleanValue:()Z
+      20: ifeq          40
+      23: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      26: ldc           #70                 // String Cleaned all WALs under {}
+      28: aload_0
+      29: getfield      #16                 // Field oldFileDir:Lorg/apache/hadoop/fs/Path;
+      32: invokeinterface #71,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      37: goto          54
+      40: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      43: ldc           #72                 // String WALs outstanding under {}
+      45: aload_0
+      46: getfield      #16                 // Field oldFileDir:Lorg/apache/hadoop/fs/Path;
+      49: invokeinterface #71,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      54: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      57: invokevirtual #73                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.latchCountDown:()V
+      60: goto          72
+      63: astore_1
+      64: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      67: invokevirtual #73                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.latchCountDown:()V
+      70: aload_1
+      71: athrow
+      72: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      75: getfield      #74                 // Field org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.reconfigNotification:Ljava/util/concurrent/atomic/AtomicBoolean;
+      78: iconst_1
+      79: iconst_0
+      80: invokevirtual #75                 // Method java/util/concurrent/atomic/AtomicBoolean.compareAndSet:(ZZ)Z
+      83: ifeq          123
+      86: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      89: ldc2_w        #76                 // double 0.8d
+      92: aload_0
+      93: invokevirtual #78                 // Method getTimeUnit:()Ljava/util/concurrent/TimeUnit;
+      96: aload_0
+      97: invokevirtual #79                 // Method getPeriod:()I
+     100: i2l
+     101: invokevirtual #80                 // Method java/util/concurrent/TimeUnit.toMillis:(J)J
+     104: l2d
+     105: dmul
+     106: d2l
+     107: invokevirtual #81                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.updatePool:(J)V
+     110: goto          123
+     113: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     116: ldc           #82                 // String Cleaner chore disabled! Not cleaning.
+     118: invokeinterface #83,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     123: return
+    Exception table:
+       from    to  target type
+           7    54    63   any
+
+  public java.lang.Boolean runCleaner();
+    Code:
+       0: aload_0
+       1: invokespecial #86                 // Method preRunCleaner:()V
+       4: new           #87                 // class org/apache/hadoop/hbase/master/cleaner/CleanerChore$CleanerTask
+       7: dup
+       8: aload_0
+       9: aload_0
+      10: getfield      #16                 // Field oldFileDir:Lorg/apache/hadoop/fs/Path;
+      13: iconst_1
+      14: invokespecial #88                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$CleanerTask."<init>":(Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore;Lorg/apache/hadoop/fs/Path;Z)V
+      17: astore_1
+      18: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+      21: aload_1
+      22: invokevirtual #89                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.submit:(Ljava/util/concurrent/ForkJoinTask;)V
+      25: aload_1
+      26: invokevirtual #90                 // Method org/apache/hadoop/hbase/master/cleaner/CleanerChore$CleanerTask.join:()Ljava/lang/Object;
+      29: checkcast     #91                 // class java/lang/Boolean
+      32: areturn
+
+  protected int deleteFiles(java.lang.Iterable<org.apache.hadoop.fs.FileStatus>);
+    Code:
+       0: iconst_0
+       1: istore_2
+       2: aload_1
+       3: invokeinterface #117,  1          // InterfaceMethod java/lang/Iterable.iterator:()Ljava/util/Iterator;
+       8: astore_3
+       9: aload_3
+      10: invokeinterface #99,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          165
+      18: aload_3
+      19: invokeinterface #100,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      24: checkcast     #101                // class org/apache/hadoop/fs/FileStatus
+      27: astore        4
+      29: aload         4
+      31: invokevirtual #102                // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+      34: astore        5
+      36: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      39: ldc           #122                // String Removing {} from archive
+      41: aload         5
+      43: invokeinterface #71,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      48: aload_0
+      49: getfield      #15                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      52: aload         5
+      54: iconst_0
+      55: invokevirtual #123                // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+      58: istore        6
+      60: iload         6
+      62: ifeq          71
+      65: iinc          2, 1
+      68: goto          104
+      71: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      74: new           #33                 // class java/lang/StringBuilder
+      77: dup
+      78: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+      81: ldc           #124                // String Attempted to delete:
+      83: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: aload         5
+      88: invokevirtual #105                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      91: ldc           #125                // String , but couldn't. Run cleaner chain and attempt to delete on next pass.
+      93: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      99: invokeinterface #107,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     104: goto          162
+     107: astore        6
+     109: aload         6
+     111: instanceof    #127                // class org/apache/hadoop/ipc/RemoteException
+     114: ifeq          128
+     117: aload         6
+     119: checkcast     #127                // class org/apache/hadoop/ipc/RemoteException
+     122: invokevirtual #128                // Method org/apache/hadoop/ipc/RemoteException.unwrapRemoteException:()Ljava/io/IOException;
+     125: goto          130
+     128: aload         6
+     130: astore        6
+     132: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+     135: new           #33                 // class java/lang/StringBuilder
+     138: dup
+     139: invokespecial #34                 // Method java/lang/StringBuilder."<init>":()V
+     142: ldc           #129                // String Error while deleting:
+     144: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     147: aload         5
+     149: invokevirtual #105                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     152: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     155: aload         6
+     157: invokeinterface #130,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     162: goto          9
+     165: iload_2
+     166: ireturn
+    Exception table:
+       from    to  target type
+          48   104   107   Class java/io/IOException
+
+  public synchronized void cleanup();
+    Code:
+       0: aload_0
+       1: getfield      #48                 // Field cleanersChain:Ljava/util/List;
+       4: invokeinterface #98,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       9: astore_1
+      10: aload_1
+      11: invokeinterface #99,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      16: ifeq          55
+      19: aload_1
+      20: invokeinterface #100,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      25: checkcast     #55                 // class org/apache/hadoop/hbase/master/cleaner/FileCleanerDelegate
+      28: astore_2
+      29: aload_2
+      30: ldc           #131                // String Exiting
+      32: invokeinterface #132,  2          // InterfaceMethod org/apache/hadoop/hbase/master/cleaner/FileCleanerDelegate.stop:(Ljava/lang/String;)V
+      37: goto          52
+      40: astore_3
+      41: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+      44: ldc           #134                // String Stopping
+      46: aload_3
+      47: invokeinterface #130,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      52: goto          10
+      55: return
+    Exception table:
+       from    to  target type
+          29    37    40   Class java/lang/Throwable
+
+  int getChorePoolSize();
+    Code:
+       0: getstatic     #4                  // Field POOL:Lorg/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool;
+       3: getfield      #135                // Field org/apache/hadoop/hbase/master/cleaner/CleanerChore$DirScanPool.size:I
+       6: ireturn
+
+  public boolean setEnabled(boolean);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field enabled:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: iload_1
+       5: invokevirtual #136                // Method java/util/concurrent/atomic/AtomicBoolean.getAndSet:(Z)Z
+       8: ireturn
+
+  public boolean getEnabled();
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field enabled:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: invokevirtual #137                // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+       7: ireturn
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static void access$100(org.apache.hadoop.hbase.master.cleaner.CleanerChore, java.util.List);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #2                  // Method sortByConsumedSpace:(Ljava/util/List;)V
+       5: return
+
+  static boolean access$200(org.apache.hadoop.hbase.master.cleaner.CleanerChore, java.util.List);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method checkAndDeleteFiles:(Ljava/util/List;)Z
+       5: ireturn
+
+  static {};
+    Code:
+       0: ldc           #38                 // class org/apache/hadoop/hbase/master/cleaner/CleanerChore
+       2: invokestatic  #138                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #3                  // Field LOG:Lorg/slf4j/Logger;
+       8: invokestatic  #139                // Method java/lang/Runtime.getRuntime:()Ljava/lang/Runtime;
+      11: invokevirtual #140                // Method java/lang/Runtime.availableProcessors:()I
+      14: putstatic     #23                 // Field AVAIL_PROCESSORS:I
+      17: return
+}

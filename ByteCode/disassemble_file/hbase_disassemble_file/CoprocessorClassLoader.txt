@@ -1,0 +1,541 @@
+Compiled from "CoprocessorClassLoader.java"
+public class org.apache.hadoop.hbase.util.CoprocessorClassLoader extends org.apache.hadoop.hbase.util.ClassLoaderBase {
+  static final java.util.HashSet<java.lang.String> parentDirLockSet;
+
+  public static org.apache.hadoop.hbase.util.CoprocessorClassLoader getIfCached(org.apache.hadoop.fs.Path);
+    Code:
+       0: aload_0
+       1: ldc           #70                 // String The jar path is null!
+       3: invokestatic  #71                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: getstatic     #72                 // Field classLoadersCache:Ljava/util/concurrent/ConcurrentMap;
+      10: aload_0
+      11: invokeinterface #73,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      16: checkcast     #74                 // class org/apache/hadoop/hbase/util/CoprocessorClassLoader
+      19: areturn
+
+  public static java.util.Collection<? extends java.lang.ClassLoader> getAllCached();
+    Code:
+       0: getstatic     #72                 // Field classLoadersCache:Ljava/util/concurrent/ConcurrentMap;
+       3: invokeinterface #75,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+       8: areturn
+
+  public static void clearCache();
+    Code:
+       0: getstatic     #72                 // Field classLoadersCache:Ljava/util/concurrent/ConcurrentMap;
+       3: invokeinterface #76,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.clear:()V
+       8: return
+
+  public static org.apache.hadoop.hbase.util.CoprocessorClassLoader getClassLoader(org.apache.hadoop.fs.Path, java.lang.ClassLoader, java.lang.String, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokestatic  #77                 // Method getIfCached:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/util/CoprocessorClassLoader;
+       4: astore        4
+       6: aload_0
+       7: invokevirtual #32                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+      10: astore        5
+      12: aload         4
+      14: ifnull        58
+      17: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+      20: new           #3                  // class java/lang/StringBuilder
+      23: dup
+      24: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+      27: ldc           #79                 // String Found classloader
+      29: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: aload         4
+      34: invokevirtual #80                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      37: ldc           #81                 // String  for
+      39: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: aload         5
+      44: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      47: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      50: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      55: aload         4
+      57: areturn
+      58: aload_0
+      59: aload_3
+      60: invokevirtual #26                 // Method org/apache/hadoop/fs/Path.getFileSystem:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+      63: aload_0
+      64: invokevirtual #35                 // Method org/apache/hadoop/fs/FileSystem.isFile:(Lorg/apache/hadoop/fs/Path;)Z
+      67: ifeq          108
+      70: aload         5
+      72: ldc           #41                 // String .jar
+      74: invokevirtual #83                 // Method java/lang/String.endsWith:(Ljava/lang/String;)Z
+      77: ifne          108
+      80: new           #84                 // class java/io/IOException
+      83: dup
+      84: new           #3                  // class java/lang/StringBuilder
+      87: dup
+      88: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+      91: aload         5
+      93: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: ldc           #85                 // String : not a jar file?
+      98: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     101: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     104: invokespecial #86                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     107: athrow
+     108: getstatic     #87                 // Field locker:Lorg/apache/hadoop/hbase/util/KeyLocker;
+     111: aload         5
+     113: invokevirtual #88                 // Method org/apache/hadoop/hbase/util/KeyLocker.acquireLock:(Ljava/lang/Object;)Ljava/util/concurrent/locks/ReentrantLock;
+     116: astore        6
+     118: aload_0
+     119: invokestatic  #77                 // Method getIfCached:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/util/CoprocessorClassLoader;
+     122: astore        4
+     124: aload         4
+     126: ifnull        181
+     129: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     132: new           #3                  // class java/lang/StringBuilder
+     135: dup
+     136: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+     139: ldc           #79                 // String Found classloader
+     141: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     144: aload         4
+     146: invokevirtual #80                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     149: ldc           #81                 // String  for
+     151: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     154: aload         5
+     156: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     159: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     162: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     167: aload         4
+     169: astore        7
+     171: aload         6
+     173: invokeinterface #89,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     178: aload         7
+     180: areturn
+     181: new           #90                 // class org/apache/hadoop/hbase/util/CoprocessorClassLoader$1
+     184: dup
+     185: aload_1
+     186: invokespecial #91                 // Method org/apache/hadoop/hbase/util/CoprocessorClassLoader$1."<init>":(Ljava/lang/ClassLoader;)V
+     189: invokestatic  #92                 // Method java/security/AccessController.doPrivileged:(Ljava/security/PrivilegedAction;)Ljava/lang/Object;
+     192: checkcast     #74                 // class org/apache/hadoop/hbase/util/CoprocessorClassLoader
+     195: astore        4
+     197: aload         4
+     199: aload_0
+     200: aload_2
+     201: aload_3
+     202: invokespecial #93                 // Method init:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;Lorg/apache/hadoop/conf/Configuration;)V
+     205: getstatic     #72                 // Field classLoadersCache:Ljava/util/concurrent/ConcurrentMap;
+     208: aload_0
+     209: aload         4
+     211: invokeinterface #94,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     216: checkcast     #74                 // class org/apache/hadoop/hbase/util/CoprocessorClassLoader
+     219: astore        7
+     221: aload         7
+     223: ifnull        258
+     226: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     229: new           #3                  // class java/lang/StringBuilder
+     232: dup
+     233: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+     236: ldc           #95                 // String THIS SHOULD NOT HAPPEN, a class loader is already cached for
+     238: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     241: aload         5
+     243: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     246: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     249: invokeinterface #96,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     254: aload         7
+     256: astore        4
+     258: aload         4
+     260: astore        8
+     262: aload         6
+     264: invokeinterface #89,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     269: aload         8
+     271: areturn
+     272: astore        9
+     274: aload         6
+     276: invokeinterface #89,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     281: aload         9
+     283: athrow
+    Exception table:
+       from    to  target type
+         118   171   272   any
+         181   262   272   any
+         272   274   272   any
+
+  public java.lang.Class<?> loadClass(java.lang.String) throws java.lang.ClassNotFoundException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aconst_null
+       3: invokevirtual #97                 // Method loadClass:(Ljava/lang/String;[Ljava/lang/String;)Ljava/lang/Class;
+       6: areturn
+
+  public java.lang.Class<?> loadClass(java.lang.String, java.lang.String[]) throws java.lang.ClassNotFoundException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokevirtual #98                 // Method isClassExempt:(Ljava/lang/String;[Ljava/lang/String;)Z
+       6: ifeq          61
+       9: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+      12: invokeinterface #99,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      17: ifeq          52
+      20: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+      23: new           #3                  // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #100                // String Skipping exempt class
+      32: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload_1
+      36: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: ldc           #101                // String  - delegating directly to parent
+      41: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      47: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      52: aload_0
+      53: getfield      #102                // Field parent:Ljava/lang/ClassLoader;
+      56: aload_1
+      57: invokevirtual #103                // Method java/lang/ClassLoader.loadClass:(Ljava/lang/String;)Ljava/lang/Class;
+      60: areturn
+      61: aload_0
+      62: aload_1
+      63: invokevirtual #104                // Method getClassLoadingLock:(Ljava/lang/String;)Ljava/lang/Object;
+      66: dup
+      67: astore_3
+      68: monitorenter
+      69: aload_0
+      70: aload_1
+      71: invokevirtual #105                // Method findLoadedClass:(Ljava/lang/String;)Ljava/lang/Class;
+      74: astore        4
+      76: aload         4
+      78: ifnull        127
+      81: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+      84: invokeinterface #99,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      89: ifeq          281
+      92: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+      95: new           #3                  // class java/lang/StringBuilder
+      98: dup
+      99: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+     102: ldc           #106                // String Class
+     104: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     107: aload_1
+     108: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     111: ldc           #107                // String  already loaded
+     113: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     116: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     119: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     124: goto          281
+     127: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     130: invokeinterface #99,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     135: ifeq          165
+     138: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     141: new           #3                  // class java/lang/StringBuilder
+     144: dup
+     145: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+     148: ldc           #108                // String Finding class:
+     150: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     153: aload_1
+     154: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     157: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     160: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     165: aload_0
+     166: aload_1
+     167: invokevirtual #109                // Method findClass:(Ljava/lang/String;)Ljava/lang/Class;
+     170: astore        4
+     172: goto          281
+     175: astore        5
+     177: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     180: invokeinterface #99,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     185: ifeq          220
+     188: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     191: new           #3                  // class java/lang/StringBuilder
+     194: dup
+     195: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+     198: ldc           #106                // String Class
+     200: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     203: aload_1
+     204: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     207: ldc           #111                // String  not found - delegating to parent
+     209: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     212: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     215: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     220: aload_0
+     221: getfield      #102                // Field parent:Ljava/lang/ClassLoader;
+     224: aload_1
+     225: invokevirtual #103                // Method java/lang/ClassLoader.loadClass:(Ljava/lang/String;)Ljava/lang/Class;
+     228: astore        4
+     230: goto          281
+     233: astore        6
+     235: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     238: invokeinterface #99,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     243: ifeq          278
+     246: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+     249: new           #3                  // class java/lang/StringBuilder
+     252: dup
+     253: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+     256: ldc           #106                // String Class
+     258: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     261: aload_1
+     262: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     265: ldc           #112                // String  not found in parent loader
+     267: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     270: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     273: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     278: aload         6
+     280: athrow
+     281: aload         4
+     283: aload_3
+     284: monitorexit
+     285: areturn
+     286: astore        7
+     288: aload_3
+     289: monitorexit
+     290: aload         7
+     292: athrow
+    Exception table:
+       from    to  target type
+         127   172   175   Class java/lang/ClassNotFoundException
+         220   230   233   Class java/lang/ClassNotFoundException
+          69   285   286   any
+         286   290   286   any
+
+  public java.net.URL getResource(java.lang.String);
+    Code:
+       0: aconst_null
+       1: astore_2
+       2: iconst_0
+       3: istore_3
+       4: aload_0
+       5: aload_1
+       6: invokevirtual #113                // Method loadResourceUsingParentFirst:(Ljava/lang/String;)Z
+       9: ifeq          58
+      12: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+      15: invokeinterface #99,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      20: ifeq          50
+      23: getstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+      26: new           #3                  // class java/lang/StringBuilder
+      29: dup
+      30: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+      33: ldc           #114                // String Checking parent first for resource
+      35: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: aload_1
+      39: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      45: invokeinterface #82,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      50: aload_0
+      51: aload_1
+      52: invokespecial #115                // Method org/apache/hadoop/hbase/util/ClassLoaderBase.getResource:(Ljava/lang/String;)Ljava/net/URL;
+      55: astore_2
+      56: iconst_1
+      57: istore_3
+      58: aload_2
+      59: ifnonnull     105
+      62: aload_0
+      63: aload_1
+      64: invokevirtual #104                // Method getClassLoadingLock:(Ljava/lang/String;)Ljava/lang/Object;
+      67: dup
+      68: astore        4
+      70: monitorenter
+      71: aload_0
+      72: aload_1
+      73: invokevirtual #116                // Method findResource:(Ljava/lang/String;)Ljava/net/URL;
+      76: astore_2
+      77: aload_2
+      78: ifnonnull     91
+      81: iload_3
+      82: ifne          91
+      85: aload_0
+      86: aload_1
+      87: invokespecial #115                // Method org/apache/hadoop/hbase/util/ClassLoaderBase.getResource:(Ljava/lang/String;)Ljava/net/URL;
+      90: astore_2
+      91: aload         4
+      93: monitorexit
+      94: goto          105
+      97: astore        5
+      99: aload         4
+     101: monitorexit
+     102: aload         5
+     104: athrow
+     105: aload_2
+     106: areturn
+    Exception table:
+       from    to  target type
+          71    94    97   any
+          97   102    97   any
+
+  protected boolean isClassExempt(java.lang.String, java.lang.String[]);
+    Code:
+       0: aload_2
+       1: ifnull        43
+       4: aload_2
+       5: astore_3
+       6: aload_3
+       7: arraylength
+       8: istore        4
+      10: iconst_0
+      11: istore        5
+      13: iload         5
+      15: iload         4
+      17: if_icmpge     43
+      20: aload_3
+      21: iload         5
+      23: aaload
+      24: astore        6
+      26: aload_1
+      27: aload         6
+      29: invokevirtual #117                // Method java/lang/String.startsWith:(Ljava/lang/String;)Z
+      32: ifeq          37
+      35: iconst_0
+      36: ireturn
+      37: iinc          5, 1
+      40: goto          13
+      43: getstatic     #118                // Field CLASS_PREFIX_EXEMPTIONS:[Ljava/lang/String;
+      46: astore_3
+      47: aload_3
+      48: arraylength
+      49: istore        4
+      51: iconst_0
+      52: istore        5
+      54: iload         5
+      56: iload         4
+      58: if_icmpge     84
+      61: aload_3
+      62: iload         5
+      64: aaload
+      65: astore        6
+      67: aload_1
+      68: aload         6
+      70: invokevirtual #117                // Method java/lang/String.startsWith:(Ljava/lang/String;)Z
+      73: ifeq          78
+      76: iconst_1
+      77: ireturn
+      78: iinc          5, 1
+      81: goto          54
+      84: iconst_0
+      85: ireturn
+
+  protected boolean loadResourceUsingParentFirst(java.lang.String);
+    Code:
+       0: getstatic     #119                // Field RESOURCE_LOAD_PARENT_FIRST_PATTERNS:[Ljava/util/regex/Pattern;
+       3: astore_2
+       4: aload_2
+       5: arraylength
+       6: istore_3
+       7: iconst_0
+       8: istore        4
+      10: iload         4
+      12: iload_3
+      13: if_icmpge     42
+      16: aload_2
+      17: iload         4
+      19: aaload
+      20: astore        5
+      22: aload         5
+      24: aload_1
+      25: invokevirtual #58                 // Method java/util/regex/Pattern.matcher:(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;
+      28: invokevirtual #59                 // Method java/util/regex/Matcher.matches:()Z
+      31: ifeq          36
+      34: iconst_1
+      35: ireturn
+      36: iinc          4, 1
+      39: goto          10
+      42: iconst_0
+      43: ireturn
+
+  org.apache.hadoop.hbase.util.CoprocessorClassLoader(java.lang.ClassLoader, org.apache.hadoop.hbase.util.CoprocessorClassLoader$1);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method "<init>":(Ljava/lang/ClassLoader;)V
+       5: return
+
+  static {};
+    Code:
+       0: ldc           #74                 // class org/apache/hadoop/hbase/util/CoprocessorClassLoader
+       2: invokestatic  #120                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #78                 // Field LOG:Lorg/slf4j/Logger;
+       8: new           #3                  // class java/lang/StringBuilder
+      11: dup
+      12: invokespecial #4                  // Method java/lang/StringBuilder."<init>":()V
+      15: getstatic     #121                // Field java/io/File.separator:Ljava/lang/String;
+      18: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      21: ldc           #122                // String jars
+      23: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      26: getstatic     #121                // Field java/io/File.separator:Ljava/lang/String;
+      29: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: ldc           #123                // String tmp
+      34: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: getstatic     #121                // Field java/io/File.separator:Ljava/lang/String;
+      40: invokevirtual #9                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: invokevirtual #11                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      46: putstatic     #10                 // Field TMP_JARS_DIR:Ljava/lang/String;
+      49: new           #124                // class org/apache/hbase/thirdparty/com/google/common/collect/MapMaker
+      52: dup
+      53: invokespecial #125                // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker."<init>":()V
+      56: iconst_3
+      57: invokevirtual #126                // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.concurrencyLevel:(I)Lorg/apache/hbase/thirdparty/com/google/common/collect/MapMaker;
+      60: invokevirtual #127                // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.weakValues:()Lorg/apache/hbase/thirdparty/com/google/common/collect/MapMaker;
+      63: invokevirtual #128                // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.makeMap:()Ljava/util/concurrent/ConcurrentMap;
+      66: putstatic     #72                 // Field classLoadersCache:Ljava/util/concurrent/ConcurrentMap;
+      69: bipush        12
+      71: anewarray     #129                // class java/lang/String
+      74: dup
+      75: iconst_0
+      76: ldc           #130                // String com.sun.
+      78: aastore
+      79: dup
+      80: iconst_1
+      81: ldc           #131                // String java.
+      83: aastore
+      84: dup
+      85: iconst_2
+      86: ldc           #132                // String javax.
+      88: aastore
+      89: dup
+      90: iconst_3
+      91: ldc           #133                // String org.ietf
+      93: aastore
+      94: dup
+      95: iconst_4
+      96: ldc           #134                // String org.omg
+      98: aastore
+      99: dup
+     100: iconst_5
+     101: ldc           #135                // String org.w3c
+     103: aastore
+     104: dup
+     105: bipush        6
+     107: ldc           #136                // String org.xml
+     109: aastore
+     110: dup
+     111: bipush        7
+     113: ldc           #137                // String sunw.
+     115: aastore
+     116: dup
+     117: bipush        8
+     119: ldc           #138                // String org.slf4j
+     121: aastore
+     122: dup
+     123: bipush        9
+     125: ldc           #139                // String org.apache.log4j
+     127: aastore
+     128: dup
+     129: bipush        10
+     131: ldc           #140                // String com.hadoop
+     133: aastore
+     134: dup
+     135: bipush        11
+     137: ldc           #141                // String org.apache.hadoop.hbase
+     139: aastore
+     140: putstatic     #118                // Field CLASS_PREFIX_EXEMPTIONS:[Ljava/lang/String;
+     143: iconst_1
+     144: anewarray     #142                // class java/util/regex/Pattern
+     147: dup
+     148: iconst_0
+     149: ldc           #143                // String ^[^-]+-default\.xml$
+     151: invokestatic  #144                // Method java/util/regex/Pattern.compile:(Ljava/lang/String;)Ljava/util/regex/Pattern;
+     154: aastore
+     155: putstatic     #119                // Field RESOURCE_LOAD_PARENT_FIRST_PATTERNS:[Ljava/util/regex/Pattern;
+     158: ldc           #145                // String [/]?lib/([^/]+\.jar)
+     160: invokestatic  #144                // Method java/util/regex/Pattern.compile:(Ljava/lang/String;)Ljava/util/regex/Pattern;
+     163: putstatic     #56                 // Field libJarPattern:Ljava/util/regex/Pattern;
+     166: new           #146                // class org/apache/hadoop/hbase/util/KeyLocker
+     169: dup
+     170: invokespecial #147                // Method org/apache/hadoop/hbase/util/KeyLocker."<init>":()V
+     173: putstatic     #87                 // Field locker:Lorg/apache/hadoop/hbase/util/KeyLocker;
+     176: new           #148                // class java/util/HashSet
+     179: dup
+     180: invokespecial #149                // Method java/util/HashSet."<init>":()V
+     183: putstatic     #12                 // Field parentDirLockSet:Ljava/util/HashSet;
+     186: return
+}

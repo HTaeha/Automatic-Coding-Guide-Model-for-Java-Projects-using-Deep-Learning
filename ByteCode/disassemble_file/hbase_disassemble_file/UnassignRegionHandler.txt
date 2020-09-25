@@ -1,0 +1,227 @@
+Compiled from "UnassignRegionHandler.java"
+public class org.apache.hadoop.hbase.regionserver.handler.UnassignRegionHandler extends org.apache.hadoop.hbase.executor.EventHandler {
+  public org.apache.hadoop.hbase.regionserver.handler.UnassignRegionHandler(org.apache.hadoop.hbase.regionserver.HRegionServer, java.lang.String, long, boolean, org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.executor.EventType);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload         7
+       4: invokespecial #1                  // Method org/apache/hadoop/hbase/executor/EventHandler."<init>":(Lorg/apache/hadoop/hbase/Server;Lorg/apache/hadoop/hbase/executor/EventType;)V
+       7: aload_0
+       8: aload_2
+       9: putfield      #2                  // Field encodedName:Ljava/lang/String;
+      12: aload_0
+      13: lload_3
+      14: putfield      #3                  // Field closeProcId:J
+      17: aload_0
+      18: iload         5
+      20: putfield      #4                  // Field abort:Z
+      23: aload_0
+      24: aload         6
+      26: putfield      #5                  // Field destination:Lorg/apache/hadoop/hbase/ServerName;
+      29: aload_0
+      30: invokestatic  #6                  // Method org/apache/hadoop/hbase/regionserver/handler/HandlerUtil.getRetryCounter:()Lorg/apache/hadoop/hbase/util/RetryCounter;
+      33: putfield      #7                  // Field retryCounter:Lorg/apache/hadoop/hbase/util/RetryCounter;
+      36: return
+
+  public void process() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #10                 // Method getServer:()Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       4: astore_1
+       5: aload_0
+       6: getfield      #2                  // Field encodedName:Ljava/lang/String;
+       9: invokestatic  #11                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      12: astore_2
+      13: aload_1
+      14: invokevirtual #12                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+      17: aload_2
+      18: getstatic     #13                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+      21: invokeinterface #14,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      26: checkcast     #15                 // class java/lang/Boolean
+      29: astore_3
+      30: aload_3
+      31: ifnull        100
+      34: aload_3
+      35: invokevirtual #16                 // Method java/lang/Boolean.booleanValue:()Z
+      38: ifeq          85
+      41: aload_0
+      42: getfield      #7                  // Field retryCounter:Lorg/apache/hadoop/hbase/util/RetryCounter;
+      45: invokevirtual #17                 // Method org/apache/hadoop/hbase/util/RetryCounter.getBackoffTimeAndIncrementAttempts:()J
+      48: lstore        4
+      50: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+      53: ldc           #19                 // String Received CLOSE for the region: {}, which we are already trying to OPEN. try again after {}ms
+      55: aload_0
+      56: getfield      #2                  // Field encodedName:Ljava/lang/String;
+      59: lload         4
+      61: invokestatic  #20                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      64: invokeinterface #21,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      69: aload_1
+      70: invokevirtual #22                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getExecutorService:()Lorg/apache/hadoop/hbase/executor/ExecutorService;
+      73: aload_0
+      74: lload         4
+      76: getstatic     #23                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      79: invokevirtual #24                 // Method org/apache/hadoop/hbase/executor/ExecutorService.delayedSubmit:(Lorg/apache/hadoop/hbase/executor/EventHandler;JLjava/util/concurrent/TimeUnit;)V
+      82: goto          99
+      85: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+      88: ldc           #25                 // String Received CLOSE for the region: {}, which we are already trying to CLOSE, but not completed yet
+      90: aload_0
+      91: getfield      #2                  // Field encodedName:Ljava/lang/String;
+      94: invokeinterface #26,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+      99: return
+     100: aload_1
+     101: aload_0
+     102: getfield      #2                  // Field encodedName:Ljava/lang/String;
+     105: invokevirtual #27                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegion:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/HRegion;
+     108: astore        4
+     110: aload         4
+     112: ifnonnull     144
+     115: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+     118: ldc           #28                 // String Received CLOSE for a region {} which is not online, and we're not opening/closing.
+     120: aload_0
+     121: getfield      #2                  // Field encodedName:Ljava/lang/String;
+     124: invokeinterface #29,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     129: aload_1
+     130: invokevirtual #12                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     133: aload_2
+     134: getstatic     #13                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     137: invokeinterface #30,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     142: pop
+     143: return
+     144: aload         4
+     146: invokevirtual #31                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     149: invokeinterface #32,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     154: astore        5
+     156: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+     159: ldc           #33                 // String Close {}
+     161: aload         5
+     163: invokeinterface #26,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+     168: aload         4
+     170: invokevirtual #34                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     173: ifnull        188
+     176: aload         4
+     178: invokevirtual #34                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     181: aload_0
+     182: getfield      #4                  // Field abort:Z
+     185: invokevirtual #35                 // Method org/apache/hadoop/hbase/regionserver/RegionCoprocessorHost.preClose:(Z)V
+     188: aload         4
+     190: aload_0
+     191: getfield      #4                  // Field abort:Z
+     194: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.close:(Z)Ljava/util/Map;
+     197: ifnonnull     227
+     200: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+     203: ldc           #37                 // String Can't close region {}, was already closed during close()
+     205: aload         5
+     207: invokeinterface #38,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+     212: aload_1
+     213: invokevirtual #12                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     216: aload_2
+     217: getstatic     #13                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     220: invokeinterface #30,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     225: pop
+     226: return
+     227: aload_1
+     228: aload         4
+     230: aload_0
+     231: getfield      #5                  // Field destination:Lorg/apache/hadoop/hbase/ServerName;
+     234: invokevirtual #39                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.removeRegion:(Lorg/apache/hadoop/hbase/regionserver/HRegion;Lorg/apache/hadoop/hbase/ServerName;)Z
+     237: pop
+     238: aload_1
+     239: new           #40                 // class org/apache/hadoop/hbase/regionserver/RegionServerServices$RegionStateTransitionContext
+     242: dup
+     243: getstatic     #41                 // Field org/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$RegionStateTransition$TransitionCode.CLOSED:Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$RegionStateTransition$TransitionCode;
+     246: ldc2_w        #43                 // long -1l
+     249: aload_0
+     250: getfield      #3                  // Field closeProcId:J
+     253: ldc2_w        #43                 // long -1l
+     256: aload         4
+     258: invokevirtual #31                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     261: invokespecial #45                 // Method org/apache/hadoop/hbase/regionserver/RegionServerServices$RegionStateTransitionContext."<init>":(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RegionServerStatusProtos$RegionStateTransition$TransitionCode;JJJLorg/apache/hadoop/hbase/client/RegionInfo;)V
+     264: invokevirtual #46                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.reportRegionStateTransition:(Lorg/apache/hadoop/hbase/regionserver/RegionServerServices$RegionStateTransitionContext;)Z
+     267: ifne          298
+     270: new           #47                 // class java/io/IOException
+     273: dup
+     274: new           #48                 // class java/lang/StringBuilder
+     277: dup
+     278: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
+     281: ldc           #50                 // String Failed to report close to master:
+     283: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     286: aload         5
+     288: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     291: invokevirtual #52                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     294: invokespecial #53                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     297: athrow
+     298: aload_1
+     299: aload_0
+     300: getfield      #3                  // Field closeProcId:J
+     303: invokevirtual #54                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.finishRegionProcedure:(J)V
+     306: aload_1
+     307: invokevirtual #12                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     310: aload_2
+     311: getstatic     #13                 // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     314: invokeinterface #30,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     319: pop
+     320: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+     323: ldc           #55                 // String Closed {}
+     325: aload         5
+     327: invokeinterface #26,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+     332: return
+
+  protected void handleException(java.lang.Throwable);
+    Code:
+       0: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #56                 // String Fatal error occurred while closing region {}, aborting...
+       5: aload_0
+       6: getfield      #2                  // Field encodedName:Ljava/lang/String;
+       9: aload_1
+      10: invokeinterface #21,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      15: aload_0
+      16: invokespecial #10                 // Method getServer:()Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      19: new           #48                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
+      26: ldc           #57                 // String Failed to close region
+      28: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: aload_0
+      32: getfield      #2                  // Field encodedName:Ljava/lang/String;
+      35: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: ldc           #58                 // String  and can not recover
+      40: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: invokevirtual #52                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      46: aload_1
+      47: invokevirtual #59                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      50: return
+
+  public static org.apache.hadoop.hbase.regionserver.handler.UnassignRegionHandler create(org.apache.hadoop.hbase.regionserver.HRegionServer, java.lang.String, long, boolean, org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #27                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegion:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/HRegion;
+       5: astore        6
+       7: aload         6
+       9: ifnull        33
+      12: aload         6
+      14: invokeinterface #60,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      19: invokeinterface #61,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isMetaRegion:()Z
+      24: ifeq          33
+      27: getstatic     #62                 // Field org/apache/hadoop/hbase/executor/EventType.M_RS_CLOSE_META:Lorg/apache/hadoop/hbase/executor/EventType;
+      30: goto          36
+      33: getstatic     #63                 // Field org/apache/hadoop/hbase/executor/EventType.M_RS_CLOSE_REGION:Lorg/apache/hadoop/hbase/executor/EventType;
+      36: astore        7
+      38: new           #64                 // class org/apache/hadoop/hbase/regionserver/handler/UnassignRegionHandler
+      41: dup
+      42: aload_0
+      43: aload_1
+      44: lload_2
+      45: iload         4
+      47: aload         5
+      49: aload         7
+      51: invokespecial #65                 // Method "<init>":(Lorg/apache/hadoop/hbase/regionserver/HRegionServer;Ljava/lang/String;JZLorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/executor/EventType;)V
+      54: areturn
+
+  static {};
+    Code:
+       0: ldc           #64                 // class org/apache/hadoop/hbase/regionserver/handler/UnassignRegionHandler
+       2: invokestatic  #66                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

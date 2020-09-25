@@ -1,0 +1,1097 @@
+Compiled from "FileArchiverNotifierImpl.java"
+public class org.apache.hadoop.hbase.quotas.FileArchiverNotifierImpl implements org.apache.hadoop.hbase.quotas.FileArchiverNotifier {
+  public org.apache.hadoop.hbase.quotas.FileArchiverNotifierImpl(org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: ldc2_w        #3                  // long -9223372036854775808l
+       8: putfield      #5                  // Field lastFullCompute:J
+      11: aload_0
+      12: invokestatic  #6                  // Method java/util/Collections.emptyList:()Ljava/util/List;
+      15: putfield      #7                  // Field currentSnapshots:Ljava/util/List;
+      18: aload_0
+      19: aload_1
+      20: putfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      23: aload_0
+      24: aload_2
+      25: putfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      28: aload_0
+      29: aload_3
+      30: putfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      33: aload_0
+      34: aload         4
+      36: putfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+      39: new           #12                 // class java/util/concurrent/locks/ReentrantReadWriteLock
+      42: dup
+      43: invokespecial #13                 // Method java/util/concurrent/locks/ReentrantReadWriteLock."<init>":()V
+      46: astore        5
+      48: aload_0
+      49: aload         5
+      51: invokevirtual #14                 // Method java/util/concurrent/locks/ReentrantReadWriteLock.readLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      54: putfield      #15                 // Field readLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      57: aload_0
+      58: aload         5
+      60: invokevirtual #16                 // Method java/util/concurrent/locks/ReentrantReadWriteLock.writeLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      63: putfield      #17                 // Field writeLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      66: return
+
+  static synchronized java.lang.Object getLockForNamespace(java.lang.String);
+    Code:
+       0: getstatic     #18                 // Field NAMESPACE_LOCKS:Ljava/util/Map;
+       3: aload_0
+       4: invokedynamic #19,  0             // InvokeDynamic #0:apply:()Ljava/util/function/Function;
+       9: invokeinterface #20,  3           // InterfaceMethod java/util/Map.computeIfAbsent:(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;
+      14: areturn
+
+  long getLastFullCompute();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field lastFullCompute:J
+       4: lreturn
+
+  public void addArchivedFiles(java.util.Set<java.util.Map$Entry<java.lang.String, java.lang.Long>>) throws java.io.IOException;
+    Code:
+       0: invokestatic  #21                 // Method java/lang/System.nanoTime:()J
+       3: lstore_2
+       4: aload_0
+       5: getfield      #15                 // Field readLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+       8: invokevirtual #22                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.lock:()V
+      11: aload_0
+      12: getfield      #5                  // Field lastFullCompute:J
+      15: ldc2_w        #3                  // long -9223372036854775808l
+      18: lcmp
+      19: ifeq          79
+      22: lload_2
+      23: aload_0
+      24: getfield      #5                  // Field lastFullCompute:J
+      27: lsub
+      28: lconst_0
+      29: lcmp
+      30: ifge          79
+      33: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      36: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      41: ifeq          71
+      44: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      47: new           #25                 // class java/lang/StringBuilder
+      50: dup
+      51: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      54: ldc           #27                 // String A full computation was performed after this request was received. Ignoring requested updates:
+      56: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: aload_1
+      60: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      63: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      66: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      71: aload_0
+      72: getfield      #15                 // Field readLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      75: invokevirtual #32                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+      78: return
+      79: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      82: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      87: ifeq          129
+      90: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      93: new           #25                 // class java/lang/StringBuilder
+      96: dup
+      97: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     100: ldc           #33                 // String currentSnapshots:
+     102: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     105: aload_0
+     106: getfield      #7                  // Field currentSnapshots:Ljava/util/List;
+     109: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     112: ldc           #34                 // String  fileSize:
+     114: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: aload_1
+     118: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     121: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     124: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     129: aload_0
+     130: getfield      #7                  // Field currentSnapshots:Ljava/util/List;
+     133: invokeinterface #35,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     138: ifne          159
+     141: aload_1
+     142: invokeinterface #36,  1           // InterfaceMethod java/util/Set.isEmpty:()Z
+     147: ifne          159
+     150: aload_0
+     151: aload_0
+     152: getfield      #7                  // Field currentSnapshots:Ljava/util/List;
+     155: aload_1
+     156: invokevirtual #37                 // Method groupArchivedFiledBySnapshotAndRecordSize:(Ljava/util/List;Ljava/util/Set;)V
+     159: aload_0
+     160: getfield      #15                 // Field readLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+     163: invokevirtual #32                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+     166: goto          181
+     169: astore        4
+     171: aload_0
+     172: getfield      #15                 // Field readLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+     175: invokevirtual #32                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+     178: aload         4
+     180: athrow
+     181: return
+    Exception table:
+       from    to  target type
+          11    71   169   any
+          79   159   169   any
+         169   171   169   any
+
+  void groupArchivedFiledBySnapshotAndRecordSize(java.util.List<java.lang.String>, java.util.Set<java.util.Map$Entry<java.lang.String, java.lang.Long>>) throws java.io.IOException;
+    Code:
+       0: new           #38                 // class java/util/HashMap
+       3: dup
+       4: aload_2
+       5: invokeinterface #39,  1           // InterfaceMethod java/util/Set.size:()I
+      10: invokespecial #40                 // Method java/util/HashMap."<init>":(I)V
+      13: astore_3
+      14: aload_2
+      15: invokeinterface #41,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      20: astore        4
+      22: aload         4
+      24: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      29: ifeq          68
+      32: aload         4
+      34: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      39: checkcast     #44                 // class java/util/Map$Entry
+      42: astore        5
+      44: aload_3
+      45: aload         5
+      47: invokeinterface #45,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      52: aload         5
+      54: invokeinterface #46,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      59: invokeinterface #47,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      64: pop
+      65: goto          22
+      68: new           #38                 // class java/util/HashMap
+      71: dup
+      72: invokespecial #48                 // Method java/util/HashMap."<init>":()V
+      75: astore        4
+      77: aload_1
+      78: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      83: astore        5
+      85: aload         5
+      87: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      92: ifeq          131
+      95: aload         5
+      97: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     102: checkcast     #50                 // class java/lang/String
+     105: astore        6
+     107: aload_0
+     108: aload         6
+     110: aload_3
+     111: aload         4
+     113: invokevirtual #51                 // Method bucketFilesToSnapshot:(Ljava/lang/String;Ljava/util/Map;Ljava/util/Map;)V
+     116: aload_3
+     117: invokeinterface #52,  1           // InterfaceMethod java/util/Map.isEmpty:()Z
+     122: ifeq          128
+     125: goto          131
+     128: goto          85
+     131: aload         4
+     133: invokeinterface #52,  1           // InterfaceMethod java/util/Map.isEmpty:()Z
+     138: ifne          186
+     141: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     144: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     149: ifeq          180
+     152: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     155: new           #25                 // class java/lang/StringBuilder
+     158: dup
+     159: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     162: ldc           #53                 // String Writing snapshot size changes for:
+     164: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     167: aload         4
+     169: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     172: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     175: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     180: aload_0
+     181: aload         4
+     183: invokevirtual #54                 // Method persistSnapshotSizeChanges:(Ljava/util/Map;)V
+     186: return
+
+  void bucketFilesToSnapshot(java.lang.String, java.util.Map<java.lang.String, java.lang.Long>, java.util.Map<java.lang.String, java.lang.Long>) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: invokeinterface #52,  1           // InterfaceMethod java/util/Map.isEmpty:()Z
+       6: ifeq          10
+       9: return
+      10: aload_1
+      11: aload_0
+      12: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      15: invokestatic  #55                 // Method org/apache/hadoop/hbase/util/FSUtils.getRootDir:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+      18: invokestatic  #56                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.getCompletedSnapshotDir:(Ljava/lang/String;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+      21: astore        4
+      23: aload_0
+      24: getfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      27: aload         4
+      29: invokestatic  #57                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.readSnapshotInfo:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+      32: astore        5
+      34: aload_0
+      35: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      38: aload_0
+      39: getfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      42: aload         4
+      44: aload         5
+      46: invokestatic  #58                 // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.open:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;
+      49: astore        6
+      51: aload         6
+      53: invokevirtual #59                 // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.getRegionManifests:()Ljava/util/List;
+      56: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      61: astore        7
+      63: aload         7
+      65: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      70: ifeq          208
+      73: aload         7
+      75: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      80: checkcast     #60                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest
+      83: astore        8
+      85: aload         8
+      87: invokevirtual #61                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest.getFamilyFilesList:()Ljava/util/List;
+      90: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      95: astore        9
+      97: aload         9
+      99: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     104: ifeq          205
+     107: aload         9
+     109: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     114: checkcast     #62                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$FamilyFiles
+     117: astore        10
+     119: aload         10
+     121: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$FamilyFiles.getStoreFilesList:()Ljava/util/List;
+     124: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     129: astore        11
+     131: aload         11
+     133: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     138: ifeq          202
+     141: aload         11
+     143: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     148: checkcast     #64                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$StoreFile
+     151: astore        12
+     153: aload_2
+     154: aload         12
+     156: invokevirtual #65                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$StoreFile.getName:()Ljava/lang/String;
+     159: invokeinterface #66,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     164: checkcast     #2                  // class java/lang/Long
+     167: astore        13
+     169: aload         13
+     171: ifnull        189
+     174: aload_3
+     175: aload_1
+     176: aload         13
+     178: invokedynamic #67,  0             // InvokeDynamic #1:apply:()Ljava/util/function/BiFunction;
+     183: invokeinterface #68,  4           // InterfaceMethod java/util/Map.merge:(Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;
+     188: pop
+     189: aload_2
+     190: invokeinterface #52,  1           // InterfaceMethod java/util/Map.isEmpty:()Z
+     195: ifeq          199
+     198: return
+     199: goto          131
+     202: goto          97
+     205: goto          63
+     208: return
+
+  void persistSnapshotSizeChanges(java.util.Map<java.lang.String, java.lang.Long>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+       4: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokeinterface #70,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      12: astore_2
+      13: aconst_null
+      14: astore_3
+      15: new           #71                 // class java/util/ArrayList
+      18: dup
+      19: aload_1
+      20: invokeinterface #72,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      25: invokespecial #73                 // Method java/util/ArrayList."<init>":(Ljava/util/Collection;)V
+      28: astore        4
+      30: aload         4
+      32: invokeinterface #74,  1           // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+      37: aload_0
+      38: invokedynamic #75,  0             // InvokeDynamic #2:apply:(Lorg/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl;)Ljava/util/function/Function;
+      43: invokeinterface #76,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      48: invokestatic  #77                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      51: invokeinterface #78,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      56: checkcast     #79                 // class java/util/List
+      59: astore        5
+      61: aload         4
+      63: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      68: astore        6
+      70: new           #71                 // class java/util/ArrayList
+      73: dup
+      74: aload         4
+      76: invokeinterface #80,  1           // InterfaceMethod java/util/List.size:()I
+      81: invokespecial #81                 // Method java/util/ArrayList."<init>":(I)V
+      84: astore        7
+      86: aload_0
+      87: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+      90: invokevirtual #82                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+      93: invokestatic  #83                 // Method getLockForNamespace:(Ljava/lang/String;)Ljava/lang/Object;
+      96: dup
+      97: astore        8
+      99: monitorenter
+     100: aload_2
+     101: aload         5
+     103: invokeinterface #84,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.get:(Ljava/util/List;)[Lorg/apache/hadoop/hbase/client/Result;
+     108: astore        9
+     110: lconst_0
+     111: lstore        10
+     113: aload         9
+     115: astore        12
+     117: aload         12
+     119: arraylength
+     120: istore        13
+     122: iconst_0
+     123: istore        14
+     125: iload         14
+     127: iload         13
+     129: if_icmpge     224
+     132: aload         12
+     134: iload         14
+     136: aaload
+     137: astore        15
+     139: aload         6
+     141: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     146: checkcast     #44                 // class java/util/Map$Entry
+     149: astore        16
+     151: aload         16
+     153: invokeinterface #45,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     158: checkcast     #50                 // class java/lang/String
+     161: astore        17
+     163: aload         16
+     165: invokeinterface #46,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     170: checkcast     #2                  // class java/lang/Long
+     173: astore        18
+     175: lload         10
+     177: aload         18
+     179: invokevirtual #85                 // Method java/lang/Long.longValue:()J
+     182: ladd
+     183: lstore        10
+     185: aload_0
+     186: aload         15
+     188: invokevirtual #86                 // Method getSnapshotSizeFromResult:(Lorg/apache/hadoop/hbase/client/Result;)J
+     191: lstore        19
+     193: aload         7
+     195: aload_0
+     196: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+     199: aload         17
+     201: lload         19
+     203: aload         18
+     205: invokevirtual #85                 // Method java/lang/Long.longValue:()J
+     208: ladd
+     209: invokestatic  #87                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.createPutForSnapshotSize:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;J)Lorg/apache/hadoop/hbase/client/Put;
+     212: invokeinterface #88,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     217: pop
+     218: iinc          14, 1
+     221: goto          125
+     224: lload         10
+     226: lconst_0
+     227: lcmp
+     228: ifeq          268
+     231: aload_0
+     232: aload_2
+     233: aload_0
+     234: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+     237: invokevirtual #82                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+     240: invokevirtual #89                 // Method getPreviousNamespaceSnapshotSize:(Lorg/apache/hadoop/hbase/client/Table;Ljava/lang/String;)J
+     243: lstore        12
+     245: aload         7
+     247: aload_0
+     248: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+     251: invokevirtual #82                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+     254: lload         12
+     256: lload         10
+     258: ladd
+     259: invokestatic  #90                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.createPutForNamespaceSnapshotSize:(Ljava/lang/String;J)Lorg/apache/hadoop/hbase/client/Put;
+     262: invokeinterface #88,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     267: pop
+     268: new           #71                 // class java/util/ArrayList
+     271: dup
+     272: invokespecial #91                 // Method java/util/ArrayList."<init>":()V
+     275: astore        12
+     277: aload         7
+     279: invokeinterface #80,  1           // InterfaceMethod java/util/List.size:()I
+     284: anewarray     #92                 // class java/lang/Object
+     287: astore        13
+     289: aload_2
+     290: aload         7
+     292: aload         13
+     294: invokeinterface #93,  3           // InterfaceMethod org/apache/hadoop/hbase/client/Table.batch:(Ljava/util/List;[Ljava/lang/Object;)V
+     299: aload         13
+     301: astore        14
+     303: aload         14
+     305: arraylength
+     306: istore        15
+     308: iconst_0
+     309: istore        16
+     311: iload         16
+     313: iload         15
+     315: if_icmpge     349
+     318: aload         14
+     320: iload         16
+     322: aaload
+     323: astore        17
+     325: aload         17
+     327: instanceof    #94                 // class org/apache/hadoop/hbase/client/Result
+     330: ifne          343
+     333: aload         12
+     335: aload         17
+     337: invokeinterface #88,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     342: pop
+     343: iinc          16, 1
+     346: goto          311
+     349: aload         12
+     351: invokeinterface #35,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     356: ifne          387
+     359: new           #95                 // class org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$QuotaSnapshotSizeSerializationException
+     362: dup
+     363: new           #25                 // class java/lang/StringBuilder
+     366: dup
+     367: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     370: ldc           #96                 // String Failed to write some snapshot size updates:
+     372: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     375: aload         12
+     377: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     380: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     383: invokespecial #97                 // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$QuotaSnapshotSizeSerializationException."<init>":(Ljava/lang/String;)V
+     386: athrow
+     387: aload         8
+     389: monitorexit
+     390: goto          401
+     393: astore        21
+     395: aload         8
+     397: monitorexit
+     398: aload         21
+     400: athrow
+     401: aload_2
+     402: ifnull        485
+     405: aload_3
+     406: ifnull        429
+     409: aload_2
+     410: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     415: goto          485
+     418: astore        4
+     420: aload_3
+     421: aload         4
+     423: invokevirtual #100                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     426: goto          485
+     429: aload_2
+     430: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     435: goto          485
+     438: astore        4
+     440: aload         4
+     442: astore_3
+     443: aload         4
+     445: athrow
+     446: astore        22
+     448: aload_2
+     449: ifnull        482
+     452: aload_3
+     453: ifnull        476
+     456: aload_2
+     457: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     462: goto          482
+     465: astore        23
+     467: aload_3
+     468: aload         23
+     470: invokevirtual #100                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     473: goto          482
+     476: aload_2
+     477: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     482: aload         22
+     484: athrow
+     485: goto          496
+     488: astore_2
+     489: invokestatic  #102                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     492: invokevirtual #103                // Method java/lang/Thread.interrupt:()V
+     495: return
+     496: return
+    Exception table:
+       from    to  target type
+         100   390   393   any
+         393   398   393   any
+         409   415   418   Class java/lang/Throwable
+          15   401   438   Class java/lang/Throwable
+          15   401   446   any
+         456   462   465   Class java/lang/Throwable
+         438   448   446   any
+           0   485   488   Class java/lang/InterruptedException
+
+  long getPreviousNamespaceSnapshotSize(org.apache.hadoop.hbase.client.Table, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: aload_2
+       2: invokestatic  #104                // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.createGetNamespaceSnapshotSize:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/client/Get;
+       5: invokeinterface #105,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.get:(Lorg/apache/hadoop/hbase/client/Get;)Lorg/apache/hadoop/hbase/client/Result;
+      10: astore_3
+      11: aload_0
+      12: aload_3
+      13: invokevirtual #86                 // Method getSnapshotSizeFromResult:(Lorg/apache/hadoop/hbase/client/Result;)J
+      16: lreturn
+
+  long getSnapshotSizeFromResult(org.apache.hadoop.hbase.client.Result) throws org.apache.hbase.thirdparty.com.google.protobuf.InvalidProtocolBufferException;
+    Code:
+       0: aload_1
+       1: invokevirtual #106                // Method org/apache/hadoop/hbase/client/Result.isEmpty:()Z
+       4: ifne          22
+       7: aload_1
+       8: invokevirtual #107                // Method org/apache/hadoop/hbase/client/Result.advance:()Z
+      11: ifeq          22
+      14: aload_1
+      15: invokevirtual #108                // Method org/apache/hadoop/hbase/client/Result.current:()Lorg/apache/hadoop/hbase/Cell;
+      18: invokestatic  #109                // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.parseSnapshotSize:(Lorg/apache/hadoop/hbase/Cell;)J
+      21: lreturn
+      22: lconst_0
+      23: lreturn
+
+  public long computeAndStoreSnapshotSizes(java.util.Collection<java.lang.String>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: new           #71                 // class java/util/ArrayList
+       4: dup
+       5: aload_1
+       6: invokespecial #73                 // Method java/util/ArrayList."<init>":(Ljava/util/Collection;)V
+       9: putfield      #7                  // Field currentSnapshots:Ljava/util/List;
+      12: aload_0
+      13: getfield      #7                  // Field currentSnapshots:Ljava/util/List;
+      16: invokestatic  #110                // Method java/util/Collections.sort:(Ljava/util/List;)V
+      19: aload_0
+      20: aload_0
+      21: getfield      #7                  // Field currentSnapshots:Ljava/util/List;
+      24: invokevirtual #111                // Method computeSnapshotSizes:(Ljava/util/List;)Ljava/util/List;
+      27: astore_2
+      28: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      31: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      36: ifeq          78
+      39: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      42: new           #25                 // class java/lang/StringBuilder
+      45: dup
+      46: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      49: ldc           #112                // String Computed snapshot sizes for
+      51: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      54: aload_0
+      55: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+      58: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      61: ldc           #113                // String  of
+      63: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: aload_2
+      67: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      70: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      73: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      78: aload_2
+      79: invokeinterface #74,  1           // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+      84: invokedynamic #114,  0            // InvokeDynamic #3:applyAsLong:()Ljava/util/function/ToLongFunction;
+      89: invokeinterface #115,  2          // InterfaceMethod java/util/stream/Stream.mapToLong:(Ljava/util/function/ToLongFunction;)Ljava/util/stream/LongStream;
+      94: invokeinterface #116,  1          // InterfaceMethod java/util/stream/LongStream.sum:()J
+      99: lstore_3
+     100: aload_0
+     101: getfield      #17                 // Field writeLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+     104: invokevirtual #117                // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.lock:()V
+     107: aload_0
+     108: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+     111: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     114: invokeinterface #70,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     119: astore        5
+     121: aconst_null
+     122: astore        6
+     124: aload_0
+     125: aload         5
+     127: aload_2
+     128: invokevirtual #118                // Method persistSnapshotSizes:(Lorg/apache/hadoop/hbase/client/Table;Ljava/util/List;)V
+     131: aload         5
+     133: ifnull        226
+     136: aload         6
+     138: ifnull        163
+     141: aload         5
+     143: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     148: goto          226
+     151: astore        7
+     153: aload         6
+     155: aload         7
+     157: invokevirtual #100                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     160: goto          226
+     163: aload         5
+     165: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     170: goto          226
+     173: astore        7
+     175: aload         7
+     177: astore        6
+     179: aload         7
+     181: athrow
+     182: astore        8
+     184: aload         5
+     186: ifnull        223
+     189: aload         6
+     191: ifnull        216
+     194: aload         5
+     196: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     201: goto          223
+     204: astore        9
+     206: aload         6
+     208: aload         9
+     210: invokevirtual #100                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     213: goto          223
+     216: aload         5
+     218: invokeinterface #98,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     223: aload         8
+     225: athrow
+     226: aload_0
+     227: invokestatic  #21                 // Method java/lang/System.nanoTime:()J
+     230: putfield      #5                  // Field lastFullCompute:J
+     233: lload_3
+     234: lstore        5
+     236: aload_0
+     237: getfield      #17                 // Field writeLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+     240: invokevirtual #119                // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.unlock:()V
+     243: lload         5
+     245: lreturn
+     246: astore        10
+     248: aload_0
+     249: getfield      #17                 // Field writeLock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+     252: invokevirtual #119                // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.unlock:()V
+     255: aload         10
+     257: athrow
+    Exception table:
+       from    to  target type
+         141   148   151   Class java/lang/Throwable
+         124   131   173   Class java/lang/Throwable
+         124   131   182   any
+         194   201   204   Class java/lang/Throwable
+         173   184   182   any
+         107   236   246   any
+         246   248   246   any
+
+  public java.lang.String toString();
+    Code:
+       0: new           #25                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: aload_0
+      10: invokevirtual #120                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      13: invokevirtual #121                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      16: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: ldc           #122                // String [
+      21: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: pop
+      25: aload_1
+      26: ldc           #123                // String tableName=
+      28: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: aload_0
+      32: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+      35: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      38: ldc           #124                // String , currentSnapshots=
+      40: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: pop
+      44: aload_1
+      45: aload_0
+      46: getfield      #7                  // Field currentSnapshots:Ljava/util/List;
+      49: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      52: ldc           #125                // String , lastFullCompute=
+      54: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: aload_0
+      58: getfield      #5                  // Field lastFullCompute:J
+      61: invokevirtual #126                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      64: pop
+      65: aload_1
+      66: ldc           #127                // String ]
+      68: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      71: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      74: areturn
+
+  java.util.List<org.apache.hadoop.hbase.quotas.FileArchiverNotifierImpl$SnapshotWithSize> computeSnapshotSizes(java.util.List<java.lang.String>) throws java.io.IOException;
+    Code:
+       0: new           #71                 // class java/util/ArrayList
+       3: dup
+       4: aload_1
+       5: invokeinterface #80,  1           // InterfaceMethod java/util/List.size:()I
+      10: invokespecial #81                 // Method java/util/ArrayList."<init>":(I)V
+      13: astore_2
+      14: aload_0
+      15: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      18: invokestatic  #55                 // Method org/apache/hadoop/hbase/util/FSUtils.getRootDir:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+      21: astore_3
+      22: aload_0
+      23: getfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      26: aload_3
+      27: invokestatic  #128                // Method org/apache/hadoop/hbase/util/FSUtils.getTableStoreFilePathMap:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Ljava/util/Map;
+      30: invokeinterface #129,  1          // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+      35: astore        4
+      37: goto          50
+      40: astore        5
+      42: invokestatic  #102                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      45: invokevirtual #103                // Method java/lang/Thread.interrupt:()V
+      48: aconst_null
+      49: areturn
+      50: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      53: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      58: ifeq          101
+      61: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      64: new           #25                 // class java/lang/StringBuilder
+      67: dup
+      68: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      71: ldc           #130                // String Paths for
+      73: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: aload_0
+      77: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+      80: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      83: ldc           #131                // String :
+      85: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      88: aload         4
+      90: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      93: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      96: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     101: new           #132                // class java/util/HashSet
+     104: dup
+     105: invokespecial #133                // Method java/util/HashSet."<init>":()V
+     108: astore        5
+     110: aload_1
+     111: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     116: astore        6
+     118: aload         6
+     120: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     125: ifeq          449
+     128: aload         6
+     130: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     135: checkcast     #50                 // class java/lang/String
+     138: astore        7
+     140: aload         7
+     142: aload_3
+     143: invokestatic  #56                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.getCompletedSnapshotDir:(Ljava/lang/String;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/Path;
+     146: astore        8
+     148: aload_0
+     149: getfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+     152: aload         8
+     154: invokestatic  #57                 // Method org/apache/hadoop/hbase/snapshot/SnapshotDescriptionUtils.readSnapshotInfo:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+     157: astore        9
+     159: aload_0
+     160: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     163: aload_0
+     164: getfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+     167: aload         8
+     169: aload         9
+     171: invokestatic  #58                 // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.open:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;
+     174: astore        10
+     176: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     179: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     184: ifeq          215
+     187: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     190: new           #25                 // class java/lang/StringBuilder
+     193: dup
+     194: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     197: ldc           #134                // String Files referenced by other snapshots:
+     199: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     202: aload         5
+     204: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     207: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     210: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     215: aload_0
+     216: aload         10
+     218: aload         4
+     220: aload         5
+     222: invokedynamic #135,  0            // InvokeDynamic #4:test:(Ljava/util/Set;Ljava/util/Set;)Ljava/util/function/Predicate;
+     227: invokevirtual #136                // Method getStoreFilesFromSnapshot:(Lorg/apache/hadoop/hbase/snapshot/SnapshotManifest;Ljava/util/function/Predicate;)Ljava/util/Set;
+     230: astore        11
+     232: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     235: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     240: ifeq          281
+     243: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     246: new           #25                 // class java/lang/StringBuilder
+     249: dup
+     250: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     253: ldc           #137                // String Snapshot
+     255: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     258: aload         7
+     260: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     263: ldc           #138                // String  solely references the files:
+     265: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     268: aload         11
+     270: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     273: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     276: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     281: aload_0
+     282: aload_0
+     283: getfield      #11                 // Field tn:Lorg/apache/hadoop/hbase/TableName;
+     286: aload         11
+     288: invokevirtual #139                // Method getSizeOfStoreFiles:(Lorg/apache/hadoop/hbase/TableName;Ljava/util/Set;)J
+     291: lstore        12
+     293: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     296: invokeinterface #24,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     301: ifeq          342
+     304: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     307: new           #25                 // class java/lang/StringBuilder
+     310: dup
+     311: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     314: ldc           #140                // String Computed size of
+     316: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     319: aload         7
+     321: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     324: ldc           #141                // String  to be
+     326: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     329: lload         12
+     331: invokevirtual #126                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     334: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     337: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     342: aload_2
+     343: new           #142                // class org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$SnapshotWithSize
+     346: dup
+     347: aload         7
+     349: lload         12
+     351: invokespecial #143                // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$SnapshotWithSize."<init>":(Ljava/lang/String;J)V
+     354: invokeinterface #88,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     359: pop
+     360: aload         11
+     362: invokeinterface #41,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     367: astore        14
+     369: aload         14
+     371: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     376: ifeq          446
+     379: aload         14
+     381: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     386: checkcast     #144                // class org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference
+     389: astore        15
+     391: aload         15
+     393: invokevirtual #145                // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference.getFamilyToFilesMapping:()Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;
+     396: invokeinterface #146,  1          // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.values:()Ljava/util/Collection;
+     401: invokeinterface #147,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+     406: astore        16
+     408: aload         16
+     410: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     415: ifeq          443
+     418: aload         16
+     420: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     425: checkcast     #50                 // class java/lang/String
+     428: astore        17
+     430: aload         5
+     432: aload         17
+     434: invokeinterface #148,  2          // InterfaceMethod java/util/Set.add:(Ljava/lang/Object;)Z
+     439: pop
+     440: goto          408
+     443: goto          369
+     446: goto          118
+     449: aload_2
+     450: areturn
+    Exception table:
+       from    to  target type
+          22    37    40   Class java/lang/InterruptedException
+
+  long getSizeOfStoreFiles(org.apache.hadoop.hbase.TableName, java.util.Set<org.apache.hadoop.hbase.quotas.FileArchiverNotifierImpl$StoreFileReference>);
+    Code:
+       0: aload_2
+       1: invokeinterface #149,  1          // InterfaceMethod java/util/Set.stream:()Ljava/util/stream/Stream;
+       6: aload_0
+       7: aload_1
+       8: invokedynamic #150,  0            // InvokeDynamic #5:applyAsLong:(Lorg/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/ToLongFunction;
+      13: invokestatic  #151                // Method java/util/stream/Collectors.summingLong:(Ljava/util/function/ToLongFunction;)Ljava/util/stream/Collector;
+      16: invokeinterface #78,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      21: checkcast     #2                  // class java/lang/Long
+      24: invokevirtual #85                 // Method java/lang/Long.longValue:()J
+      27: lreturn
+
+  long getSizeOfStoreFile(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.FileArchiverNotifierImpl$StoreFileReference);
+    Code:
+       0: aload_2
+       1: invokevirtual #152                // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference.getRegionName:()Ljava/lang/String;
+       4: astore_3
+       5: aload_2
+       6: invokevirtual #145                // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference.getFamilyToFilesMapping:()Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;
+       9: invokeinterface #153,  1          // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.entries:()Ljava/util/Collection;
+      14: invokeinterface #154,  1          // InterfaceMethod java/util/Collection.stream:()Ljava/util/stream/Stream;
+      19: aload_0
+      20: aload_1
+      21: aload_3
+      22: invokedynamic #155,  0            // InvokeDynamic #6:applyAsLong:(Lorg/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl;Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;)Ljava/util/function/ToLongFunction;
+      27: invokestatic  #151                // Method java/util/stream/Collectors.summingLong:(Ljava/util/function/ToLongFunction;)Ljava/util/stream/Collector;
+      30: invokeinterface #78,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      35: checkcast     #2                  // class java/lang/Long
+      38: invokevirtual #85                 // Method java/lang/Long.longValue:()J
+      41: lreturn
+
+  long getSizeOfStoreFile(org.apache.hadoop.hbase.TableName, java.lang.String, java.lang.String, java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: aload_1
+       5: aload_2
+       6: aload_3
+       7: invokestatic  #156                // Method org/apache/hadoop/hbase/util/HFileArchiveUtil.getStoreArchivePath:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      10: astore        5
+      12: goto          31
+      15: astore        6
+      17: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      20: ldc           #158                // String Could not compute path for the archive directory for the region
+      22: aload         6
+      24: invokeinterface #159,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      29: lconst_0
+      30: lreturn
+      31: new           #160                // class org/apache/hadoop/fs/Path
+      34: dup
+      35: aload         5
+      37: aload         4
+      39: invokespecial #161                // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      42: astore        6
+      44: aload_0
+      45: getfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      48: aload         6
+      50: invokevirtual #162                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      53: ifeq          117
+      56: aload_0
+      57: getfield      #10                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      60: aload         6
+      62: invokevirtual #163                // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+      65: astore        7
+      67: iconst_1
+      68: aload         7
+      70: arraylength
+      71: if_icmpeq     109
+      74: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      77: new           #25                 // class java/lang/StringBuilder
+      80: dup
+      81: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      84: ldc           #164                // String Expected
+      86: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      89: aload         6
+      91: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      94: ldc           #165                // String  to be a file but was a directory, ignoring reference
+      96: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      99: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     102: invokeinterface #166,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     107: lconst_0
+     108: lreturn
+     109: aload         7
+     111: iconst_0
+     112: aaload
+     113: invokevirtual #167                // Method org/apache/hadoop/fs/FileStatus.getLen:()J
+     116: lreturn
+     117: goto          154
+     120: astore        7
+     122: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     125: new           #25                 // class java/lang/StringBuilder
+     128: dup
+     129: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     132: ldc           #168                // String Could not obtain the status of
+     134: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     137: aload         6
+     139: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     142: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     145: aload         7
+     147: invokeinterface #159,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     152: lconst_0
+     153: lreturn
+     154: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     157: new           #25                 // class java/lang/StringBuilder
+     160: dup
+     161: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     164: ldc           #164                // String Expected
+     166: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     169: aload         6
+     171: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     174: ldc           #169                // String  to exist but does not, ignoring reference.
+     176: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     179: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     182: invokeinterface #166,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     187: lconst_0
+     188: lreturn
+    Exception table:
+       from    to  target type
+           0    12    15   Class java/io/IOException
+          44   108   120   Class java/io/IOException
+         109   116   120   Class java/io/IOException
+
+  java.util.Set<org.apache.hadoop.hbase.quotas.FileArchiverNotifierImpl$StoreFileReference> getStoreFilesFromSnapshot(org.apache.hadoop.hbase.snapshot.SnapshotManifest, java.util.function.Predicate<java.lang.String>);
+    Code:
+       0: new           #132                // class java/util/HashSet
+       3: dup
+       4: invokespecial #133                // Method java/util/HashSet."<init>":()V
+       7: astore_3
+       8: aload_1
+       9: invokevirtual #59                 // Method org/apache/hadoop/hbase/snapshot/SnapshotManifest.getRegionManifests:()Ljava/util/List;
+      12: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      17: astore        4
+      19: aload         4
+      21: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          199
+      29: aload         4
+      31: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #60                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest
+      39: astore        5
+      41: new           #144                // class org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference
+      44: dup
+      45: aload         5
+      47: invokevirtual #170                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest.getRegionInfo:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$RegionInfo;
+      50: invokestatic  #171                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toRegionInfo:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+      53: invokeinterface #172,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      58: invokespecial #173                // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference."<init>":(Ljava/lang/String;)V
+      61: astore        6
+      63: aload         5
+      65: invokevirtual #61                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest.getFamilyFilesList:()Ljava/util/List;
+      68: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      73: astore        7
+      75: aload         7
+      77: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      82: ifeq          174
+      85: aload         7
+      87: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      92: checkcast     #62                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$FamilyFiles
+      95: astore        8
+      97: aload         8
+      99: invokevirtual #174                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$FamilyFiles.getFamilyName:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+     102: invokevirtual #175                // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toStringUtf8:()Ljava/lang/String;
+     105: astore        9
+     107: aload         8
+     109: invokevirtual #63                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$FamilyFiles.getStoreFilesList:()Ljava/util/List;
+     112: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     117: astore        10
+     119: aload         10
+     121: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     126: ifeq          171
+     129: aload         10
+     131: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     136: checkcast     #64                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$StoreFile
+     139: astore        11
+     141: aload         11
+     143: invokevirtual #65                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotRegionManifest$StoreFile.getName:()Ljava/lang/String;
+     146: astore        12
+     148: aload_2
+     149: aload         12
+     151: invokeinterface #176,  2          // InterfaceMethod java/util/function/Predicate.test:(Ljava/lang/Object;)Z
+     156: ifeq          168
+     159: aload         6
+     161: aload         9
+     163: aload         12
+     165: invokevirtual #177                // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference.addFamilyStoreFile:(Ljava/lang/String;Ljava/lang/String;)V
+     168: goto          119
+     171: goto          75
+     174: aload         6
+     176: invokevirtual #145                // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl$StoreFileReference.getFamilyToFilesMapping:()Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;
+     179: invokeinterface #178,  1          // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.isEmpty:()Z
+     184: ifne          196
+     187: aload_3
+     188: aload         6
+     190: invokeinterface #148,  2          // InterfaceMethod java/util/Set.add:(Ljava/lang/Object;)Z
+     195: pop
+     196: goto          19
+     199: aload_3
+     200: areturn
+
+  void persistSnapshotSizes(org.apache.hadoop.hbase.client.Table, java.util.List<org.apache.hadoop.hbase.quotas.FileArchiverNotifierImpl$SnapshotWithSize>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: aload_2
+       2: invokeinterface #74,  1           // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+       7: aload_0
+       8: invokedynamic #179,  0            // InvokeDynamic #7:apply:(Lorg/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl;)Ljava/util/function/Function;
+      13: invokeinterface #76,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      18: invokestatic  #77                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      21: invokeinterface #78,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      26: checkcast     #79                 // class java/util/List
+      29: invokeinterface #180,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Ljava/util/List;)V
+      34: return
+
+  static {};
+    Code:
+       0: ldc           #187                // class org/apache/hadoop/hbase/quotas/FileArchiverNotifierImpl
+       2: invokestatic  #188                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+       8: new           #38                 // class java/util/HashMap
+      11: dup
+      12: invokespecial #48                 // Method java/util/HashMap."<init>":()V
+      15: putstatic     #18                 // Field NAMESPACE_LOCKS:Ljava/util/Map;
+      18: return
+}

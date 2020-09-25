@@ -1,0 +1,219 @@
+Compiled from "CompoundBloomFilterWriter.java"
+public class org.apache.hadoop.hbase.io.hfile.CompoundBloomFilterWriter extends org.apache.hadoop.hbase.io.hfile.CompoundBloomFilterBase implements org.apache.hadoop.hbase.util.BloomFilterWriter,org.apache.hadoop.hbase.io.hfile.InlineBlockWriter {
+  public org.apache.hadoop.hbase.io.hfile.CompoundBloomFilterWriter(int, float, int, int, boolean, org.apache.hadoop.hbase.CellComparator, org.apache.hadoop.hbase.regionserver.BloomType);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterBase."<init>":()V
+       4: aload_0
+       5: new           #4                  // class java/util/ArrayDeque
+       8: dup
+       9: invokespecial #5                  // Method java/util/ArrayDeque."<init>":()V
+      12: putfield      #6                  // Field readyChunks:Ljava/util/Queue;
+      15: aload_0
+      16: aconst_null
+      17: putfield      #7                  // Field firstKeyInChunk:[B
+      20: aload_0
+      21: new           #8                  // class org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexWriter
+      24: dup
+      25: invokespecial #9                  // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexWriter."<init>":()V
+      28: putfield      #1                  // Field bloomBlockIndexWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexWriter;
+      31: aload_0
+      32: iload_1
+      33: i2l
+      34: ldc2_w        #10                 // long 8l
+      37: lmul
+      38: iload         4
+      40: invokestatic  #12                 // Method org/apache/hadoop/hbase/util/BloomFilterUtil.computeFoldableByteSize:(JI)I
+      43: putfield      #13                 // Field chunkByteSize:I
+      46: aload_0
+      47: fload_2
+      48: putfield      #14                 // Field errorRate:F
+      51: aload_0
+      52: iload_3
+      53: putfield      #15                 // Field hashType:I
+      56: aload_0
+      57: iload         4
+      59: putfield      #16                 // Field maxFold:I
+      62: aload_0
+      63: iload         5
+      65: putfield      #17                 // Field cacheOnWrite:Z
+      68: aload_0
+      69: aload         6
+      71: putfield      #18                 // Field comparator:Lorg/apache/hadoop/hbase/CellComparator;
+      74: aload_0
+      75: aload         7
+      77: putfield      #19                 // Field bloomType:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+      80: return
+
+  public boolean shouldWriteBlock(boolean);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: invokespecial #20                 // Method enqueueReadyChunk:(Z)V
+       5: aload_0
+       6: getfield      #6                  // Field readyChunks:Ljava/util/Queue;
+       9: invokeinterface #21,  1           // InterfaceMethod java/util/Queue.isEmpty:()Z
+      14: ifne          21
+      17: iconst_1
+      18: goto          22
+      21: iconst_0
+      22: ireturn
+
+  public void append(org.apache.hadoop.hbase.Cell) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: ifnonnull     12
+       4: new           #25                 // class java/lang/NullPointerException
+       7: dup
+       8: invokespecial #56                 // Method java/lang/NullPointerException."<init>":()V
+      11: athrow
+      12: aload_0
+      13: iconst_0
+      14: invokespecial #20                 // Method enqueueReadyChunk:(Z)V
+      17: aload_0
+      18: getfield      #22                 // Field chunk:Lorg/apache/hadoop/hbase/util/BloomFilterChunk;
+      21: ifnonnull     100
+      24: aload_0
+      25: getfield      #7                  // Field firstKeyInChunk:[B
+      28: ifnull        64
+      31: new           #57                 // class java/lang/IllegalStateException
+      34: dup
+      35: new           #26                 // class java/lang/StringBuilder
+      38: dup
+      39: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      42: ldc           #58                 // String First key in chunk already set:
+      44: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      47: aload_0
+      48: getfield      #7                  // Field firstKeyInChunk:[B
+      51: invokestatic  #59                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+      54: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: invokevirtual #34                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      60: invokespecial #60                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      63: athrow
+      64: aload_0
+      65: getfield      #19                 // Field bloomType:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+      68: getstatic     #61                 // Field org/apache/hadoop/hbase/regionserver/BloomType.ROWCOL:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+      71: if_acmpne     88
+      74: aload_0
+      75: aload_1
+      76: invokestatic  #62                 // Method org/apache/hadoop/hbase/PrivateCellUtil.createFirstOnRowCol:(Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/Cell;
+      79: invokestatic  #63                 // Method org/apache/hadoop/hbase/PrivateCellUtil.getCellKeySerializedAsKeyValueKey:(Lorg/apache/hadoop/hbase/Cell;)[B
+      82: putfield      #7                  // Field firstKeyInChunk:[B
+      85: goto          96
+      88: aload_0
+      89: aload_1
+      90: invokestatic  #64                 // Method org/apache/hadoop/hbase/CellUtil.copyRow:(Lorg/apache/hadoop/hbase/Cell;)[B
+      93: putfield      #7                  // Field firstKeyInChunk:[B
+      96: aload_0
+      97: invokespecial #65                 // Method allocateNewChunk:()V
+     100: aload_0
+     101: getfield      #22                 // Field chunk:Lorg/apache/hadoop/hbase/util/BloomFilterChunk;
+     104: aload_1
+     105: invokevirtual #66                 // Method org/apache/hadoop/hbase/util/BloomFilterChunk.add:(Lorg/apache/hadoop/hbase/Cell;)V
+     108: aload_0
+     109: aload_1
+     110: putfield      #67                 // Field prevCell:Lorg/apache/hadoop/hbase/Cell;
+     113: aload_0
+     114: dup
+     115: getfield      #68                 // Field totalKeyCount:J
+     118: lconst_1
+     119: ladd
+     120: putfield      #68                 // Field totalKeyCount:J
+     123: return
+
+  public void beforeShipped() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #67                 // Field prevCell:Lorg/apache/hadoop/hbase/Cell;
+       4: ifnull        18
+       7: aload_0
+       8: aload_0
+       9: getfield      #67                 // Field prevCell:Lorg/apache/hadoop/hbase/Cell;
+      12: invokestatic  #69                 // Method org/apache/hadoop/hbase/KeyValueUtil.toNewKeyCell:(Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/KeyValue;
+      15: putfield      #67                 // Field prevCell:Lorg/apache/hadoop/hbase/Cell;
+      18: return
+
+  public org.apache.hadoop.hbase.Cell getPrevCell();
+    Code:
+       0: aload_0
+       1: getfield      #67                 // Field prevCell:Lorg/apache/hadoop/hbase/Cell;
+       4: areturn
+
+  public void writeInlineBlock(java.io.DataOutput) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field readyChunks:Ljava/util/Queue;
+       4: invokeinterface #75,  1           // InterfaceMethod java/util/Queue.peek:()Ljava/lang/Object;
+       9: checkcast     #36                 // class org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter$ReadyChunk
+      12: astore_2
+      13: aload_2
+      14: getfield      #40                 // Field org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter$ReadyChunk.chunk:Lorg/apache/hadoop/hbase/util/BloomFilterChunk;
+      17: astore_3
+      18: aload_3
+      19: aload_1
+      20: invokevirtual #76                 // Method org/apache/hadoop/hbase/util/BloomFilterChunk.writeBloom:(Ljava/io/DataOutput;)V
+      23: return
+
+  public void blockWritten(long, int, int);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field readyChunks:Ljava/util/Queue;
+       4: invokeinterface #77,  1           // InterfaceMethod java/util/Queue.remove:()Ljava/lang/Object;
+       9: checkcast     #36                 // class org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter$ReadyChunk
+      12: astore        5
+      14: aload_0
+      15: getfield      #1                  // Field bloomBlockIndexWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexWriter;
+      18: aload         5
+      20: getfield      #41                 // Field org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter$ReadyChunk.firstKey:[B
+      23: lload_1
+      24: iload_3
+      25: invokevirtual #78                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexWriter.addEntry:([BJI)V
+      28: return
+
+  public org.apache.hadoop.hbase.io.hfile.BlockType getInlineBlockType();
+    Code:
+       0: getstatic     #79                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.BLOOM_CHUNK:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+       3: areturn
+
+  public void compactBloom();
+    Code:
+       0: return
+
+  public org.apache.hadoop.io.Writable getMetaWriter();
+    Code:
+       0: new           #80                 // class org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter$MetaWriter
+       3: dup
+       4: aload_0
+       5: invokespecial #81                 // Method org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter$MetaWriter."<init>":(Lorg/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter;)V
+       8: areturn
+
+  public org.apache.hadoop.io.Writable getDataWriter();
+    Code:
+       0: aconst_null
+       1: areturn
+
+  public boolean getCacheOnWrite();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field cacheOnWrite:Z
+       4: ireturn
+
+  static org.apache.hadoop.hbase.util.BloomFilterChunk access$100(org.apache.hadoop.hbase.io.hfile.CompoundBloomFilterWriter);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field prevChunk:Lorg/apache/hadoop/hbase/util/BloomFilterChunk;
+       4: areturn
+
+  static org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$BlockIndexWriter access$200(org.apache.hadoop.hbase.io.hfile.CompoundBloomFilterWriter);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field bloomBlockIndexWriter:Lorg/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexWriter;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #82                 // class org/apache/hadoop/hbase/io/hfile/CompoundBloomFilterWriter
+       2: invokestatic  #83                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #45                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

@@ -1,0 +1,352 @@
+Compiled from "RegionMover.java"
+public class org.apache.hadoop.hbase.util.RegionMover extends org.apache.hadoop.hbase.util.AbstractHBaseTool implements java.io.Closeable {
+  public static final java.lang.String MOVE_RETRIES_MAX_KEY;
+
+  public static final java.lang.String MOVE_WAIT_MAX_KEY;
+
+  public static final java.lang.String SERVERSTART_WAIT_MAX_KEY;
+
+  public static final int DEFAULT_MOVE_RETRIES_MAX;
+
+  public static final int DEFAULT_MOVE_WAIT_MAX;
+
+  public static final int DEFAULT_SERVERSTART_WAIT_MAX;
+
+  static final org.slf4j.Logger LOG;
+
+  public void close();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+       4: invokestatic  #26                 // Method org/apache/commons/io/IOUtils.closeQuietly:(Ljava/io/Closeable;)V
+       7: aload_0
+       8: getfield      #24                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      11: invokestatic  #26                 // Method org/apache/commons/io/IOUtils.closeQuietly:(Ljava/io/Closeable;)V
+      14: return
+
+  public boolean load() throws java.util.concurrent.ExecutionException, java.lang.InterruptedException, java.util.concurrent.TimeoutException;
+    Code:
+       0: iconst_1
+       1: invokestatic  #27                 // Method java/util/concurrent/Executors.newFixedThreadPool:(I)Ljava/util/concurrent/ExecutorService;
+       4: astore_1
+       5: aload_1
+       6: aload_0
+       7: invokedynamic #28,  0             // InvokeDynamic #0:call:(Lorg/apache/hadoop/hbase/util/RegionMover;)Ljava/util/concurrent/Callable;
+      12: invokeinterface #29,  2           // InterfaceMethod java/util/concurrent/ExecutorService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+      17: astore_2
+      18: aload_0
+      19: aload_1
+      20: aload_2
+      21: ldc           #30                 // String loading
+      23: invokespecial #31                 // Method waitTaskToFinish:(Ljava/util/concurrent/ExecutorService;Ljava/util/concurrent/Future;Ljava/lang/String;)Z
+      26: ireturn
+
+  public boolean unload() throws java.lang.InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #11                 // Field filename:Ljava/lang/String;
+       5: invokespecial #73                 // Method deleteFile:(Ljava/lang/String;)V
+       8: iconst_1
+       9: invokestatic  #27                 // Method java/util/concurrent/Executors.newFixedThreadPool:(I)Ljava/util/concurrent/ExecutorService;
+      12: astore_1
+      13: aload_1
+      14: aload_0
+      15: invokedynamic #74,  0             // InvokeDynamic #1:call:(Lorg/apache/hadoop/hbase/util/RegionMover;)Ljava/util/concurrent/Callable;
+      20: invokeinterface #29,  2           // InterfaceMethod java/util/concurrent/ExecutorService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+      25: astore_2
+      26: aload_0
+      27: aload_1
+      28: aload_2
+      29: ldc           #75                 // String unloading
+      31: invokespecial #31                 // Method waitTaskToFinish:(Ljava/util/concurrent/ExecutorService;Ljava/util/concurrent/Future;Ljava/lang/String;)Z
+      34: ireturn
+
+  protected void addOptions();
+    Code:
+       0: aload_0
+       1: ldc           #228                // String r
+       3: ldc           #229                // String regionserverhost
+       5: ldc           #230                // String region server <hostname>|<hostname:port>
+       7: invokevirtual #231                // Method addRequiredOptWithArg:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      10: aload_0
+      11: ldc           #232                // String o
+      13: ldc           #233                // String operation
+      15: ldc           #234                // String Expected: load/unload
+      17: invokevirtual #231                // Method addRequiredOptWithArg:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      20: aload_0
+      21: ldc           #235                // String m
+      23: ldc           #236                // String maxthreads
+      25: ldc           #237                // String Define the maximum number of threads to use to unload and reload the regions
+      27: invokevirtual #238                // Method addOptWithArg:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      30: aload_0
+      31: ldc           #239                // String x
+      33: ldc           #240                // String excludefile
+      35: ldc           #241                // String File with <hostname:port> per line to exclude as unload targets; default excludes only target host; useful for rack decommisioning.
+      37: invokevirtual #238                // Method addOptWithArg:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      40: aload_0
+      41: ldc           #242                // String f
+      43: ldc           #243                // String filename
+      45: ldc           #244                // String File to save regions list into unloading, or read from loading; default /tmp/<usernamehostname:port>
+      47: invokevirtual #238                // Method addOptWithArg:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      50: aload_0
+      51: ldc           #245                // String n
+      53: ldc           #246                // String noack
+      55: ldc           #247                // String Turn on No-Ack mode(default: false) which won't check if region is online on target RegionServer, hence best effort. This is more performant in unloading and loading but might lead to region being unavailable for some time till master reassigns it in case the move failed
+      57: invokevirtual #248                // Method addOptNoArg:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      60: aload_0
+      61: ldc           #249                // String t
+      63: ldc           #250                // String timeout
+      65: ldc           #251                // String timeout in seconds after which the tool will exit irrespective of whether it finished or not;default Integer.MAX_VALUE
+      67: invokevirtual #238                // Method addOptWithArg:(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      70: return
+
+  protected void processOptions(org.apache.hbase.thirdparty.org.apache.commons.cli.CommandLine);
+    Code:
+       0: aload_1
+       1: ldc           #228                // String r
+       3: invokevirtual #252                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.getOptionValue:(Ljava/lang/String;)Ljava/lang/String;
+       6: astore_2
+       7: aload_0
+       8: new           #253                // class org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder
+      11: dup
+      12: aload_2
+      13: invokespecial #254                // Method org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder."<init>":(Ljava/lang/String;)V
+      16: putfield      #255                // Field rmbuilder:Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      19: aload_1
+      20: bipush        109
+      22: invokevirtual #256                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.hasOption:(C)Z
+      25: ifeq          45
+      28: aload_0
+      29: getfield      #255                // Field rmbuilder:Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      32: aload_1
+      33: bipush        109
+      35: invokevirtual #257                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.getOptionValue:(C)Ljava/lang/String;
+      38: invokestatic  #258                // Method java/lang/Integer.parseInt:(Ljava/lang/String;)I
+      41: invokevirtual #259                // Method org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder.maxthreads:(I)Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      44: pop
+      45: aload_1
+      46: bipush        110
+      48: invokevirtual #256                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.hasOption:(C)Z
+      51: ifeq          63
+      54: aload_0
+      55: getfield      #255                // Field rmbuilder:Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      58: iconst_0
+      59: invokevirtual #260                // Method org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder.ack:(Z)Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      62: pop
+      63: aload_1
+      64: bipush        102
+      66: invokevirtual #256                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.hasOption:(C)Z
+      69: ifeq          86
+      72: aload_0
+      73: getfield      #255                // Field rmbuilder:Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      76: aload_1
+      77: bipush        102
+      79: invokevirtual #257                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.getOptionValue:(C)Ljava/lang/String;
+      82: invokevirtual #261                // Method org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder.filename:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      85: pop
+      86: aload_1
+      87: bipush        120
+      89: invokevirtual #256                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.hasOption:(C)Z
+      92: ifeq          109
+      95: aload_0
+      96: getfield      #255                // Field rmbuilder:Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+      99: aload_1
+     100: bipush        120
+     102: invokevirtual #257                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.getOptionValue:(C)Ljava/lang/String;
+     105: invokevirtual #262                // Method org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder.excludeFile:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+     108: pop
+     109: aload_1
+     110: bipush        116
+     112: invokevirtual #256                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.hasOption:(C)Z
+     115: ifeq          135
+     118: aload_0
+     119: getfield      #255                // Field rmbuilder:Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+     122: aload_1
+     123: bipush        116
+     125: invokevirtual #257                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.getOptionValue:(C)Ljava/lang/String;
+     128: invokestatic  #258                // Method java/lang/Integer.parseInt:(Ljava/lang/String;)I
+     131: invokevirtual #263                // Method org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder.timeout:(I)Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+     134: pop
+     135: aload_0
+     136: aload_1
+     137: ldc           #232                // String o
+     139: invokevirtual #252                // Method org/apache/hbase/thirdparty/org/apache/commons/cli/CommandLine.getOptionValue:(Ljava/lang/String;)Ljava/lang/String;
+     142: getstatic     #264                // Field java/util/Locale.ROOT:Ljava/util/Locale;
+     145: invokevirtual #265                // Method java/lang/String.toLowerCase:(Ljava/util/Locale;)Ljava/lang/String;
+     148: putfield      #266                // Field loadUnload:Ljava/lang/String;
+     151: return
+
+  protected int doWork() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #255                // Field rmbuilder:Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;
+       4: invokevirtual #267                // Method org/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder.build:()Lorg/apache/hadoop/hbase/util/RegionMover;
+       7: astore_2
+       8: aconst_null
+       9: astore_3
+      10: aload_0
+      11: getfield      #266                // Field loadUnload:Ljava/lang/String;
+      14: ldc_w         #268                // String load
+      17: invokevirtual #202                // Method java/lang/String.equalsIgnoreCase:(Ljava/lang/String;)Z
+      20: ifeq          31
+      23: aload_2
+      24: invokevirtual #269                // Method load:()Z
+      27: istore_1
+      28: goto          58
+      31: aload_0
+      32: getfield      #266                // Field loadUnload:Ljava/lang/String;
+      35: ldc_w         #270                // String unload
+      38: invokevirtual #202                // Method java/lang/String.equalsIgnoreCase:(Ljava/lang/String;)Z
+      41: ifeq          52
+      44: aload_2
+      45: invokevirtual #271                // Method unload:()Z
+      48: istore_1
+      49: goto          58
+      52: aload_0
+      53: invokevirtual #272                // Method printUsage:()V
+      56: iconst_0
+      57: istore_1
+      58: aload_2
+      59: ifnull        134
+      62: aload_3
+      63: ifnull        84
+      66: aload_2
+      67: invokevirtual #273                // Method close:()V
+      70: goto          134
+      73: astore        4
+      75: aload_3
+      76: aload         4
+      78: invokevirtual #157                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      81: goto          134
+      84: aload_2
+      85: invokevirtual #273                // Method close:()V
+      88: goto          134
+      91: astore        4
+      93: aload         4
+      95: astore_3
+      96: aload         4
+      98: athrow
+      99: astore        5
+     101: aload_2
+     102: ifnull        131
+     105: aload_3
+     106: ifnull        127
+     109: aload_2
+     110: invokevirtual #273                // Method close:()V
+     113: goto          131
+     116: astore        6
+     118: aload_3
+     119: aload         6
+     121: invokevirtual #157                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     124: goto          131
+     127: aload_2
+     128: invokevirtual #273                // Method close:()V
+     131: aload         5
+     133: athrow
+     134: iload_1
+     135: ifeq          142
+     138: iconst_0
+     139: goto          143
+     142: iconst_1
+     143: ireturn
+    Exception table:
+       from    to  target type
+          66    70    73   Class java/lang/Throwable
+          10    58    91   Class java/lang/Throwable
+          10    58    99   any
+         109   113   116   Class java/lang/Throwable
+          91   101    99   any
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: new           #67                 // class org/apache/hadoop/hbase/util/RegionMover
+       3: dup
+       4: invokespecial #274                // Method "<init>":()V
+       7: astore_1
+       8: aconst_null
+       9: astore_2
+      10: aload_1
+      11: aload_0
+      12: invokevirtual #275                // Method doStaticMain:([Ljava/lang/String;)V
+      15: aload_1
+      16: ifnull        86
+      19: aload_2
+      20: ifnull        39
+      23: aload_1
+      24: invokevirtual #273                // Method close:()V
+      27: goto          86
+      30: astore_3
+      31: aload_2
+      32: aload_3
+      33: invokevirtual #157                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      36: goto          86
+      39: aload_1
+      40: invokevirtual #273                // Method close:()V
+      43: goto          86
+      46: astore_3
+      47: aload_3
+      48: astore_2
+      49: aload_3
+      50: athrow
+      51: astore        4
+      53: aload_1
+      54: ifnull        83
+      57: aload_2
+      58: ifnull        79
+      61: aload_1
+      62: invokevirtual #273                // Method close:()V
+      65: goto          83
+      68: astore        5
+      70: aload_2
+      71: aload         5
+      73: invokevirtual #157                // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      76: goto          83
+      79: aload_1
+      80: invokevirtual #273                // Method close:()V
+      83: aload         4
+      85: athrow
+      86: return
+    Exception table:
+       from    to  target type
+          23    27    30   Class java/lang/Throwable
+          10    15    46   Class java/lang/Throwable
+          10    15    51   any
+          61    65    68   Class java/lang/Throwable
+          46    53    51   any
+
+  org.apache.hadoop.hbase.util.RegionMover(org.apache.hadoop.hbase.util.RegionMover$RegionMoverBuilder, org.apache.hadoop.hbase.util.RegionMover$1) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #4                  // Method "<init>":(Lorg/apache/hadoop/hbase/util/RegionMover$RegionMoverBuilder;)V
+       5: return
+
+  static org.apache.hadoop.hbase.client.Admin access$800(org.apache.hadoop.hbase.util.RegionMover);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+       4: areturn
+
+  static void access$900(org.apache.hadoop.hbase.util.RegionMover, org.apache.hadoop.hbase.client.RegionInfo) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #2                  // Method isSuccessfulScan:(Lorg/apache/hadoop/hbase/client/RegionInfo;)V
+       5: return
+
+  static boolean access$1000(org.apache.hadoop.hbase.util.RegionMover, org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #1                  // Method isSameServer:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;)Z
+       6: ireturn
+
+  static {};
+    Code:
+       0: ldc           #67                 // class org/apache/hadoop/hbase/util/RegionMover
+       2: invokestatic  #287                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #36                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

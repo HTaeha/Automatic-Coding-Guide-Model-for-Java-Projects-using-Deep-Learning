@@ -1,0 +1,561 @@
+Compiled from "LogRoller.java"
+public class org.apache.hadoop.hbase.regionserver.LogRoller extends org.apache.hadoop.hbase.util.HasThread implements java.io.Closeable {
+  protected final org.apache.hadoop.hbase.regionserver.RegionServerServices services;
+
+  public void addWAL(org.apache.hadoop.hbase.wal.WAL);
+    Code:
+       0: aconst_null
+       1: aload_0
+       2: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+       5: aload_1
+       6: getstatic     #3                  // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+       9: invokevirtual #4                  // Method java/util/concurrent/ConcurrentHashMap.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      12: if_acmpne     30
+      15: aload_1
+      16: new           #5                  // class org/apache/hadoop/hbase/regionserver/LogRoller$1
+      19: dup
+      20: aload_0
+      21: aload_1
+      22: invokespecial #6                  // Method org/apache/hadoop/hbase/regionserver/LogRoller$1."<init>":(Lorg/apache/hadoop/hbase/regionserver/LogRoller;Lorg/apache/hadoop/hbase/wal/WAL;)V
+      25: invokeinterface #7,  2            // InterfaceMethod org/apache/hadoop/hbase/wal/WAL.registerWALActionsListener:(Lorg/apache/hadoop/hbase/regionserver/wal/WALActionsListener;)V
+      30: return
+
+  public void requestRollAll();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+       4: invokevirtual #8                  // Method java/util/concurrent/ConcurrentHashMap.keySet:()Ljava/util/concurrent/ConcurrentHashMap$KeySetView;
+       7: invokevirtual #9                  // Method java/util/concurrent/ConcurrentHashMap$KeySetView.iterator:()Ljava/util/Iterator;
+      10: astore_1
+      11: aload_1
+      12: invokeinterface #10,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      17: ifeq          45
+      20: aload_1
+      21: invokeinterface #11,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      26: checkcast     #12                 // class org/apache/hadoop/hbase/wal/WAL
+      29: astore_2
+      30: aload_0
+      31: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+      34: aload_2
+      35: getstatic     #13                 // Field java/lang/Boolean.TRUE:Ljava/lang/Boolean;
+      38: invokevirtual #14                 // Method java/util/concurrent/ConcurrentHashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      41: pop
+      42: goto          11
+      45: aload_0
+      46: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      49: dup
+      50: astore_1
+      51: monitorenter
+      52: aload_0
+      53: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      56: iconst_1
+      57: invokevirtual #15                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+      60: aload_0
+      61: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      64: invokevirtual #16                 // Method java/lang/Object.notifyAll:()V
+      67: aload_1
+      68: monitorexit
+      69: goto          77
+      72: astore_3
+      73: aload_1
+      74: monitorexit
+      75: aload_3
+      76: athrow
+      77: return
+    Exception table:
+       from    to  target type
+          52    69    72   any
+          72    75    72   any
+
+  public org.apache.hadoop.hbase.regionserver.LogRoller(org.apache.hadoop.hbase.Server, org.apache.hadoop.hbase.regionserver.RegionServerServices);
+    Code:
+       0: aload_0
+       1: ldc           #17                 // String LogRoller
+       3: invokespecial #18                 // Method org/apache/hadoop/hbase/util/HasThread."<init>":(Ljava/lang/String;)V
+       6: aload_0
+       7: new           #19                 // class java/util/concurrent/locks/ReentrantLock
+      10: dup
+      11: invokespecial #20                 // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+      14: putfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+      17: aload_0
+      18: new           #22                 // class java/util/concurrent/atomic/AtomicBoolean
+      21: dup
+      22: iconst_0
+      23: invokespecial #23                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      26: putfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      29: aload_0
+      30: new           #24                 // class java/util/concurrent/ConcurrentHashMap
+      33: dup
+      34: invokespecial #25                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      37: putfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+      40: aload_0
+      41: invokestatic  #26                 // Method java/lang/System.currentTimeMillis:()J
+      44: putfield      #27                 // Field lastrolltime:J
+      47: aload_0
+      48: iconst_1
+      49: putfield      #28                 // Field running:Z
+      52: aload_0
+      53: aload_1
+      54: putfield      #29                 // Field server:Lorg/apache/hadoop/hbase/Server;
+      57: aload_0
+      58: aload_2
+      59: putfield      #30                 // Field services:Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;
+      62: aload_0
+      63: aload_0
+      64: getfield      #29                 // Field server:Lorg/apache/hadoop/hbase/Server;
+      67: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      72: ldc           #32                 // String hbase.regionserver.logroll.period
+      74: ldc2_w        #33                 // long 3600000l
+      77: invokevirtual #35                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      80: putfield      #36                 // Field rollperiod:J
+      83: aload_0
+      84: aload_0
+      85: getfield      #29                 // Field server:Lorg/apache/hadoop/hbase/Server;
+      88: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      93: ldc           #38                 // String hbase.server.thread.wakefrequency
+      95: sipush        10000
+      98: invokevirtual #39                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     101: putfield      #40                 // Field threadWakeFrequency:I
+     104: aload_0
+     105: aload_0
+     106: getfield      #29                 // Field server:Lorg/apache/hadoop/hbase/Server;
+     109: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     114: ldc           #41                 // String hbase.regionserver.hlog.check.lowreplication.interval
+     116: ldc2_w        #42                 // long 30000l
+     119: invokevirtual #35                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+     122: putfield      #44                 // Field checkLowReplicationInterval:J
+     125: return
+
+  public void interrupt();
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: dup
+       5: astore_1
+       6: monitorenter
+       7: aload_0
+       8: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      11: invokevirtual #45                 // Method java/lang/Object.notify:()V
+      14: aload_1
+      15: monitorexit
+      16: goto          24
+      19: astore_2
+      20: aload_1
+      21: monitorexit
+      22: aload_2
+      23: athrow
+      24: aload_0
+      25: invokespecial #46                 // Method org/apache/hadoop/hbase/util/HasThread.interrupt:()V
+      28: return
+    Exception table:
+       from    to  target type
+           7    16    19   any
+          19    22    19   any
+
+  void checkLowReplication(long);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+       4: invokevirtual #47                 // Method java/util/concurrent/ConcurrentHashMap.entrySet:()Ljava/util/Set;
+       7: invokeinterface #48,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      12: astore_3
+      13: aload_3
+      14: invokeinterface #10,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      19: ifeq          91
+      22: aload_3
+      23: invokeinterface #11,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      28: checkcast     #49                 // class java/util/Map$Entry
+      31: astore        4
+      33: aload         4
+      35: invokeinterface #50,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      40: checkcast     #12                 // class org/apache/hadoop/hbase/wal/WAL
+      43: astore        5
+      45: aload         4
+      47: invokeinterface #51,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      52: checkcast     #52                 // class java/lang/Boolean
+      55: invokevirtual #53                 // Method java/lang/Boolean.booleanValue:()Z
+      58: istore        6
+      60: iload         6
+      62: ifne          13
+      65: aload         5
+      67: instanceof    #54                 // class org/apache/hadoop/hbase/regionserver/wal/AbstractFSWAL
+      70: ifne          76
+      73: goto          13
+      76: aload         5
+      78: checkcast     #54                 // class org/apache/hadoop/hbase/regionserver/wal/AbstractFSWAL
+      81: aload_0
+      82: getfield      #44                 // Field checkLowReplicationInterval:J
+      85: invokevirtual #55                 // Method org/apache/hadoop/hbase/regionserver/wal/AbstractFSWAL.checkLogLowReplication:(J)V
+      88: goto          13
+      91: goto          106
+      94: astore_3
+      95: getstatic     #57                 // Field LOG:Lorg/slf4j/Logger;
+      98: ldc           #58                 // String Failed checking low replication
+     100: aload_3
+     101: invokeinterface #59,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     106: return
+    Exception table:
+       from    to  target type
+           0    91    94   Class java/lang/Throwable
+
+  public void run();
+    Code:
+       0: aload_0
+       1: getfield      #28                 // Field running:Z
+       4: ifeq          585
+       7: invokestatic  #26                 // Method java/lang/System.currentTimeMillis:()J
+      10: lstore_1
+      11: aload_0
+      12: lload_1
+      13: invokevirtual #64                 // Method checkLowReplication:(J)V
+      16: iconst_0
+      17: istore_3
+      18: aload_0
+      19: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      22: invokevirtual #65                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+      25: ifne          124
+      28: lload_1
+      29: aload_0
+      30: getfield      #27                 // Field lastrolltime:J
+      33: lsub
+      34: aload_0
+      35: getfield      #36                 // Field rollperiod:J
+      38: lcmp
+      39: ifle          46
+      42: iconst_1
+      43: goto          47
+      46: iconst_0
+      47: istore_3
+      48: iload_3
+      49: ifne          104
+      52: aload_0
+      53: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      56: dup
+      57: astore        4
+      59: monitorenter
+      60: aload_0
+      61: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      64: invokevirtual #65                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+      67: ifne          82
+      70: aload_0
+      71: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+      74: aload_0
+      75: getfield      #40                 // Field threadWakeFrequency:I
+      78: i2l
+      79: invokevirtual #66                 // Method java/lang/Object.wait:(J)V
+      82: goto          87
+      85: astore        5
+      87: aload         4
+      89: monitorexit
+      90: goto          101
+      93: astore        6
+      95: aload         4
+      97: monitorexit
+      98: aload         6
+     100: athrow
+     101: goto          0
+     104: getstatic     #57                 // Field LOG:Lorg/slf4j/Logger;
+     107: ldc           #68                 // String Wal roll period {} ms elapsed
+     109: aload_0
+     110: getfield      #36                 // Field rollperiod:J
+     113: invokestatic  #69                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     116: invokeinterface #70,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     121: goto          134
+     124: getstatic     #57                 // Field LOG:Lorg/slf4j/Logger;
+     127: ldc           #71                 // String WAL roll requested
+     129: invokeinterface #72,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     134: aload_0
+     135: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     138: invokevirtual #73                 // Method java/util/concurrent/locks/ReentrantLock.lock:()V
+     141: aload_0
+     142: lload_1
+     143: putfield      #27                 // Field lastrolltime:J
+     146: aload_0
+     147: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+     150: invokevirtual #47                 // Method java/util/concurrent/ConcurrentHashMap.entrySet:()Ljava/util/Set;
+     153: invokeinterface #48,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     158: astore        4
+     160: aload         4
+     162: invokeinterface #10,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     167: ifeq          311
+     170: aload         4
+     172: invokeinterface #11,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     177: checkcast     #49                 // class java/util/Map$Entry
+     180: astore        5
+     182: aload         5
+     184: invokeinterface #50,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+     189: checkcast     #12                 // class org/apache/hadoop/hbase/wal/WAL
+     192: astore        6
+     194: aload         6
+     196: iload_3
+     197: ifne          216
+     200: aload         5
+     202: invokeinterface #51,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     207: checkcast     #52                 // class java/lang/Boolean
+     210: invokevirtual #53                 // Method java/lang/Boolean.booleanValue:()Z
+     213: ifeq          220
+     216: iconst_1
+     217: goto          221
+     220: iconst_0
+     221: invokeinterface #74,  2           // InterfaceMethod org/apache/hadoop/hbase/wal/WAL.rollWriter:(Z)[[B
+     226: astore        7
+     228: aload_0
+     229: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+     232: aload         6
+     234: getstatic     #3                  // Field java/lang/Boolean.FALSE:Ljava/lang/Boolean;
+     237: invokevirtual #14                 // Method java/util/concurrent/ConcurrentHashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     240: pop
+     241: aload         7
+     243: ifnull        284
+     246: aload         7
+     248: astore        8
+     250: aload         8
+     252: arraylength
+     253: istore        9
+     255: iconst_0
+     256: istore        10
+     258: iload         10
+     260: iload         9
+     262: if_icmpge     284
+     265: aload         8
+     267: iload         10
+     269: aaload
+     270: astore        11
+     272: aload_0
+     273: aload         11
+     275: invokespecial #75                 // Method scheduleFlush:([B)V
+     278: iinc          10, 1
+     281: goto          258
+     284: goto          308
+     287: astore        7
+     289: getstatic     #57                 // Field LOG:Lorg/slf4j/Logger;
+     292: ldc           #77                 // String WAL has been closed. Skipping rolling of writer and just remove it
+     294: aload         7
+     296: invokeinterface #59,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     301: aload         4
+     303: invokeinterface #78,  1           // InterfaceMethod java/util/Iterator.remove:()V
+     308: goto          160
+     311: aload_0
+     312: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+     315: iconst_0
+     316: invokevirtual #15                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     319: aload_0
+     320: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     323: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     326: goto          341
+     329: astore        12
+     331: aload_0
+     332: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     335: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     338: aload         12
+     340: athrow
+     341: goto          582
+     344: astore        4
+     346: aload_0
+     347: ldc           #81                 // String Failed log close in log roller
+     349: aload         4
+     351: invokespecial #82                 // Method abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     354: aload_0
+     355: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+     358: iconst_0
+     359: invokevirtual #15                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     362: aload_0
+     363: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     366: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     369: goto          384
+     372: astore        13
+     374: aload_0
+     375: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     378: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     381: aload         13
+     383: athrow
+     384: goto          582
+     387: astore        4
+     389: aload_0
+     390: ldc           #81                 // String Failed log close in log roller
+     392: aload         4
+     394: invokespecial #82                 // Method abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     397: aload_0
+     398: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+     401: iconst_0
+     402: invokevirtual #15                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     405: aload_0
+     406: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     409: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     412: goto          427
+     415: astore        14
+     417: aload_0
+     418: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     421: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     424: aload         14
+     426: athrow
+     427: goto          582
+     430: astore        4
+     432: aload_0
+     433: ldc           #84                 // String IOE in log roller
+     435: aload         4
+     437: instanceof    #85                 // class org/apache/hadoop/ipc/RemoteException
+     440: ifeq          454
+     443: aload         4
+     445: checkcast     #85                 // class org/apache/hadoop/ipc/RemoteException
+     448: invokevirtual #86                 // Method org/apache/hadoop/ipc/RemoteException.unwrapRemoteException:()Ljava/io/IOException;
+     451: goto          456
+     454: aload         4
+     456: invokespecial #82                 // Method abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     459: aload_0
+     460: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+     463: iconst_0
+     464: invokevirtual #15                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     467: aload_0
+     468: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     471: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     474: goto          489
+     477: astore        15
+     479: aload_0
+     480: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     483: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     486: aload         15
+     488: athrow
+     489: goto          582
+     492: astore        4
+     494: getstatic     #57                 // Field LOG:Lorg/slf4j/Logger;
+     497: ldc           #88                 // String Log rolling failed
+     499: aload         4
+     501: invokeinterface #89,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     506: aload_0
+     507: ldc           #88                 // String Log rolling failed
+     509: aload         4
+     511: invokespecial #82                 // Method abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     514: aload_0
+     515: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+     518: iconst_0
+     519: invokevirtual #15                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     522: aload_0
+     523: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     526: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     529: goto          544
+     532: astore        16
+     534: aload_0
+     535: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     538: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     541: aload         16
+     543: athrow
+     544: goto          582
+     547: astore        17
+     549: aload_0
+     550: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+     553: iconst_0
+     554: invokevirtual #15                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+     557: aload_0
+     558: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     561: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     564: goto          579
+     567: astore        18
+     569: aload_0
+     570: getfield      #21                 // Field rollLock:Ljava/util/concurrent/locks/ReentrantLock;
+     573: invokevirtual #79                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     576: aload         18
+     578: athrow
+     579: aload         17
+     581: athrow
+     582: goto          0
+     585: getstatic     #57                 // Field LOG:Lorg/slf4j/Logger;
+     588: ldc           #90                 // String LogRoller exiting.
+     590: invokeinterface #91,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     595: return
+    Exception table:
+       from    to  target type
+          60    82    85   Class java/lang/InterruptedException
+          60    90    93   any
+          93    98    93   any
+         194   284   287   Class org/apache/hadoop/hbase/regionserver/wal/WALClosedException
+         311   319   329   any
+         329   331   329   any
+         141   311   344   Class org/apache/hadoop/hbase/regionserver/wal/FailedLogCloseException
+         354   362   372   any
+         372   374   372   any
+         141   311   387   Class java/net/ConnectException
+         397   405   415   any
+         415   417   415   any
+         141   311   430   Class java/io/IOException
+         459   467   477   any
+         477   479   477   any
+         141   311   492   Class java/lang/Exception
+         514   522   532   any
+         532   534   532   any
+         141   311   547   any
+         344   354   547   any
+         387   397   547   any
+         430   459   547   any
+         492   514   547   any
+         549   557   567   any
+         567   569   567   any
+         547   549   547   any
+
+  public boolean walRollFinished();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+       4: invokevirtual #101                // Method java/util/concurrent/ConcurrentHashMap.values:()Ljava/util/Collection;
+       7: invokeinterface #102,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      12: astore_1
+      13: aload_1
+      14: invokeinterface #10,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      19: ifeq          44
+      22: aload_1
+      23: invokeinterface #11,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      28: checkcast     #52                 // class java/lang/Boolean
+      31: invokevirtual #53                 // Method java/lang/Boolean.booleanValue:()Z
+      34: istore_2
+      35: iload_2
+      36: ifeq          41
+      39: iconst_0
+      40: ireturn
+      41: goto          13
+      44: iconst_1
+      45: ireturn
+
+  public void waitUntilWalRollFinished() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: invokevirtual #103                // Method walRollFinished:()Z
+       4: ifne          16
+       7: ldc2_w        #104                // long 100l
+      10: invokestatic  #106                // Method java/lang/Thread.sleep:(J)V
+      13: goto          0
+      16: return
+
+  public void close();
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #28                 // Field running:Z
+       5: aload_0
+       6: invokevirtual #107                // Method interrupt:()V
+       9: return
+
+  java.util.Map<org.apache.hadoop.hbase.wal.WAL, java.lang.Boolean> getWalNeedsRoll();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static java.util.concurrent.ConcurrentHashMap access$000(org.apache.hadoop.hbase.regionserver.LogRoller);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field walNeedsRoll:Ljava/util/concurrent/ConcurrentHashMap;
+       4: areturn
+
+  static java.util.concurrent.atomic.AtomicBoolean access$100(org.apache.hadoop.hbase.regionserver.LogRoller);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field rollLog:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #108                // class org/apache/hadoop/hbase/regionserver/LogRoller
+       2: invokestatic  #109                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #57                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

@@ -1,0 +1,1593 @@
+Compiled from "ZKReplicationQueueStorage.java"
+class org.apache.hadoop.hbase.replication.ZKReplicationQueueStorage extends org.apache.hadoop.hbase.replication.ZKReplicationStorageBase implements org.apache.hadoop.hbase.replication.ReplicationQueueStorage {
+  public static final java.lang.String ZOOKEEPER_ZNODE_REPLICATION_HFILE_REFS_KEY;
+
+  public static final java.lang.String ZOOKEEPER_ZNODE_REPLICATION_HFILE_REFS_DEFAULT;
+
+  public static final java.lang.String ZOOKEEPER_ZNODE_REPLICATION_REGIONS_KEY;
+
+  public static final java.lang.String ZOOKEEPER_ZNODE_REPLICATION_REGIONS_DEFAULT;
+
+  final java.lang.String regionsZNode;
+
+  public org.apache.hadoop.hbase.replication.ZKReplicationQueueStorage(org.apache.hadoop.hbase.zookeeper.ZKWatcher, org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #1                  // Method org/apache/hadoop/hbase/replication/ZKReplicationStorageBase."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Lorg/apache/hadoop/conf/Configuration;)V
+       6: aload_2
+       7: ldc           #2                  // String zookeeper.znode.replication.rs
+       9: ldc           #3                  // String rs
+      11: invokevirtual #4                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      14: astore_3
+      15: aload_2
+      16: ldc           #6                  // String zookeeper.znode.replication.hfile.refs
+      18: ldc           #7                  // String hfile-refs
+      20: invokevirtual #4                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      23: astore        4
+      25: aload_0
+      26: aload_0
+      27: getfield      #8                  // Field replicationZNode:Ljava/lang/String;
+      30: aload_3
+      31: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZNodePaths.joinZNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      34: putfield      #10                 // Field queuesZNode:Ljava/lang/String;
+      37: aload_0
+      38: aload_0
+      39: getfield      #8                  // Field replicationZNode:Ljava/lang/String;
+      42: aload         4
+      44: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZNodePaths.joinZNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      47: putfield      #11                 // Field hfileRefsZNode:Ljava/lang/String;
+      50: aload_0
+      51: aload_0
+      52: getfield      #8                  // Field replicationZNode:Ljava/lang/String;
+      55: aload_2
+      56: ldc           #12                 // String zookeeper.znode.replication.regions
+      58: ldc           #13                 // String regions
+      60: invokevirtual #4                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      63: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZNodePaths.joinZNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      66: putfield      #14                 // Field regionsZNode:Ljava/lang/String;
+      69: return
+
+  public java.lang.String getRsNode(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field queuesZNode:Ljava/lang/String;
+       4: aload_1
+       5: invokevirtual #15                 // Method org/apache/hadoop/hbase/ServerName.getServerName:()Ljava/lang/String;
+       8: invokestatic  #9                  // Method org/apache/hadoop/hbase/zookeeper/ZNodePaths.joinZNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      11: areturn
+
+  java.lang.String getSerialReplicationRegionPeerNode(java.lang.String, java.lang.String);
+    Code:
+       0: aload_1
+       1: ifnull        13
+       4: aload_1
+       5: invokevirtual #19                 // Method java/lang/String.length:()I
+       8: bipush        32
+      10: if_icmpeq     45
+      13: new           #21                 // class java/lang/IllegalArgumentException
+      16: dup
+      17: new           #22                 // class java/lang/StringBuilder
+      20: dup
+      21: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      24: ldc           #24                 // String Invalid encoded region name:
+      26: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      29: aload_1
+      30: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: ldc           #26                 // String , length should be 32.
+      35: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      41: invokespecial #28                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      44: athrow
+      45: new           #22                 // class java/lang/StringBuilder
+      48: dup
+      49: aload_0
+      50: getfield      #14                 // Field regionsZNode:Ljava/lang/String;
+      53: invokespecial #29                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      56: bipush        47
+      58: invokevirtual #31                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      61: aload_1
+      62: iconst_0
+      63: iconst_2
+      64: invokevirtual #32                 // Method java/lang/String.substring:(II)Ljava/lang/String;
+      67: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      70: bipush        47
+      72: invokevirtual #31                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      75: aload_1
+      76: iconst_2
+      77: iconst_4
+      78: invokevirtual #32                 // Method java/lang/String.substring:(II)Ljava/lang/String;
+      81: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      84: bipush        47
+      86: invokevirtual #31                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      89: aload_1
+      90: iconst_4
+      91: invokevirtual #33                 // Method java/lang/String.substring:(I)Ljava/lang/String;
+      94: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      97: ldc           #34                 // String -
+      99: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     102: aload_2
+     103: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     106: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     109: areturn
+
+  public void removeQueue(org.apache.hadoop.hbase.ServerName, java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: invokespecial #17                 // Method getQueueNode:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)Ljava/lang/String;
+      10: invokestatic  #36                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNodeRecursively:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      13: goto          59
+      16: astore_3
+      17: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      20: dup
+      21: new           #22                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      28: ldc           #39                 // String Failed to delete queue (serverName=
+      30: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload_1
+      34: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      37: ldc           #41                 // String , queueId=
+      39: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: aload_2
+      43: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: ldc           #42                 // String )
+      48: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: aload_3
+      55: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      58: athrow
+      59: return
+    Exception table:
+       from    to  target type
+           0    13    16   Class org/apache/zookeeper/KeeperException
+
+  public void addWAL(org.apache.hadoop.hbase.ServerName, java.lang.String, java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: aload_3
+       8: invokespecial #44                 // Method getFileNode:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      11: invokestatic  #45                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.createWithParents:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      14: goto          71
+      17: astore        4
+      19: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      22: dup
+      23: new           #22                 // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #46                 // String Failed to add wal to queue (serverName=
+      32: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload_1
+      36: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      39: ldc           #41                 // String , queueId=
+      41: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: aload_2
+      45: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      48: ldc           #47                 // String , fileName=
+      50: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: aload_3
+      54: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: ldc           #42                 // String )
+      59: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      62: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      65: aload         4
+      67: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      70: athrow
+      71: return
+    Exception table:
+       from    to  target type
+           0    14    17   Class org/apache/zookeeper/KeeperException
+
+  public void removeWAL(org.apache.hadoop.hbase.ServerName, java.lang.String, java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: invokespecial #44                 // Method getFileNode:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+       7: astore        4
+       9: aload_0
+      10: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      13: aload         4
+      15: invokestatic  #48                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNode:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      18: goto          92
+      21: astore        5
+      23: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      26: ldc           #51                 // String {} already deleted when removing log
+      28: aload         4
+      30: invokeinterface #52,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+      35: goto          92
+      38: astore        5
+      40: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      43: dup
+      44: new           #22                 // class java/lang/StringBuilder
+      47: dup
+      48: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      51: ldc           #53                 // String Failed to remove wal from queue (serverName=
+      53: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: aload_1
+      57: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      60: ldc           #41                 // String , queueId=
+      62: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      65: aload_2
+      66: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: ldc           #47                 // String , fileName=
+      71: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      74: aload_3
+      75: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      78: ldc           #42                 // String )
+      80: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      86: aload         5
+      88: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      91: athrow
+      92: return
+    Exception table:
+       from    to  target type
+           9    18    21   Class org/apache/zookeeper/KeeperException$NoNodeException
+           9    18    38   Class org/apache/zookeeper/KeeperException
+
+  public void setWALPosition(org.apache.hadoop.hbase.ServerName, java.lang.String, java.lang.String, long, java.util.Map<java.lang.String, java.lang.Long>) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: iconst_0
+       1: istore        7
+       3: new           #78                 // class java/util/ArrayList
+       6: dup
+       7: invokespecial #79                 // Method java/util/ArrayList."<init>":()V
+      10: astore        8
+      12: lload         4
+      14: lconst_0
+      15: lcmp
+      16: ifle          42
+      19: aload         8
+      21: aload_0
+      22: aload_1
+      23: aload_2
+      24: aload_3
+      25: invokespecial #44                 // Method getFileNode:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      28: lload         4
+      30: invokestatic  #69                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.positionToByteArray:(J)[B
+      33: invokestatic  #80                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp.setData:(Ljava/lang/String;[B)Lorg/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp;
+      36: invokeinterface #75,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      41: pop
+      42: aload_0
+      43: aload_2
+      44: aload         6
+      46: aload         8
+      48: invokespecial #81                 // Method addLastSeqIdsToOps:(Ljava/lang/String;Ljava/util/Map;Ljava/util/List;)V
+      51: aload         8
+      53: invokeinterface #82,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      58: ifeq          62
+      61: return
+      62: aload_0
+      63: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      66: aload         8
+      68: iconst_0
+      69: invokestatic  #83                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.multiOrSequential:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/util/List;Z)V
+      72: return
+      73: astore        9
+      75: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      78: new           #22                 // class java/lang/StringBuilder
+      81: dup
+      82: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      85: ldc           #86                 // String Bad version(or node exist) when persist the last pushed sequence id to zookeeper storage, Retry =
+      87: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      90: iload         7
+      92: invokevirtual #87                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      95: ldc           #88                 // String , serverName=
+      97: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     100: aload_1
+     101: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     104: ldc           #41                 // String , queueId=
+     106: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     109: aload_2
+     110: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     113: ldc           #47                 // String , fileName=
+     115: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     118: aload_3
+     119: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     122: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     125: invokeinterface #89,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     130: iinc          7, 1
+     133: goto          3
+     136: astore        7
+     138: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+     141: dup
+     142: new           #22                 // class java/lang/StringBuilder
+     145: dup
+     146: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     149: ldc           #90                 // String Failed to set log position (serverName=
+     151: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     154: aload_1
+     155: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     158: ldc           #41                 // String , queueId=
+     160: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     163: aload_2
+     164: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     167: ldc           #47                 // String , fileName=
+     169: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     172: aload_3
+     173: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     176: ldc           #91                 // String , position=
+     178: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     181: lload         4
+     183: invokevirtual #92                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     186: ldc           #42                 // String )
+     188: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     191: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     194: aload         7
+     196: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     199: athrow
+    Exception table:
+       from    to  target type
+          62    72    73   Class org/apache/zookeeper/KeeperException$BadVersionException
+          62    72    73   Class org/apache/zookeeper/KeeperException$NodeExistsException
+           0    61   136   Class org/apache/zookeeper/KeeperException
+          62    72   136   Class org/apache/zookeeper/KeeperException
+          73   136   136   Class org/apache/zookeeper/KeeperException
+
+  protected org.apache.hadoop.hbase.util.Pair<java.lang.Long, java.lang.Integer> getLastSequenceIdWithVersion(java.lang.String, java.lang.String) throws org.apache.zookeeper.KeeperException;
+    Code:
+       0: new           #93                 // class org/apache/zookeeper/data/Stat
+       3: dup
+       4: invokespecial #94                 // Method org/apache/zookeeper/data/Stat."<init>":()V
+       7: astore_3
+       8: aload_0
+       9: aload_1
+      10: aload_2
+      11: invokevirtual #64                 // Method getSerialReplicationRegionPeerNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      14: astore        4
+      16: aload_0
+      17: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      20: aload         4
+      22: aload_3
+      23: invokestatic  #95                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataNoWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;Lorg/apache/zookeeper/data/Stat;)[B
+      26: astore        5
+      28: aload         5
+      30: ifnonnull     47
+      33: ldc2_w        #97                 // long -1l
+      36: invokestatic  #99                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      39: iconst_m1
+      40: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      43: invokestatic  #101                // Method org/apache/hadoop/hbase/util/Pair.newPair:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hadoop/hbase/util/Pair;
+      46: areturn
+      47: aload         5
+      49: invokestatic  #102                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.parseWALPositionFrom:([B)J
+      52: invokestatic  #99                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      55: aload_3
+      56: invokevirtual #103                // Method org/apache/zookeeper/data/Stat.getVersion:()I
+      59: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      62: invokestatic  #101                // Method org/apache/hadoop/hbase/util/Pair.newPair:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hadoop/hbase/util/Pair;
+      65: areturn
+      66: astore        6
+      68: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      71: new           #22                 // class java/lang/StringBuilder
+      74: dup
+      75: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      78: ldc           #105                // String Failed to parse log position (region=
+      80: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: aload_1
+      84: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: ldc           #106                // String , peerId=
+      89: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      92: aload_2
+      93: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: ldc           #107                // String ), data=
+      98: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     101: aload         5
+     103: invokestatic  #108                // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+     106: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     109: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     112: invokeinterface #89,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     117: ldc2_w        #97                 // long -1l
+     120: invokestatic  #99                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     123: aload_3
+     124: invokevirtual #103                // Method org/apache/zookeeper/data/Stat.getVersion:()I
+     127: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     130: invokestatic  #101                // Method org/apache/hadoop/hbase/util/Pair.newPair:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hadoop/hbase/util/Pair;
+     133: areturn
+    Exception table:
+       from    to  target type
+          47    65    66   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+
+  public long getLastSequenceId(java.lang.String, java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokevirtual #65                 // Method getLastSequenceIdWithVersion:(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/hadoop/hbase/util/Pair;
+       6: invokevirtual #76                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+       9: checkcast     #67                 // class java/lang/Long
+      12: invokevirtual #68                 // Method java/lang/Long.longValue:()J
+      15: lreturn
+      16: astore_3
+      17: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      20: dup
+      21: new           #22                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      28: ldc           #109                // String Failed to get last pushed sequence id (encodedRegionName=
+      30: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload_1
+      34: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: ldc           #106                // String , peerId=
+      39: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: aload_2
+      43: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: ldc           #42                 // String )
+      48: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: aload_3
+      55: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      58: athrow
+    Exception table:
+       from    to  target type
+           0    15    16   Class org/apache/zookeeper/KeeperException
+
+  public void setLastSequenceIds(java.lang.String, java.util.Map<java.lang.String, java.lang.Long>) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: new           #78                 // class java/util/ArrayList
+       3: dup
+       4: invokespecial #79                 // Method java/util/ArrayList."<init>":()V
+       7: astore_3
+       8: aload_2
+       9: invokeinterface #57,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      14: invokeinterface #58,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      19: astore        4
+      21: aload         4
+      23: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      28: ifeq          100
+      31: aload         4
+      33: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      38: checkcast     #61                 // class java/util/Map$Entry
+      41: astore        5
+      43: aload_0
+      44: aload         5
+      46: invokeinterface #62,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      51: checkcast     #63                 // class java/lang/String
+      54: aload_1
+      55: invokevirtual #64                 // Method getSerialReplicationRegionPeerNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      58: astore        6
+      60: aload_0
+      61: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      64: aload         6
+      66: invokestatic  #45                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.createWithParents:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      69: aload_3
+      70: aload         6
+      72: aload         5
+      74: invokeinterface #66,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      79: checkcast     #67                 // class java/lang/Long
+      82: invokevirtual #68                 // Method java/lang/Long.longValue:()J
+      85: invokestatic  #69                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.positionToByteArray:(J)[B
+      88: invokestatic  #80                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp.setData:(Ljava/lang/String;[B)Lorg/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp;
+      91: invokeinterface #75,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      96: pop
+      97: goto          21
+     100: aload_3
+     101: invokeinterface #82,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     106: ifne          118
+     109: aload_0
+     110: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     113: aload_3
+     114: iconst_1
+     115: invokestatic  #83                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.multiOrSequential:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/util/List;Z)V
+     118: goto          164
+     121: astore_3
+     122: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+     125: dup
+     126: new           #22                 // class java/lang/StringBuilder
+     129: dup
+     130: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     133: ldc           #110                // String Failed to set last sequence ids, peerId=
+     135: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     138: aload_1
+     139: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     142: ldc           #111                // String , size of lastSeqIds=
+     144: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     147: aload_2
+     148: invokeinterface #112,  1          // InterfaceMethod java/util/Map.size:()I
+     153: invokevirtual #87                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     156: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     159: aload_3
+     160: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     163: athrow
+     164: return
+    Exception table:
+       from    to  target type
+           0   118   121   Class org/apache/zookeeper/KeeperException
+
+  public void removeLastSequenceIds(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: new           #22                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #34                 // String -
+       9: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_1
+      13: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      16: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      19: astore_2
+      20: new           #22                 // class java/lang/StringBuilder
+      23: dup
+      24: aload_0
+      25: getfield      #14                 // Field regionsZNode:Ljava/lang/String;
+      28: invokespecial #29                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+      31: astore_3
+      32: aload_0
+      33: getfield      #14                 // Field regionsZNode:Ljava/lang/String;
+      36: invokevirtual #19                 // Method java/lang/String.length:()I
+      39: istore        4
+      41: iload         4
+      43: iconst_3
+      44: iadd
+      45: istore        5
+      47: iload         5
+      49: iconst_3
+      50: iadd
+      51: istore        6
+      53: aload_0
+      54: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      57: aload_0
+      58: getfield      #14                 // Field regionsZNode:Ljava/lang/String;
+      61: invokestatic  #113                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.listChildrenNoWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)Ljava/util/List;
+      64: astore        7
+      66: aload         7
+      68: invokestatic  #114                // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/CollectionUtils.isEmpty:(Ljava/util/Collection;)Z
+      71: ifeq          75
+      74: return
+      75: aload         7
+      77: invokeinterface #115,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      82: astore        8
+      84: aload         8
+      86: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      91: ifeq          269
+      94: aload         8
+      96: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     101: checkcast     #63                 // class java/lang/String
+     104: astore        9
+     106: aload_3
+     107: bipush        47
+     109: invokevirtual #31                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+     112: aload         9
+     114: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: pop
+     118: aload_0
+     119: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     122: aload_3
+     123: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     126: invokestatic  #113                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.listChildrenNoWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)Ljava/util/List;
+     129: invokeinterface #115,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     134: astore        10
+     136: aload         10
+     138: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     143: ifeq          260
+     146: aload         10
+     148: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     153: checkcast     #63                 // class java/lang/String
+     156: astore        11
+     158: aload_3
+     159: bipush        47
+     161: invokevirtual #31                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+     164: aload         11
+     166: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     169: pop
+     170: aload_0
+     171: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     174: aload_3
+     175: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     178: invokestatic  #113                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.listChildrenNoWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)Ljava/util/List;
+     181: invokeinterface #115,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     186: astore        12
+     188: aload         12
+     190: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     195: ifeq          251
+     198: aload         12
+     200: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     205: checkcast     #63                 // class java/lang/String
+     208: astore        13
+     210: aload         13
+     212: aload_2
+     213: invokevirtual #116                // Method java/lang/String.endsWith:(Ljava/lang/String;)Z
+     216: ifeq          248
+     219: aload_3
+     220: bipush        47
+     222: invokevirtual #31                 // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+     225: aload         13
+     227: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     230: pop
+     231: aload_0
+     232: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     235: aload_3
+     236: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     239: invokestatic  #48                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNode:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+     242: aload_3
+     243: iload         6
+     245: invokevirtual #117                // Method java/lang/StringBuilder.setLength:(I)V
+     248: goto          188
+     251: aload_3
+     252: iload         5
+     254: invokevirtual #117                // Method java/lang/StringBuilder.setLength:(I)V
+     257: goto          136
+     260: aload_3
+     261: iload         4
+     263: invokevirtual #117                // Method java/lang/StringBuilder.setLength:(I)V
+     266: goto          84
+     269: goto          301
+     272: astore_3
+     273: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+     276: dup
+     277: new           #22                 // class java/lang/StringBuilder
+     280: dup
+     281: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     284: ldc           #118                // String Failed to remove all last sequence ids, peerId=
+     286: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     289: aload_1
+     290: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     293: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     296: aload_3
+     297: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     300: athrow
+     301: return
+    Exception table:
+       from    to  target type
+          20    74   272   Class org/apache/zookeeper/KeeperException
+          75   269   272   Class org/apache/zookeeper/KeeperException
+
+  public void removeLastSequenceIds(java.lang.String, java.util.List<java.lang.String>) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_2
+       1: invokeinterface #119,  1          // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+       6: aload_0
+       7: aload_1
+       8: invokedynamic #120,  0            // InvokeDynamic #0:apply:(Lorg/apache/hadoop/hbase/replication/ZKReplicationQueueStorage;Ljava/lang/String;)Ljava/util/function/Function;
+      13: invokeinterface #121,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      18: invokedynamic #122,  0            // InvokeDynamic #1:apply:()Ljava/util/function/Function;
+      23: invokeinterface #121,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      28: invokestatic  #123                // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      31: invokeinterface #124,  2          // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      36: checkcast     #125                // class java/util/List
+      39: astore_3
+      40: aload_0
+      41: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      44: aload_3
+      45: iconst_1
+      46: invokestatic  #83                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.multiOrSequential:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/util/List;Z)V
+      49: goto          95
+      52: astore_3
+      53: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      56: dup
+      57: new           #22                 // class java/lang/StringBuilder
+      60: dup
+      61: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      64: ldc           #126                // String Failed to remove last sequence ids, peerId=
+      66: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: aload_1
+      70: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      73: ldc           #127                // String , encodedRegionNames.size=
+      75: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      78: aload_2
+      79: invokeinterface #128,  1          // InterfaceMethod java/util/List.size:()I
+      84: invokevirtual #87                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      87: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      90: aload_3
+      91: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      94: athrow
+      95: return
+    Exception table:
+       from    to  target type
+           0    49    52   Class org/apache/zookeeper/KeeperException
+
+  public long getWALPosition(org.apache.hadoop.hbase.ServerName, java.lang.String, java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: aload_3
+       8: invokespecial #44                 // Method getFileNode:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      11: invokestatic  #129                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getData:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+      14: astore        4
+      16: goto          73
+      19: astore        5
+      21: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      24: dup
+      25: new           #22                 // class java/lang/StringBuilder
+      28: dup
+      29: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      32: ldc           #131                // String Failed to get log position (serverName=
+      34: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: aload_1
+      38: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      41: ldc           #41                 // String , queueId=
+      43: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_2
+      47: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      50: ldc           #47                 // String , fileName=
+      52: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      55: aload_3
+      56: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: ldc           #42                 // String )
+      61: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      67: aload         5
+      69: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      72: athrow
+      73: aload         4
+      75: invokestatic  #102                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.parseWALPositionFrom:([B)J
+      78: lreturn
+      79: astore        5
+      81: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      84: ldc           #132                // String Failed parse log position (serverName={}, queueId={}, fileName={})
+      86: iconst_3
+      87: anewarray     #133                // class java/lang/Object
+      90: dup
+      91: iconst_0
+      92: aload_1
+      93: aastore
+      94: dup
+      95: iconst_1
+      96: aload_2
+      97: aastore
+      98: dup
+      99: iconst_2
+     100: aload_3
+     101: aastore
+     102: invokeinterface #134,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;[Ljava/lang/Object;)V
+     107: lconst_0
+     108: lreturn
+    Exception table:
+       from    to  target type
+           0    16    19   Class org/apache/zookeeper/KeeperException
+           0    16    19   Class java/lang/InterruptedException
+          73    78    79   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+
+  public org.apache.hadoop.hbase.util.Pair<java.lang.String, java.util.SortedSet<java.lang.String>> claimQueue(org.apache.hadoop.hbase.ServerName, java.lang.String, org.apache.hadoop.hbase.ServerName) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #135                // String Atomically moving {}/{}'s WALs to {}
+       5: iconst_3
+       6: anewarray     #133                // class java/lang/Object
+       9: dup
+      10: iconst_0
+      11: aload_1
+      12: aastore
+      13: dup
+      14: iconst_1
+      15: aload_2
+      16: aastore
+      17: dup
+      18: iconst_2
+      19: aload_3
+      20: aastore
+      21: invokeinterface #136,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+      26: aload_0
+      27: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      30: aload_0
+      31: aload_3
+      32: invokevirtual #16                 // Method getRsNode:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/lang/String;
+      35: invokestatic  #45                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.createWithParents:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      38: goto          99
+      41: astore        4
+      43: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      46: dup
+      47: new           #22                 // class java/lang/StringBuilder
+      50: dup
+      51: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      54: ldc           #137                // String Claim queue queueId=
+      56: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: aload_2
+      60: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: ldc           #138                // String  from
+      65: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      68: aload_1
+      69: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      72: ldc           #139                // String  to
+      74: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      77: aload_3
+      78: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      81: ldc           #140                // String  failed when creating the node for
+      83: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: aload_3
+      87: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      90: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      93: aload         4
+      95: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      98: athrow
+      99: new           #22                 // class java/lang/StringBuilder
+     102: dup
+     103: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     106: aload_2
+     107: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     110: ldc           #34                 // String -
+     112: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     115: aload_1
+     116: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     119: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     122: astore        4
+     124: aload_0
+     125: aload_1
+     126: aload_2
+     127: invokespecial #17                 // Method getQueueNode:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)Ljava/lang/String;
+     130: astore        5
+     132: aload_0
+     133: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     136: aload         5
+     138: invokestatic  #113                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.listChildrenNoWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)Ljava/util/List;
+     141: astore        6
+     143: aload         6
+     145: invokestatic  #114                // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/CollectionUtils.isEmpty:(Ljava/util/Collection;)Z
+     148: ifeq          185
+     151: aload_0
+     152: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     155: aload         5
+     157: invokestatic  #141                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNodeFailSilent:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+     160: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+     163: ldc           #142                // String Removed empty {}/{}
+     165: aload_1
+     166: aload_2
+     167: invokeinterface #143,  4          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     172: new           #144                // class org/apache/hadoop/hbase/util/Pair
+     175: dup
+     176: aload         4
+     178: invokestatic  #145                // Method java/util/Collections.emptySortedSet:()Ljava/util/SortedSet;
+     181: invokespecial #146                // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+     184: areturn
+     185: aload_0
+     186: aload_3
+     187: aload         4
+     189: invokespecial #17                 // Method getQueueNode:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)Ljava/lang/String;
+     192: astore        7
+     194: new           #78                 // class java/util/ArrayList
+     197: dup
+     198: invokespecial #79                 // Method java/util/ArrayList."<init>":()V
+     201: astore        8
+     203: new           #147                // class java/util/TreeSet
+     206: dup
+     207: invokespecial #148                // Method java/util/TreeSet."<init>":()V
+     210: astore        9
+     212: aload         8
+     214: aload         7
+     216: getstatic     #149                // Field org/apache/hadoop/hbase/HConstants.EMPTY_BYTE_ARRAY:[B
+     219: invokestatic  #74                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp.createAndFailSilent:(Ljava/lang/String;[B)Lorg/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp;
+     222: invokeinterface #75,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     227: pop
+     228: aload         6
+     230: invokeinterface #115,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     235: astore        10
+     237: aload         10
+     239: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     244: ifeq          348
+     247: aload         10
+     249: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     254: checkcast     #63                 // class java/lang/String
+     257: astore        11
+     259: aload_0
+     260: aload         5
+     262: aload         11
+     264: invokespecial #18                 // Method getFileNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+     267: astore        12
+     269: aload_0
+     270: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     273: aload         12
+     275: invokestatic  #129                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getData:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)[B
+     278: astore        13
+     280: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+     283: ldc           #150                // String Creating {} with data {}
+     285: aload         11
+     287: aload         13
+     289: invokestatic  #108                // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+     292: invokeinterface #151,  4          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     297: aload_0
+     298: aload         7
+     300: aload         11
+     302: invokespecial #18                 // Method getFileNode:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+     305: astore        14
+     307: aload         8
+     309: aload         14
+     311: aload         13
+     313: invokestatic  #74                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp.createAndFailSilent:(Ljava/lang/String;[B)Lorg/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp;
+     316: invokeinterface #75,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     321: pop
+     322: aload         8
+     324: aload         12
+     326: invokestatic  #152                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp.deleteNodeFailSilent:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp;
+     329: invokeinterface #75,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     334: pop
+     335: aload         9
+     337: aload         11
+     339: invokeinterface #153,  2          // InterfaceMethod java/util/SortedSet.add:(Ljava/lang/Object;)Z
+     344: pop
+     345: goto          237
+     348: aload         8
+     350: aload         5
+     352: invokestatic  #152                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp.deleteNodeFailSilent:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/zookeeper/ZKUtil$ZKUtilOp;
+     355: invokeinterface #75,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     360: pop
+     361: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+     364: ldc           #154                // String The multi list size is {}
+     366: aload         8
+     368: invokeinterface #128,  1          // InterfaceMethod java/util/List.size:()I
+     373: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     376: invokeinterface #155,  3          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+     381: aload_0
+     382: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     385: aload         8
+     387: iconst_0
+     388: invokestatic  #83                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.multiOrSequential:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/util/List;Z)V
+     391: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+     394: ldc           #156                // String Atomically moved {}/{}'s WALs to {}
+     396: iconst_3
+     397: anewarray     #133                // class java/lang/Object
+     400: dup
+     401: iconst_0
+     402: aload_1
+     403: aastore
+     404: dup
+     405: iconst_1
+     406: aload_2
+     407: aastore
+     408: dup
+     409: iconst_2
+     410: aload_3
+     411: aastore
+     412: invokeinterface #136,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     417: new           #144                // class org/apache/hadoop/hbase/util/Pair
+     420: dup
+     421: aload         4
+     423: aload         9
+     425: invokespecial #146                // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+     428: areturn
+     429: astore        5
+     431: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+     434: ldc           #158                // String Claim queue queueId={} from {} to {} failed with {}, someone else took the log?
+     436: iconst_4
+     437: anewarray     #133                // class java/lang/Object
+     440: dup
+     441: iconst_0
+     442: aload_2
+     443: aastore
+     444: dup
+     445: iconst_1
+     446: aload_1
+     447: aastore
+     448: dup
+     449: iconst_2
+     450: aload_3
+     451: aastore
+     452: dup
+     453: iconst_3
+     454: aload         5
+     456: invokevirtual #159                // Method org/apache/zookeeper/KeeperException.toString:()Ljava/lang/String;
+     459: aastore
+     460: invokeinterface #136,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     465: new           #144                // class org/apache/hadoop/hbase/util/Pair
+     468: dup
+     469: aload         4
+     471: invokestatic  #145                // Method java/util/Collections.emptySortedSet:()Ljava/util/SortedSet;
+     474: invokespecial #146                // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+     477: areturn
+     478: astore        5
+     480: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+     483: dup
+     484: new           #22                 // class java/lang/StringBuilder
+     487: dup
+     488: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     491: ldc           #137                // String Claim queue queueId=
+     493: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     496: aload_2
+     497: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     500: ldc           #138                // String  from
+     502: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     505: aload_1
+     506: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     509: ldc           #139                // String  to
+     511: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     514: aload_3
+     515: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     518: ldc           #160                // String  failed
+     520: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     523: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     526: aload         5
+     528: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     531: athrow
+    Exception table:
+       from    to  target type
+          26    38    41   Class org/apache/zookeeper/KeeperException
+         124   184   429   Class org/apache/zookeeper/KeeperException$NoNodeException
+         124   184   429   Class org/apache/zookeeper/KeeperException$NodeExistsException
+         124   184   429   Class org/apache/zookeeper/KeeperException$NotEmptyException
+         124   184   429   Class org/apache/zookeeper/KeeperException$BadVersionException
+         185   428   429   Class org/apache/zookeeper/KeeperException$NoNodeException
+         185   428   429   Class org/apache/zookeeper/KeeperException$NodeExistsException
+         185   428   429   Class org/apache/zookeeper/KeeperException$NotEmptyException
+         185   428   429   Class org/apache/zookeeper/KeeperException$BadVersionException
+         124   184   478   Class org/apache/zookeeper/KeeperException
+         124   184   478   Class java/lang/InterruptedException
+         185   428   478   Class org/apache/zookeeper/KeeperException
+         185   428   478   Class java/lang/InterruptedException
+
+  public void removeReplicatorIfQueueIsEmpty(org.apache.hadoop.hbase.ServerName) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: aload_0
+       5: aload_1
+       6: invokevirtual #16                 // Method getRsNode:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/lang/String;
+       9: invokestatic  #141                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNodeFailSilent:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      12: goto          48
+      15: astore_2
+      16: goto          48
+      19: astore_2
+      20: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      23: dup
+      24: new           #22                 // class java/lang/StringBuilder
+      27: dup
+      28: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      31: ldc           #161                // String Failed to remove replicator for
+      33: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      36: aload_1
+      37: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      40: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      43: aload_2
+      44: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      47: athrow
+      48: return
+    Exception table:
+       from    to  target type
+           0    12    15   Class org/apache/zookeeper/KeeperException$NotEmptyException
+           0    12    19   Class org/apache/zookeeper/KeeperException
+
+  public java.util.List<org.apache.hadoop.hbase.ServerName> getListOfReplicators() throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: invokespecial #164                // Method getListOfReplicators0:()Ljava/util/List;
+       4: areturn
+       5: astore_1
+       6: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+       9: dup
+      10: ldc           #165                // String Failed to get list of replicators
+      12: aload_1
+      13: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      16: athrow
+    Exception table:
+       from    to  target type
+           0     4     5   Class org/apache/zookeeper/KeeperException
+
+  public java.util.List<java.lang.String> getWALsInQueue(org.apache.hadoop.hbase.ServerName, java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #166                // Method getWALsInQueue0:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)Ljava/util/List;
+       6: areturn
+       7: astore_3
+       8: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      11: dup
+      12: new           #22                 // class java/lang/StringBuilder
+      15: dup
+      16: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      19: ldc           #167                // String Failed to get wals in queue (serverName=
+      21: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: aload_1
+      25: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      28: ldc           #41                 // String , queueId=
+      30: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload_2
+      34: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: ldc           #42                 // String )
+      39: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      45: aload_3
+      46: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      49: athrow
+    Exception table:
+       from    to  target type
+           0     6     7   Class org/apache/zookeeper/KeeperException
+
+  public java.util.List<java.lang.String> getAllQueues(org.apache.hadoop.hbase.ServerName) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #168                // Method getAllQueues0:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/util/List;
+       5: areturn
+       6: astore_2
+       7: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      10: dup
+      11: new           #22                 // class java/lang/StringBuilder
+      14: dup
+      15: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      18: ldc           #169                // String Failed to get all queues (serverName=
+      20: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      23: aload_1
+      24: invokevirtual #40                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      27: ldc           #42                 // String )
+      29: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      35: aload_2
+      36: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      39: athrow
+    Exception table:
+       from    to  target type
+           0     5     6   Class org/apache/zookeeper/KeeperException
+
+  protected int getQueuesZNodeCversion() throws org.apache.zookeeper.KeeperException;
+    Code:
+       0: new           #93                 // class org/apache/zookeeper/data/Stat
+       3: dup
+       4: invokespecial #94                 // Method org/apache/zookeeper/data/Stat."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      12: aload_0
+      13: getfield      #10                 // Field queuesZNode:Ljava/lang/String;
+      16: aload_1
+      17: invokestatic  #95                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataNoWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;Lorg/apache/zookeeper/data/Stat;)[B
+      20: pop
+      21: aload_1
+      22: invokevirtual #170                // Method org/apache/zookeeper/data/Stat.getCversion:()I
+      25: ireturn
+
+  public java.util.Set<java.lang.String> getAllWALs() throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: invokevirtual #171                // Method getQueuesZNodeCversion:()I
+       6: istore_2
+       7: aload_0
+       8: invokespecial #164                // Method getListOfReplicators0:()Ljava/util/List;
+      11: astore_3
+      12: aload_3
+      13: invokeinterface #82,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      18: ifeq          35
+      21: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      24: ldc           #172                // String Didn't find a RegionServer that replicates, won't prevent deletions.
+      26: invokeinterface #173,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      31: invokestatic  #174                // Method java/util/Collections.emptySet:()Ljava/util/Set;
+      34: areturn
+      35: new           #175                // class java/util/HashSet
+      38: dup
+      39: invokespecial #176                // Method java/util/HashSet."<init>":()V
+      42: astore        4
+      44: aload_3
+      45: invokeinterface #115,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      50: astore        5
+      52: aload         5
+      54: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      59: ifeq          131
+      62: aload         5
+      64: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      69: checkcast     #177                // class org/apache/hadoop/hbase/ServerName
+      72: astore        6
+      74: aload_0
+      75: aload         6
+      77: invokespecial #168                // Method getAllQueues0:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/util/List;
+      80: invokeinterface #115,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      85: astore        7
+      87: aload         7
+      89: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      94: ifeq          128
+      97: aload         7
+      99: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     104: checkcast     #63                 // class java/lang/String
+     107: astore        8
+     109: aload         4
+     111: aload_0
+     112: aload         6
+     114: aload         8
+     116: invokespecial #166                // Method getWALsInQueue0:(Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)Ljava/util/List;
+     119: invokeinterface #178,  2          // InterfaceMethod java/util/Set.addAll:(Ljava/util/Collection;)Z
+     124: pop
+     125: goto          87
+     128: goto          52
+     131: aload_0
+     132: invokevirtual #171                // Method getQueuesZNodeCversion:()I
+     135: istore        5
+     137: iload_2
+     138: iload         5
+     140: if_icmpne     146
+     143: aload         4
+     145: areturn
+     146: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+     149: ldc           #179                // String Replication queue node cversion changed from %d to %d, retry = %d
+     151: iconst_3
+     152: anewarray     #133                // class java/lang/Object
+     155: dup
+     156: iconst_0
+     157: iload_2
+     158: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     161: aastore
+     162: dup
+     163: iconst_1
+     164: iload         5
+     166: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     169: aastore
+     170: dup
+     171: iconst_2
+     172: iload_1
+     173: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     176: aastore
+     177: invokeinterface #136,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     182: iinc          1, 1
+     185: goto          2
+     188: astore_1
+     189: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+     192: dup
+     193: ldc           #180                // String Failed to get all wals
+     195: aload_1
+     196: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     199: athrow
+    Exception table:
+       from    to  target type
+           0    34   188   Class org/apache/zookeeper/KeeperException
+          35   145   188   Class org/apache/zookeeper/KeeperException
+         146   188   188   Class org/apache/zookeeper/KeeperException
+
+  public void addPeerToHFileRefs(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #181                // Method getHFileRefsPeerNode:(Ljava/lang/String;)Ljava/lang/String;
+       5: astore_2
+       6: aload_0
+       7: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      10: aload_2
+      11: invokestatic  #182                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.checkExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)I
+      14: iconst_m1
+      15: if_icmpne     37
+      18: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      21: ldc           #183                // String Adding peer {} to hfile reference queue.
+      23: aload_1
+      24: invokeinterface #184,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+      29: aload_0
+      30: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      33: aload_2
+      34: invokestatic  #45                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.createWithParents:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      37: goto          74
+      40: astore_3
+      41: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      44: dup
+      45: new           #22                 // class java/lang/StringBuilder
+      48: dup
+      49: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      52: ldc           #185                // String Failed to add peer
+      54: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: aload_1
+      58: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: ldc           #186                // String  to hfile reference queue.
+      63: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      69: aload_3
+      70: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      73: athrow
+      74: return
+    Exception table:
+       from    to  target type
+           6    37    40   Class org/apache/zookeeper/KeeperException
+
+  public void removePeerFromHFileRefs(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #181                // Method getHFileRefsPeerNode:(Ljava/lang/String;)Ljava/lang/String;
+       5: astore_2
+       6: aload_0
+       7: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      10: aload_2
+      11: invokestatic  #182                // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.checkExists:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)I
+      14: iconst_m1
+      15: if_icmpne     32
+      18: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      21: ldc           #187                // String Peer {} not found in hfile reference queue.
+      23: aload_2
+      24: invokeinterface #188,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+      29: goto          51
+      32: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      35: ldc           #189                // String Removing peer {} from hfile reference queue.
+      37: aload_2
+      38: invokeinterface #184,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+      43: aload_0
+      44: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      47: aload_2
+      48: invokestatic  #36                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.deleteNodeRecursively:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)V
+      51: goto          88
+      54: astore_3
+      55: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      58: dup
+      59: new           #22                 // class java/lang/StringBuilder
+      62: dup
+      63: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      66: ldc           #190                // String Failed to remove peer
+      68: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      71: aload_1
+      72: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: ldc           #191                // String  from hfile reference queue.
+      77: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      80: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      83: aload_3
+      84: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      87: athrow
+      88: return
+    Exception table:
+       from    to  target type
+           6    51    54   Class org/apache/zookeeper/KeeperException
+
+  public void addHFileRefs(java.lang.String, java.util.List<org.apache.hadoop.hbase.util.Pair<org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path>>) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #181                // Method getHFileRefsPeerNode:(Ljava/lang/String;)Ljava/lang/String;
+       5: astore_3
+       6: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+       9: ldc           #192                // String Adding hfile references {} in queue {}
+      11: aload_2
+      12: aload_3
+      13: invokeinterface #151,  4          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      18: aload_2
+      19: invokeinterface #119,  1          // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+      24: invokedynamic #193,  0            // InvokeDynamic #3:apply:()Ljava/util/function/Function;
+      29: invokeinterface #121,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      34: aload_0
+      35: aload_3
+      36: invokedynamic #194,  0            // InvokeDynamic #4:apply:(Lorg/apache/hadoop/hbase/replication/ZKReplicationQueueStorage;Ljava/lang/String;)Ljava/util/function/Function;
+      41: invokeinterface #121,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      46: invokedynamic #195,  0            // InvokeDynamic #5:apply:()Ljava/util/function/Function;
+      51: invokeinterface #121,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      56: invokestatic  #123                // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      59: invokeinterface #124,  2          // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      64: checkcast     #125                // class java/util/List
+      67: astore        4
+      69: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      72: ldc           #196                // String The multi list size for adding hfile references in zk for node {} is {}
+      74: aload_3
+      75: aload         4
+      77: invokeinterface #128,  1          // InterfaceMethod java/util/List.size:()I
+      82: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      85: invokeinterface #151,  4          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      90: aload_0
+      91: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      94: aload         4
+      96: iconst_1
+      97: invokestatic  #83                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.multiOrSequential:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/util/List;Z)V
+     100: goto          134
+     103: astore        5
+     105: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+     108: dup
+     109: new           #22                 // class java/lang/StringBuilder
+     112: dup
+     113: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     116: ldc           #197                // String Failed to add hfile reference to peer
+     118: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     121: aload_1
+     122: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     125: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     128: aload         5
+     130: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     133: athrow
+     134: return
+    Exception table:
+       from    to  target type
+          90   100   103   Class org/apache/zookeeper/KeeperException
+
+  public void removeHFileRefs(java.lang.String, java.util.List<java.lang.String>) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #181                // Method getHFileRefsPeerNode:(Ljava/lang/String;)Ljava/lang/String;
+       5: astore_3
+       6: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+       9: ldc           #198                // String Removing hfile references {} from queue {}
+      11: aload_2
+      12: aload_3
+      13: invokeinterface #151,  4          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      18: aload_2
+      19: invokeinterface #119,  1          // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+      24: aload_0
+      25: aload_3
+      26: invokedynamic #199,  0            // InvokeDynamic #6:apply:(Lorg/apache/hadoop/hbase/replication/ZKReplicationQueueStorage;Ljava/lang/String;)Ljava/util/function/Function;
+      31: invokeinterface #121,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      36: invokedynamic #122,  0            // InvokeDynamic #1:apply:()Ljava/util/function/Function;
+      41: invokeinterface #121,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      46: invokestatic  #123                // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      49: invokeinterface #124,  2          // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      54: checkcast     #125                // class java/util/List
+      57: astore        4
+      59: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      62: ldc           #200                // String The multi list size for removing hfile references in zk for node {} is {}
+      64: aload_3
+      65: aload         4
+      67: invokeinterface #128,  1          // InterfaceMethod java/util/List.size:()I
+      72: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      75: invokeinterface #151,  4          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      80: aload_0
+      81: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      84: aload         4
+      86: iconst_1
+      87: invokestatic  #83                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.multiOrSequential:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/util/List;Z)V
+      90: goto          124
+      93: astore        5
+      95: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      98: dup
+      99: new           #22                 // class java/lang/StringBuilder
+     102: dup
+     103: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+     106: ldc           #201                // String Failed to remove hfile reference from peer
+     108: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     111: aload_1
+     112: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     115: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     118: aload         5
+     120: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     123: athrow
+     124: return
+    Exception table:
+       from    to  target type
+          80    90    93   Class org/apache/zookeeper/KeeperException
+
+  public java.util.List<java.lang.String> getAllPeersFromHFileRefsQueue() throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: invokespecial #202                // Method getAllPeersFromHFileRefsQueue0:()Ljava/util/List;
+       4: areturn
+       5: astore_1
+       6: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+       9: dup
+      10: ldc           #203                // String Failed to get list of all peers in hfile references node.
+      12: aload_1
+      13: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      16: athrow
+    Exception table:
+       from    to  target type
+           0     4     5   Class org/apache/zookeeper/KeeperException
+
+  public java.util.List<java.lang.String> getReplicableHFiles(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #204                // Method getReplicableHFiles0:(Ljava/lang/String;)Ljava/util/List;
+       5: areturn
+       6: astore_2
+       7: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      10: dup
+      11: new           #22                 // class java/lang/StringBuilder
+      14: dup
+      15: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      18: ldc           #205                // String Failed to get list of hfile references for peer
+      20: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      23: aload_1
+      24: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      30: aload_2
+      31: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      34: athrow
+    Exception table:
+       from    to  target type
+           0     5     6   Class org/apache/zookeeper/KeeperException
+
+  protected int getHFileRefsZNodeCversion() throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: new           #93                 // class org/apache/zookeeper/data/Stat
+       3: dup
+       4: invokespecial #94                 // Method org/apache/zookeeper/data/Stat."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getfield      #35                 // Field zookeeper:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      12: aload_0
+      13: getfield      #11                 // Field hfileRefsZNode:Ljava/lang/String;
+      16: aload_1
+      17: invokestatic  #95                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.getDataNoWatch:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;Lorg/apache/zookeeper/data/Stat;)[B
+      20: pop
+      21: goto          36
+      24: astore_2
+      25: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+      28: dup
+      29: ldc           #206                // String Failed to get stat of replication hfile references node.
+      31: aload_2
+      32: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      35: athrow
+      36: aload_1
+      37: invokevirtual #170                // Method org/apache/zookeeper/data/Stat.getCversion:()I
+      40: ireturn
+    Exception table:
+       from    to  target type
+           8    21    24   Class org/apache/zookeeper/KeeperException
+
+  public java.util.Set<java.lang.String> getAllHFileRefs() throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: invokevirtual #207                // Method getHFileRefsZNodeCversion:()I
+       6: istore_2
+       7: aload_0
+       8: invokevirtual #208                // Method getAllPeersFromHFileRefsQueue:()Ljava/util/List;
+      11: astore_3
+      12: aload_3
+      13: invokeinterface #82,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      18: ifeq          35
+      21: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+      24: ldc           #209                // String Didn't find any peers with hfile references, won't prevent deletions.
+      26: invokeinterface #173,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      31: invokestatic  #174                // Method java/util/Collections.emptySet:()Ljava/util/Set;
+      34: areturn
+      35: new           #175                // class java/util/HashSet
+      38: dup
+      39: invokespecial #176                // Method java/util/HashSet."<init>":()V
+      42: astore        4
+      44: aload_3
+      45: invokeinterface #115,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      50: astore        5
+      52: aload         5
+      54: invokeinterface #59,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      59: ifeq          91
+      62: aload         5
+      64: invokeinterface #60,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      69: checkcast     #63                 // class java/lang/String
+      72: astore        6
+      74: aload         4
+      76: aload_0
+      77: aload         6
+      79: invokespecial #204                // Method getReplicableHFiles0:(Ljava/lang/String;)Ljava/util/List;
+      82: invokeinterface #178,  2          // InterfaceMethod java/util/Set.addAll:(Ljava/util/Collection;)Z
+      87: pop
+      88: goto          52
+      91: aload_0
+      92: invokevirtual #207                // Method getHFileRefsZNodeCversion:()I
+      95: istore        5
+      97: iload_2
+      98: iload         5
+     100: if_icmpne     106
+     103: aload         4
+     105: areturn
+     106: getstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+     109: ldc           #210                // String Replication hfile references node cversion changed from %d to %d, retry = %d
+     111: iconst_3
+     112: anewarray     #133                // class java/lang/Object
+     115: dup
+     116: iconst_0
+     117: iload_2
+     118: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     121: aastore
+     122: dup
+     123: iconst_1
+     124: iload         5
+     126: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     129: aastore
+     130: dup
+     131: iconst_2
+     132: iload_1
+     133: invokestatic  #100                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     136: aastore
+     137: invokeinterface #211,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;[Ljava/lang/Object;)V
+     142: iinc          1, 1
+     145: goto          2
+     148: astore_1
+     149: new           #38                 // class org/apache/hadoop/hbase/replication/ReplicationException
+     152: dup
+     153: ldc           #212                // String Failed to get all hfile refs
+     155: aload_1
+     156: invokespecial #43                 // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     159: athrow
+    Exception table:
+       from    to  target type
+           0    34   148   Class org/apache/zookeeper/KeeperException
+          35   105   148   Class org/apache/zookeeper/KeeperException
+         106   148   148   Class org/apache/zookeeper/KeeperException
+
+  static {};
+    Code:
+       0: ldc           #5                  // class org/apache/hadoop/hbase/replication/ZKReplicationQueueStorage
+       2: invokestatic  #216                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #50                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

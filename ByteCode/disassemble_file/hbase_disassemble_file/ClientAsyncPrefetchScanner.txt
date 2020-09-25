@@ -1,0 +1,228 @@
+Compiled from "ClientAsyncPrefetchScanner.java"
+public class org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner extends org.apache.hadoop.hbase.client.ClientSimpleScanner {
+  public org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.Scan, org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.ClusterConnection, org.apache.hadoop.hbase.client.RpcRetryingCallerFactory, org.apache.hadoop.hbase.ipc.RpcControllerFactory, java.util.concurrent.ExecutorService, int) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: aload         7
+      12: iload         8
+      14: invokespecial #7                  // Method org/apache/hadoop/hbase/client/ClientSimpleScanner."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;Ljava/util/concurrent/ExecutorService;I)V
+      17: aload_0
+      18: new           #8                  // class java/util/concurrent/locks/ReentrantLock
+      21: dup
+      22: invokespecial #9                  // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+      25: putfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      28: aload_0
+      29: aload_0
+      30: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      33: invokeinterface #10,  1           // InterfaceMethod java/util/concurrent/locks/Lock.newCondition:()Ljava/util/concurrent/locks/Condition;
+      38: putfield      #2                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+      41: aload_0
+      42: aload_0
+      43: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      46: invokeinterface #10,  1           // InterfaceMethod java/util/concurrent/locks/Lock.newCondition:()Ljava/util/concurrent/locks/Condition;
+      51: putfield      #4                  // Field notFull:Ljava/util/concurrent/locks/Condition;
+      54: return
+
+  void setPrefetchListener(java.util.function.Consumer<java.lang.Boolean>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field prefetchListener:Ljava/util/function/Consumer;
+       5: return
+
+  protected void initCache();
+    Code:
+       0: aload_0
+       1: aload_0
+       2: aload_0
+       3: getfield      #11                 // Field maxScannerResultSize:J
+       6: invokespecial #12                 // Method resultSize2CacheSize:(J)J
+       9: putfield      #13                 // Field maxCacheSize:J
+      12: aload_0
+      13: new           #14                 // class java/util/concurrent/LinkedBlockingQueue
+      16: dup
+      17: invokespecial #15                 // Method java/util/concurrent/LinkedBlockingQueue."<init>":()V
+      20: putfield      #16                 // Field cache:Ljava/util/Queue;
+      23: aload_0
+      24: new           #17                 // class java/util/concurrent/atomic/AtomicLong
+      27: dup
+      28: lconst_0
+      29: invokespecial #18                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      32: putfield      #19                 // Field cacheSizeInBytes:Ljava/util/concurrent/atomic/AtomicLong;
+      35: aload_0
+      36: new           #20                 // class java/util/concurrent/ConcurrentLinkedQueue
+      39: dup
+      40: invokespecial #21                 // Method java/util/concurrent/ConcurrentLinkedQueue."<init>":()V
+      43: putfield      #3                  // Field exceptionsQueue:Ljava/util/Queue;
+      46: aload_0
+      47: new           #22                 // class java/lang/Thread
+      50: dup
+      51: new           #23                 // class org/apache/hadoop/hbase/client/ClientAsyncPrefetchScanner$PrefetchRunnable
+      54: dup
+      55: aload_0
+      56: aconst_null
+      57: invokespecial #24                 // Method org/apache/hadoop/hbase/client/ClientAsyncPrefetchScanner$PrefetchRunnable."<init>":(Lorg/apache/hadoop/hbase/client/ClientAsyncPrefetchScanner;Lorg/apache/hadoop/hbase/client/ClientAsyncPrefetchScanner$1;)V
+      60: invokespecial #25                 // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;)V
+      63: putfield      #26                 // Field prefetcher:Ljava/lang/Thread;
+      66: aload_0
+      67: getfield      #26                 // Field prefetcher:Ljava/lang/Thread;
+      70: new           #27                 // class java/lang/StringBuilder
+      73: dup
+      74: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      77: aload_0
+      78: getfield      #29                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      81: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      84: ldc           #31                 // String .asyncPrefetcher
+      86: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      89: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      92: invokestatic  #34                 // Method org/apache/hadoop/hbase/util/Threads.setDaemonThreadRunning:(Ljava/lang/Thread;Ljava/lang/String;)Ljava/lang/Thread;
+      95: pop
+      96: return
+
+  public org.apache.hadoop.hbase.client.Result next() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: invokeinterface #40,  1           // InterfaceMethod java/util/concurrent/locks/Lock.lock:()V
+       9: aload_0
+      10: getfield      #16                 // Field cache:Ljava/util/Queue;
+      13: invokeinterface #41,  1           // InterfaceMethod java/util/Queue.isEmpty:()Z
+      18: ifeq          72
+      21: aload_0
+      22: invokespecial #42                 // Method handleException:()V
+      25: aload_0
+      26: getfield      #43                 // Field closed:Z
+      29: ifeq          49
+      32: aconst_null
+      33: astore_1
+      34: aload_0
+      35: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      38: invokeinterface #44,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      43: aload_0
+      44: invokespecial #42                 // Method handleException:()V
+      47: aload_1
+      48: areturn
+      49: aload_0
+      50: getfield      #2                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+      53: invokeinterface #45,  1           // InterfaceMethod java/util/concurrent/locks/Condition.await:()V
+      58: goto          9
+      61: astore_1
+      62: new           #47                 // class java/io/InterruptedIOException
+      65: dup
+      66: ldc           #48                 // String Interrupted when wait to load cache
+      68: invokespecial #49                 // Method java/io/InterruptedIOException."<init>":(Ljava/lang/String;)V
+      71: athrow
+      72: aload_0
+      73: invokespecial #50                 // Method pollCache:()Lorg/apache/hadoop/hbase/client/Result;
+      76: astore_1
+      77: aload_0
+      78: invokespecial #5                  // Method prefetchCondition:()Z
+      81: ifeq          93
+      84: aload_0
+      85: getfield      #4                  // Field notFull:Ljava/util/concurrent/locks/Condition;
+      88: invokeinterface #51,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signalAll:()V
+      93: aload_1
+      94: astore_2
+      95: aload_0
+      96: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      99: invokeinterface #44,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     104: aload_0
+     105: invokespecial #42                 // Method handleException:()V
+     108: aload_2
+     109: areturn
+     110: astore_3
+     111: aload_0
+     112: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+     115: invokeinterface #44,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     120: aload_0
+     121: invokespecial #42                 // Method handleException:()V
+     124: aload_3
+     125: athrow
+    Exception table:
+       from    to  target type
+          49    58    61   Class java/lang/InterruptedException
+           0    34   110   any
+          49    95   110   any
+
+  public void close();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: invokeinterface #40,  1           // InterfaceMethod java/util/concurrent/locks/Lock.lock:()V
+       9: aload_0
+      10: invokespecial #52                 // Method org/apache/hadoop/hbase/client/ClientSimpleScanner.close:()V
+      13: aload_0
+      14: iconst_1
+      15: putfield      #43                 // Field closed:Z
+      18: aload_0
+      19: getfield      #4                  // Field notFull:Ljava/util/concurrent/locks/Condition;
+      22: invokeinterface #51,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signalAll:()V
+      27: aload_0
+      28: getfield      #2                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+      31: invokeinterface #51,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signalAll:()V
+      36: aload_0
+      37: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      40: invokeinterface #44,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      45: goto          60
+      48: astore_1
+      49: aload_0
+      50: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      53: invokeinterface #44,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+      58: aload_1
+      59: athrow
+      60: return
+    Exception table:
+       from    to  target type
+           0    36    48   any
+
+  protected void addEstimatedSize(long);
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field cacheSizeInBytes:Ljava/util/concurrent/atomic/AtomicLong;
+       4: lload_1
+       5: invokevirtual #53                 // Method java/util/concurrent/atomic/AtomicLong.addAndGet:(J)J
+       8: pop2
+       9: return
+
+  static java.util.concurrent.locks.Lock access$100(org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: areturn
+
+  static boolean access$200(org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner);
+    Code:
+       0: aload_0
+       1: invokespecial #5                  // Method prefetchCondition:()Z
+       4: ireturn
+
+  static java.util.concurrent.locks.Condition access$300(org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field notFull:Ljava/util/concurrent/locks/Condition;
+       4: areturn
+
+  static java.util.Queue access$400(org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field exceptionsQueue:Ljava/util/Queue;
+       4: areturn
+
+  static java.util.concurrent.locks.Condition access$500(org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field notEmpty:Ljava/util/concurrent/locks/Condition;
+       4: areturn
+
+  static java.util.function.Consumer access$600(org.apache.hadoop.hbase.client.ClientAsyncPrefetchScanner);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field prefetchListener:Ljava/util/function/Consumer;
+       4: areturn
+}

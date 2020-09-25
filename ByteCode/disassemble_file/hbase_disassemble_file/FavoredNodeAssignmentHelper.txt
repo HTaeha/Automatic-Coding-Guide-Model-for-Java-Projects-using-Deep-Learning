@@ -1,0 +1,1076 @@
+Compiled from "FavoredNodeAssignmentHelper.java"
+public class org.apache.hadoop.hbase.favored.FavoredNodeAssignmentHelper {
+  public static final byte[] FAVOREDNODES_QUALIFIER;
+
+  public static final short FAVORED_NODES_NUM;
+
+  public static final short MAX_ATTEMPTS_FN_GENERATION;
+
+  public org.apache.hadoop.hbase.favored.FavoredNodeAssignmentHelper(java.util.List<org.apache.hadoop.hbase.ServerName>, org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: new           #2                  // class org/apache/hadoop/hbase/master/RackManager
+       5: dup
+       6: aload_2
+       7: invokespecial #3                  // Method org/apache/hadoop/hbase/master/RackManager."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+      10: invokespecial #4                  // Method "<init>":(Ljava/util/List;Lorg/apache/hadoop/hbase/master/RackManager;)V
+      13: return
+
+  public org.apache.hadoop.hbase.favored.FavoredNodeAssignmentHelper(java.util.List<org.apache.hadoop.hbase.ServerName>, org.apache.hadoop.hbase.master.RackManager);
+    Code:
+       0: aload_0
+       1: invokespecial #5                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #6                  // Field servers:Ljava/util/List;
+       9: aload_0
+      10: aload_2
+      11: putfield      #7                  // Field rackManager:Lorg/apache/hadoop/hbase/master/RackManager;
+      14: aload_0
+      15: new           #8                  // class java/util/HashMap
+      18: dup
+      19: invokespecial #9                  // Method java/util/HashMap."<init>":()V
+      22: putfield      #10                 // Field rackToRegionServerMap:Ljava/util/Map;
+      25: aload_0
+      26: new           #8                  // class java/util/HashMap
+      29: dup
+      30: invokespecial #9                  // Method java/util/HashMap."<init>":()V
+      33: putfield      #11                 // Field regionServerToRackMap:Ljava/util/Map;
+      36: aload_0
+      37: new           #12                 // class java/util/ArrayList
+      40: dup
+      41: invokespecial #13                 // Method java/util/ArrayList."<init>":()V
+      44: putfield      #14                 // Field uniqueRackList:Ljava/util/List;
+      47: aload_0
+      48: new           #15                 // class java/util/Random
+      51: dup
+      52: invokespecial #16                 // Method java/util/Random."<init>":()V
+      55: putfield      #17                 // Field random:Ljava/util/Random;
+      58: return
+
+  public void initialize();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field servers:Ljava/util/List;
+       4: invokeinterface #18,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       9: astore_1
+      10: aload_1
+      11: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      16: ifeq          157
+      19: aload_1
+      20: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      25: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+      28: astore_2
+      29: aload_0
+      30: aload_2
+      31: invokespecial #21                 // Method getRackOfServer:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/lang/String;
+      34: astore_3
+      35: aload_0
+      36: getfield      #10                 // Field rackToRegionServerMap:Ljava/util/Map;
+      39: aload_3
+      40: invokeinterface #22,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      45: checkcast     #23                 // class java/util/List
+      48: astore        4
+      50: aload         4
+      52: ifnonnull     84
+      55: invokestatic  #24                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:()Ljava/util/ArrayList;
+      58: astore        4
+      60: aload_0
+      61: getfield      #14                 // Field uniqueRackList:Ljava/util/List;
+      64: aload_3
+      65: invokeinterface #25,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      70: pop
+      71: aload_0
+      72: getfield      #10                 // Field rackToRegionServerMap:Ljava/util/Map;
+      75: aload_3
+      76: aload         4
+      78: invokeinterface #26,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      83: pop
+      84: aload         4
+      86: invokeinterface #18,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      91: astore        5
+      93: aload         5
+      95: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     100: ifeq          130
+     103: aload         5
+     105: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     110: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+     113: astore        6
+     115: aload_2
+     116: aload         6
+     118: invokestatic  #27                 // Method org/apache/hadoop/hbase/ServerName.isSameAddress:(Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/ServerName;)Z
+     121: ifeq          127
+     124: goto          130
+     127: goto          93
+     130: aload         4
+     132: aload_2
+     133: invokeinterface #25,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     138: pop
+     139: aload_0
+     140: getfield      #11                 // Field regionServerToRackMap:Ljava/util/Map;
+     143: aload_2
+     144: invokevirtual #28                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+     147: aload_3
+     148: invokeinterface #26,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     153: pop
+     154: goto          10
+     157: return
+
+  public static void updateMetaWithFavoredNodesInfo(java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, java.util.List<org.apache.hadoop.hbase.ServerName>>, org.apache.hadoop.hbase.client.Connection) throws java.io.IOException;
+    Code:
+       0: new           #12                 // class java/util/ArrayList
+       3: dup
+       4: invokespecial #13                 // Method java/util/ArrayList."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: invokeinterface #29,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      14: invokeinterface #30,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      19: astore_3
+      20: aload_3
+      21: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          82
+      29: aload_3
+      30: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #31                 // class java/util/Map$Entry
+      38: astore        4
+      40: aload         4
+      42: invokeinterface #32,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      47: checkcast     #33                 // class org/apache/hadoop/hbase/client/RegionInfo
+      50: aload         4
+      52: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      57: checkcast     #23                 // class java/util/List
+      60: invokestatic  #35                 // Method makePutFromRegionInfo:(Lorg/apache/hadoop/hbase/client/RegionInfo;Ljava/util/List;)Lorg/apache/hadoop/hbase/client/Put;
+      63: astore        5
+      65: aload         5
+      67: ifnull        79
+      70: aload_2
+      71: aload         5
+      73: invokeinterface #25,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      78: pop
+      79: goto          20
+      82: aload_1
+      83: aload_2
+      84: invokestatic  #36                 // Method org/apache/hadoop/hbase/MetaTableAccessor.putsToMetaTable:(Lorg/apache/hadoop/hbase/client/Connection;Ljava/util/List;)V
+      87: getstatic     #37                 // Field LOG:Lorg/slf4j/Logger;
+      90: new           #38                 // class java/lang/StringBuilder
+      93: dup
+      94: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+      97: ldc           #40                 // String Added
+      99: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     102: aload_2
+     103: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     108: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     111: ldc           #44                 // String  regions in META
+     113: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     116: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     119: invokeinterface #46,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     124: return
+
+  public static void updateMetaWithFavoredNodesInfo(java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, java.util.List<org.apache.hadoop.hbase.ServerName>>, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: new           #12                 // class java/util/ArrayList
+       3: dup
+       4: invokespecial #13                 // Method java/util/ArrayList."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: invokeinterface #29,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      14: invokeinterface #30,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      19: astore_3
+      20: aload_3
+      21: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          82
+      29: aload_3
+      30: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #31                 // class java/util/Map$Entry
+      38: astore        4
+      40: aload         4
+      42: invokeinterface #32,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      47: checkcast     #33                 // class org/apache/hadoop/hbase/client/RegionInfo
+      50: aload         4
+      52: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      57: checkcast     #23                 // class java/util/List
+      60: invokestatic  #35                 // Method makePutFromRegionInfo:(Lorg/apache/hadoop/hbase/client/RegionInfo;Ljava/util/List;)Lorg/apache/hadoop/hbase/client/Put;
+      63: astore        5
+      65: aload         5
+      67: ifnull        79
+      70: aload_2
+      71: aload         5
+      73: invokeinterface #25,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      78: pop
+      79: goto          20
+      82: aload_1
+      83: invokestatic  #47                 // Method org/apache/hadoop/hbase/client/ConnectionFactory.createConnection:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/Connection;
+      86: astore_3
+      87: aconst_null
+      88: astore        4
+      90: aload_3
+      91: getstatic     #48                 // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      94: invokeinterface #49,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      99: astore        5
+     101: aconst_null
+     102: astore        6
+     104: aload         5
+     106: aload_2
+     107: invokeinterface #50,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Ljava/util/List;)V
+     112: aload         5
+     114: ifnull        207
+     117: aload         6
+     119: ifnull        144
+     122: aload         5
+     124: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     129: goto          207
+     132: astore        7
+     134: aload         6
+     136: aload         7
+     138: invokevirtual #53                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     141: goto          207
+     144: aload         5
+     146: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     151: goto          207
+     154: astore        7
+     156: aload         7
+     158: astore        6
+     160: aload         7
+     162: athrow
+     163: astore        8
+     165: aload         5
+     167: ifnull        204
+     170: aload         6
+     172: ifnull        197
+     175: aload         5
+     177: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     182: goto          204
+     185: astore        9
+     187: aload         6
+     189: aload         9
+     191: invokevirtual #53                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     194: goto          204
+     197: aload         5
+     199: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     204: aload         8
+     206: athrow
+     207: aload_3
+     208: ifnull        296
+     211: aload         4
+     213: ifnull        237
+     216: aload_3
+     217: invokeinterface #54,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     222: goto          296
+     225: astore        5
+     227: aload         4
+     229: aload         5
+     231: invokevirtual #53                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     234: goto          296
+     237: aload_3
+     238: invokeinterface #54,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     243: goto          296
+     246: astore        5
+     248: aload         5
+     250: astore        4
+     252: aload         5
+     254: athrow
+     255: astore        10
+     257: aload_3
+     258: ifnull        293
+     261: aload         4
+     263: ifnull        287
+     266: aload_3
+     267: invokeinterface #54,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     272: goto          293
+     275: astore        11
+     277: aload         4
+     279: aload         11
+     281: invokevirtual #53                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     284: goto          293
+     287: aload_3
+     288: invokeinterface #54,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+     293: aload         10
+     295: athrow
+     296: getstatic     #37                 // Field LOG:Lorg/slf4j/Logger;
+     299: new           #38                 // class java/lang/StringBuilder
+     302: dup
+     303: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     306: ldc           #40                 // String Added
+     308: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     311: aload_2
+     312: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     317: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     320: ldc           #44                 // String  regions in META
+     322: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     325: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     328: invokeinterface #46,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     333: return
+    Exception table:
+       from    to  target type
+         122   129   132   Class java/lang/Throwable
+         104   112   154   Class java/lang/Throwable
+         104   112   163   any
+         175   182   185   Class java/lang/Throwable
+         154   165   163   any
+         216   222   225   Class java/lang/Throwable
+          90   207   246   Class java/lang/Throwable
+          90   207   255   any
+         266   272   275   Class java/lang/Throwable
+         246   257   255   any
+
+  public static org.apache.hadoop.hbase.ServerName[] getFavoredNodesList(byte[]) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokestatic  #75                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes.parseFrom:([B)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes;
+       4: astore_1
+       5: aload_1
+       6: invokevirtual #76                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes.getFavoredNodeList:()Ljava/util/List;
+       9: astore_2
+      10: aload_2
+      11: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+      16: anewarray     #1                  // class org/apache/hadoop/hbase/ServerName
+      19: astore_3
+      20: iconst_0
+      21: istore        4
+      23: aload_2
+      24: invokeinterface #18,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      29: astore        5
+      31: aload         5
+      33: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      38: ifeq          68
+      41: aload         5
+      43: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      48: checkcast     #77                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName
+      51: astore        6
+      53: aload_3
+      54: iload         4
+      56: iinc          4, 1
+      59: aload         6
+      61: invokestatic  #78                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toServerName:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName;)Lorg/apache/hadoop/hbase/ServerName;
+      64: aastore
+      65: goto          31
+      68: aload_3
+      69: areturn
+
+  public static byte[] getFavoredNodes(java.util.List<org.apache.hadoop.hbase.ServerName>);
+    Code:
+       0: invokestatic  #79                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes$Builder;
+       3: astore_1
+       4: aload_0
+       5: invokeinterface #18,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      10: astore_2
+      11: aload_2
+      12: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      17: ifeq          77
+      20: aload_2
+      21: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      26: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+      29: astore_3
+      30: invokestatic  #80                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder;
+      33: astore        4
+      35: aload         4
+      37: aload_3
+      38: invokevirtual #28                 // Method org/apache/hadoop/hbase/ServerName.getHostname:()Ljava/lang/String;
+      41: invokevirtual #81                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder.setHostName:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder;
+      44: pop
+      45: aload         4
+      47: aload_3
+      48: invokevirtual #82                 // Method org/apache/hadoop/hbase/ServerName.getPort:()I
+      51: invokevirtual #83                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder.setPort:(I)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder;
+      54: pop
+      55: aload         4
+      57: ldc2_w        #84                 // long -1l
+      60: invokevirtual #86                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder.setStartCode:(J)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder;
+      63: pop
+      64: aload_1
+      65: aload         4
+      67: invokevirtual #87                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName;
+      70: invokevirtual #88                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes$Builder.addFavoredNode:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ServerName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes$Builder;
+      73: pop
+      74: goto          11
+      77: aload_1
+      78: invokevirtual #89                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes;
+      81: invokevirtual #90                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$FavoredNodes.toByteArray:()[B
+      84: areturn
+
+  public void placePrimaryRSAsRoundRobin(java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>, java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName>, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>);
+    Code:
+       0: new           #12                 // class java/util/ArrayList
+       3: dup
+       4: aload_0
+       5: getfield      #10                 // Field rackToRegionServerMap:Ljava/util/Map;
+       8: invokeinterface #91,  1           // InterfaceMethod java/util/Map.size:()I
+      13: invokespecial #92                 // Method java/util/ArrayList."<init>":(I)V
+      16: astore        4
+      18: aload         4
+      20: aload_0
+      21: getfield      #10                 // Field rackToRegionServerMap:Ljava/util/Map;
+      24: invokeinterface #93,  1           // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+      29: invokeinterface #94,  2           // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+      34: pop
+      35: aload_0
+      36: getfield      #17                 // Field random:Ljava/util/Random;
+      39: aload         4
+      41: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+      46: invokevirtual #95                 // Method java/util/Random.nextInt:(I)I
+      49: istore        5
+      51: iconst_0
+      52: istore        6
+      54: aload_0
+      55: getfield      #10                 // Field rackToRegionServerMap:Ljava/util/Map;
+      58: invokeinterface #29,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      63: invokeinterface #30,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      68: astore        7
+      70: aload         7
+      72: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      77: ifeq          132
+      80: aload         7
+      82: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      87: checkcast     #31                 // class java/util/Map$Entry
+      90: astore        8
+      92: aload         8
+      94: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      99: checkcast     #23                 // class java/util/List
+     102: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     107: iload         6
+     109: if_icmple     129
+     112: aload         8
+     114: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+     119: checkcast     #23                 // class java/util/List
+     122: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     127: istore        6
+     129: goto          70
+     132: iconst_0
+     133: istore        7
+     135: aload_0
+     136: getfield      #17                 // Field random:Ljava/util/Random;
+     139: iload         6
+     141: invokevirtual #95                 // Method java/util/Random.nextInt:(I)I
+     144: istore        8
+     146: aload_3
+     147: invokeinterface #18,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     152: astore        9
+     154: aload         9
+     156: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     161: ifeq          382
+     164: aload         9
+     166: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     171: checkcast     #33                 // class org/apache/hadoop/hbase/client/RegionInfo
+     174: astore        10
+     176: aload         4
+     178: iload         5
+     180: invokeinterface #96,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     185: checkcast     #97                 // class java/lang/String
+     188: astore        12
+     190: iinc          7, 1
+     193: aload_0
+     194: getfield      #10                 // Field rackToRegionServerMap:Ljava/util/Map;
+     197: aload         12
+     199: invokeinterface #22,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     204: checkcast     #23                 // class java/util/List
+     207: astore        11
+     209: iload         8
+     211: aload         11
+     213: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     218: if_icmplt     268
+     221: iload         7
+     223: aload         4
+     225: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     230: irem
+     231: ifne          247
+     234: iinc          8, 1
+     237: iload         8
+     239: iload         6
+     241: if_icmplt     247
+     244: iconst_0
+     245: istore        8
+     247: iinc          5, 1
+     250: iload         5
+     252: aload         4
+     254: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     259: if_icmplt     176
+     262: iconst_0
+     263: istore        5
+     265: goto          176
+     268: aload         11
+     270: iload         8
+     272: invokeinterface #96,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     277: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+     280: astore        13
+     282: aload_2
+     283: aload         10
+     285: aload         13
+     287: invokeinterface #26,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     292: pop
+     293: aload_1
+     294: ifnull        345
+     297: aload_1
+     298: aload         13
+     300: invokeinterface #22,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     305: checkcast     #23                 // class java/util/List
+     308: astore        14
+     310: aload         14
+     312: ifnonnull     335
+     315: new           #12                 // class java/util/ArrayList
+     318: dup
+     319: invokespecial #13                 // Method java/util/ArrayList."<init>":()V
+     322: astore        14
+     324: aload_1
+     325: aload         13
+     327: aload         14
+     329: invokeinterface #26,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     334: pop
+     335: aload         14
+     337: aload         10
+     339: invokeinterface #25,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     344: pop
+     345: iload         7
+     347: aload         4
+     349: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     354: irem
+     355: ifne          361
+     358: iinc          8, 1
+     361: iinc          5, 1
+     364: iload         5
+     366: aload         4
+     368: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+     373: if_icmplt     379
+     376: iconst_0
+     377: istore        5
+     379: goto          154
+     382: return
+
+  public java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName[]> placeSecondaryAndTertiaryRS(java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName>);
+    Code:
+       0: new           #8                  // class java/util/HashMap
+       3: dup
+       4: invokespecial #9                  // Method java/util/HashMap."<init>":()V
+       7: astore_2
+       8: aload_1
+       9: invokeinterface #29,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      14: invokeinterface #30,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      19: astore_3
+      20: aload_3
+      21: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          179
+      29: aload_3
+      30: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #31                 // class java/util/Map$Entry
+      38: astore        4
+      40: aload         4
+      42: invokeinterface #32,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      47: checkcast     #33                 // class org/apache/hadoop/hbase/client/RegionInfo
+      50: astore        5
+      52: aload         4
+      54: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      59: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+      62: astore        6
+      64: aload_0
+      65: aload         5
+      67: aload         6
+      69: invokevirtual #98                 // Method getSecondaryAndTertiary:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;)[Lorg/apache/hadoop/hbase/ServerName;
+      72: astore        7
+      74: aload         7
+      76: ifnull        123
+      79: aload_2
+      80: aload         5
+      82: aload         7
+      84: invokeinterface #26,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      89: pop
+      90: getstatic     #37                 // Field LOG:Lorg/slf4j/Logger;
+      93: new           #38                 // class java/lang/StringBuilder
+      96: dup
+      97: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     100: ldc           #99                 // String Place the secondary and tertiary region server for region
+     102: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     105: aload         5
+     107: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+     112: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     115: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     118: invokeinterface #100,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     123: goto          176
+     126: astore        7
+     128: getstatic     #37                 // Field LOG:Lorg/slf4j/Logger;
+     131: new           #38                 // class java/lang/StringBuilder
+     134: dup
+     135: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     138: ldc           #102                // String Cannot place the favored nodes for region
+     140: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     143: aload         5
+     145: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+     150: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     153: ldc           #103                // String  because
+     155: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     158: aload         7
+     160: invokevirtual #104                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     163: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     166: aload         7
+     168: invokeinterface #105,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     173: goto          20
+     176: goto          20
+     179: aload_2
+     180: areturn
+    Exception table:
+       from    to  target type
+          64   123   126   Class java/lang/Exception
+
+  public org.apache.hadoop.hbase.ServerName[] getSecondaryAndTertiary(org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_2
+       2: invokespecial #21                 // Method getRackOfServer:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/lang/String;
+       5: astore        4
+       7: aload_0
+       8: invokespecial #106                // Method getTotalNumberOfRacks:()I
+      11: iconst_1
+      12: if_icmpne     27
+      15: aload_0
+      16: aload_1
+      17: aload_2
+      18: aload         4
+      20: invokespecial #107                // Method singleRackCase:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)[Lorg/apache/hadoop/hbase/ServerName;
+      23: astore_3
+      24: goto          36
+      27: aload_0
+      28: aload_1
+      29: aload_2
+      30: aload         4
+      32: invokespecial #108                // Method multiRackCase:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)[Lorg/apache/hadoop/hbase/ServerName;
+      35: astore_3
+      36: aload_3
+      37: areturn
+
+  public java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName[]> placeSecondaryAndTertiaryWithRestrictions(java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.ServerName>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #113                // Method mapRSToPrimaries:(Ljava/util/Map;)Ljava/util/Map;
+       5: astore_2
+       6: new           #8                  // class java/util/HashMap
+       9: dup
+      10: invokespecial #9                  // Method java/util/HashMap."<init>":()V
+      13: astore_3
+      14: aload_1
+      15: invokeinterface #29,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      20: invokeinterface #30,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      25: astore        4
+      27: aload         4
+      29: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      34: ifeq          226
+      37: aload         4
+      39: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      44: checkcast     #31                 // class java/util/Map$Entry
+      47: astore        5
+      49: aload         5
+      51: invokeinterface #32,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      56: checkcast     #33                 // class org/apache/hadoop/hbase/client/RegionInfo
+      59: astore        6
+      61: aload         5
+      63: invokeinterface #34,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      68: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+      71: astore        7
+      73: aload_0
+      74: aload         7
+      76: invokespecial #21                 // Method getRackOfServer:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/lang/String;
+      79: astore        8
+      81: aconst_null
+      82: astore        9
+      84: aload_0
+      85: invokespecial #106                // Method getTotalNumberOfRacks:()I
+      88: iconst_1
+      89: if_icmpne     107
+      92: aload_0
+      93: aload         6
+      95: aload         7
+      97: aload         8
+      99: invokespecial #107                // Method singleRackCase:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/ServerName;Ljava/lang/String;)[Lorg/apache/hadoop/hbase/ServerName;
+     102: astore        9
+     104: goto          121
+     107: aload_0
+     108: aload_2
+     109: aload_3
+     110: aload         8
+     112: aload         7
+     114: aload         6
+     116: invokespecial #114                // Method multiRackCaseWithRestrictions:(Ljava/util/Map;Ljava/util/Map;Ljava/lang/String;Lorg/apache/hadoop/hbase/ServerName;Lorg/apache/hadoop/hbase/client/RegionInfo;)[Lorg/apache/hadoop/hbase/ServerName;
+     119: astore        9
+     121: aload         9
+     123: ifnull        170
+     126: aload_3
+     127: aload         6
+     129: aload         9
+     131: invokeinterface #26,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     136: pop
+     137: getstatic     #37                 // Field LOG:Lorg/slf4j/Logger;
+     140: new           #38                 // class java/lang/StringBuilder
+     143: dup
+     144: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     147: ldc           #99                 // String Place the secondary and tertiary region server for region
+     149: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     152: aload         6
+     154: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+     159: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     162: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     165: invokeinterface #100,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     170: goto          223
+     173: astore        8
+     175: getstatic     #37                 // Field LOG:Lorg/slf4j/Logger;
+     178: new           #38                 // class java/lang/StringBuilder
+     181: dup
+     182: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     185: ldc           #102                // String Cannot place the favored nodes for region
+     187: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     190: aload         6
+     192: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+     197: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     200: ldc           #103                // String  because
+     202: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     205: aload         8
+     207: invokevirtual #104                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     210: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     213: aload         8
+     215: invokeinterface #105,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     220: goto          27
+     223: goto          27
+     226: aload_3
+     227: areturn
+    Exception table:
+       from    to  target type
+          73   170   173   Class java/lang/Exception
+
+  public boolean canPlaceFavoredNodes();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field servers:Ljava/util/List;
+       4: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+       9: iconst_3
+      10: if_icmplt     17
+      13: iconst_1
+      14: goto          18
+      17: iconst_0
+      18: ireturn
+
+  protected org.apache.hadoop.hbase.ServerName getOneRandomServer(java.lang.String, java.util.Set<org.apache.hadoop.hbase.ServerName>);
+    Code:
+       0: aload_1
+       1: ifnull        25
+       4: aload_0
+       5: aload_1
+       6: invokespecial #116                // Method getServersFromRack:(Ljava/lang/String;)Ljava/util/List;
+       9: ifnull        25
+      12: aload_0
+      13: aload_1
+      14: invokespecial #116                // Method getServersFromRack:(Ljava/lang/String;)Ljava/util/List;
+      17: invokeinterface #133,  1          // InterfaceMethod java/util/List.isEmpty:()Z
+      22: ifeq          27
+      25: aconst_null
+      26: areturn
+      27: invokestatic  #134                // Method org/apache/hbase/thirdparty/com/google/common/collect/Sets.newHashSet:()Ljava/util/HashSet;
+      30: astore_3
+      31: aload_0
+      32: aload_1
+      33: invokespecial #116                // Method getServersFromRack:(Ljava/lang/String;)Ljava/util/List;
+      36: invokeinterface #18,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      41: astore        4
+      43: aload         4
+      45: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      50: ifeq          80
+      53: aload         4
+      55: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      60: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+      63: astore        5
+      65: aload_3
+      66: aload         5
+      68: invokestatic  #135                // Method org/apache/hadoop/hbase/favored/StartcodeAgnosticServerName.valueOf:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/favored/StartcodeAgnosticServerName;
+      71: invokeinterface #112,  2          // InterfaceMethod java/util/Set.add:(Ljava/lang/Object;)Z
+      76: pop
+      77: goto          43
+      80: aload_2
+      81: ifnull        149
+      84: aload_2
+      85: invokeinterface #118,  1          // InterfaceMethod java/util/Set.size:()I
+      90: ifle          149
+      93: aload_2
+      94: invokeinterface #30,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      99: astore        4
+     101: aload         4
+     103: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     108: ifeq          138
+     111: aload         4
+     113: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     118: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+     121: astore        5
+     123: aload_3
+     124: aload         5
+     126: invokestatic  #135                // Method org/apache/hadoop/hbase/favored/StartcodeAgnosticServerName.valueOf:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/favored/StartcodeAgnosticServerName;
+     129: invokeinterface #122,  2          // InterfaceMethod java/util/Set.remove:(Ljava/lang/Object;)Z
+     134: pop
+     135: goto          101
+     138: aload_3
+     139: invokeinterface #136,  1          // InterfaceMethod java/util/Set.isEmpty:()Z
+     144: ifeq          149
+     147: aconst_null
+     148: areturn
+     149: aconst_null
+     150: astore        4
+     152: aload_0
+     153: getfield      #17                 // Field random:Ljava/util/Random;
+     156: aload_3
+     157: invokeinterface #118,  1          // InterfaceMethod java/util/Set.size:()I
+     162: invokevirtual #95                 // Method java/util/Random.nextInt:(I)I
+     165: istore        5
+     167: iconst_0
+     168: istore        6
+     170: aload_3
+     171: invokeinterface #30,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     176: astore        7
+     178: aload         7
+     180: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     185: ifeq          220
+     188: aload         7
+     190: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     195: checkcast     #137                // class org/apache/hadoop/hbase/favored/StartcodeAgnosticServerName
+     198: astore        8
+     200: iload         6
+     202: iload         5
+     204: if_icmpne     214
+     207: aload         8
+     209: astore        4
+     211: goto          220
+     214: iinc          6, 1
+     217: goto          178
+     220: aload         4
+     222: ifnull        239
+     225: aload         4
+     227: invokevirtual #138                // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+     230: aload         4
+     232: invokevirtual #139                // Method org/apache/hadoop/hbase/ServerName.getStartcode:()J
+     235: invokestatic  #140                // Method org/apache/hadoop/hbase/ServerName.valueOf:(Ljava/lang/String;J)Lorg/apache/hadoop/hbase/ServerName;
+     238: areturn
+     239: aconst_null
+     240: areturn
+
+  protected java.lang.String getOneRandomRack(java.util.Set<java.lang.String>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: ifnull        22
+       4: aload_0
+       5: getfield      #14                 // Field uniqueRackList:Ljava/util/List;
+       8: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+      13: aload_1
+      14: invokeinterface #118,  1          // InterfaceMethod java/util/Set.size:()I
+      19: if_icmpgt     32
+      22: new           #141                // class java/io/IOException
+      25: dup
+      26: ldc           #142                // String Cannot randomly pick another random server
+      28: invokespecial #143                // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      31: athrow
+      32: aload_0
+      33: getfield      #17                 // Field random:Ljava/util/Random;
+      36: aload_0
+      37: getfield      #14                 // Field uniqueRackList:Ljava/util/List;
+      40: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+      45: invokevirtual #95                 // Method java/util/Random.nextInt:(I)I
+      48: istore_3
+      49: aload_0
+      50: getfield      #14                 // Field uniqueRackList:Ljava/util/List;
+      53: iload_3
+      54: invokeinterface #96,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      59: checkcast     #97                 // class java/lang/String
+      62: astore_2
+      63: aload_1
+      64: aload_2
+      65: invokeinterface #144,  2          // InterfaceMethod java/util/Set.contains:(Ljava/lang/Object;)Z
+      70: ifne          32
+      73: aload_2
+      74: areturn
+
+  public static java.lang.String getFavoredNodesAsString(java.util.List<org.apache.hadoop.hbase.ServerName>);
+    Code:
+       0: new           #38                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+       7: astore_1
+       8: iconst_0
+       9: istore_2
+      10: aload_0
+      11: invokeinterface #18,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      16: astore_3
+      17: aload_3
+      18: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      23: ifeq          70
+      26: aload_3
+      27: invokeinterface #20,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      32: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+      35: astore        4
+      37: aload_1
+      38: aload         4
+      40: invokevirtual #138                // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+      43: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: pop
+      47: iinc          2, 1
+      50: iload_2
+      51: aload_0
+      52: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+      57: if_icmpeq     67
+      60: aload_1
+      61: ldc           #145                // String ;
+      63: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: pop
+      67: goto          17
+      70: aload_1
+      71: invokevirtual #45                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      74: areturn
+
+  public org.apache.hadoop.hbase.ServerName generateMissingFavoredNode(java.util.List<org.apache.hadoop.hbase.ServerName>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field uniqueRackList:Ljava/util/List;
+       4: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+       9: iconst_1
+      10: if_icmpne     20
+      13: aload_0
+      14: aload_1
+      15: aconst_null
+      16: invokespecial #146                // Method generateMissingFavoredNodeSingleRack:(Ljava/util/List;Ljava/util/List;)Lorg/apache/hadoop/hbase/ServerName;
+      19: areturn
+      20: aload_0
+      21: aload_1
+      22: aconst_null
+      23: invokespecial #147                // Method generateMissingFavoredNodeMultiRack:(Ljava/util/List;Ljava/util/List;)Lorg/apache/hadoop/hbase/ServerName;
+      26: areturn
+
+  public org.apache.hadoop.hbase.ServerName generateMissingFavoredNode(java.util.List<org.apache.hadoop.hbase.ServerName>, java.util.List<org.apache.hadoop.hbase.ServerName>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field uniqueRackList:Ljava/util/List;
+       4: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+       9: iconst_1
+      10: if_icmpne     20
+      13: aload_0
+      14: aload_1
+      15: aload_2
+      16: invokespecial #146                // Method generateMissingFavoredNodeSingleRack:(Ljava/util/List;Ljava/util/List;)Lorg/apache/hadoop/hbase/ServerName;
+      19: areturn
+      20: aload_0
+      21: aload_1
+      22: aload_2
+      23: invokespecial #147                // Method generateMissingFavoredNodeMultiRack:(Ljava/util/List;Ljava/util/List;)Lorg/apache/hadoop/hbase/ServerName;
+      26: areturn
+
+  public java.util.List<org.apache.hadoop.hbase.ServerName> generateFavoredNodes(org.apache.hadoop.hbase.client.RegionInfo) throws java.io.IOException;
+    Code:
+       0: new           #12                 // class java/util/ArrayList
+       3: dup
+       4: iconst_3
+       5: invokespecial #92                 // Method java/util/ArrayList."<init>":(I)V
+       8: astore_2
+       9: aload_0
+      10: getfield      #6                  // Field servers:Ljava/util/List;
+      13: aload_0
+      14: getfield      #17                 // Field random:Ljava/util/Random;
+      17: aload_0
+      18: getfield      #6                  // Field servers:Ljava/util/List;
+      21: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+      26: invokevirtual #95                 // Method java/util/Random.nextInt:(I)I
+      29: invokeinterface #96,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      34: checkcast     #1                  // class org/apache/hadoop/hbase/ServerName
+      37: astore_3
+      38: aload_2
+      39: aload_3
+      40: invokevirtual #138                // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+      43: ldc2_w        #84                 // long -1l
+      46: invokestatic  #140                // Method org/apache/hadoop/hbase/ServerName.valueOf:(Ljava/lang/String;J)Lorg/apache/hadoop/hbase/ServerName;
+      49: invokeinterface #25,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      54: pop
+      55: new           #8                  // class java/util/HashMap
+      58: dup
+      59: iconst_1
+      60: invokespecial #157                // Method java/util/HashMap."<init>":(I)V
+      63: astore        4
+      65: aload         4
+      67: aload_1
+      68: aload_3
+      69: invokeinterface #26,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      74: pop
+      75: aload_0
+      76: aload         4
+      78: invokevirtual #158                // Method placeSecondaryAndTertiaryRS:(Ljava/util/Map;)Ljava/util/Map;
+      81: astore        5
+      83: aload         5
+      85: aload_1
+      86: invokeinterface #22,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      91: checkcast     #119                // class "[Lorg/apache/hadoop/hbase/ServerName;"
+      94: astore        6
+      96: aload         6
+      98: ifnull        160
+     101: aload         6
+     103: arraylength
+     104: iconst_2
+     105: if_icmpne     160
+     108: aload         6
+     110: astore        7
+     112: aload         7
+     114: arraylength
+     115: istore        8
+     117: iconst_0
+     118: istore        9
+     120: iload         9
+     122: iload         8
+     124: if_icmpge     158
+     127: aload         7
+     129: iload         9
+     131: aaload
+     132: astore        10
+     134: aload_2
+     135: aload         10
+     137: invokevirtual #138                // Method org/apache/hadoop/hbase/ServerName.getHostAndPort:()Ljava/lang/String;
+     140: ldc2_w        #84                 // long -1l
+     143: invokestatic  #140                // Method org/apache/hadoop/hbase/ServerName.valueOf:(Ljava/lang/String;J)Lorg/apache/hadoop/hbase/ServerName;
+     146: invokeinterface #25,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     151: pop
+     152: iinc          9, 1
+     155: goto          120
+     158: aload_2
+     159: areturn
+     160: new           #159                // class org/apache/hadoop/hbase/HBaseIOException
+     163: dup
+     164: ldc           #160                // String Unable to generate secondary and tertiary favored nodes.
+     166: invokespecial #161                // Method org/apache/hadoop/hbase/HBaseIOException."<init>":(Ljava/lang/String;)V
+     169: athrow
+
+  public java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, java.util.List<org.apache.hadoop.hbase.ServerName>> generateFavoredNodesRoundRobin(java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: invokeinterface #42,  1           // InterfaceMethod java/util/List.size:()I
+       6: ifle          47
+       9: aload_0
+      10: invokevirtual #162                // Method canPlaceFavoredNodes:()Z
+      13: ifeq          37
+      16: new           #8                  // class java/util/HashMap
+      19: dup
+      20: invokespecial #9                  // Method java/util/HashMap."<init>":()V
+      23: astore_3
+      24: aload_0
+      25: aload_1
+      26: aload_3
+      27: aload_2
+      28: invokevirtual #163                // Method placePrimaryRSAsRoundRobin:(Ljava/util/Map;Ljava/util/Map;Ljava/util/List;)V
+      31: aload_0
+      32: aload_3
+      33: invokespecial #164                // Method generateFavoredNodes:(Ljava/util/Map;)Ljava/util/Map;
+      36: areturn
+      37: new           #159                // class org/apache/hadoop/hbase/HBaseIOException
+      40: dup
+      41: ldc           #165                // String Not enough nodes to generate favored nodes
+      43: invokespecial #161                // Method org/apache/hadoop/hbase/HBaseIOException."<init>":(Ljava/lang/String;)V
+      46: athrow
+      47: aconst_null
+      48: areturn
+
+  static {};
+    Code:
+       0: ldc           #132                // class org/apache/hadoop/hbase/favored/FavoredNodeAssignmentHelper
+       2: invokestatic  #169                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #37                 // Field LOG:Lorg/slf4j/Logger;
+       8: ldc           #170                // String fn
+      10: invokestatic  #171                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      13: putstatic     #64                 // Field FAVOREDNODES_QUALIFIER:[B
+      16: return
+}

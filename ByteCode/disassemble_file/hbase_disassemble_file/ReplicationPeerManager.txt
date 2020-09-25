@@ -1,0 +1,669 @@
+Compiled from "ReplicationPeerManager.java"
+public class org.apache.hadoop.hbase.master.replication.ReplicationPeerManager {
+  org.apache.hadoop.hbase.master.replication.ReplicationPeerManager(org.apache.hadoop.hbase.replication.ReplicationPeerStorage, org.apache.hadoop.hbase.replication.ReplicationQueueStorage, java.util.concurrent.ConcurrentMap<java.lang.String, org.apache.hadoop.hbase.replication.ReplicationPeerDescription>);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: getstatic     #2                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.ACTIVE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+       8: getstatic     #3                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.DOWNGRADE_ACTIVE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      11: getstatic     #4                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.STANDBY:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      14: invokestatic  #5                  // Method java/util/EnumSet.of:(Ljava/lang/Enum;Ljava/lang/Enum;)Ljava/util/EnumSet;
+      17: getstatic     #4                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.STANDBY:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      20: getstatic     #3                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.DOWNGRADE_ACTIVE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      23: invokestatic  #6                  // Method java/util/EnumSet.of:(Ljava/lang/Enum;)Ljava/util/EnumSet;
+      26: getstatic     #3                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.DOWNGRADE_ACTIVE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      29: getstatic     #4                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.STANDBY:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      32: getstatic     #2                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.ACTIVE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      35: invokestatic  #5                  // Method java/util/EnumSet.of:(Ljava/lang/Enum;Ljava/lang/Enum;)Ljava/util/EnumSet;
+      38: invokestatic  #7                  // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.of:(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+      41: invokestatic  #8                  // Method org/apache/hbase/thirdparty/com/google/common/collect/Maps.immutableEnumMap:(Ljava/util/Map;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+      44: putfield      #9                  // Field allowedTransition:Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+      47: aload_0
+      48: new           #10                 // class java/util/concurrent/Semaphore
+      51: dup
+      52: iconst_1
+      53: invokespecial #11                 // Method java/util/concurrent/Semaphore."<init>":(I)V
+      56: putfield      #12                 // Field syncReplicationPeerLock:Ljava/util/concurrent/Semaphore;
+      59: aload_0
+      60: aload_1
+      61: putfield      #13                 // Field peerStorage:Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+      64: aload_0
+      65: aload_2
+      66: putfield      #14                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+      69: aload_0
+      70: aload_3
+      71: putfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      74: return
+
+  void preAddPeer(java.lang.String, org.apache.hadoop.hbase.replication.ReplicationPeerConfig) throws org.apache.hadoop.hbase.DoNotRetryIOException, org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_1
+       1: ldc           #41                 // String -
+       3: invokevirtual #42                 // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+       6: ifeq          36
+       9: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      12: dup
+      13: new           #28                 // class java/lang/StringBuilder
+      16: dup
+      17: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      20: ldc           #43                 // String Found invalid peer name:
+      22: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: aload_1
+      26: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      29: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      32: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      35: athrow
+      36: aload_0
+      37: aload_2
+      38: invokespecial #44                 // Method checkPeerConfig:(Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)V
+      41: aload_2
+      42: invokevirtual #45                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.isSyncReplication:()Z
+      45: ifeq          53
+      48: aload_0
+      49: aload_2
+      50: invokespecial #46                 // Method checkSyncReplicationPeerConfigConflict:(Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)V
+      53: aload_0
+      54: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      57: aload_1
+      58: invokeinterface #47,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.containsKey:(Ljava/lang/Object;)Z
+      63: ifeq          98
+      66: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      69: dup
+      70: new           #28                 // class java/lang/StringBuilder
+      73: dup
+      74: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      77: ldc           #48                 // String Replication peer
+      79: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      82: aload_1
+      83: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: ldc           #49                 // String  already exists
+      88: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      91: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      94: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      97: athrow
+      98: aload_0
+      99: aload_1
+     100: invokespecial #50                 // Method checkQueuesDeleted:(Ljava/lang/String;)V
+     103: return
+
+  org.apache.hadoop.hbase.replication.ReplicationPeerConfig preRemovePeer(java.lang.String) throws org.apache.hadoop.hbase.DoNotRetryIOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #59                 // Method checkPeerExists:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerDescription;
+       5: astore_2
+       6: aload_0
+       7: aload_1
+       8: invokespecial #60                 // Method checkPeerInDAStateIfSyncReplication:(Ljava/lang/String;)V
+      11: aload_2
+      12: invokevirtual #54                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getPeerConfig:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      15: areturn
+
+  void preEnablePeer(java.lang.String) throws org.apache.hadoop.hbase.DoNotRetryIOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #59                 // Method checkPeerExists:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerDescription;
+       5: astore_2
+       6: aload_2
+       7: invokevirtual #61                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.isEnabled:()Z
+      10: ifeq          45
+      13: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      16: dup
+      17: new           #28                 // class java/lang/StringBuilder
+      20: dup
+      21: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      24: ldc           #48                 // String Replication peer
+      26: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      29: aload_1
+      30: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: ldc           #62                 // String  has already been enabled
+      35: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      41: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      44: athrow
+      45: return
+
+  void preDisablePeer(java.lang.String) throws org.apache.hadoop.hbase.DoNotRetryIOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #59                 // Method checkPeerExists:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerDescription;
+       5: astore_2
+       6: aload_2
+       7: invokevirtual #61                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.isEnabled:()Z
+      10: ifne          45
+      13: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      16: dup
+      17: new           #28                 // class java/lang/StringBuilder
+      20: dup
+      21: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      24: ldc           #48                 // String Replication peer
+      26: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      29: aload_1
+      30: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: ldc           #63                 // String  has already been disabled
+      35: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      41: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      44: athrow
+      45: return
+
+  org.apache.hadoop.hbase.replication.ReplicationPeerDescription preUpdatePeerConfig(java.lang.String, org.apache.hadoop.hbase.replication.ReplicationPeerConfig) throws org.apache.hadoop.hbase.DoNotRetryIOException;
+    Code:
+       0: aload_0
+       1: aload_2
+       2: invokespecial #44                 // Method checkPeerConfig:(Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)V
+       5: aload_0
+       6: aload_1
+       7: invokespecial #59                 // Method checkPeerExists:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerDescription;
+      10: astore_3
+      11: aload_3
+      12: invokevirtual #54                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getPeerConfig:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      15: astore        4
+      17: aload_0
+      18: aload_2
+      19: invokevirtual #64                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getClusterKey:()Ljava/lang/String;
+      22: aload         4
+      24: invokevirtual #64                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getClusterKey:()Ljava/lang/String;
+      27: invokespecial #65                 // Method isStringEquals:(Ljava/lang/String;Ljava/lang/String;)Z
+      30: ifne          90
+      33: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      36: dup
+      37: new           #28                 // class java/lang/StringBuilder
+      40: dup
+      41: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      44: ldc           #66                 // String Changing the cluster key on an existing peer is not allowed. Existing key '
+      46: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      49: aload         4
+      51: invokevirtual #64                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getClusterKey:()Ljava/lang/String;
+      54: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: ldc           #67                 // String ' for peer
+      59: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      62: aload_1
+      63: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: ldc           #68                 // String  does not match new key '
+      68: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      71: aload_2
+      72: invokevirtual #64                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getClusterKey:()Ljava/lang/String;
+      75: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      78: ldc           #69                 // String '
+      80: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      86: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      89: athrow
+      90: aload_0
+      91: aload_2
+      92: invokevirtual #70                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getReplicationEndpointImpl:()Ljava/lang/String;
+      95: aload         4
+      97: invokevirtual #70                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getReplicationEndpointImpl:()Ljava/lang/String;
+     100: invokespecial #65                 // Method isStringEquals:(Ljava/lang/String;Ljava/lang/String;)Z
+     103: ifne          163
+     106: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+     109: dup
+     110: new           #28                 // class java/lang/StringBuilder
+     113: dup
+     114: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     117: ldc           #71                 // String Changing the replication endpoint implementation class on an existing peer is not allowed. Existing class '
+     119: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     122: aload         4
+     124: invokevirtual #70                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getReplicationEndpointImpl:()Ljava/lang/String;
+     127: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     130: ldc           #67                 // String ' for peer
+     132: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     135: aload_1
+     136: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     139: ldc           #72                 // String  does not match new class '
+     141: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     144: aload_2
+     145: invokevirtual #70                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getReplicationEndpointImpl:()Ljava/lang/String;
+     148: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     151: ldc           #69                 // String '
+     153: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     156: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     159: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+     162: athrow
+     163: aload_0
+     164: aload_2
+     165: invokevirtual #73                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getRemoteWALDir:()Ljava/lang/String;
+     168: aload         4
+     170: invokevirtual #73                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getRemoteWALDir:()Ljava/lang/String;
+     173: invokespecial #65                 // Method isStringEquals:(Ljava/lang/String;Ljava/lang/String;)Z
+     176: ifne          236
+     179: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+     182: dup
+     183: new           #28                 // class java/lang/StringBuilder
+     186: dup
+     187: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     190: ldc           #74                 // String Changing the remote wal dir on an existing peer is not allowed. Existing remote wal dir '
+     192: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     195: aload         4
+     197: invokevirtual #73                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getRemoteWALDir:()Ljava/lang/String;
+     200: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     203: ldc           #67                 // String ' for peer
+     205: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     208: aload_1
+     209: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     212: ldc           #75                 // String  does not match new remote wal dir '
+     214: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     217: aload_2
+     218: invokevirtual #73                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getRemoteWALDir:()Ljava/lang/String;
+     221: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     224: ldc           #69                 // String '
+     226: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     229: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     232: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+     235: athrow
+     236: aload         4
+     238: invokevirtual #45                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.isSyncReplication:()Z
+     241: ifeq          285
+     244: aload         4
+     246: aload_2
+     247: invokestatic  #76                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.isNamespacesAndTableCFsEqual:(Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)Z
+     250: ifne          285
+     253: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+     256: dup
+     257: new           #28                 // class java/lang/StringBuilder
+     260: dup
+     261: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     264: ldc           #77                 // String Changing the replicated namespace/table config on a synchronous replication peer(peerId:
+     266: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     269: aload_1
+     270: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     273: ldc           #78                 // String ) is not allowed.
+     275: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     278: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     281: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+     284: athrow
+     285: aload_3
+     286: areturn
+
+  org.apache.hadoop.hbase.replication.ReplicationPeerDescription preTransitPeerSyncReplicationState(java.lang.String, org.apache.hadoop.hbase.replication.SyncReplicationState) throws org.apache.hadoop.hbase.DoNotRetryIOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #59                 // Method checkPeerExists:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerDescription;
+       5: astore_3
+       6: aload_3
+       7: invokevirtual #55                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getSyncReplicationState:()Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      10: astore        4
+      12: aload_0
+      13: getfield      #9                  // Field allowedTransition:Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+      16: aload         4
+      18: invokevirtual #79                 // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      21: checkcast     #80                 // class java/util/EnumSet
+      24: astore        5
+      26: aload         5
+      28: ifnull        40
+      31: aload         5
+      33: aload_2
+      34: invokevirtual #81                 // Method java/util/EnumSet.contains:(Ljava/lang/Object;)Z
+      37: ifne          86
+      40: new           #27                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      43: dup
+      44: new           #28                 // class java/lang/StringBuilder
+      47: dup
+      48: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      51: ldc           #82                 // String Can not transit current cluster state from
+      53: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: aload         4
+      58: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      61: ldc           #83                 // String  to
+      63: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: aload_2
+      67: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      70: ldc           #84                 // String  for peer id=
+      72: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: aload_1
+      76: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      79: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      82: invokespecial #36                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      85: athrow
+      86: aload_3
+      87: areturn
+
+  public void addPeer(java.lang.String, org.apache.hadoop.hbase.replication.ReplicationPeerConfig, boolean) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #47,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.containsKey:(Ljava/lang/Object;)Z
+      10: ifeq          14
+      13: return
+      14: aload_2
+      15: invokestatic  #85                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.newBuilder:(Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+      18: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.build:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      23: astore        4
+      25: aload         4
+      27: invokevirtual #45                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.isSyncReplication:()Z
+      30: ifeq          39
+      33: getstatic     #3                  // Field org/apache/hadoop/hbase/replication/SyncReplicationState.DOWNGRADE_ACTIVE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      36: goto          42
+      39: getstatic     #87                 // Field org/apache/hadoop/hbase/replication/SyncReplicationState.NONE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      42: astore        5
+      44: aload_0
+      45: getfield      #13                 // Field peerStorage:Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+      48: aload_1
+      49: aload         4
+      51: iload_3
+      52: aload         5
+      54: invokeinterface #88,  5           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.addPeer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;ZLorg/apache/hadoop/hbase/replication/SyncReplicationState;)V
+      59: aload_0
+      60: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      63: aload_1
+      64: new           #52                 // class org/apache/hadoop/hbase/replication/ReplicationPeerDescription
+      67: dup
+      68: aload_1
+      69: iload_3
+      70: aload         4
+      72: aload         5
+      74: invokespecial #89                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription."<init>":(Ljava/lang/String;ZLorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;Lorg/apache/hadoop/hbase/replication/SyncReplicationState;)V
+      77: invokeinterface #90,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      82: pop
+      83: return
+
+  public void removePeer(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #47,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.containsKey:(Ljava/lang/Object;)Z
+      10: ifne          14
+      13: return
+      14: aload_0
+      15: getfield      #13                 // Field peerStorage:Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+      18: aload_1
+      19: invokeinterface #91,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.removePeer:(Ljava/lang/String;)V
+      24: aload_0
+      25: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      28: aload_1
+      29: invokeinterface #92,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      34: pop
+      35: return
+
+  public void enablePeer(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: invokespecial #94                 // Method setPeerState:(Ljava/lang/String;Z)V
+       6: return
+
+  public void disablePeer(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_0
+       3: invokespecial #94                 // Method setPeerState:(Ljava/lang/String;Z)V
+       6: return
+
+  public void updatePeerConfig(java.lang.String, org.apache.hadoop.hbase.replication.ReplicationPeerConfig) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #51,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #52                 // class org/apache/hadoop/hbase/replication/ReplicationPeerDescription
+      13: astore_3
+      14: aload_3
+      15: invokevirtual #54                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getPeerConfig:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      18: astore        4
+      20: aload_2
+      21: invokestatic  #85                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.newBuilder:(Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+      24: astore        5
+      26: aload         5
+      28: aload         4
+      30: invokevirtual #95                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getConfiguration:()Ljava/util/Map;
+      33: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.putAllConfiguration:(Ljava/util/Map;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+      38: pop
+      39: aload         5
+      41: aload_2
+      42: invokevirtual #95                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getConfiguration:()Ljava/util/Map;
+      45: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.putAllConfiguration:(Ljava/util/Map;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+      50: pop
+      51: aload         5
+      53: aload         4
+      55: invokevirtual #95                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getConfiguration:()Ljava/util/Map;
+      58: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.putAllConfiguration:(Ljava/util/Map;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+      63: pop
+      64: aload         5
+      66: aload_2
+      67: invokevirtual #95                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getConfiguration:()Ljava/util/Map;
+      70: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.putAllConfiguration:(Ljava/util/Map;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder;
+      75: pop
+      76: aload         5
+      78: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerConfigBuilder.build:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      83: astore        6
+      85: aload_0
+      86: getfield      #13                 // Field peerStorage:Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+      89: aload_1
+      90: aload         6
+      92: invokeinterface #97,  3           // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.updatePeerConfig:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)V
+      97: aload_0
+      98: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+     101: aload_1
+     102: new           #52                 // class org/apache/hadoop/hbase/replication/ReplicationPeerDescription
+     105: dup
+     106: aload_1
+     107: aload_3
+     108: invokevirtual #61                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.isEnabled:()Z
+     111: aload         6
+     113: aload_3
+     114: invokevirtual #55                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getSyncReplicationState:()Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+     117: invokespecial #89                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription."<init>":(Ljava/lang/String;ZLorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;Lorg/apache/hadoop/hbase/replication/SyncReplicationState;)V
+     120: invokeinterface #90,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     125: pop
+     126: return
+
+  public java.util.List<org.apache.hadoop.hbase.replication.ReplicationPeerDescription> listPeers(java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ifnonnull     21
+       4: new           #98                 // class java/util/ArrayList
+       7: dup
+       8: aload_0
+       9: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      12: invokeinterface #99,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+      17: invokespecial #100                // Method java/util/ArrayList."<init>":(Ljava/util/Collection;)V
+      20: areturn
+      21: aload_0
+      22: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      25: invokeinterface #99,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+      30: invokeinterface #101,  1          // InterfaceMethod java/util/Collection.stream:()Ljava/util/stream/Stream;
+      35: aload_1
+      36: invokedynamic #102,  0            // InvokeDynamic #0:test:(Ljava/util/regex/Pattern;)Ljava/util/function/Predicate;
+      41: invokeinterface #103,  2          // InterfaceMethod java/util/stream/Stream.filter:(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;
+      46: invokestatic  #104                // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      49: invokeinterface #105,  2          // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      54: checkcast     #106                // class java/util/List
+      57: areturn
+
+  public java.util.Optional<org.apache.hadoop.hbase.replication.ReplicationPeerConfig> getPeerConfig(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #51,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #52                 // class org/apache/hadoop/hbase/replication/ReplicationPeerDescription
+      13: astore_2
+      14: aload_2
+      15: ifnull        28
+      18: aload_2
+      19: invokevirtual #54                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getPeerConfig:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      22: invokestatic  #107                // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+      25: goto          31
+      28: invokestatic  #108                // Method java/util/Optional.empty:()Ljava/util/Optional;
+      31: areturn
+
+  void removeAllLastPushedSeqIds(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+       4: aload_1
+       5: invokeinterface #109,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationQueueStorage.removeLastSequenceIds:(Ljava/lang/String;)V
+      10: return
+
+  public void setPeerNewSyncReplicationState(java.lang.String, org.apache.hadoop.hbase.replication.SyncReplicationState) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field peerStorage:Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+       4: aload_1
+       5: aload_2
+       6: invokeinterface #110,  3          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.setPeerNewSyncReplicationState:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/SyncReplicationState;)V
+      11: return
+
+  public void transitPeerSyncReplicationState(java.lang.String, org.apache.hadoop.hbase.replication.SyncReplicationState) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field peerStorage:Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+       4: aload_1
+       5: invokeinterface #111,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.getPeerNewSyncReplicationState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      10: getstatic     #87                 // Field org/apache/hadoop/hbase/replication/SyncReplicationState.NONE:Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      13: if_acmpeq     26
+      16: aload_0
+      17: getfield      #13                 // Field peerStorage:Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+      20: aload_1
+      21: invokeinterface #112,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.transitPeerSyncReplicationState:(Ljava/lang/String;)V
+      26: aload_0
+      27: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      30: aload_1
+      31: invokeinterface #51,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      36: checkcast     #52                 // class org/apache/hadoop/hbase/replication/ReplicationPeerDescription
+      39: astore_3
+      40: aload_3
+      41: invokevirtual #55                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getSyncReplicationState:()Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      44: aload_2
+      45: if_acmpeq     76
+      48: aload_0
+      49: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+      52: aload_1
+      53: new           #52                 // class org/apache/hadoop/hbase/replication/ReplicationPeerDescription
+      56: dup
+      57: aload_1
+      58: aload_3
+      59: invokevirtual #61                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.isEnabled:()Z
+      62: aload_3
+      63: invokevirtual #54                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription.getPeerConfig:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      66: aload_2
+      67: invokespecial #89                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription."<init>":(Ljava/lang/String;ZLorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;Lorg/apache/hadoop/hbase/replication/SyncReplicationState;)V
+      70: invokeinterface #90,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      75: pop
+      76: return
+
+  public void removeAllQueues(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+       4: aload_1
+       5: invokestatic  #113                // Method org/apache/hadoop/hbase/replication/ReplicationUtils.removeAllQueues:(Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;Ljava/lang/String;)V
+       8: aload_0
+       9: getfield      #14                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+      12: aload_1
+      13: invokestatic  #113                // Method org/apache/hadoop/hbase/replication/ReplicationUtils.removeAllQueues:(Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;Ljava/lang/String;)V
+      16: return
+
+  public void removeAllQueuesAndHFileRefs(java.lang.String) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #114                // Method removeAllQueues:(Ljava/lang/String;)V
+       5: aload_0
+       6: getfield      #14                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+       9: aload_1
+      10: invokeinterface #115,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationQueueStorage.removePeerFromHFileRefs:(Ljava/lang/String;)V
+      15: return
+
+  public java.util.List<java.lang.String> getSerialPeerIdsBelongsTo(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field peers:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #99,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+       9: invokeinterface #101,  1          // InterfaceMethod java/util/Collection.stream:()Ljava/util/stream/Stream;
+      14: invokedynamic #183,  0            // InvokeDynamic #1:test:()Ljava/util/function/Predicate;
+      19: invokeinterface #103,  2          // InterfaceMethod java/util/stream/Stream.filter:(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;
+      24: aload_1
+      25: invokedynamic #184,  0            // InvokeDynamic #2:test:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/Predicate;
+      30: invokeinterface #103,  2          // InterfaceMethod java/util/stream/Stream.filter:(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;
+      35: invokedynamic #185,  0            // InvokeDynamic #3:apply:()Ljava/util/function/Function;
+      40: invokeinterface #186,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      45: invokestatic  #104                // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      48: invokeinterface #105,  2          // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      53: checkcast     #106                // class java/util/List
+      56: areturn
+
+  public org.apache.hadoop.hbase.replication.ReplicationQueueStorage getQueueStorage();
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+       4: areturn
+
+  public static org.apache.hadoop.hbase.master.replication.ReplicationPeerManager create(org.apache.hadoop.hbase.zookeeper.ZKWatcher, org.apache.hadoop.conf.Configuration) throws org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #187                // Method org/apache/hadoop/hbase/replication/ReplicationStorageFactory.getReplicationPeerStorage:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;
+       5: astore_2
+       6: new           #188                // class java/util/concurrent/ConcurrentHashMap
+       9: dup
+      10: invokespecial #189                // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      13: astore_3
+      14: aload_2
+      15: invokeinterface #190,  1          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.listPeerIds:()Ljava/util/List;
+      20: invokeinterface #17,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      25: astore        4
+      27: aload         4
+      29: invokeinterface #18,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      34: ifeq          106
+      37: aload         4
+      39: invokeinterface #19,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      44: checkcast     #22                 // class java/lang/String
+      47: astore        5
+      49: aload_2
+      50: aload         5
+      52: invokeinterface #191,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.getPeerConfig:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      57: astore        6
+      59: aload_2
+      60: aload         5
+      62: invokeinterface #192,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.isPeerEnabled:(Ljava/lang/String;)Z
+      67: istore        7
+      69: aload_2
+      70: aload         5
+      72: invokeinterface #193,  2          // InterfaceMethod org/apache/hadoop/hbase/replication/ReplicationPeerStorage.getPeerSyncReplicationState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/replication/SyncReplicationState;
+      77: astore        8
+      79: aload_3
+      80: aload         5
+      82: new           #52                 // class org/apache/hadoop/hbase/replication/ReplicationPeerDescription
+      85: dup
+      86: aload         5
+      88: iload         7
+      90: aload         6
+      92: aload         8
+      94: invokespecial #89                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerDescription."<init>":(Ljava/lang/String;ZLorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;Lorg/apache/hadoop/hbase/replication/SyncReplicationState;)V
+      97: invokeinterface #90,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     102: pop
+     103: goto          27
+     106: new           #194                // class org/apache/hadoop/hbase/master/replication/ReplicationPeerManager
+     109: dup
+     110: aload_2
+     111: aload_0
+     112: aload_1
+     113: invokestatic  #195                // Method org/apache/hadoop/hbase/replication/ReplicationStorageFactory.getReplicationQueueStorage:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+     116: aload_3
+     117: invokespecial #196                // Method "<init>":(Lorg/apache/hadoop/hbase/replication/ReplicationPeerStorage;Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;Ljava/util/concurrent/ConcurrentMap;)V
+     120: areturn
+
+  public void acquireSyncReplicationPeerLock() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field syncReplicationPeerLock:Ljava/util/concurrent/Semaphore;
+       4: invokevirtual #197                // Method java/util/concurrent/Semaphore.acquire:()V
+       7: return
+
+  public void releaseSyncReplicationPeerLock();
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field syncReplicationPeerLock:Ljava/util/concurrent/Semaphore;
+       4: invokevirtual #198                // Method java/util/concurrent/Semaphore.release:()V
+       7: return
+}

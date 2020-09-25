@@ -1,0 +1,499 @@
+Compiled from "HFile.java"
+public class org.apache.hadoop.hbase.io.hfile.HFile {
+  static final org.slf4j.Logger LOG;
+
+  public static final int MAXIMUM_KEY_LENGTH;
+
+  public static final org.apache.hadoop.hbase.io.compress.Compression$Algorithm DEFAULT_COMPRESSION_ALGORITHM;
+
+  public static final int MIN_FORMAT_VERSION;
+
+  public static final int MAX_FORMAT_VERSION;
+
+  public static final int MIN_FORMAT_VERSION_WITH_TAGS;
+
+  public static final java.lang.String DEFAULT_COMPRESSION;
+
+  public static final java.lang.String BLOOM_FILTER_DATA_KEY;
+
+  public static final int MIN_NUM_HFILE_PATH_LEVELS;
+
+  public static final int DEFAULT_BYTES_PER_CHECKSUM;
+
+  static final java.util.concurrent.atomic.LongAdder CHECKSUM_FAILURES;
+
+  public static final java.util.concurrent.atomic.LongAdder DATABLOCK_READ_COUNT;
+
+  static final org.apache.hadoop.hbase.io.MetricsIO metrics;
+
+  public static final java.lang.String FORMAT_VERSION_KEY;
+
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.io.hfile.HFile();
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static final long getAndResetChecksumFailuresCount();
+    Code:
+       0: getstatic     #3                  // Field CHECKSUM_FAILURES:Ljava/util/concurrent/atomic/LongAdder;
+       3: invokevirtual #4                  // Method java/util/concurrent/atomic/LongAdder.sumThenReset:()J
+       6: lreturn
+
+  public static final long getChecksumFailuresCount();
+    Code:
+       0: getstatic     #3                  // Field CHECKSUM_FAILURES:Ljava/util/concurrent/atomic/LongAdder;
+       3: invokevirtual #5                  // Method java/util/concurrent/atomic/LongAdder.sum:()J
+       6: lreturn
+
+  public static final void updateReadLatency(long, boolean);
+    Code:
+       0: iload_2
+       1: ifeq          14
+       4: getstatic     #6                  // Field metrics:Lorg/apache/hadoop/hbase/io/MetricsIO;
+       7: lload_0
+       8: invokevirtual #7                  // Method org/apache/hadoop/hbase/io/MetricsIO.updateFsPreadTime:(J)V
+      11: goto          21
+      14: getstatic     #6                  // Field metrics:Lorg/apache/hadoop/hbase/io/MetricsIO;
+      17: lload_0
+      18: invokevirtual #8                  // Method org/apache/hadoop/hbase/io/MetricsIO.updateFsReadTime:(J)V
+      21: return
+
+  public static final void updateWriteLatency(long);
+    Code:
+       0: getstatic     #6                  // Field metrics:Lorg/apache/hadoop/hbase/io/MetricsIO;
+       3: lload_0
+       4: invokevirtual #9                  // Method org/apache/hadoop/hbase/io/MetricsIO.updateFsWriteTime:(J)V
+       7: return
+
+  public static int getFormatVersion(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #11                 // String hfile.format.version
+       3: iconst_3
+       4: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       7: istore_1
+       8: iload_1
+       9: invokestatic  #13                 // Method checkFormatVersion:(I)V
+      12: iload_1
+      13: ireturn
+
+  public static final org.apache.hadoop.hbase.io.hfile.HFile$WriterFactory getWriterFactoryNoCache(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: getstatic     #14                 // Field org/apache/hadoop/hbase/io/hfile/CacheConfig.DISABLED:Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+       4: invokestatic  #15                 // Method getWriterFactory:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;)Lorg/apache/hadoop/hbase/io/hfile/HFile$WriterFactory;
+       7: areturn
+
+  public static final org.apache.hadoop.hbase.io.hfile.HFile$WriterFactory getWriterFactory(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.io.hfile.CacheConfig);
+    Code:
+       0: aload_0
+       1: invokestatic  #16                 // Method getFormatVersion:(Lorg/apache/hadoop/conf/Configuration;)I
+       4: istore_2
+       5: iload_2
+       6: lookupswitch  { // 2
+                     2: 32
+                     3: 42
+               default: 52
+          }
+      32: new           #17                 // class java/lang/IllegalArgumentException
+      35: dup
+      36: ldc           #18                 // String This should never happen. Did you change hfile.format.version to read v2? This version of the software writes v3 hfiles only (but it can read v2 files without having to update hfile.format.version in hbase-site.xml)
+      38: invokespecial #19                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      41: athrow
+      42: new           #20                 // class org/apache/hadoop/hbase/io/hfile/HFile$WriterFactory
+      45: dup
+      46: aload_0
+      47: aload_1
+      48: invokespecial #21                 // Method org/apache/hadoop/hbase/io/hfile/HFile$WriterFactory."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;)V
+      51: areturn
+      52: new           #17                 // class java/lang/IllegalArgumentException
+      55: dup
+      56: new           #22                 // class java/lang/StringBuilder
+      59: dup
+      60: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      63: ldc           #24                 // String Cannot create writer for HFile format version
+      65: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      68: iload_2
+      69: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      72: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      75: invokespecial #19                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      78: athrow
+
+  public static org.apache.hadoop.hbase.io.hfile.HFile$Reader createReader(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.io.FSDataInputStreamWrapper, long, org.apache.hadoop.hbase.io.hfile.CacheConfig, boolean, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: aconst_null
+       1: astore        8
+       3: aload_0
+       4: instanceof    #48                 // class org/apache/hadoop/hbase/fs/HFileSystem
+       7: ifne          23
+      10: new           #48                 // class org/apache/hadoop/hbase/fs/HFileSystem
+      13: dup
+      14: aload_0
+      15: invokespecial #49                 // Method org/apache/hadoop/hbase/fs/HFileSystem."<init>":(Lorg/apache/hadoop/fs/FileSystem;)V
+      18: astore        8
+      20: goto          29
+      23: aload_0
+      24: checkcast     #48                 // class org/apache/hadoop/hbase/fs/HFileSystem
+      27: astore        8
+      29: aload_1
+      30: aload_2
+      31: lload_3
+      32: aload         5
+      34: aload         8
+      36: iload         6
+      38: aload         7
+      40: invokestatic  #50                 // Method openReader:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/io/FSDataInputStreamWrapper;JLorg/apache/hadoop/hbase/io/hfile/CacheConfig;Lorg/apache/hadoop/hbase/fs/HFileSystem;ZLorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/io/hfile/HFile$Reader;
+      43: areturn
+
+  public static org.apache.hadoop.hbase.io.hfile.HFile$Reader createReader(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: getstatic     #14                 // Field org/apache/hadoop/hbase/io/hfile/CacheConfig.DISABLED:Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;
+       5: iconst_1
+       6: aload_2
+       7: invokestatic  #51                 // Method createReader:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;ZLorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/io/hfile/HFile$Reader;
+      10: areturn
+
+  public static org.apache.hadoop.hbase.io.hfile.HFile$Reader createReader(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.io.hfile.CacheConfig, boolean, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: ldc           #52                 // String Cannot create Reader with null CacheConf
+       3: invokestatic  #53                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: new           #54                 // class org/apache/hadoop/hbase/io/FSDataInputStreamWrapper
+      10: dup
+      11: aload_0
+      12: aload_1
+      13: invokespecial #55                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper."<init>":(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+      16: astore        5
+      18: aload_1
+      19: aload         5
+      21: aload_0
+      22: aload_1
+      23: invokevirtual #56                 // Method org/apache/hadoop/fs/FileSystem.getFileStatus:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/FileStatus;
+      26: invokevirtual #57                 // Method org/apache/hadoop/fs/FileStatus.getLen:()J
+      29: aload_2
+      30: aload         5
+      32: invokevirtual #58                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper.getHfs:()Lorg/apache/hadoop/hbase/fs/HFileSystem;
+      35: iload_3
+      36: aload         4
+      38: invokestatic  #50                 // Method openReader:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/io/FSDataInputStreamWrapper;JLorg/apache/hadoop/hbase/io/hfile/CacheConfig;Lorg/apache/hadoop/hbase/fs/HFileSystem;ZLorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/io/hfile/HFile$Reader;
+      41: areturn
+
+  static org.apache.hadoop.hbase.io.hfile.HFile$Reader createReaderFromStream(org.apache.hadoop.fs.Path, org.apache.hadoop.fs.FSDataInputStream, long, org.apache.hadoop.hbase.io.hfile.CacheConfig, org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: new           #54                 // class org/apache/hadoop/hbase/io/FSDataInputStreamWrapper
+       3: dup
+       4: aload_1
+       5: invokespecial #59                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper."<init>":(Lorg/apache/hadoop/fs/FSDataInputStream;)V
+       8: astore        6
+      10: aload_0
+      11: aload         6
+      13: lload_2
+      14: aload         4
+      16: aconst_null
+      17: iconst_1
+      18: aload         5
+      20: invokestatic  #50                 // Method openReader:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/io/FSDataInputStreamWrapper;JLorg/apache/hadoop/hbase/io/hfile/CacheConfig;Lorg/apache/hadoop/hbase/fs/HFileSystem;ZLorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/io/hfile/HFile$Reader;
+      23: areturn
+
+  public static boolean isHFileFormat(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: aload_1
+       3: invokevirtual #56                 // Method org/apache/hadoop/fs/FileSystem.getFileStatus:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/FileStatus;
+       6: invokestatic  #60                 // Method isHFileFormat:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/FileStatus;)Z
+       9: ireturn
+
+  public static boolean isHFileFormat(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.FileStatus) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #61                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+       4: astore_2
+       5: aload_1
+       6: invokevirtual #57                 // Method org/apache/hadoop/fs/FileStatus.getLen:()J
+       9: lstore_3
+      10: new           #54                 // class org/apache/hadoop/hbase/io/FSDataInputStreamWrapper
+      13: dup
+      14: aload_0
+      15: aload_2
+      16: invokespecial #55                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper."<init>":(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;)V
+      19: astore        5
+      21: aconst_null
+      22: astore        6
+      24: aload         5
+      26: invokevirtual #28                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper.shouldUseHBaseChecksum:()Z
+      29: istore        7
+      31: getstatic     #29                 // Field $assertionsDisabled:Z
+      34: ifne          50
+      37: iload         7
+      39: ifeq          50
+      42: new           #30                 // class java/lang/AssertionError
+      45: dup
+      46: invokespecial #31                 // Method java/lang/AssertionError."<init>":()V
+      49: athrow
+      50: aload         5
+      52: iload         7
+      54: invokevirtual #32                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper.getStream:(Z)Lorg/apache/hadoop/fs/FSDataInputStream;
+      57: lload_3
+      58: invokestatic  #33                 // Method org/apache/hadoop/hbase/io/hfile/FixedFileTrailer.readFromStream:(Lorg/apache/hadoop/fs/FSDataInputStream;J)Lorg/apache/hadoop/hbase/io/hfile/FixedFileTrailer;
+      61: pop
+      62: iconst_1
+      63: istore        8
+      65: aload         5
+      67: ifnull        100
+      70: aload         6
+      72: ifnull        95
+      75: aload         5
+      77: invokevirtual #62                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper.close:()V
+      80: goto          100
+      83: astore        9
+      85: aload         6
+      87: aload         9
+      89: invokevirtual #63                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      92: goto          100
+      95: aload         5
+      97: invokevirtual #62                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper.close:()V
+     100: iload         8
+     102: ireturn
+     103: astore        7
+     105: aload         7
+     107: astore        6
+     109: aload         7
+     111: athrow
+     112: astore        10
+     114: aload         5
+     116: ifnull        149
+     119: aload         6
+     121: ifnull        144
+     124: aload         5
+     126: invokevirtual #62                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper.close:()V
+     129: goto          149
+     132: astore        11
+     134: aload         6
+     136: aload         11
+     138: invokevirtual #63                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     141: goto          149
+     144: aload         5
+     146: invokevirtual #62                 // Method org/apache/hadoop/hbase/io/FSDataInputStreamWrapper.close:()V
+     149: aload         10
+     151: athrow
+     152: astore        5
+     154: iconst_0
+     155: ireturn
+    Exception table:
+       from    to  target type
+          75    80    83   Class java/lang/Throwable
+          24    65   103   Class java/lang/Throwable
+          24    65   112   any
+         124   129   132   Class java/lang/Throwable
+         103   114   112   any
+          10   100   152   Class java/lang/IllegalArgumentException
+         103   152   152   Class java/lang/IllegalArgumentException
+
+  public static boolean isReservedFileInfoKey(byte[]);
+    Code:
+       0: aload_0
+       1: getstatic     #64                 // Field org/apache/hadoop/hbase/io/hfile/HFile$FileInfo.RESERVED_PREFIX_BYTES:[B
+       4: invokestatic  #65                 // Method org/apache/hadoop/hbase/util/Bytes.startsWith:([B[B)Z
+       7: ireturn
+
+  public static java.lang.String[] getSupportedCompressionAlgorithms();
+    Code:
+       0: invokestatic  #66                 // Method org/apache/hadoop/hbase/io/compress/Compression.getSupportedAlgorithms:()[Ljava/lang/String;
+       3: areturn
+
+  static int longToInt(long);
+    Code:
+       0: lload_0
+       1: ldc2_w        #67                 // long 4294967295l
+       4: land
+       5: l2i
+       6: ireturn
+
+  static java.util.List<org.apache.hadoop.fs.Path> getStoreFiles(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path) throws java.io.IOException;
+    Code:
+       0: new           #69                 // class java/util/ArrayList
+       3: dup
+       4: invokespecial #70                 // Method java/util/ArrayList."<init>":()V
+       7: astore_2
+       8: new           #71                 // class org/apache/hadoop/hbase/util/FSUtils$DirFilter
+      11: dup
+      12: aload_0
+      13: invokespecial #72                 // Method org/apache/hadoop/hbase/util/FSUtils$DirFilter."<init>":(Lorg/apache/hadoop/fs/FileSystem;)V
+      16: astore_3
+      17: aload_0
+      18: aload_1
+      19: aload_3
+      20: invokevirtual #73                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/PathFilter;)[Lorg/apache/hadoop/fs/FileStatus;
+      23: astore        4
+      25: aload         4
+      27: astore        5
+      29: aload         5
+      31: arraylength
+      32: istore        6
+      34: iconst_0
+      35: istore        7
+      37: iload         7
+      39: iload         6
+      41: if_icmpge     152
+      44: aload         5
+      46: iload         7
+      48: aaload
+      49: astore        8
+      51: aload_0
+      52: aload         8
+      54: invokevirtual #61                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+      57: invokevirtual #74                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+      60: astore        9
+      62: aload         9
+      64: astore        10
+      66: aload         10
+      68: arraylength
+      69: istore        11
+      71: iconst_0
+      72: istore        12
+      74: iload         12
+      76: iload         11
+      78: if_icmpge     146
+      81: aload         10
+      83: iload         12
+      85: aaload
+      86: astore        13
+      88: aload         13
+      90: invokevirtual #75                 // Method org/apache/hadoop/fs/FileStatus.isDirectory:()Z
+      93: ifne          140
+      96: aload         13
+      98: invokevirtual #61                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     101: invokevirtual #76                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     104: ldc           #78                 // String oldWALs
+     106: invokevirtual #79                 // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+     109: ifne          140
+     112: aload         13
+     114: invokevirtual #61                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     117: invokevirtual #76                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+     120: ldc           #80                 // String recovered.edits
+     122: invokevirtual #79                 // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+     125: ifne          140
+     128: aload_2
+     129: aload         13
+     131: invokevirtual #61                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     134: invokeinterface #81,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     139: pop
+     140: iinc          12, 1
+     143: goto          74
+     146: iinc          7, 1
+     149: goto          37
+     152: aload_2
+     153: areturn
+
+  public static void checkFormatVersion(int) throws java.lang.IllegalArgumentException;
+    Code:
+       0: iload_0
+       1: iconst_2
+       2: if_icmplt     10
+       5: iload_0
+       6: iconst_3
+       7: if_icmple     60
+      10: new           #17                 // class java/lang/IllegalArgumentException
+      13: dup
+      14: new           #22                 // class java/lang/StringBuilder
+      17: dup
+      18: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      21: ldc           #82                 // String Invalid HFile version:
+      23: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      26: iload_0
+      27: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      30: ldc           #83                 // String  (expected to be between
+      32: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: iconst_2
+      36: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      39: ldc           #84                 // String  and
+      41: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: iconst_3
+      45: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      48: ldc           #85                 // String )
+      50: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      56: invokespecial #19                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      59: athrow
+      60: return
+
+  public static void checkHFileVersion(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #11                 // String hfile.format.version
+       3: iconst_3
+       4: invokevirtual #12                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       7: istore_1
+       8: iload_1
+       9: iconst_3
+      10: if_icmplt     18
+      13: iload_1
+      14: iconst_3
+      15: if_icmple     59
+      18: new           #17                 // class java/lang/IllegalArgumentException
+      21: dup
+      22: new           #22                 // class java/lang/StringBuilder
+      25: dup
+      26: invokespecial #23                 // Method java/lang/StringBuilder."<init>":()V
+      29: ldc           #86                 // String The setting for hfile.format.version (in your hbase-*.xml files) is
+      31: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: iload_1
+      35: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      38: ldc           #87                 // String  which does not match
+      40: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: iconst_3
+      44: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      47: ldc           #88                 // String ; are you running with a configuration from an older or newer hbase install (an incompatible hbase-default.xml or hbase-site.xml on your CLASSPATH)?
+      49: invokevirtual #25                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      52: invokevirtual #27                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      55: invokespecial #19                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      58: athrow
+      59: return
+
+  public static void main(java.lang.String[]) throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: invokestatic  #89                 // Method org/apache/hadoop/hbase/io/hfile/HFilePrettyPrinter.main:([Ljava/lang/String;)V
+       4: return
+
+  static {};
+    Code:
+       0: ldc           #10                 // class org/apache/hadoop/hbase/io/hfile/HFile
+       2: invokevirtual #90                 // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #29                 // Field $assertionsDisabled:Z
+      16: ldc           #10                 // class org/apache/hadoop/hbase/io/hfile/HFile
+      18: invokestatic  #91                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      21: putstatic     #35                 // Field LOG:Lorg/slf4j/Logger;
+      24: getstatic     #92                 // Field org/apache/hadoop/hbase/io/compress/Compression$Algorithm.NONE:Lorg/apache/hadoop/hbase/io/compress/Compression$Algorithm;
+      27: putstatic     #93                 // Field DEFAULT_COMPRESSION_ALGORITHM:Lorg/apache/hadoop/hbase/io/compress/Compression$Algorithm;
+      30: getstatic     #93                 // Field DEFAULT_COMPRESSION_ALGORITHM:Lorg/apache/hadoop/hbase/io/compress/Compression$Algorithm;
+      33: invokevirtual #94                 // Method org/apache/hadoop/hbase/io/compress/Compression$Algorithm.getName:()Ljava/lang/String;
+      36: putstatic     #95                 // Field DEFAULT_COMPRESSION:Ljava/lang/String;
+      39: new           #96                 // class java/util/concurrent/atomic/LongAdder
+      42: dup
+      43: invokespecial #97                 // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+      46: putstatic     #3                  // Field CHECKSUM_FAILURES:Ljava/util/concurrent/atomic/LongAdder;
+      49: new           #96                 // class java/util/concurrent/atomic/LongAdder
+      52: dup
+      53: invokespecial #97                 // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+      56: putstatic     #98                 // Field DATABLOCK_READ_COUNT:Ljava/util/concurrent/atomic/LongAdder;
+      59: new           #99                 // class org/apache/hadoop/hbase/io/MetricsIO
+      62: dup
+      63: new           #100                // class org/apache/hadoop/hbase/io/MetricsIOWrapperImpl
+      66: dup
+      67: invokespecial #101                // Method org/apache/hadoop/hbase/io/MetricsIOWrapperImpl."<init>":()V
+      70: invokespecial #102                // Method org/apache/hadoop/hbase/io/MetricsIO."<init>":(Lorg/apache/hadoop/hbase/io/MetricsIOWrapper;)V
+      73: putstatic     #6                  // Field metrics:Lorg/apache/hadoop/hbase/io/MetricsIO;
+      76: return
+}

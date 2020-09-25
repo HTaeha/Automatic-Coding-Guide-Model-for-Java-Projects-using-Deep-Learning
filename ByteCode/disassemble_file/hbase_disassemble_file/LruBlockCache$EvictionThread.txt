@@ -1,0 +1,118 @@
+Compiled from "LruBlockCache.java"
+class org.apache.hadoop.hbase.io.hfile.LruBlockCache$EvictionThread extends org.apache.hadoop.hbase.util.HasThread {
+  public org.apache.hadoop.hbase.io.hfile.LruBlockCache$EvictionThread(org.apache.hadoop.hbase.io.hfile.LruBlockCache);
+    Code:
+       0: aload_0
+       1: new           #1                  // class java/lang/StringBuilder
+       4: dup
+       5: invokespecial #2                  // Method java/lang/StringBuilder."<init>":()V
+       8: invokestatic  #3                  // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      11: invokevirtual #4                  // Method java/lang/Thread.getName:()Ljava/lang/String;
+      14: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      17: ldc           #6                  // String .LruBlockCache.EvictionThread
+      19: invokevirtual #5                  // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      22: invokevirtual #7                  // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      25: invokespecial #8                  // Method org/apache/hadoop/hbase/util/HasThread."<init>":(Ljava/lang/String;)V
+      28: aload_0
+      29: iconst_1
+      30: putfield      #9                  // Field go:Z
+      33: aload_0
+      34: iconst_0
+      35: putfield      #10                 // Field enteringRun:Z
+      38: aload_0
+      39: iconst_1
+      40: invokevirtual #11                 // Method setDaemon:(Z)V
+      43: aload_0
+      44: new           #12                 // class java/lang/ref/WeakReference
+      47: dup
+      48: aload_1
+      49: invokespecial #13                 // Method java/lang/ref/WeakReference."<init>":(Ljava/lang/Object;)V
+      52: putfield      #14                 // Field cache:Ljava/lang/ref/WeakReference;
+      55: return
+
+  public void run();
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #10                 // Field enteringRun:Z
+       5: aload_0
+       6: getfield      #9                  // Field go:Z
+       9: ifeq          79
+      12: aload_0
+      13: dup
+      14: astore_1
+      15: monitorenter
+      16: aload_0
+      17: ldc2_w        #15                 // long 10000l
+      20: invokevirtual #17                 // Method java/lang/Object.wait:(J)V
+      23: goto          44
+      26: astore_2
+      27: invokestatic  #19                 // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache.access$000:()Lorg/slf4j/Logger;
+      30: ldc           #20                 // String Interrupted eviction thread
+      32: aload_2
+      33: invokeinterface #21,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      38: invokestatic  #3                  // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      41: invokevirtual #22                 // Method java/lang/Thread.interrupt:()V
+      44: aload_1
+      45: monitorexit
+      46: goto          54
+      49: astore_3
+      50: aload_1
+      51: monitorexit
+      52: aload_3
+      53: athrow
+      54: aload_0
+      55: getfield      #14                 // Field cache:Ljava/lang/ref/WeakReference;
+      58: invokevirtual #23                 // Method java/lang/ref/WeakReference.get:()Ljava/lang/Object;
+      61: checkcast     #24                 // class org/apache/hadoop/hbase/io/hfile/LruBlockCache
+      64: astore_1
+      65: aload_1
+      66: ifnonnull     72
+      69: goto          79
+      72: aload_1
+      73: invokevirtual #25                 // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache.evict:()V
+      76: goto          5
+      79: return
+    Exception table:
+       from    to  target type
+          16    23    26   Class java/lang/InterruptedException
+          16    46    49   any
+          49    52    49   any
+
+  public void evict();
+    Code:
+       0: aload_0
+       1: dup
+       2: astore_1
+       3: monitorenter
+       4: aload_0
+       5: invokevirtual #26                 // Method java/lang/Object.notifyAll:()V
+       8: aload_1
+       9: monitorexit
+      10: goto          18
+      13: astore_2
+      14: aload_1
+      15: monitorexit
+      16: aload_2
+      17: athrow
+      18: return
+    Exception table:
+       from    to  target type
+           4    10    13   any
+          13    16    13   any
+
+  synchronized void shutdown();
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #9                  // Field go:Z
+       5: aload_0
+       6: invokevirtual #26                 // Method java/lang/Object.notifyAll:()V
+       9: return
+
+  boolean isEnteringRun();
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field enteringRun:Z
+       4: ireturn
+}

@@ -1,0 +1,334 @@
+Compiled from "TableNamespaceManager.java"
+public class org.apache.hadoop.hbase.master.TableNamespaceManager {
+  public static final java.lang.String KEY_MAX_REGIONS;
+
+  public static final java.lang.String KEY_MAX_TABLES;
+
+  static final java.lang.String NS_INIT_TIMEOUT;
+
+  static final int DEFAULT_NS_INIT_TIMEOUT;
+
+  org.apache.hadoop.hbase.master.TableNamespaceManager(org.apache.hadoop.hbase.master.MasterServices);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #4                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+      15: aload_0
+      16: aload_1
+      17: putfield      #5                  // Field masterServices:Lorg/apache/hadoop/hbase/master/MasterServices;
+      20: return
+
+  public void start() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field masterServices:Lorg/apache/hadoop/hbase/master/MasterServices;
+       4: invokeinterface #6,  1            // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+       9: getstatic     #7                  // Field org/apache/hadoop/hbase/TableName.NAMESPACE_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      12: invokestatic  #49                 // Method org/apache/hadoop/hbase/MetaTableAccessor.getTableState:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/TableState;
+      15: astore_1
+      16: aload_1
+      17: ifnull        31
+      20: aload_1
+      21: invokevirtual #50                 // Method org/apache/hadoop/hbase/client/TableState.isEnabled:()Z
+      24: ifeq          31
+      27: aload_0
+      28: invokespecial #51                 // Method migrateNamespaceTable:()V
+      31: aload_0
+      32: invokespecial #52                 // Method loadNamespaceIntoCache:()V
+      35: return
+
+  public boolean doesNamespaceExist(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #53,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.containsKey:(Ljava/lang/Object;)Z
+      10: ireturn
+
+  public org.apache.hadoop.hbase.NamespaceDescriptor get(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #54,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #55                 // class org/apache/hadoop/hbase/NamespaceDescriptor
+      13: areturn
+
+  public void addOrUpdateNamespace(org.apache.hadoop.hbase.NamespaceDescriptor) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field masterServices:Lorg/apache/hadoop/hbase/master/MasterServices;
+       4: invokeinterface #6,  1            // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+       9: aload_1
+      10: invokestatic  #56                 // Method insertNamespaceToMeta:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/NamespaceDescriptor;)V
+      13: aload_0
+      14: getfield      #4                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+      17: aload_1
+      18: invokevirtual #47                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.getName:()Ljava/lang/String;
+      21: aload_1
+      22: invokeinterface #48,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      27: pop
+      28: return
+
+  public static void insertNamespaceToMeta(org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.hbase.NamespaceDescriptor) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #47                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.getName:()Ljava/lang/String;
+       4: invokestatic  #57                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+       7: astore_2
+       8: new           #18                 // class org/apache/hadoop/hbase/client/Put
+      11: dup
+      12: aload_2
+      13: iconst_1
+      14: invokespecial #58                 // Method org/apache/hadoop/hbase/client/Put."<init>":([BZ)V
+      17: getstatic     #37                 // Field org/apache/hadoop/hbase/HConstants.NAMESPACE_FAMILY:[B
+      20: getstatic     #39                 // Field org/apache/hadoop/hbase/HConstants.NAMESPACE_COL_DESC_QUALIFIER:[B
+      23: aload_1
+      24: invokestatic  #59                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toProtoNamespaceDescriptor:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$NamespaceDescriptor;
+      27: invokevirtual #60                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$NamespaceDescriptor.toByteArray:()[B
+      30: invokevirtual #61                 // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+      33: astore_3
+      34: aload_0
+      35: getstatic     #15                 // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      38: invokeinterface #8,  2            // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      43: astore        4
+      45: aconst_null
+      46: astore        5
+      48: aload         4
+      50: aload_3
+      51: invokeinterface #62,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Lorg/apache/hadoop/hbase/client/Put;)V
+      56: aload         4
+      58: ifnull        151
+      61: aload         5
+      63: ifnull        88
+      66: aload         4
+      68: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      73: goto          151
+      76: astore        6
+      78: aload         5
+      80: aload         6
+      82: invokevirtual #28                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      85: goto          151
+      88: aload         4
+      90: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      95: goto          151
+      98: astore        6
+     100: aload         6
+     102: astore        5
+     104: aload         6
+     106: athrow
+     107: astore        7
+     109: aload         4
+     111: ifnull        148
+     114: aload         5
+     116: ifnull        141
+     119: aload         4
+     121: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     126: goto          148
+     129: astore        8
+     131: aload         5
+     133: aload         8
+     135: invokevirtual #28                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     138: goto          148
+     141: aload         4
+     143: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     148: aload         7
+     150: athrow
+     151: return
+    Exception table:
+       from    to  target type
+          66    73    76   Class java/lang/Throwable
+          48    56    98   Class java/lang/Throwable
+          48    56   107   any
+         119   126   129   Class java/lang/Throwable
+          98   109   107   any
+
+  public void deleteNamespace(java.lang.String) throws java.io.IOException;
+    Code:
+       0: new           #63                 // class org/apache/hadoop/hbase/client/Delete
+       3: dup
+       4: aload_1
+       5: invokestatic  #57                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+       8: invokespecial #64                 // Method org/apache/hadoop/hbase/client/Delete."<init>":([B)V
+      11: astore_2
+      12: aload_0
+      13: getfield      #5                  // Field masterServices:Lorg/apache/hadoop/hbase/master/MasterServices;
+      16: invokeinterface #6,  1            // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      21: getstatic     #15                 // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      24: invokeinterface #8,  2            // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      29: astore_3
+      30: aconst_null
+      31: astore        4
+      33: aload_3
+      34: aload_2
+      35: invokeinterface #65,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.delete:(Lorg/apache/hadoop/hbase/client/Delete;)V
+      40: aload_3
+      41: ifnull        129
+      44: aload         4
+      46: ifnull        70
+      49: aload_3
+      50: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      55: goto          129
+      58: astore        5
+      60: aload         4
+      62: aload         5
+      64: invokevirtual #28                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      67: goto          129
+      70: aload_3
+      71: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      76: goto          129
+      79: astore        5
+      81: aload         5
+      83: astore        4
+      85: aload         5
+      87: athrow
+      88: astore        6
+      90: aload_3
+      91: ifnull        126
+      94: aload         4
+      96: ifnull        120
+      99: aload_3
+     100: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     105: goto          126
+     108: astore        7
+     110: aload         4
+     112: aload         7
+     114: invokevirtual #28                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     117: goto          126
+     120: aload_3
+     121: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     126: aload         6
+     128: athrow
+     129: aload_0
+     130: getfield      #4                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+     133: aload_1
+     134: invokeinterface #66,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     139: pop
+     140: return
+    Exception table:
+       from    to  target type
+          49    55    58   Class java/lang/Throwable
+          33    40    79   Class java/lang/Throwable
+          33    40    88   any
+          99   105   108   Class java/lang/Throwable
+          79    90    88   any
+
+  public java.util.List<org.apache.hadoop.hbase.NamespaceDescriptor> list() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #67,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+       9: invokeinterface #68,  1           // InterfaceMethod java/util/Collection.stream:()Ljava/util/stream/Stream;
+      14: invokestatic  #69                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      17: invokeinterface #70,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      22: checkcast     #71                 // class java/util/List
+      25: areturn
+
+  public void validateTableAndRegionCount(org.apache.hadoop.hbase.NamespaceDescriptor) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokestatic  #72                 // Method getMaxRegions:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+       4: lconst_0
+       5: lcmp
+       6: ifgt          44
+       9: new           #73                 // class org/apache/hadoop/hbase/constraint/ConstraintException
+      12: dup
+      13: new           #74                 // class java/lang/StringBuilder
+      16: dup
+      17: invokespecial #75                 // Method java/lang/StringBuilder."<init>":()V
+      20: ldc           #76                 // String The max region quota for
+      22: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: aload_1
+      26: invokevirtual #47                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.getName:()Ljava/lang/String;
+      29: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: ldc           #78                 // String  is less than or equal to zero.
+      34: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: invokevirtual #79                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      40: invokespecial #80                 // Method org/apache/hadoop/hbase/constraint/ConstraintException."<init>":(Ljava/lang/String;)V
+      43: athrow
+      44: aload_1
+      45: invokestatic  #81                 // Method getMaxTables:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+      48: lconst_0
+      49: lcmp
+      50: ifgt          88
+      53: new           #73                 // class org/apache/hadoop/hbase/constraint/ConstraintException
+      56: dup
+      57: new           #74                 // class java/lang/StringBuilder
+      60: dup
+      61: invokespecial #75                 // Method java/lang/StringBuilder."<init>":()V
+      64: ldc           #82                 // String The max tables quota for
+      66: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: aload_1
+      70: invokevirtual #47                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.getName:()Ljava/lang/String;
+      73: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: ldc           #78                 // String  is less than or equal to zero.
+      78: invokevirtual #77                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: invokevirtual #79                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      84: invokespecial #80                 // Method org/apache/hadoop/hbase/constraint/ConstraintException."<init>":(Ljava/lang/String;)V
+      87: athrow
+      88: return
+
+  public static long getMaxTables(org.apache.hadoop.hbase.NamespaceDescriptor) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: ldc           #84                 // String hbase.namespace.quota.maxtables
+       3: invokevirtual #85                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.getConfigurationValue:(Ljava/lang/String;)Ljava/lang/String;
+       6: astore_1
+       7: lconst_0
+       8: lstore_2
+       9: aload_1
+      10: invokestatic  #86                 // Method org/apache/commons/lang3/StringUtils.isNotEmpty:(Ljava/lang/CharSequence;)Z
+      13: ifeq          38
+      16: aload_1
+      17: invokestatic  #87                 // Method java/lang/Long.parseLong:(Ljava/lang/String;)J
+      20: lstore_2
+      21: goto          42
+      24: astore        4
+      26: new           #89                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      29: dup
+      30: ldc           #90                 // String NumberFormatException while getting max tables.
+      32: aload         4
+      34: invokespecial #91                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      37: athrow
+      38: ldc2_w        #93                 // long 9223372036854775807l
+      41: lstore_2
+      42: lload_2
+      43: lreturn
+    Exception table:
+       from    to  target type
+          16    21    24   Class java/lang/NumberFormatException
+
+  public static long getMaxRegions(org.apache.hadoop.hbase.NamespaceDescriptor) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: ldc           #95                 // String hbase.namespace.quota.maxregions
+       3: invokevirtual #85                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.getConfigurationValue:(Ljava/lang/String;)Ljava/lang/String;
+       6: astore_1
+       7: lconst_0
+       8: lstore_2
+       9: aload_1
+      10: invokestatic  #86                 // Method org/apache/commons/lang3/StringUtils.isNotEmpty:(Ljava/lang/CharSequence;)Z
+      13: ifeq          38
+      16: aload_1
+      17: invokestatic  #87                 // Method java/lang/Long.parseLong:(Ljava/lang/String;)J
+      20: lstore_2
+      21: goto          42
+      24: astore        4
+      26: new           #89                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      29: dup
+      30: ldc           #96                 // String NumberFormatException while getting max regions.
+      32: aload         4
+      34: invokespecial #91                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      37: athrow
+      38: ldc2_w        #93                 // long 9223372036854775807l
+      41: lstore_2
+      42: lload_2
+      43: lreturn
+    Exception table:
+       from    to  target type
+          16    21    24   Class java/lang/NumberFormatException
+}

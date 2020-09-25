@@ -1,0 +1,395 @@
+Compiled from "MultipleColumnPrefixFilter.java"
+public class org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter extends org.apache.hadoop.hbase.filter.FilterBase {
+  protected byte[] hint;
+
+  protected java.util.TreeSet<byte[]> sortedPrefixes;
+
+  public org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter(byte[][]);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/filter/FilterBase."<init>":()V
+       4: aload_0
+       5: aconst_null
+       6: putfield      #2                  // Field hint:[B
+       9: aload_0
+      10: aload_0
+      11: invokevirtual #3                  // Method createTreeSet:()Ljava/util/TreeSet;
+      14: putfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      17: aload_1
+      18: ifnull        58
+      21: iconst_0
+      22: istore_2
+      23: iload_2
+      24: aload_1
+      25: arraylength
+      26: if_icmpge     58
+      29: aload_0
+      30: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      33: aload_1
+      34: iload_2
+      35: aaload
+      36: invokevirtual #5                  // Method java/util/TreeSet.add:(Ljava/lang/Object;)Z
+      39: ifne          52
+      42: new           #6                  // class java/lang/IllegalArgumentException
+      45: dup
+      46: ldc           #7                  // String prefixes must be distinct
+      48: invokespecial #8                  // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      51: athrow
+      52: iinc          2, 1
+      55: goto          23
+      58: return
+
+  public byte[][] getPrefix();
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+       6: invokevirtual #9                  // Method java/util/TreeSet.size:()I
+       9: anewarray     #10                 // class "[B"
+      12: astore_2
+      13: aload_0
+      14: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      17: invokevirtual #11                 // Method java/util/TreeSet.iterator:()Ljava/util/Iterator;
+      20: astore_3
+      21: aload_3
+      22: invokeinterface #12,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      27: ifeq          52
+      30: aload_3
+      31: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #10                 // class "[B"
+      39: astore        4
+      41: aload_2
+      42: iload_1
+      43: iinc          1, 1
+      46: aload         4
+      48: aastore
+      49: goto          21
+      52: aload_2
+      53: areturn
+
+  public boolean filterRowKey(org.apache.hadoop.hbase.Cell) throws java.io.IOException;
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public org.apache.hadoop.hbase.filter.Filter$ReturnCode filterKeyValue(org.apache.hadoop.hbase.Cell);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #14                 // Method filterCell:(Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/filter/Filter$ReturnCode;
+       5: areturn
+
+  public org.apache.hadoop.hbase.filter.Filter$ReturnCode filterCell(org.apache.hadoop.hbase.Cell);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+       4: invokevirtual #15                 // Method java/util/TreeSet.isEmpty:()Z
+       7: ifeq          14
+      10: getstatic     #16                 // Field org/apache/hadoop/hbase/filter/Filter$ReturnCode.INCLUDE:Lorg/apache/hadoop/hbase/filter/Filter$ReturnCode;
+      13: areturn
+      14: aload_0
+      15: aload_1
+      16: invokevirtual #17                 // Method filterColumn:(Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/filter/Filter$ReturnCode;
+      19: areturn
+
+  public org.apache.hadoop.hbase.filter.Filter$ReturnCode filterColumn(org.apache.hadoop.hbase.Cell);
+    Code:
+       0: aload_1
+       1: invokestatic  #18                 // Method org/apache/hadoop/hbase/CellUtil.cloneQualifier:(Lorg/apache/hadoop/hbase/Cell;)[B
+       4: astore_2
+       5: aload_0
+       6: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+       9: aload_2
+      10: iconst_1
+      11: invokevirtual #19                 // Method java/util/TreeSet.headSet:(Ljava/lang/Object;Z)Ljava/util/NavigableSet;
+      14: checkcast     #20                 // class java/util/TreeSet
+      17: astore_3
+      18: aload_3
+      19: invokevirtual #9                  // Method java/util/TreeSet.size:()I
+      22: ifeq          85
+      25: aload_3
+      26: invokevirtual #21                 // Method java/util/TreeSet.last:()Ljava/lang/Object;
+      29: checkcast     #10                 // class "[B"
+      32: astore        4
+      34: aload_2
+      35: aload         4
+      37: invokestatic  #22                 // Method org/apache/hadoop/hbase/util/Bytes.startsWith:([B[B)Z
+      40: ifeq          47
+      43: getstatic     #16                 // Field org/apache/hadoop/hbase/filter/Filter$ReturnCode.INCLUDE:Lorg/apache/hadoop/hbase/filter/Filter$ReturnCode;
+      46: areturn
+      47: aload_3
+      48: invokevirtual #9                  // Method java/util/TreeSet.size:()I
+      51: aload_0
+      52: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      55: invokevirtual #9                  // Method java/util/TreeSet.size:()I
+      58: if_icmpne     65
+      61: getstatic     #23                 // Field org/apache/hadoop/hbase/filter/Filter$ReturnCode.NEXT_ROW:Lorg/apache/hadoop/hbase/filter/Filter$ReturnCode;
+      64: areturn
+      65: aload_0
+      66: aload_0
+      67: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      70: aload         4
+      72: invokevirtual #24                 // Method java/util/TreeSet.higher:(Ljava/lang/Object;)Ljava/lang/Object;
+      75: checkcast     #10                 // class "[B"
+      78: putfield      #2                  // Field hint:[B
+      81: getstatic     #25                 // Field org/apache/hadoop/hbase/filter/Filter$ReturnCode.SEEK_NEXT_USING_HINT:Lorg/apache/hadoop/hbase/filter/Filter$ReturnCode;
+      84: areturn
+      85: aload_0
+      86: aload_0
+      87: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      90: invokevirtual #26                 // Method java/util/TreeSet.first:()Ljava/lang/Object;
+      93: checkcast     #10                 // class "[B"
+      96: putfield      #2                  // Field hint:[B
+      99: getstatic     #25                 // Field org/apache/hadoop/hbase/filter/Filter$ReturnCode.SEEK_NEXT_USING_HINT:Lorg/apache/hadoop/hbase/filter/Filter$ReturnCode;
+     102: areturn
+
+  public static org.apache.hadoop.hbase.filter.Filter createFilterFromArguments(java.util.ArrayList<byte[]>);
+    Code:
+       0: aload_0
+       1: invokevirtual #27                 // Method java/util/ArrayList.size:()I
+       4: anewarray     #10                 // class "[B"
+       7: astore_1
+       8: iconst_0
+       9: istore_2
+      10: iload_2
+      11: aload_0
+      12: invokevirtual #27                 // Method java/util/ArrayList.size:()I
+      15: if_icmpge     40
+      18: aload_0
+      19: iload_2
+      20: invokevirtual #28                 // Method java/util/ArrayList.get:(I)Ljava/lang/Object;
+      23: checkcast     #10                 // class "[B"
+      26: invokestatic  #29                 // Method org/apache/hadoop/hbase/filter/ParseFilter.removeQuotesFromByteArray:([B)[B
+      29: astore_3
+      30: aload_1
+      31: iload_2
+      32: aload_3
+      33: aastore
+      34: iinc          2, 1
+      37: goto          10
+      40: new           #30                 // class org/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter
+      43: dup
+      44: aload_1
+      45: invokespecial #31                 // Method "<init>":([[B)V
+      48: areturn
+
+  public byte[] toByteArray();
+    Code:
+       0: invokestatic  #32                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter$Builder;
+       3: astore_1
+       4: aload_0
+       5: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+       8: invokevirtual #11                 // Method java/util/TreeSet.iterator:()Ljava/util/Iterator;
+      11: astore_2
+      12: aload_2
+      13: invokeinterface #12,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      18: ifeq          47
+      21: aload_2
+      22: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      27: checkcast     #10                 // class "[B"
+      30: astore_3
+      31: aload_3
+      32: ifnull        44
+      35: aload_1
+      36: aload_3
+      37: invokestatic  #33                 // Method org/apache/hbase/thirdparty/com/google/protobuf/UnsafeByteOperations.unsafeWrap:([B)Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      40: invokevirtual #34                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter$Builder.addSortedPrefixes:(Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter$Builder;
+      43: pop
+      44: goto          12
+      47: aload_1
+      48: invokevirtual #35                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter;
+      51: invokevirtual #36                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter.toByteArray:()[B
+      54: areturn
+
+  public static org.apache.hadoop.hbase.filter.MultipleColumnPrefixFilter parseFrom(byte[]) throws org.apache.hadoop.hbase.exceptions.DeserializationException;
+    Code:
+       0: aload_0
+       1: invokestatic  #37                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter.parseFrom:([B)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter;
+       4: astore_1
+       5: goto          18
+       8: astore_2
+       9: new           #39                 // class org/apache/hadoop/hbase/exceptions/DeserializationException
+      12: dup
+      13: aload_2
+      14: invokespecial #40                 // Method org/apache/hadoop/hbase/exceptions/DeserializationException."<init>":(Ljava/lang/Throwable;)V
+      17: athrow
+      18: aload_1
+      19: invokevirtual #41                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter.getSortedPrefixesCount:()I
+      22: istore_2
+      23: iload_2
+      24: anewarray     #10                 // class "[B"
+      27: astore_3
+      28: iconst_0
+      29: istore        4
+      31: iload         4
+      33: iload_2
+      34: if_icmpge     56
+      37: aload_3
+      38: iload         4
+      40: aload_1
+      41: iload         4
+      43: invokevirtual #42                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/FilterProtos$MultipleColumnPrefixFilter.getSortedPrefixes:(I)Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      46: invokevirtual #43                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+      49: aastore
+      50: iinc          4, 1
+      53: goto          31
+      56: new           #30                 // class org/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter
+      59: dup
+      60: aload_3
+      61: invokespecial #31                 // Method "<init>":([[B)V
+      64: areturn
+    Exception table:
+       from    to  target type
+           0     5     8   Class org/apache/hbase/thirdparty/com/google/protobuf/InvalidProtocolBufferException
+
+  boolean areSerializedFieldsEqual(org.apache.hadoop.hbase.filter.Filter);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: if_acmpne     7
+       5: iconst_1
+       6: ireturn
+       7: aload_1
+       8: instanceof    #30                 // class org/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter
+      11: ifne          16
+      14: iconst_0
+      15: ireturn
+      16: aload_1
+      17: checkcast     #30                 // class org/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter
+      20: astore_2
+      21: aload_0
+      22: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      25: aload_2
+      26: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      29: invokevirtual #44                 // Method java/util/TreeSet.equals:(Ljava/lang/Object;)Z
+      32: ireturn
+
+  public org.apache.hadoop.hbase.Cell getNextCellHint(org.apache.hadoop.hbase.Cell);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #2                  // Field hint:[B
+       5: iconst_0
+       6: aload_0
+       7: getfield      #2                  // Field hint:[B
+      10: arraylength
+      11: invokestatic  #45                 // Method org/apache/hadoop/hbase/PrivateCellUtil.createFirstOnRowCol:(Lorg/apache/hadoop/hbase/Cell;[BII)Lorg/apache/hadoop/hbase/Cell;
+      14: areturn
+
+  public java.util.TreeSet<byte[]> createTreeSet();
+    Code:
+       0: new           #20                 // class java/util/TreeSet
+       3: dup
+       4: new           #46                 // class org/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter$1
+       7: dup
+       8: aload_0
+       9: invokespecial #47                 // Method org/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter$1."<init>":(Lorg/apache/hadoop/hbase/filter/MultipleColumnPrefixFilter;)V
+      12: invokespecial #48                 // Method java/util/TreeSet."<init>":(Ljava/util/Comparator;)V
+      15: areturn
+
+  public java.lang.String toString();
+    Code:
+       0: aload_0
+       1: iconst_5
+       2: invokevirtual #49                 // Method toString:(I)Ljava/lang/String;
+       5: areturn
+
+  protected java.lang.String toString(int);
+    Code:
+       0: new           #50                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #51                 // Method java/lang/StringBuilder."<init>":()V
+       7: astore_2
+       8: iconst_0
+       9: istore_3
+      10: aload_0
+      11: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      14: invokevirtual #11                 // Method java/util/TreeSet.iterator:()Ljava/util/Iterator;
+      17: astore        4
+      19: aload         4
+      21: invokeinterface #12,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          88
+      29: aload         4
+      31: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #10                 // class "[B"
+      39: astore        5
+      41: iload_3
+      42: iload_1
+      43: if_icmplt     49
+      46: goto          88
+      49: iinc          3, 1
+      52: aload_2
+      53: aload         5
+      55: invokestatic  #52                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+      58: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: pop
+      62: iload_3
+      63: aload_0
+      64: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      67: invokevirtual #9                  // Method java/util/TreeSet.size:()I
+      70: if_icmpge     85
+      73: iload_3
+      74: iload_1
+      75: if_icmpge     85
+      78: aload_2
+      79: ldc           #54                 // String ,
+      81: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      84: pop
+      85: goto          19
+      88: ldc           #55                 // String %s (%d/%d): [%s]
+      90: iconst_4
+      91: anewarray     #56                 // class java/lang/Object
+      94: dup
+      95: iconst_0
+      96: aload_0
+      97: invokevirtual #57                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     100: invokevirtual #58                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+     103: aastore
+     104: dup
+     105: iconst_1
+     106: iload_3
+     107: invokestatic  #59                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     110: aastore
+     111: dup
+     112: iconst_2
+     113: aload_0
+     114: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+     117: invokevirtual #9                  // Method java/util/TreeSet.size:()I
+     120: invokestatic  #59                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     123: aastore
+     124: dup
+     125: iconst_3
+     126: aload_2
+     127: invokevirtual #60                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     130: aastore
+     131: invokestatic  #61                 // Method java/lang/String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+     134: areturn
+
+  public boolean equals(java.lang.Object);
+    Code:
+       0: aload_1
+       1: instanceof    #62                 // class org/apache/hadoop/hbase/filter/Filter
+       4: ifeq          22
+       7: aload_0
+       8: aload_1
+       9: checkcast     #62                 // class org/apache/hadoop/hbase/filter/Filter
+      12: invokevirtual #63                 // Method areSerializedFieldsEqual:(Lorg/apache/hadoop/hbase/filter/Filter;)Z
+      15: ifeq          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: ireturn
+
+  public int hashCode();
+    Code:
+       0: iconst_1
+       1: anewarray     #56                 // class java/lang/Object
+       4: dup
+       5: iconst_0
+       6: aload_0
+       7: getfield      #4                  // Field sortedPrefixes:Ljava/util/TreeSet;
+      10: aastore
+      11: invokestatic  #64                 // Method java/util/Objects.hash:([Ljava/lang/Object;)I
+      14: ireturn
+}

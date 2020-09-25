@@ -1,0 +1,168 @@
+Compiled from "QuotaRetriever.java"
+public class org.apache.hadoop.hbase.quotas.QuotaRetriever implements java.io.Closeable, java.lang.Iterable<org.apache.hadoop.hbase.quotas.QuotaSettings> {
+  org.apache.hadoop.hbase.quotas.QuotaRetriever();
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #3                  // class java/util/LinkedList
+       8: dup
+       9: invokespecial #4                  // Method java/util/LinkedList."<init>":()V
+      12: putfield      #5                  // Field cache:Ljava/util/Queue;
+      15: aload_0
+      16: iconst_0
+      17: putfield      #6                  // Field isManagedConnection:Z
+      20: return
+
+  void init(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.Scan) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #6                  // Field isManagedConnection:Z
+       5: aload_0
+       6: aload_1
+       7: invokestatic  #7                  // Method org/apache/hadoop/hbase/client/ConnectionFactory.createConnection:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/client/Connection;
+      10: aload_2
+      11: invokevirtual #8                  // Method init:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/client/Scan;)V
+      14: return
+
+  void init(org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.hbase.client.Scan) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+       5: checkcast     #10                 // class org/apache/hadoop/hbase/client/Connection
+       8: putfield      #11                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      11: aload_0
+      12: aload_0
+      13: getfield      #11                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      16: getstatic     #12                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      19: invokeinterface #13,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      24: putfield      #14                 // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      27: aload_0
+      28: aload_0
+      29: getfield      #14                 // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      32: aload_2
+      33: invokeinterface #15,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+      38: putfield      #16                 // Field scanner:Lorg/apache/hadoop/hbase/client/ResultScanner;
+      41: goto          67
+      44: astore_3
+      45: aload_0
+      46: invokevirtual #18                 // Method close:()V
+      49: goto          65
+      52: astore        4
+      54: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      57: ldc           #19                 // String Failed getting scanner and then failed close on cleanup
+      59: aload_3
+      60: invokeinterface #20,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      65: aload_3
+      66: athrow
+      67: return
+    Exception table:
+       from    to  target type
+          27    41    44   Class java/io/IOException
+          45    49    52   Class java/io/IOException
+
+  public void close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field table:Lorg/apache/hadoop/hbase/client/Table;
+       4: ifnull        21
+       7: aload_0
+       8: getfield      #14                 // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      11: invokeinterface #21,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      16: aload_0
+      17: aconst_null
+      18: putfield      #14                 // Field table:Lorg/apache/hadoop/hbase/client/Table;
+      21: aload_0
+      22: getfield      #6                  // Field isManagedConnection:Z
+      25: ifeq          44
+      28: aload_0
+      29: getfield      #11                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      32: ifnull        44
+      35: aload_0
+      36: getfield      #11                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      39: invokeinterface #22,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.close:()V
+      44: aload_0
+      45: aconst_null
+      46: putfield      #11                 // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      49: return
+
+  public org.apache.hadoop.hbase.quotas.QuotaSettings next() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field cache:Ljava/util/Queue;
+       4: invokeinterface #23,  1           // InterfaceMethod java/util/Queue.isEmpty:()Z
+       9: ifeq          63
+      12: aload_0
+      13: getfield      #16                 // Field scanner:Lorg/apache/hadoop/hbase/client/ResultScanner;
+      16: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.next:()Lorg/apache/hadoop/hbase/client/Result;
+      21: astore_1
+      22: aload_1
+      23: ifnull        49
+      26: aload_1
+      27: invokevirtual #25                 // Method org/apache/hadoop/hbase/client/Result.getRow:()[B
+      30: invokestatic  #26                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.getExceedThrottleQuotaRowKey:()[B
+      33: invokestatic  #27                 // Method org/apache/hadoop/hbase/util/Bytes.equals:([B[B)Z
+      36: ifeq          49
+      39: aload_0
+      40: getfield      #16                 // Field scanner:Lorg/apache/hadoop/hbase/client/ResultScanner;
+      43: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.next:()Lorg/apache/hadoop/hbase/client/Result;
+      48: astore_1
+      49: aload_1
+      50: ifnonnull     55
+      53: aconst_null
+      54: areturn
+      55: aload_1
+      56: aload_0
+      57: getfield      #5                  // Field cache:Ljava/util/Queue;
+      60: invokestatic  #28                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.parseResultToCollection:(Lorg/apache/hadoop/hbase/client/Result;Ljava/util/Collection;)V
+      63: aload_0
+      64: getfield      #5                  // Field cache:Ljava/util/Queue;
+      67: invokeinterface #29,  1           // InterfaceMethod java/util/Queue.poll:()Ljava/lang/Object;
+      72: checkcast     #30                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+      75: areturn
+
+  public java.util.Iterator<org.apache.hadoop.hbase.quotas.QuotaSettings> iterator();
+    Code:
+       0: new           #31                 // class org/apache/hadoop/hbase/quotas/QuotaRetriever$Iter
+       3: dup
+       4: aload_0
+       5: invokespecial #32                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever$Iter."<init>":(Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;)V
+       8: areturn
+
+  public static org.apache.hadoop.hbase.quotas.QuotaRetriever open(org.apache.hadoop.conf.Configuration) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: invokestatic  #33                 // Method open:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/quotas/QuotaFilter;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+       5: areturn
+
+  public static org.apache.hadoop.hbase.quotas.QuotaRetriever open(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.quotas.QuotaFilter) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokestatic  #34                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.makeScan:(Lorg/apache/hadoop/hbase/quotas/QuotaFilter;)Lorg/apache/hadoop/hbase/client/Scan;
+       4: astore_2
+       5: new           #35                 // class org/apache/hadoop/hbase/quotas/QuotaRetriever
+       8: dup
+       9: invokespecial #36                 // Method "<init>":()V
+      12: astore_3
+      13: aload_3
+      14: aload_0
+      15: aload_2
+      16: invokevirtual #37                 // Method init:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/client/Scan;)V
+      19: aload_3
+      20: areturn
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #35                 // class org/apache/hadoop/hbase/quotas/QuotaRetriever
+       2: invokestatic  #38                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

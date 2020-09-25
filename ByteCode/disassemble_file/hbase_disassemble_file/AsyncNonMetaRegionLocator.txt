@@ -1,0 +1,269 @@
+Compiled from "AsyncNonMetaRegionLocator.java"
+class org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator {
+  static final java.lang.String MAX_CONCURRENT_LOCATE_REQUEST_PER_TABLE;
+
+  static java.lang.String LOCATE_PREFETCH_LIMIT;
+
+  static final boolean $assertionsDisabled;
+
+  org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator(org.apache.hadoop.hbase.client.AsyncConnectionImpl);
+    Code:
+       0: aload_0
+       1: invokespecial #6                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #7                  // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #8                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #9                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+      15: aload_0
+      16: aload_1
+      17: putfield      #10                 // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      20: aload_0
+      21: aload_1
+      22: invokevirtual #11                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      25: ldc           #13                 // String hbase.client.meta.max.concurrent.locate.per.table
+      27: bipush        8
+      29: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      32: putfield      #15                 // Field maxConcurrentLocateRequestPerTable:I
+      35: aload_0
+      36: aload_1
+      37: invokevirtual #11                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      40: getstatic     #16                 // Field LOCATE_PREFETCH_LIMIT:Ljava/lang/String;
+      43: bipush        10
+      45: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      48: putfield      #17                 // Field locatePrefetchLimit:I
+      51: aload_0
+      52: aload_1
+      53: invokevirtual #11                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      56: ldc           #18                 // String hbase.meta.replicas.use
+      58: iconst_0
+      59: invokevirtual #19                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      62: putfield      #20                 // Field useMetaReplicas:Z
+      65: return
+
+  java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.RegionLocations> getRegionLocations(org.apache.hadoop.hbase.TableName, byte[], int, org.apache.hadoop.hbase.client.RegionLocateType, boolean);
+    Code:
+       0: aload         4
+       2: getstatic     #137                // Field org/apache/hadoop/hbase/client/RegionLocateType.AFTER:Lorg/apache/hadoop/hbase/client/RegionLocateType;
+       5: invokevirtual #110                // Method org/apache/hadoop/hbase/client/RegionLocateType.equals:(Ljava/lang/Object;)Z
+       8: ifeq          21
+      11: aload_2
+      12: invokestatic  #150                // Method org/apache/hadoop/hbase/client/ConnectionUtils.createClosestRowAfter:([B)[B
+      15: astore_2
+      16: getstatic     #100                // Field org/apache/hadoop/hbase/client/RegionLocateType.CURRENT:Lorg/apache/hadoop/hbase/client/RegionLocateType;
+      19: astore        4
+      21: aload_0
+      22: aload_1
+      23: aload_2
+      24: iload_3
+      25: aload         4
+      27: iload         5
+      29: invokespecial #151                // Method getRegionLocationsInternal:(Lorg/apache/hadoop/hbase/TableName;[BILorg/apache/hadoop/hbase/client/RegionLocateType;Z)Ljava/util/concurrent/CompletableFuture;
+      32: areturn
+
+  void updateCachedLocationOnError(org.apache.hadoop.hbase.HRegionLocation, java.lang.Throwable);
+    Code:
+       0: aload_1
+       1: aload_2
+       2: aload_0
+       3: invokedynamic #162,  0            // InvokeDynamic #8:apply:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator;)Ljava/util/function/Function;
+       8: aload_0
+       9: invokedynamic #163,  0            // InvokeDynamic #9:accept:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator;)Ljava/util/function/Consumer;
+      14: aload_0
+      15: invokedynamic #164,  0            // InvokeDynamic #10:accept:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator;)Ljava/util/function/Consumer;
+      20: aload_0
+      21: getfield      #10                 // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      24: invokevirtual #88                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConnectionMetrics:()Ljava/util/Optional;
+      27: invokestatic  #165                // Method org/apache/hadoop/hbase/client/AsyncRegionLocatorHelper.updateCachedLocationOnError:(Lorg/apache/hadoop/hbase/HRegionLocation;Ljava/lang/Throwable;Ljava/util/function/Function;Ljava/util/function/Consumer;Ljava/util/function/Consumer;Ljava/util/Optional;)V
+      30: return
+
+  void clearCache(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #166,  2          // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #23                 // class org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache
+      13: astore_2
+      14: aload_2
+      15: ifnonnull     19
+      18: return
+      19: aload_2
+      20: dup
+      21: astore_3
+      22: monitorenter
+      23: aload_2
+      24: invokestatic  #73                 // Method org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache.access$400:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;)Ljava/util/Map;
+      27: invokeinterface #167,  1          // InterfaceMethod java/util/Map.isEmpty:()Z
+      32: ifne          67
+      35: new           #168                // class java/io/IOException
+      38: dup
+      39: ldc           #169                // String Cache cleared
+      41: invokespecial #170                // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      44: astore        4
+      46: aload_2
+      47: invokestatic  #73                 // Method org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache.access$400:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;)Ljava/util/Map;
+      50: invokeinterface #171,  1          // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+      55: aload         4
+      57: invokedynamic #172,  0            // InvokeDynamic #11:accept:(Ljava/io/IOException;)Ljava/util/function/Consumer;
+      62: invokeinterface #173,  2          // InterfaceMethod java/util/Collection.forEach:(Ljava/util/function/Consumer;)V
+      67: aload_3
+      68: monitorexit
+      69: goto          79
+      72: astore        5
+      74: aload_3
+      75: monitorexit
+      76: aload         5
+      78: athrow
+      79: aload_0
+      80: getfield      #10                 // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      83: invokevirtual #88                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConnectionMetrics:()Ljava/util/Optional;
+      86: aload_2
+      87: invokedynamic #174,  0            // InvokeDynamic #12:accept:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;)Ljava/util/function/Consumer;
+      92: invokevirtual #68                 // Method java/util/Optional.ifPresent:(Ljava/util/function/Consumer;)V
+      95: return
+    Exception table:
+       from    to  target type
+          23    69    72   any
+          72    76    72   any
+
+  void clearCache();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #175,  1          // InterfaceMethod java/util/concurrent/ConcurrentMap.clear:()V
+       9: return
+
+  void clearCache(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #176,  1          // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+       9: invokeinterface #177,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      14: astore_2
+      15: aload_2
+      16: invokeinterface #178,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      21: ifeq          161
+      24: aload_2
+      25: invokeinterface #179,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      30: checkcast     #23                 // class org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache
+      33: astore_3
+      34: aload_3
+      35: invokestatic  #34                 // Method org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache.access$200:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;)Ljava/util/concurrent/ConcurrentNavigableMap;
+      38: invokeinterface #180,  1          // InterfaceMethod java/util/concurrent/ConcurrentNavigableMap.entrySet:()Ljava/util/Set;
+      43: invokeinterface #181,  1          // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      48: astore        4
+      50: aload         4
+      52: invokeinterface #178,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      57: ifeq          158
+      60: aload         4
+      62: invokeinterface #179,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      67: checkcast     #182                // class java/util/Map$Entry
+      70: astore        5
+      72: aload         5
+      74: invokeinterface #183,  1          // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      79: checkcast     #184                // class "[B"
+      82: astore        6
+      84: aload         5
+      86: invokeinterface #93,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      91: checkcast     #36                 // class org/apache/hadoop/hbase/RegionLocations
+      94: astore        7
+      96: aload         7
+      98: aload_1
+      99: invokevirtual #185                // Method org/apache/hadoop/hbase/RegionLocations.removeByServer:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/RegionLocations;
+     102: astore        8
+     104: aload         7
+     106: aload         8
+     108: if_acmpne     114
+     111: goto          50
+     114: aload         8
+     116: invokevirtual #186                // Method org/apache/hadoop/hbase/RegionLocations.isEmpty:()Z
+     119: ifeq          139
+     122: aload_3
+     123: invokestatic  #34                 // Method org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache.access$200:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;)Ljava/util/concurrent/ConcurrentNavigableMap;
+     126: aload         6
+     128: aload         7
+     130: invokeinterface #159,  3          // InterfaceMethod java/util/concurrent/ConcurrentNavigableMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     135: pop
+     136: goto          155
+     139: aload_3
+     140: invokestatic  #34                 // Method org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache.access$200:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;)Ljava/util/concurrent/ConcurrentNavigableMap;
+     143: aload         6
+     145: aload         7
+     147: aload         8
+     149: invokeinterface #44,  4           // InterfaceMethod java/util/concurrent/ConcurrentNavigableMap.replace:(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z
+     154: pop
+     155: goto          50
+     158: goto          15
+     161: return
+
+  org.apache.hadoop.hbase.RegionLocations getRegionLocationInCache(org.apache.hadoop.hbase.TableName, byte[]);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field cache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #154,  2          // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #23                 // class org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache
+      13: astore_3
+      14: aload_3
+      15: ifnonnull     20
+      18: aconst_null
+      19: areturn
+      20: aload_0
+      21: aload_3
+      22: aload_1
+      23: aload_2
+      24: iconst_0
+      25: invokespecial #136                // Method locateRowInCache:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;Lorg/apache/hadoop/hbase/TableName;[BI)Lorg/apache/hadoop/hbase/RegionLocations;
+      28: areturn
+
+  static void access$500(org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator, org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator$LocateRequest, org.apache.hadoop.hbase.RegionLocations, java.lang.Throwable);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: invokespecial #5                  // Method complete:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$LocateRequest;Lorg/apache/hadoop/hbase/RegionLocations;Ljava/lang/Throwable;)V
+       9: return
+
+  static boolean access$600(org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator, org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator$LocateRequest, org.apache.hadoop.hbase.client.Result);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: invokespecial #4                  // Method onScanNext:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$LocateRequest;Lorg/apache/hadoop/hbase/client/Result;)Z
+       7: ireturn
+
+  static org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator$TableCache access$700(org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator, org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #3                  // Method getTableCache:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;
+       5: areturn
+
+  static org.apache.hadoop.hbase.RegionLocations access$800(org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator, org.apache.hadoop.hbase.client.AsyncNonMetaRegionLocator$TableCache, org.apache.hadoop.hbase.RegionLocations);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #2                  // Method addToCache:(Lorg/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator$TableCache;Lorg/apache/hadoop/hbase/RegionLocations;)Lorg/apache/hadoop/hbase/RegionLocations;
+       6: areturn
+
+  static {};
+    Code:
+       0: ldc           #12                 // class org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator
+       2: invokevirtual #191                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #70                 // Field $assertionsDisabled:Z
+      16: ldc           #12                 // class org/apache/hadoop/hbase/client/AsyncNonMetaRegionLocator
+      18: invokestatic  #192                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      21: putstatic     #28                 // Field LOG:Lorg/slf4j/Logger;
+      24: ldc           #193                // String hbase.client.locate.prefetch.limit
+      26: putstatic     #16                 // Field LOCATE_PREFETCH_LIMIT:Ljava/lang/String;
+      29: return
+}

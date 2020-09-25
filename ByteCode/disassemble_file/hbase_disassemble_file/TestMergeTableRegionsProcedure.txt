@@ -1,0 +1,665 @@
+Compiled from "TestMergeTableRegionsProcedure.java"
+public class org.apache.hadoop.hbase.master.assignment.TestMergeTableRegionsProcedure {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public final org.junit.rules.TestName name;
+
+  public org.apache.hadoop.hbase.master.assignment.TestMergeTableRegionsProcedure();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/junit/rules/TestName
+       8: dup
+       9: invokespecial #3                  // Method org/junit/rules/TestName."<init>":()V
+      12: putfield      #4                  // Field name:Lorg/junit/rules/TestName;
+      15: aload_0
+      16: lconst_0
+      17: putfield      #5                  // Field mergeSubmittedCount:J
+      20: aload_0
+      21: lconst_0
+      22: putfield      #6                  // Field mergeFailedCount:J
+      25: aload_0
+      26: lconst_0
+      27: putfield      #7                  // Field assignSubmittedCount:J
+      30: aload_0
+      31: lconst_0
+      32: putfield      #8                  // Field assignFailedCount:J
+      35: aload_0
+      36: lconst_0
+      37: putfield      #9                  // Field unassignSubmittedCount:J
+      40: aload_0
+      41: lconst_0
+      42: putfield      #10                 // Field unassignFailedCount:J
+      45: return
+
+  public static void setupCluster() throws java.lang.Exception;
+    Code:
+       0: getstatic     #17                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       3: invokestatic  #18                 // Method setupConf:(Lorg/apache/hadoop/conf/Configuration;)V
+       6: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       9: iconst_1
+      10: invokevirtual #20                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      13: pop
+      14: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      17: invokevirtual #21                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      20: putstatic     #22                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+      23: return
+
+  public static void cleanupTest() throws java.lang.Exception;
+    Code:
+       0: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #23                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+       6: return
+
+  public void setup() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: invokespecial #24                 // Method resetProcExecutorTestingKillFlag:()V
+       4: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       7: invokevirtual #25                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      10: invokevirtual #26                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      13: invokestatic  #27                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureTestingUtility.generateNonceGroup:(Lorg/apache/hadoop/hbase/master/HMaster;)J
+      16: pop2
+      17: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      20: invokevirtual #25                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      23: invokevirtual #26                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      26: invokestatic  #28                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureTestingUtility.generateNonce:(Lorg/apache/hadoop/hbase/master/HMaster;)J
+      29: pop2
+      30: getstatic     #22                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+      33: iconst_0
+      34: iconst_1
+      35: invokeinterface #29,  3           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.balancerSwitch:(ZZ)Z
+      40: pop
+      41: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      44: invokevirtual #25                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      47: invokevirtual #26                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      50: iconst_0
+      51: invokevirtual #30                 // Method org/apache/hadoop/hbase/master/HMaster.setCatalogJanitorEnabled:(Z)V
+      54: aload_0
+      55: invokespecial #24                 // Method resetProcExecutorTestingKillFlag:()V
+      58: aload_0
+      59: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      62: invokevirtual #25                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      65: invokevirtual #26                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+      68: invokevirtual #31                 // Method org/apache/hadoop/hbase/master/HMaster.getAssignmentManager:()Lorg/apache/hadoop/hbase/master/assignment/AssignmentManager;
+      71: putfield      #32                 // Field am:Lorg/apache/hadoop/hbase/master/assignment/AssignmentManager;
+      74: aload_0
+      75: aload_0
+      76: getfield      #32                 // Field am:Lorg/apache/hadoop/hbase/master/assignment/AssignmentManager;
+      79: invokevirtual #33                 // Method org/apache/hadoop/hbase/master/assignment/AssignmentManager.getAssignmentManagerMetrics:()Lorg/apache/hadoop/hbase/master/MetricsAssignmentManager;
+      82: invokevirtual #34                 // Method org/apache/hadoop/hbase/master/MetricsAssignmentManager.getMergeProcMetrics:()Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+      85: putfield      #35                 // Field mergeProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+      88: aload_0
+      89: aload_0
+      90: getfield      #32                 // Field am:Lorg/apache/hadoop/hbase/master/assignment/AssignmentManager;
+      93: invokevirtual #33                 // Method org/apache/hadoop/hbase/master/assignment/AssignmentManager.getAssignmentManagerMetrics:()Lorg/apache/hadoop/hbase/master/MetricsAssignmentManager;
+      96: invokevirtual #36                 // Method org/apache/hadoop/hbase/master/MetricsAssignmentManager.getAssignProcMetrics:()Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+      99: putfield      #37                 // Field assignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     102: aload_0
+     103: aload_0
+     104: getfield      #32                 // Field am:Lorg/apache/hadoop/hbase/master/assignment/AssignmentManager;
+     107: invokevirtual #33                 // Method org/apache/hadoop/hbase/master/assignment/AssignmentManager.getAssignmentManagerMetrics:()Lorg/apache/hadoop/hbase/master/MetricsAssignmentManager;
+     110: invokevirtual #38                 // Method org/apache/hadoop/hbase/master/MetricsAssignmentManager.getUnassignProcMetrics:()Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     113: putfield      #39                 // Field unassignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     116: return
+
+  public void tearDown() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: invokespecial #24                 // Method resetProcExecutorTestingKillFlag:()V
+       4: getstatic     #22                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+       7: invokeinterface #40,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.listTableDescriptors:()Ljava/util/List;
+      12: invokeinterface #41,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      17: astore_1
+      18: aload_1
+      19: invokeinterface #42,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      24: ifeq          84
+      27: aload_1
+      28: invokeinterface #43,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      33: checkcast     #44                 // class org/apache/hadoop/hbase/client/TableDescriptor
+      36: astore_2
+      37: getstatic     #45                 // Field LOG:Lorg/slf4j/Logger;
+      40: new           #46                 // class java/lang/StringBuilder
+      43: dup
+      44: invokespecial #47                 // Method java/lang/StringBuilder."<init>":()V
+      47: ldc           #48                 // String Tear down, remove table=
+      49: invokevirtual #49                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      52: aload_2
+      53: invokeinterface #50,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      58: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      61: invokevirtual #52                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      64: invokeinterface #53,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      69: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      72: aload_2
+      73: invokeinterface #50,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      78: invokevirtual #54                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.deleteTable:(Lorg/apache/hadoop/hbase/TableName;)V
+      81: goto          18
+      84: return
+
+  public void testMergeTwoRegions() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field name:Lorg/junit/rules/TestName;
+       4: invokevirtual #60                 // Method org/junit/rules/TestName.getMethodName:()Ljava/lang/String;
+       7: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      10: astore_1
+      11: aload_0
+      12: invokespecial #55                 // Method getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      15: astore_2
+      16: aload_0
+      17: aload_1
+      18: invokespecial #62                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      21: astore_3
+      22: iconst_2
+      23: anewarray     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      26: astore        4
+      28: aload         4
+      30: iconst_0
+      31: aload_3
+      32: iconst_0
+      33: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      38: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      41: aastore
+      42: aload         4
+      44: iconst_1
+      45: aload_3
+      46: iconst_1
+      47: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      52: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      55: aastore
+      56: aload_0
+      57: invokespecial #65                 // Method collectAssignmentManagerMetrics:()V
+      60: new           #66                 // class org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure
+      63: dup
+      64: aload_2
+      65: invokevirtual #67                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+      68: checkcast     #68                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+      71: aload         4
+      73: iconst_1
+      74: invokespecial #69                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;[Lorg/apache/hadoop/hbase/client/RegionInfo;Z)V
+      77: astore        5
+      79: aload_2
+      80: aload         5
+      82: invokevirtual #70                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)J
+      85: lstore        6
+      87: aload_2
+      88: lload         6
+      90: invokestatic  #71                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.waitProcedure:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+      93: aload_2
+      94: lload         6
+      96: invokestatic  #72                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.assertProcNotFailed:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+      99: aload_0
+     100: aload_1
+     101: iconst_3
+     102: invokevirtual #74                 // Method assertRegionCount:(Lorg/apache/hadoop/hbase/TableName;I)Ljava/util/List;
+     105: pop
+     106: aload_0
+     107: getfield      #5                  // Field mergeSubmittedCount:J
+     110: lconst_1
+     111: ladd
+     112: aload_0
+     113: getfield      #35                 // Field mergeProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     116: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getSubmittedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     121: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     126: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     129: aload_0
+     130: getfield      #6                  // Field mergeFailedCount:J
+     133: aload_0
+     134: getfield      #35                 // Field mergeProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     137: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getFailedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     142: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     147: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     150: aload_0
+     151: getfield      #7                  // Field assignSubmittedCount:J
+     154: lconst_1
+     155: ladd
+     156: aload_0
+     157: getfield      #37                 // Field assignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     160: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getSubmittedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     165: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     170: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     173: aload_0
+     174: getfield      #8                  // Field assignFailedCount:J
+     177: aload_0
+     178: getfield      #37                 // Field assignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     181: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getFailedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     186: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     191: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     194: aload_0
+     195: getfield      #9                  // Field unassignSubmittedCount:J
+     198: ldc2_w        #79                 // long 2l
+     201: ladd
+     202: aload_0
+     203: getfield      #39                 // Field unassignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     206: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getSubmittedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     211: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     216: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     219: aload_0
+     220: getfield      #10                 // Field unassignFailedCount:J
+     223: aload_0
+     224: getfield      #39                 // Field unassignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     227: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getFailedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     232: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     237: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     240: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     243: invokevirtual #81                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     246: aload         5
+     248: invokevirtual #82                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure.getMergedRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     251: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionName:()[B
+     256: invokestatic  #84                 // Method org/apache/hadoop/hbase/MetaTableAccessor.getRegionsFromMergeQualifier:(Lorg/apache/hadoop/hbase/client/Connection;[B)Lorg/apache/hadoop/hbase/util/Pair;
+     259: astore        8
+     261: aload         8
+     263: invokevirtual #85                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+     266: ifnull        281
+     269: aload         8
+     271: invokevirtual #86                 // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+     274: ifnull        281
+     277: iconst_1
+     278: goto          282
+     281: iconst_0
+     282: invokestatic  #87                 // Method org/junit/Assert.assertTrue:(Z)V
+     285: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     288: invokevirtual #25                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     291: invokevirtual #26                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+     294: iconst_1
+     295: invokevirtual #30                 // Method org/apache/hadoop/hbase/master/HMaster.setCatalogJanitorEnabled:(Z)V
+     298: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     301: invokevirtual #25                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     304: invokevirtual #26                 // Method org/apache/hadoop/hbase/MiniHBaseCluster.getMaster:()Lorg/apache/hadoop/hbase/master/HMaster;
+     307: invokevirtual #88                 // Method org/apache/hadoop/hbase/master/HMaster.getCatalogJanitor:()Lorg/apache/hadoop/hbase/master/CatalogJanitor;
+     310: invokevirtual #89                 // Method org/apache/hadoop/hbase/master/CatalogJanitor.triggerNow:()Z
+     313: pop
+     314: aload         8
+     316: ifnull        359
+     319: aload         8
+     321: invokevirtual #85                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+     324: ifnull        359
+     327: aload         8
+     329: invokevirtual #86                 // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+     332: ifnull        359
+     335: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     338: invokevirtual #81                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     341: aload         5
+     343: invokevirtual #82                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure.getMergedRegion:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     346: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionName:()[B
+     351: invokestatic  #84                 // Method org/apache/hadoop/hbase/MetaTableAccessor.getRegionsFromMergeQualifier:(Lorg/apache/hadoop/hbase/client/Connection;[B)Lorg/apache/hadoop/hbase/util/Pair;
+     354: astore        8
+     356: goto          314
+     359: return
+
+  public void testMergeRegionsConcurrently() throws java.lang.Exception;
+    Code:
+       0: ldc           #90                 // String testMergeRegionsConcurrently
+       2: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+       5: astore_1
+       6: aload_0
+       7: invokespecial #55                 // Method getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      10: astore_2
+      11: aload_0
+      12: aload_1
+      13: invokespecial #62                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      16: astore_3
+      17: iconst_2
+      18: anewarray     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      21: astore        4
+      23: iconst_2
+      24: anewarray     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      27: astore        5
+      29: aload         4
+      31: iconst_0
+      32: aload_3
+      33: iconst_0
+      34: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      39: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      42: aastore
+      43: aload         4
+      45: iconst_1
+      46: aload_3
+      47: iconst_1
+      48: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      53: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      56: aastore
+      57: aload         5
+      59: iconst_0
+      60: aload_3
+      61: iconst_2
+      62: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      67: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      70: aastore
+      71: aload         5
+      73: iconst_1
+      74: aload_3
+      75: iconst_3
+      76: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      81: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      84: aastore
+      85: aload_0
+      86: invokespecial #65                 // Method collectAssignmentManagerMetrics:()V
+      89: aload_2
+      90: new           #66                 // class org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure
+      93: dup
+      94: aload_2
+      95: invokevirtual #67                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+      98: checkcast     #68                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+     101: aload         4
+     103: iconst_1
+     104: invokespecial #69                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;[Lorg/apache/hadoop/hbase/client/RegionInfo;Z)V
+     107: invokevirtual #70                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)J
+     110: lstore        6
+     112: aload_2
+     113: new           #66                 // class org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure
+     116: dup
+     117: aload_2
+     118: invokevirtual #67                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+     121: checkcast     #68                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+     124: aload         5
+     126: iconst_1
+     127: invokespecial #69                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;[Lorg/apache/hadoop/hbase/client/RegionInfo;Z)V
+     130: invokevirtual #70                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)J
+     133: lstore        8
+     135: aload_2
+     136: lload         6
+     138: invokestatic  #71                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.waitProcedure:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+     141: aload_2
+     142: lload         8
+     144: invokestatic  #71                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.waitProcedure:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+     147: aload_2
+     148: lload         6
+     150: invokestatic  #72                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.assertProcNotFailed:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+     153: aload_2
+     154: lload         8
+     156: invokestatic  #72                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.assertProcNotFailed:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+     159: aload_0
+     160: aload_1
+     161: iconst_2
+     162: invokevirtual #74                 // Method assertRegionCount:(Lorg/apache/hadoop/hbase/TableName;I)Ljava/util/List;
+     165: pop
+     166: aload_0
+     167: getfield      #5                  // Field mergeSubmittedCount:J
+     170: ldc2_w        #79                 // long 2l
+     173: ladd
+     174: aload_0
+     175: getfield      #35                 // Field mergeProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     178: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getSubmittedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     183: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     188: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     191: aload_0
+     192: getfield      #6                  // Field mergeFailedCount:J
+     195: aload_0
+     196: getfield      #35                 // Field mergeProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     199: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getFailedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     204: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     209: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     212: aload_0
+     213: getfield      #7                  // Field assignSubmittedCount:J
+     216: ldc2_w        #79                 // long 2l
+     219: ladd
+     220: aload_0
+     221: getfield      #37                 // Field assignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     224: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getSubmittedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     229: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     234: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     237: aload_0
+     238: getfield      #8                  // Field assignFailedCount:J
+     241: aload_0
+     242: getfield      #37                 // Field assignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     245: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getFailedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     250: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     255: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     258: aload_0
+     259: getfield      #9                  // Field unassignSubmittedCount:J
+     262: ldc2_w        #91                 // long 4l
+     265: ladd
+     266: aload_0
+     267: getfield      #39                 // Field unassignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     270: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getSubmittedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     275: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     280: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     283: aload_0
+     284: getfield      #10                 // Field unassignFailedCount:J
+     287: aload_0
+     288: getfield      #39                 // Field unassignProcMetrics:Lorg/apache/hadoop/hbase/procedure2/ProcedureMetrics;
+     291: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureMetrics.getFailedCounter:()Lorg/apache/hadoop/hbase/metrics/Counter;
+     296: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/metrics/Counter.getCount:()J
+     301: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     304: return
+
+  public void testRecoveryAndDoubleExecution() throws java.lang.Exception;
+    Code:
+       0: ldc           #93                 // String testRecoveryAndDoubleExecution
+       2: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+       5: astore_1
+       6: aload_0
+       7: invokespecial #55                 // Method getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      10: astore_2
+      11: aload_0
+      12: aload_1
+      13: invokespecial #62                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      16: astore_3
+      17: aload_2
+      18: invokestatic  #94                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.waitNoProcedureRunning:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;)V
+      21: aload_2
+      22: iconst_0
+      23: invokestatic  #95                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.setKillIfHasParent:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;Z)V
+      26: aload_2
+      27: iconst_1
+      28: invokestatic  #56                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.setKillAndToggleBeforeStoreUpdate:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;Z)V
+      31: iconst_2
+      32: anewarray     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      35: astore        4
+      37: aload         4
+      39: iconst_0
+      40: aload_3
+      41: iconst_0
+      42: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      47: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      50: aastore
+      51: aload         4
+      53: iconst_1
+      54: aload_3
+      55: iconst_1
+      56: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      61: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      64: aastore
+      65: aload_2
+      66: new           #66                 // class org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure
+      69: dup
+      70: aload_2
+      71: invokevirtual #67                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+      74: checkcast     #68                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+      77: aload         4
+      79: iconst_1
+      80: invokespecial #69                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;[Lorg/apache/hadoop/hbase/client/RegionInfo;Z)V
+      83: invokevirtual #70                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)J
+      86: lstore        5
+      88: aload_2
+      89: lload         5
+      91: invokestatic  #96                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureTestingUtility.testRecoveryAndDoubleExecution:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+      94: aload_2
+      95: lload         5
+      97: invokestatic  #72                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.assertProcNotFailed:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+     100: aload_0
+     101: aload_1
+     102: iconst_3
+     103: invokevirtual #74                 // Method assertRegionCount:(Lorg/apache/hadoop/hbase/TableName;I)Ljava/util/List;
+     106: pop
+     107: return
+
+  public void testRollbackAndDoubleExecution() throws java.lang.Exception;
+    Code:
+       0: ldc           #97                 // String testRollbackAndDoubleExecution
+       2: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+       5: astore_1
+       6: aload_0
+       7: invokespecial #55                 // Method getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      10: astore_2
+      11: aload_0
+      12: aload_1
+      13: invokespecial #62                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      16: astore_3
+      17: aload_2
+      18: invokestatic  #94                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.waitNoProcedureRunning:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;)V
+      21: aload_2
+      22: iconst_1
+      23: invokestatic  #56                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.setKillAndToggleBeforeStoreUpdate:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;Z)V
+      26: iconst_2
+      27: anewarray     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      30: astore        4
+      32: aload         4
+      34: iconst_0
+      35: aload_3
+      36: iconst_0
+      37: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      42: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      45: aastore
+      46: aload         4
+      48: iconst_1
+      49: aload_3
+      50: iconst_1
+      51: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      56: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      59: aastore
+      60: aload_2
+      61: new           #66                 // class org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure
+      64: dup
+      65: aload_2
+      66: invokevirtual #67                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+      69: checkcast     #68                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+      72: aload         4
+      74: iconst_1
+      75: invokespecial #69                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;[Lorg/apache/hadoop/hbase/client/RegionInfo;Z)V
+      78: invokevirtual #70                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)J
+      81: lstore        5
+      83: bipush        8
+      85: istore        7
+      87: aload_2
+      88: lload         5
+      90: iload         7
+      92: iconst_1
+      93: invokestatic  #98                 // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureTestingUtility.testRollbackAndDoubleExecution:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;JIZ)V
+      96: ldc2_w        #91                 // long 4l
+      99: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     102: invokevirtual #21                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     105: aload_1
+     106: invokeinterface #99,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+     111: invokeinterface #100,  1          // InterfaceMethod java/util/List.size:()I
+     116: i2l
+     117: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     120: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     123: aload_1
+     124: invokevirtual #101                // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitUntilAllRegionsAssigned:(Lorg/apache/hadoop/hbase/TableName;)V
+     127: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     130: invokevirtual #102                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+     133: aload_1
+     134: invokevirtual #103                // Method org/apache/hadoop/hbase/MiniHBaseCluster.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+     137: astore        8
+     139: ldc2_w        #91                 // long 4l
+     142: aload         8
+     144: invokeinterface #100,  1          // InterfaceMethod java/util/List.size:()I
+     149: i2l
+     150: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+     153: return
+
+  public void testMergeWithoutPONR() throws java.lang.Exception;
+    Code:
+       0: ldc           #104                // String testMergeWithoutPONR
+       2: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+       5: astore_1
+       6: aload_0
+       7: invokespecial #55                 // Method getMasterProcedureExecutor:()Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      10: astore_2
+      11: aload_0
+      12: aload_1
+      13: invokespecial #62                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      16: astore_3
+      17: aload_2
+      18: invokestatic  #94                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.waitNoProcedureRunning:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;)V
+      21: aload_2
+      22: iconst_1
+      23: invokestatic  #56                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.setKillAndToggleBeforeStoreUpdate:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;Z)V
+      26: iconst_2
+      27: anewarray     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      30: astore        4
+      32: aload         4
+      34: iconst_0
+      35: aload_3
+      36: iconst_0
+      37: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      42: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      45: aastore
+      46: aload         4
+      48: iconst_1
+      49: aload_3
+      50: iconst_1
+      51: invokeinterface #64,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      56: checkcast     #63                 // class org/apache/hadoop/hbase/client/RegionInfo
+      59: aastore
+      60: aload_2
+      61: new           #66                 // class org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure
+      64: dup
+      65: aload_2
+      66: invokevirtual #67                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+      69: checkcast     #68                 // class org/apache/hadoop/hbase/master/procedure/MasterProcedureEnv
+      72: aload         4
+      74: iconst_1
+      75: invokespecial #69                 // Method org/apache/hadoop/hbase/master/assignment/MergeTableRegionsProcedure."<init>":(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureEnv;[Lorg/apache/hadoop/hbase/client/RegionInfo;Z)V
+      78: invokevirtual #70                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.submitProcedure:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)J
+      81: lstore        5
+      83: aload_2
+      84: lload         5
+      86: bipush        9
+      88: iconst_0
+      89: invokestatic  #105                // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureTestingUtility.testRecoveryAndDoubleExecution:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;JIZ)V
+      92: aload_2
+      93: iconst_0
+      94: invokestatic  #56                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.setKillAndToggleBeforeStoreUpdate:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;Z)V
+      97: aload_2
+      98: invokestatic  #106                // Method org/apache/hadoop/hbase/master/procedure/MasterProcedureTestingUtility.restartMasterProcedureExecutor:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;)V
+     101: aload_2
+     102: lload         5
+     104: invokestatic  #71                 // Method org/apache/hadoop/hbase/procedure2/ProcedureTestingUtility.waitProcedure:(Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;J)V
+     107: aload_0
+     108: aload_1
+     109: iconst_3
+     110: invokevirtual #74                 // Method assertRegionCount:(Lorg/apache/hadoop/hbase/TableName;I)Ljava/util/List;
+     113: pop
+     114: return
+
+  public java.util.List<org.apache.hadoop.hbase.client.RegionInfo> assertRegionCount(org.apache.hadoop.hbase.TableName, int) throws java.lang.Exception;
+    Code:
+       0: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #119                // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitUntilNoRegionsInTransition:()V
+       6: getstatic     #22                 // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+       9: aload_1
+      10: invokeinterface #99,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getRegions:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/List;
+      15: astore_3
+      16: iload_2
+      17: i2l
+      18: aload_3
+      19: invokeinterface #100,  1          // InterfaceMethod java/util/List.size:()I
+      24: i2l
+      25: invokestatic  #77                 // Method org/junit/Assert.assertEquals:(JJ)V
+      28: aload_3
+      29: areturn
+
+  static {};
+    Code:
+       0: ldc           #73                 // class org/apache/hadoop/hbase/master/assignment/TestMergeTableRegionsProcedure
+       2: invokestatic  #121                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #122                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: ldc           #73                 // class org/apache/hadoop/hbase/master/assignment/TestMergeTableRegionsProcedure
+      10: invokestatic  #123                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      13: putstatic     #45                 // Field LOG:Lorg/slf4j/Logger;
+      16: new           #124                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      19: dup
+      20: invokespecial #125                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      23: putstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      26: ldc           #126                // String FAMILY
+      28: invokestatic  #117                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: putstatic     #108                // Field FAMILY:[B
+      34: getstatic     #19                 // Field UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      37: invokevirtual #127                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      40: putstatic     #17                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      43: return
+}

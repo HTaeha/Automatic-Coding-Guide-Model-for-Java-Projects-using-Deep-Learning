@@ -1,0 +1,537 @@
+Compiled from "ProfileServlet.java"
+public class org.apache.hadoop.hbase.http.ProfileServlet extends javax.servlet.http.HttpServlet {
+  static final java.lang.String OUTPUT_DIR;
+
+  public org.apache.hadoop.hbase.http.ProfileServlet();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method javax/servlet/http/HttpServlet."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/locks/ReentrantLock
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+      12: putfield      #4                  // Field profilerLock:Ljava/util/concurrent/locks/Lock;
+      15: aload_0
+      16: invokestatic  #5                  // Method getAsyncProfilerHome:()Ljava/lang/String;
+      19: putfield      #6                  // Field asyncProfilerHome:Ljava/lang/String;
+      22: aload_0
+      23: invokestatic  #7                  // Method org/apache/hadoop/hbase/util/ProcessUtils.getPid:()Ljava/lang/Integer;
+      26: putfield      #8                  // Field pid:Ljava/lang/Integer;
+      29: getstatic     #9                  // Field LOG:Lorg/slf4j/Logger;
+      32: new           #10                 // class java/lang/StringBuilder
+      35: dup
+      36: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      39: ldc           #12                 // String Servlet process PID:
+      41: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: aload_0
+      45: getfield      #8                  // Field pid:Ljava/lang/Integer;
+      48: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      51: ldc           #15                 // String  asyncProfilerHome:
+      53: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: aload_0
+      57: getfield      #6                  // Field asyncProfilerHome:Ljava/lang/String;
+      60: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      66: invokeinterface #17,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      71: return
+
+  protected void doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method getServletContext:()Ljavax/servlet/ServletContext;
+       4: aload_1
+       5: aload_2
+       6: invokestatic  #19                 // Method org/apache/hadoop/hbase/http/HttpServer.isInstrumentationAccessAllowed:(Ljavax/servlet/ServletContext;Ljavax/servlet/http/HttpServletRequest;Ljavax/servlet/http/HttpServletResponse;)Z
+       9: ifne          37
+      12: aload_2
+      13: sipush        401
+      16: invokeinterface #21,  2           // InterfaceMethod javax/servlet/http/HttpServletResponse.setStatus:(I)V
+      21: aload_2
+      22: invokestatic  #22                 // Method setResponseHeader:(Ljavax/servlet/http/HttpServletResponse;)V
+      25: aload_2
+      26: invokeinterface #23,  1           // InterfaceMethod javax/servlet/http/HttpServletResponse.getWriter:()Ljava/io/PrintWriter;
+      31: ldc           #24                 // String Unauthorized: Instrumentation access is not allowed!
+      33: invokevirtual #25                 // Method java/io/PrintWriter.write:(Ljava/lang/String;)V
+      36: return
+      37: aload_0
+      38: getfield      #6                  // Field asyncProfilerHome:Ljava/lang/String;
+      41: ifnull        57
+      44: aload_0
+      45: getfield      #6                  // Field asyncProfilerHome:Ljava/lang/String;
+      48: invokevirtual #26                 // Method java/lang/String.trim:()Ljava/lang/String;
+      51: invokevirtual #27                 // Method java/lang/String.isEmpty:()Z
+      54: ifeq          82
+      57: aload_2
+      58: sipush        500
+      61: invokeinterface #21,  2           // InterfaceMethod javax/servlet/http/HttpServletResponse.setStatus:(I)V
+      66: aload_2
+      67: invokestatic  #22                 // Method setResponseHeader:(Ljavax/servlet/http/HttpServletResponse;)V
+      70: aload_2
+      71: invokeinterface #23,  1           // InterfaceMethod javax/servlet/http/HttpServletResponse.getWriter:()Ljava/io/PrintWriter;
+      76: ldc           #28                 // String ASYNC_PROFILER_HOME env is not set.\n\nPlease ensure the prerequsites for the Profiler Servlet have been installed and the\nenvironment is properly configured. For more information please see\nhttp://hbase.apache.org/book.html#profiler\n
+      78: invokevirtual #25                 // Method java/io/PrintWriter.write:(Ljava/lang/String;)V
+      81: return
+      82: aload_0
+      83: aload_0
+      84: aload_1
+      85: ldc           #29                 // String pid
+      87: aload_0
+      88: getfield      #8                  // Field pid:Ljava/lang/Integer;
+      91: invokespecial #30                 // Method getInteger:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;
+      94: putfield      #8                  // Field pid:Ljava/lang/Integer;
+      97: aload_0
+      98: getfield      #8                  // Field pid:Ljava/lang/Integer;
+     101: ifnonnull     129
+     104: aload_2
+     105: sipush        500
+     108: invokeinterface #21,  2           // InterfaceMethod javax/servlet/http/HttpServletResponse.setStatus:(I)V
+     113: aload_2
+     114: invokestatic  #22                 // Method setResponseHeader:(Ljavax/servlet/http/HttpServletResponse;)V
+     117: aload_2
+     118: invokeinterface #23,  1           // InterfaceMethod javax/servlet/http/HttpServletResponse.getWriter:()Ljava/io/PrintWriter;
+     123: ldc           #31                 // String 'pid' query parameter unspecified or unable to determine PID of current process.
+     125: invokevirtual #25                 // Method java/io/PrintWriter.write:(Ljava/lang/String;)V
+     128: return
+     129: aload_0
+     130: aload_1
+     131: ldc           #32                 // String duration
+     133: bipush        10
+     135: invokestatic  #34                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     138: invokespecial #30                 // Method getInteger:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;
+     141: invokevirtual #35                 // Method java/lang/Integer.intValue:()I
+     144: istore_3
+     145: aload_0
+     146: aload_1
+     147: invokespecial #36                 // Method getOutput:(Ljavax/servlet/http/HttpServletRequest;)Lorg/apache/hadoop/hbase/http/ProfileServlet$Output;
+     150: astore        4
+     152: aload_0
+     153: aload_1
+     154: invokespecial #37                 // Method getEvent:(Ljavax/servlet/http/HttpServletRequest;)Lorg/apache/hadoop/hbase/http/ProfileServlet$Event;
+     157: astore        5
+     159: aload_0
+     160: aload_1
+     161: ldc           #38                 // String interval
+     163: invokespecial #39                 // Method getLong:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;)Ljava/lang/Long;
+     166: astore        6
+     168: aload_0
+     169: aload_1
+     170: ldc           #40                 // String jstackdepth
+     172: aconst_null
+     173: invokespecial #30                 // Method getInteger:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;
+     176: astore        7
+     178: aload_0
+     179: aload_1
+     180: ldc           #41                 // String bufsize
+     182: invokespecial #39                 // Method getLong:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;)Ljava/lang/Long;
+     185: astore        8
+     187: aload_1
+     188: invokeinterface #42,  1           // InterfaceMethod javax/servlet/http/HttpServletRequest.getParameterMap:()Ljava/util/Map;
+     193: ldc           #43                 // String thread
+     195: invokeinterface #44,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     200: istore        9
+     202: aload_1
+     203: invokeinterface #42,  1           // InterfaceMethod javax/servlet/http/HttpServletRequest.getParameterMap:()Ljava/util/Map;
+     208: ldc           #45                 // String simple
+     210: invokeinterface #44,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     215: istore        10
+     217: aload_0
+     218: aload_1
+     219: ldc           #46                 // String width
+     221: aconst_null
+     222: invokespecial #30                 // Method getInteger:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;
+     225: astore        11
+     227: aload_0
+     228: aload_1
+     229: ldc           #47                 // String height
+     231: aconst_null
+     232: invokespecial #30                 // Method getInteger:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;
+     235: astore        12
+     237: aload_0
+     238: aload_1
+     239: invokespecial #48                 // Method getMinWidth:(Ljavax/servlet/http/HttpServletRequest;)Ljava/lang/Double;
+     242: astore        13
+     244: aload_1
+     245: invokeinterface #42,  1           // InterfaceMethod javax/servlet/http/HttpServletRequest.getParameterMap:()Ljava/util/Map;
+     250: ldc           #49                 // String reverse
+     252: invokeinterface #44,  2           // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+     257: istore        14
+     259: aload_0
+     260: getfield      #50                 // Field process:Ljava/lang/Process;
+     263: ifnull        276
+     266: aload_0
+     267: getfield      #50                 // Field process:Ljava/lang/Process;
+     270: invokevirtual #51                 // Method java/lang/Process.isAlive:()Z
+     273: ifne          1044
+     276: iconst_3
+     277: istore        15
+     279: aload_0
+     280: getfield      #4                  // Field profilerLock:Ljava/util/concurrent/locks/Lock;
+     283: iload         15
+     285: i2l
+     286: getstatic     #52                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     289: invokeinterface #53,  4           // InterfaceMethod java/util/concurrent/locks/Lock.tryLock:(JLjava/util/concurrent/TimeUnit;)Z
+     294: ifeq          958
+     297: new           #54                 // class java/io/File
+     300: dup
+     301: getstatic     #55                 // Field OUTPUT_DIR:Ljava/lang/String;
+     304: new           #10                 // class java/lang/StringBuilder
+     307: dup
+     308: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+     311: ldc           #56                 // String async-prof-pid-
+     313: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     316: aload_0
+     317: getfield      #8                  // Field pid:Ljava/lang/Integer;
+     320: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     323: ldc           #57                 // String -
+     325: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     328: aload         5
+     330: invokevirtual #58                 // Method org/apache/hadoop/hbase/http/ProfileServlet$Event.name:()Ljava/lang/String;
+     333: invokevirtual #59                 // Method java/lang/String.toLowerCase:()Ljava/lang/String;
+     336: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     339: ldc           #57                 // String -
+     341: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     344: getstatic     #60                 // Field ID_GEN:Ljava/util/concurrent/atomic/AtomicInteger;
+     347: invokevirtual #61                 // Method java/util/concurrent/atomic/AtomicInteger.incrementAndGet:()I
+     350: invokevirtual #62                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     353: ldc           #63                 // String .
+     355: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     358: aload         4
+     360: invokevirtual #64                 // Method org/apache/hadoop/hbase/http/ProfileServlet$Output.name:()Ljava/lang/String;
+     363: invokevirtual #59                 // Method java/lang/String.toLowerCase:()Ljava/lang/String;
+     366: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     369: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     372: invokespecial #65                 // Method java/io/File."<init>":(Ljava/lang/String;Ljava/lang/String;)V
+     375: astore        16
+     377: new           #66                 // class java/util/ArrayList
+     380: dup
+     381: invokespecial #67                 // Method java/util/ArrayList."<init>":()V
+     384: astore        17
+     386: aload         17
+     388: new           #10                 // class java/lang/StringBuilder
+     391: dup
+     392: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+     395: aload_0
+     396: getfield      #6                  // Field asyncProfilerHome:Ljava/lang/String;
+     399: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     402: ldc           #68                 // String /profiler.sh
+     404: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     407: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     410: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     415: pop
+     416: aload         17
+     418: ldc           #70                 // String -e
+     420: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     425: pop
+     426: aload         17
+     428: aload         5
+     430: invokevirtual #71                 // Method org/apache/hadoop/hbase/http/ProfileServlet$Event.getInternalName:()Ljava/lang/String;
+     433: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     438: pop
+     439: aload         17
+     441: ldc           #72                 // String -d
+     443: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     448: pop
+     449: aload         17
+     451: new           #10                 // class java/lang/StringBuilder
+     454: dup
+     455: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+     458: ldc           #73                 // String
+     460: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     463: iload_3
+     464: invokevirtual #62                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     467: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     470: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     475: pop
+     476: aload         17
+     478: ldc           #74                 // String -o
+     480: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     485: pop
+     486: aload         17
+     488: aload         4
+     490: invokevirtual #64                 // Method org/apache/hadoop/hbase/http/ProfileServlet$Output.name:()Ljava/lang/String;
+     493: invokevirtual #59                 // Method java/lang/String.toLowerCase:()Ljava/lang/String;
+     496: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     501: pop
+     502: aload         17
+     504: ldc           #75                 // String -f
+     506: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     511: pop
+     512: aload         17
+     514: aload         16
+     516: invokevirtual #76                 // Method java/io/File.getAbsolutePath:()Ljava/lang/String;
+     519: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     524: pop
+     525: aload         6
+     527: ifnull        553
+     530: aload         17
+     532: ldc           #77                 // String -i
+     534: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     539: pop
+     540: aload         17
+     542: aload         6
+     544: invokevirtual #78                 // Method java/lang/Long.toString:()Ljava/lang/String;
+     547: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     552: pop
+     553: aload         7
+     555: ifnull        581
+     558: aload         17
+     560: ldc           #79                 // String -j
+     562: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     567: pop
+     568: aload         17
+     570: aload         7
+     572: invokevirtual #80                 // Method java/lang/Integer.toString:()Ljava/lang/String;
+     575: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     580: pop
+     581: aload         8
+     583: ifnull        609
+     586: aload         17
+     588: ldc           #81                 // String -b
+     590: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     595: pop
+     596: aload         17
+     598: aload         8
+     600: invokevirtual #78                 // Method java/lang/Long.toString:()Ljava/lang/String;
+     603: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     608: pop
+     609: iload         9
+     611: ifeq          624
+     614: aload         17
+     616: ldc           #82                 // String -t
+     618: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     623: pop
+     624: iload         10
+     626: ifeq          639
+     629: aload         17
+     631: ldc           #83                 // String -s
+     633: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     638: pop
+     639: aload         11
+     641: ifnull        667
+     644: aload         17
+     646: ldc           #84                 // String --width
+     648: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     653: pop
+     654: aload         17
+     656: aload         11
+     658: invokevirtual #80                 // Method java/lang/Integer.toString:()Ljava/lang/String;
+     661: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     666: pop
+     667: aload         12
+     669: ifnull        695
+     672: aload         17
+     674: ldc           #85                 // String --height
+     676: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     681: pop
+     682: aload         17
+     684: aload         12
+     686: invokevirtual #80                 // Method java/lang/Integer.toString:()Ljava/lang/String;
+     689: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     694: pop
+     695: aload         13
+     697: ifnull        723
+     700: aload         17
+     702: ldc           #86                 // String --minwidth
+     704: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     709: pop
+     710: aload         17
+     712: aload         13
+     714: invokevirtual #87                 // Method java/lang/Double.toString:()Ljava/lang/String;
+     717: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     722: pop
+     723: iload         14
+     725: ifeq          738
+     728: aload         17
+     730: ldc           #88                 // String --reverse
+     732: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     737: pop
+     738: aload         17
+     740: aload_0
+     741: getfield      #8                  // Field pid:Ljava/lang/Integer;
+     744: invokevirtual #80                 // Method java/lang/Integer.toString:()Ljava/lang/String;
+     747: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     752: pop
+     753: aload_0
+     754: aload         17
+     756: invokestatic  #89                 // Method org/apache/hadoop/hbase/util/ProcessUtils.runCmdAsync:(Ljava/util/List;)Ljava/lang/Process;
+     759: putfield      #50                 // Field process:Ljava/lang/Process;
+     762: aload_2
+     763: invokestatic  #22                 // Method setResponseHeader:(Ljavax/servlet/http/HttpServletResponse;)V
+     766: aload_2
+     767: sipush        202
+     770: invokeinterface #21,  2           // InterfaceMethod javax/servlet/http/HttpServletResponse.setStatus:(I)V
+     775: new           #10                 // class java/lang/StringBuilder
+     778: dup
+     779: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+     782: ldc           #90                 // String /prof-output/
+     784: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     787: aload         16
+     789: invokevirtual #91                 // Method java/io/File.getName:()Ljava/lang/String;
+     792: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     795: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     798: astore        18
+     800: aload_2
+     801: invokeinterface #23,  1           // InterfaceMethod javax/servlet/http/HttpServletResponse.getWriter:()Ljava/io/PrintWriter;
+     806: new           #10                 // class java/lang/StringBuilder
+     809: dup
+     810: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+     813: ldc           #92                 // String Started [
+     815: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     818: aload         5
+     820: invokevirtual #71                 // Method org/apache/hadoop/hbase/http/ProfileServlet$Event.getInternalName:()Ljava/lang/String;
+     823: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     826: ldc           #93                 // String ] profiling. This page will automatically redirect to
+     828: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     831: aload         18
+     833: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     836: ldc           #94                 // String  after
+     838: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     841: iload_3
+     842: invokevirtual #62                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     845: ldc           #95                 // String  seconds.\n\ncommand:\n
+     847: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     850: ldc           #96                 // String
+     852: invokestatic  #97                 // Method org/apache/hbase/thirdparty/com/google/common/base/Joiner.on:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/base/Joiner;
+     855: aload         17
+     857: invokevirtual #98                 // Method org/apache/hbase/thirdparty/com/google/common/base/Joiner.join:(Ljava/lang/Iterable;)Ljava/lang/String;
+     860: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     863: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     866: invokevirtual #25                 // Method java/io/PrintWriter.write:(Ljava/lang/String;)V
+     869: aload_0
+     870: aload_1
+     871: ldc           #99                 // String refreshDelay
+     873: iconst_0
+     874: invokestatic  #34                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     877: invokespecial #30                 // Method getInteger:(Ljavax/servlet/http/HttpServletRequest;Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;
+     880: invokevirtual #35                 // Method java/lang/Integer.intValue:()I
+     883: istore        19
+     885: aload_2
+     886: ldc           #100                // String Refresh
+     888: new           #10                 // class java/lang/StringBuilder
+     891: dup
+     892: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+     895: iload_3
+     896: iload         19
+     898: iadd
+     899: invokevirtual #62                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     902: ldc           #101                // String ;
+     904: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     907: aload         18
+     909: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     912: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     915: invokeinterface #102,  3          // InterfaceMethod javax/servlet/http/HttpServletResponse.setHeader:(Ljava/lang/String;Ljava/lang/String;)V
+     920: aload_2
+     921: invokeinterface #23,  1           // InterfaceMethod javax/servlet/http/HttpServletResponse.getWriter:()Ljava/io/PrintWriter;
+     926: invokevirtual #103                // Method java/io/PrintWriter.flush:()V
+     929: aload_0
+     930: getfield      #4                  // Field profilerLock:Ljava/util/concurrent/locks/Lock;
+     933: invokeinterface #104,  1          // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     938: goto          955
+     941: astore        20
+     943: aload_0
+     944: getfield      #4                  // Field profilerLock:Ljava/util/concurrent/locks/Lock;
+     947: invokeinterface #104,  1          // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+     952: aload         20
+     954: athrow
+     955: goto          1015
+     958: aload_2
+     959: invokestatic  #22                 // Method setResponseHeader:(Ljavax/servlet/http/HttpServletResponse;)V
+     962: aload_2
+     963: sipush        500
+     966: invokeinterface #21,  2           // InterfaceMethod javax/servlet/http/HttpServletResponse.setStatus:(I)V
+     971: aload_2
+     972: invokeinterface #23,  1           // InterfaceMethod javax/servlet/http/HttpServletResponse.getWriter:()Ljava/io/PrintWriter;
+     977: ldc           #105                // String Unable to acquire lock. Another instance of profiler might be running.
+     979: invokevirtual #25                 // Method java/io/PrintWriter.write:(Ljava/lang/String;)V
+     982: getstatic     #9                  // Field LOG:Lorg/slf4j/Logger;
+     985: new           #10                 // class java/lang/StringBuilder
+     988: dup
+     989: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+     992: ldc           #106                // String Unable to acquire lock in
+     994: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     997: iload         15
+     999: invokevirtual #62                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+    1002: ldc           #107                // String  seconds. Another instance of profiler might be running.
+    1004: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    1007: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+    1010: invokeinterface #108,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+    1015: goto          1068
+    1018: astore        15
+    1020: getstatic     #9                  // Field LOG:Lorg/slf4j/Logger;
+    1023: ldc           #110                // String Interrupted while acquiring profile lock.
+    1025: aload         15
+    1027: invokeinterface #111,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+    1032: aload_2
+    1033: sipush        500
+    1036: invokeinterface #21,  2           // InterfaceMethod javax/servlet/http/HttpServletResponse.setStatus:(I)V
+    1041: goto          1068
+    1044: aload_2
+    1045: invokestatic  #22                 // Method setResponseHeader:(Ljavax/servlet/http/HttpServletResponse;)V
+    1048: aload_2
+    1049: sipush        500
+    1052: invokeinterface #21,  2           // InterfaceMethod javax/servlet/http/HttpServletResponse.setStatus:(I)V
+    1057: aload_2
+    1058: invokeinterface #23,  1           // InterfaceMethod javax/servlet/http/HttpServletResponse.getWriter:()Ljava/io/PrintWriter;
+    1063: ldc           #112                // String Another instance of profiler is already running.
+    1065: invokevirtual #25                 // Method java/io/PrintWriter.write:(Ljava/lang/String;)V
+    1068: return
+    Exception table:
+       from    to  target type
+         297   929   941   any
+         941   943   941   any
+         276  1015  1018   Class java/lang/InterruptedException
+
+  static void setResponseHeader(javax.servlet.http.HttpServletResponse);
+    Code:
+       0: aload_0
+       1: ldc           #127                // String Access-Control-Allow-Methods
+       3: ldc           #128                // String GET
+       5: invokeinterface #102,  3          // InterfaceMethod javax/servlet/http/HttpServletResponse.setHeader:(Ljava/lang/String;Ljava/lang/String;)V
+      10: aload_0
+      11: ldc           #129                // String Access-Control-Allow-Origin
+      13: ldc           #130                // String *
+      15: invokeinterface #102,  3          // InterfaceMethod javax/servlet/http/HttpServletResponse.setHeader:(Ljava/lang/String;Ljava/lang/String;)V
+      20: aload_0
+      21: ldc           #131                // String text/plain; charset=utf-8
+      23: invokeinterface #132,  2          // InterfaceMethod javax/servlet/http/HttpServletResponse.setContentType:(Ljava/lang/String;)V
+      28: return
+
+  static java.lang.String getAsyncProfilerHome();
+    Code:
+       0: ldc           #133                // String ASYNC_PROFILER_HOME
+       2: invokestatic  #134                // Method java/lang/System.getenv:(Ljava/lang/String;)Ljava/lang/String;
+       5: astore_0
+       6: aload_0
+       7: ifnull        20
+      10: aload_0
+      11: invokevirtual #26                 // Method java/lang/String.trim:()Ljava/lang/String;
+      14: invokevirtual #27                 // Method java/lang/String.isEmpty:()Z
+      17: ifeq          26
+      20: ldc           #135                // String async.profiler.home
+      22: invokestatic  #136                // Method java/lang/System.getProperty:(Ljava/lang/String;)Ljava/lang/String;
+      25: astore_0
+      26: aload_0
+      27: areturn
+
+  static {};
+    Code:
+       0: ldc           #33                 // class org/apache/hadoop/hbase/http/ProfileServlet
+       2: invokestatic  #137                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #9                  // Field LOG:Lorg/slf4j/Logger;
+       8: new           #138                // class java/util/concurrent/atomic/AtomicInteger
+      11: dup
+      12: iconst_0
+      13: invokespecial #139                // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      16: putstatic     #60                 // Field ID_GEN:Ljava/util/concurrent/atomic/AtomicInteger;
+      19: new           #10                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      26: ldc           #140                // String java.io.tmpdir
+      28: invokestatic  #136                // Method java/lang/System.getProperty:(Ljava/lang/String;)Ljava/lang/String;
+      31: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: ldc           #141                // String /prof-output
+      36: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      42: putstatic     #55                 // Field OUTPUT_DIR:Ljava/lang/String;
+      45: return
+}

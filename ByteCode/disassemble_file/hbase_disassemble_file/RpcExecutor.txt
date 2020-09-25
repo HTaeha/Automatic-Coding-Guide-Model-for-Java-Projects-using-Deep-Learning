@@ -1,0 +1,884 @@
+Compiled from "RpcExecutor.java"
+public abstract class org.apache.hadoop.hbase.ipc.RpcExecutor {
+  protected static final int DEFAULT_CALL_QUEUE_SIZE_HARD_LIMIT;
+
+  public static final java.lang.String CALL_QUEUE_HANDLER_FACTOR_CONF_KEY;
+
+  public static final java.lang.String QUEUE_MAX_CALL_DELAY_CONF_KEY;
+
+  public static final java.lang.String CALL_QUEUE_TYPE_CODEL_CONF_VALUE;
+
+  public static final java.lang.String CALL_QUEUE_TYPE_DEADLINE_CONF_VALUE;
+
+  public static final java.lang.String CALL_QUEUE_TYPE_FIFO_CONF_VALUE;
+
+  public static final java.lang.String CALL_QUEUE_TYPE_CONF_KEY;
+
+  public static final java.lang.String CALL_QUEUE_TYPE_CONF_DEFAULT;
+
+  public static final java.lang.String CALL_QUEUE_CODEL_TARGET_DELAY;
+
+  public static final java.lang.String CALL_QUEUE_CODEL_INTERVAL;
+
+  public static final java.lang.String CALL_QUEUE_CODEL_LIFO_THRESHOLD;
+
+  public static final int CALL_QUEUE_CODEL_DEFAULT_TARGET_DELAY;
+
+  public static final int CALL_QUEUE_CODEL_DEFAULT_INTERVAL;
+
+  public static final double CALL_QUEUE_CODEL_DEFAULT_LIFO_THRESHOLD;
+
+  protected final int numCallQueues;
+
+  protected final java.util.List<java.util.concurrent.BlockingQueue<org.apache.hadoop.hbase.ipc.CallRunner>> queues;
+
+  protected volatile int currentQueueLimit;
+
+  public org.apache.hadoop.hbase.ipc.RpcExecutor(java.lang.String, int, int, org.apache.hadoop.hbase.ipc.PriorityFunction, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.Abortable);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: aload         5
+       5: ldc           #7                  // String hbase.ipc.server.callqueue.type
+       7: ldc           #8                  // String fifo
+       9: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      12: iload_3
+      13: aload         4
+      15: aload         5
+      17: aload         6
+      19: invokespecial #10                 // Method "<init>":(Ljava/lang/String;ILjava/lang/String;ILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+      22: return
+
+  public org.apache.hadoop.hbase.ipc.RpcExecutor(java.lang.String, int, java.lang.String, int, org.apache.hadoop.hbase.ipc.PriorityFunction, org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.Abortable);
+    Code:
+       0: aload_0
+       1: invokespecial #11                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #12                 // class java/util/concurrent/atomic/LongAdder
+       8: dup
+       9: invokespecial #13                 // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+      12: putfield      #14                 // Field numGeneralCallsDropped:Ljava/util/concurrent/atomic/LongAdder;
+      15: aload_0
+      16: new           #12                 // class java/util/concurrent/atomic/LongAdder
+      19: dup
+      20: invokespecial #13                 // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+      23: putfield      #15                 // Field numLifoModeSwitches:Ljava/util/concurrent/atomic/LongAdder;
+      26: aload_0
+      27: new           #16                 // class java/util/concurrent/atomic/AtomicInteger
+      30: dup
+      31: iconst_0
+      32: invokespecial #17                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      35: putfield      #18                 // Field activeHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      38: aload_0
+      39: new           #16                 // class java/util/concurrent/atomic/AtomicInteger
+      42: dup
+      43: iconst_0
+      44: invokespecial #17                 // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      47: putfield      #4                  // Field failedHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      50: aload_0
+      51: aconst_null
+      52: putfield      #19                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      55: aload_0
+      56: aconst_null
+      57: putfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      60: aload_0
+      61: aload_1
+      62: invokestatic  #20                 // Method org/apache/hbase/thirdparty/com/google/common/base/Strings.nullToEmpty:(Ljava/lang/String;)Ljava/lang/String;
+      65: putfield      #21                 // Field name:Ljava/lang/String;
+      68: aload_0
+      69: aload         6
+      71: putfield      #19                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      74: aload_0
+      75: aload         7
+      77: putfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      80: aload_0
+      81: getfield      #19                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      84: ldc           #22                 // String hbase.ipc.server.callqueue.handler.factor
+      86: ldc           #23                 // float 0.1f
+      88: invokevirtual #24                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      91: fstore        8
+      93: aload_0
+      94: aload_0
+      95: iload_2
+      96: fload         8
+      98: invokevirtual #25                 // Method computeNumCallQueues:(IF)I
+     101: putfield      #26                 // Field numCallQueues:I
+     104: aload_0
+     105: new           #27                 // class java/util/ArrayList
+     108: dup
+     109: aload_0
+     110: getfield      #26                 // Field numCallQueues:I
+     113: invokespecial #28                 // Method java/util/ArrayList."<init>":(I)V
+     116: putfield      #29                 // Field queues:Ljava/util/List;
+     119: aload_0
+     120: iload_2
+     121: aload_0
+     122: getfield      #26                 // Field numCallQueues:I
+     125: invokestatic  #30                 // Method java/lang/Math.max:(II)I
+     128: putfield      #3                  // Field handlerCount:I
+     131: aload_0
+     132: new           #27                 // class java/util/ArrayList
+     135: dup
+     136: aload_0
+     137: getfield      #3                  // Field handlerCount:I
+     140: invokespecial #28                 // Method java/util/ArrayList."<init>":(I)V
+     143: putfield      #31                 // Field handlers:Ljava/util/List;
+     146: aload_0
+     147: aload         5
+     149: putfield      #32                 // Field priority:Lorg/apache/hadoop/hbase/ipc/PriorityFunction;
+     152: aload_3
+     153: invokestatic  #33                 // Method isDeadlineQueueType:(Ljava/lang/String;)Z
+     156: ifeq          226
+     159: new           #34                 // class java/lang/StringBuilder
+     162: dup
+     163: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     166: aload_0
+     167: dup_x1
+     168: getfield      #21                 // Field name:Ljava/lang/String;
+     171: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     174: ldc           #37                 // String .Deadline
+     176: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     179: invokevirtual #38                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     182: putfield      #21                 // Field name:Ljava/lang/String;
+     185: aload_0
+     186: iconst_2
+     187: anewarray     #39                 // class java/lang/Object
+     190: dup
+     191: iconst_0
+     192: iload         4
+     194: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     197: aastore
+     198: dup
+     199: iconst_1
+     200: new           #41                 // class org/apache/hadoop/hbase/ipc/RpcExecutor$CallPriorityComparator
+     203: dup
+     204: aload         6
+     206: aload_0
+     207: getfield      #32                 // Field priority:Lorg/apache/hadoop/hbase/ipc/PriorityFunction;
+     210: invokespecial #42                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor$CallPriorityComparator."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/ipc/PriorityFunction;)V
+     213: aastore
+     214: putfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+     217: aload_0
+     218: ldc           #44                 // class org/apache/hadoop/hbase/util/BoundedPriorityBlockingQueue
+     220: putfield      #45                 // Field queueClass:Ljava/lang/Class;
+     223: goto          405
+     226: aload_3
+     227: invokestatic  #46                 // Method isCodelQueueType:(Ljava/lang/String;)Z
+     230: ifeq          357
+     233: new           #34                 // class java/lang/StringBuilder
+     236: dup
+     237: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     240: aload_0
+     241: dup_x1
+     242: getfield      #21                 // Field name:Ljava/lang/String;
+     245: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     248: ldc           #47                 // String .Codel
+     250: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     253: invokevirtual #38                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     256: putfield      #21                 // Field name:Ljava/lang/String;
+     259: aload         6
+     261: ldc           #48                 // String hbase.ipc.server.callqueue.codel.target.delay
+     263: bipush        100
+     265: invokevirtual #49                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     268: istore        9
+     270: aload         6
+     272: ldc           #50                 // String hbase.ipc.server.callqueue.codel.interval
+     274: bipush        100
+     276: invokevirtual #49                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     279: istore        10
+     281: aload         6
+     283: ldc           #51                 // String hbase.ipc.server.callqueue.codel.lifo.threshold
+     285: ldc2_w        #52                 // double 0.8d
+     288: invokevirtual #54                 // Method org/apache/hadoop/conf/Configuration.getDouble:(Ljava/lang/String;D)D
+     291: dstore        11
+     293: aload_0
+     294: bipush        6
+     296: anewarray     #39                 // class java/lang/Object
+     299: dup
+     300: iconst_0
+     301: iload         4
+     303: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     306: aastore
+     307: dup
+     308: iconst_1
+     309: iload         9
+     311: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     314: aastore
+     315: dup
+     316: iconst_2
+     317: iload         10
+     319: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     322: aastore
+     323: dup
+     324: iconst_3
+     325: dload         11
+     327: invokestatic  #55                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+     330: aastore
+     331: dup
+     332: iconst_4
+     333: aload_0
+     334: getfield      #14                 // Field numGeneralCallsDropped:Ljava/util/concurrent/atomic/LongAdder;
+     337: aastore
+     338: dup
+     339: iconst_5
+     340: aload_0
+     341: getfield      #15                 // Field numLifoModeSwitches:Ljava/util/concurrent/atomic/LongAdder;
+     344: aastore
+     345: putfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+     348: aload_0
+     349: ldc           #56                 // class org/apache/hadoop/hbase/ipc/AdaptiveLifoCoDelCallQueue
+     351: putfield      #45                 // Field queueClass:Ljava/lang/Class;
+     354: goto          405
+     357: new           #34                 // class java/lang/StringBuilder
+     360: dup
+     361: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+     364: aload_0
+     365: dup_x1
+     366: getfield      #21                 // Field name:Ljava/lang/String;
+     369: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     372: ldc           #57                 // String .Fifo
+     374: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     377: invokevirtual #38                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     380: putfield      #21                 // Field name:Ljava/lang/String;
+     383: aload_0
+     384: iconst_1
+     385: anewarray     #39                 // class java/lang/Object
+     388: dup
+     389: iconst_0
+     390: iload         4
+     392: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     395: aastore
+     396: putfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+     399: aload_0
+     400: ldc           #58                 // class java/util/concurrent/LinkedBlockingQueue
+     402: putfield      #45                 // Field queueClass:Ljava/lang/Class;
+     405: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+     408: ldc           #59                 // String Instantiated {} with queueClass={}; numCallQueues={}, maxQueueLength={}, handlerCount={}
+     410: iconst_5
+     411: anewarray     #39                 // class java/lang/Object
+     414: dup
+     415: iconst_0
+     416: aload_0
+     417: getfield      #21                 // Field name:Ljava/lang/String;
+     420: aastore
+     421: dup
+     422: iconst_1
+     423: aload_0
+     424: getfield      #45                 // Field queueClass:Ljava/lang/Class;
+     427: aastore
+     428: dup
+     429: iconst_2
+     430: aload_0
+     431: getfield      #26                 // Field numCallQueues:I
+     434: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     437: aastore
+     438: dup
+     439: iconst_3
+     440: iload         4
+     442: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     445: aastore
+     446: dup
+     447: iconst_4
+     448: aload_0
+     449: getfield      #3                  // Field handlerCount:I
+     452: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     455: aastore
+     456: invokeinterface #60,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     461: return
+
+  protected int computeNumCallQueues(int, float);
+    Code:
+       0: iconst_1
+       1: iload_1
+       2: i2f
+       3: fload_2
+       4: fmul
+       5: invokestatic  #61                 // Method java/lang/Math.round:(F)I
+       8: invokestatic  #30                 // Method java/lang/Math.max:(II)I
+      11: ireturn
+
+  public java.util.Map<java.lang.String, java.lang.Long> getCallQueueCountsSummary();
+    Code:
+       0: new           #62                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #63                 // Method java/util/HashMap."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getfield      #29                 // Field queues:Ljava/util/List;
+      12: invokeinterface #64,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      17: astore_2
+      18: aload_2
+      19: invokeinterface #65,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      24: ifeq          142
+      27: aload_2
+      28: invokeinterface #66,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      33: checkcast     #67                 // class java/util/concurrent/BlockingQueue
+      36: astore_3
+      37: aload_3
+      38: invokeinterface #68,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.iterator:()Ljava/util/Iterator;
+      43: astore        4
+      45: aload         4
+      47: invokeinterface #65,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      52: ifeq          139
+      55: aload         4
+      57: invokeinterface #66,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      62: checkcast     #69                 // class org/apache/hadoop/hbase/ipc/CallRunner
+      65: astore        5
+      67: aload         5
+      69: invokevirtual #70                 // Method org/apache/hadoop/hbase/ipc/CallRunner.getRpcCall:()Lorg/apache/hadoop/hbase/ipc/RpcCall;
+      72: astore        6
+      74: aconst_null
+      75: aload         6
+      77: invokeinterface #71,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getMethod:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;
+      82: if_acmpeq     104
+      85: aload         6
+      87: invokeinterface #71,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getMethod:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;
+      92: invokevirtual #72                 // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+      95: dup
+      96: astore        7
+      98: invokestatic  #73                 // Method org/apache/hbase/thirdparty/io/netty/util/internal/StringUtil.isNullOrEmpty:(Ljava/lang/String;)Z
+     101: ifeq          108
+     104: ldc           #74                 // String Unknown
+     106: astore        7
+     108: aload_1
+     109: aload         7
+     111: lconst_1
+     112: aload_1
+     113: aload         7
+     115: lconst_0
+     116: invokestatic  #75                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     119: invokevirtual #76                 // Method java/util/HashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     122: checkcast     #77                 // class java/lang/Long
+     125: invokevirtual #78                 // Method java/lang/Long.longValue:()J
+     128: ladd
+     129: invokestatic  #75                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     132: invokevirtual #79                 // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     135: pop
+     136: goto          45
+     139: goto          18
+     142: aload_1
+     143: areturn
+
+  public java.util.Map<java.lang.String, java.lang.Long> getCallQueueSizeSummary();
+    Code:
+       0: new           #62                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #63                 // Method java/util/HashMap."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getfield      #29                 // Field queues:Ljava/util/List;
+      12: invokeinterface #64,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      17: astore_2
+      18: aload_2
+      19: invokeinterface #65,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      24: ifeq          152
+      27: aload_2
+      28: invokeinterface #66,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      33: checkcast     #67                 // class java/util/concurrent/BlockingQueue
+      36: astore_3
+      37: aload_3
+      38: invokeinterface #68,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.iterator:()Ljava/util/Iterator;
+      43: astore        4
+      45: aload         4
+      47: invokeinterface #65,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      52: ifeq          149
+      55: aload         4
+      57: invokeinterface #66,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      62: checkcast     #69                 // class org/apache/hadoop/hbase/ipc/CallRunner
+      65: astore        5
+      67: aload         5
+      69: invokevirtual #70                 // Method org/apache/hadoop/hbase/ipc/CallRunner.getRpcCall:()Lorg/apache/hadoop/hbase/ipc/RpcCall;
+      72: astore        6
+      74: aconst_null
+      75: aload         6
+      77: invokeinterface #71,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getMethod:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;
+      82: if_acmpeq     104
+      85: aload         6
+      87: invokeinterface #71,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getMethod:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;
+      92: invokevirtual #72                 // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+      95: dup
+      96: astore        7
+      98: invokestatic  #73                 // Method org/apache/hbase/thirdparty/io/netty/util/internal/StringUtil.isNullOrEmpty:(Ljava/lang/String;)Z
+     101: ifeq          108
+     104: ldc           #74                 // String Unknown
+     106: astore        7
+     108: aload         6
+     110: invokeinterface #80,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getSize:()J
+     115: lstore        8
+     117: aload_1
+     118: aload         7
+     120: lload         8
+     122: aload_1
+     123: aload         7
+     125: lconst_0
+     126: invokestatic  #75                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     129: invokevirtual #76                 // Method java/util/HashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     132: checkcast     #77                 // class java/lang/Long
+     135: invokevirtual #78                 // Method java/lang/Long.longValue:()J
+     138: ladd
+     139: invokestatic  #75                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     142: invokevirtual #79                 // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     145: pop
+     146: goto          45
+     149: goto          18
+     152: aload_1
+     153: areturn
+
+  protected void initializeQueues(int);
+    Code:
+       0: aload_0
+       1: getfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+       4: arraylength
+       5: ifle          51
+       8: aload_0
+       9: aload_0
+      10: getfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+      13: iconst_0
+      14: aaload
+      15: checkcast     #81                 // class java/lang/Integer
+      18: invokevirtual #82                 // Method java/lang/Integer.intValue:()I
+      21: putfield      #83                 // Field currentQueueLimit:I
+      24: aload_0
+      25: getfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+      28: iconst_0
+      29: aload_0
+      30: getfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+      33: iconst_0
+      34: aaload
+      35: checkcast     #81                 // class java/lang/Integer
+      38: invokevirtual #82                 // Method java/lang/Integer.intValue:()I
+      41: sipush        250
+      44: invokestatic  #30                 // Method java/lang/Math.max:(II)I
+      47: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      50: aastore
+      51: iconst_0
+      52: istore_2
+      53: iload_2
+      54: iload_1
+      55: if_icmpge     85
+      58: aload_0
+      59: getfield      #29                 // Field queues:Ljava/util/List;
+      62: aload_0
+      63: getfield      #45                 // Field queueClass:Ljava/lang/Class;
+      66: aload_0
+      67: getfield      #43                 // Field queueInitArgs:[Ljava/lang/Object;
+      70: invokestatic  #84                 // Method org/apache/hadoop/hbase/util/ReflectionUtils.newInstance:(Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;
+      73: invokeinterface #85,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      78: pop
+      79: iinc          2, 1
+      82: goto          53
+      85: return
+
+  public void start(int);
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: putfield      #6                  // Field running:Z
+       5: aload_0
+       6: iload_1
+       7: invokevirtual #86                 // Method startHandlers:(I)V
+      10: return
+
+  public void stop();
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #6                  // Field running:Z
+       5: aload_0
+       6: getfield      #31                 // Field handlers:Ljava/util/List;
+       9: invokeinterface #64,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      14: astore_1
+      15: aload_1
+      16: invokeinterface #65,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      21: ifeq          41
+      24: aload_1
+      25: invokeinterface #66,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      30: checkcast     #87                 // class java/lang/Thread
+      33: astore_2
+      34: aload_2
+      35: invokevirtual #88                 // Method java/lang/Thread.interrupt:()V
+      38: goto          15
+      41: return
+
+  public abstract boolean dispatch(org.apache.hadoop.hbase.ipc.CallRunner) throws java.lang.InterruptedException;
+
+  protected java.util.List<java.util.concurrent.BlockingQueue<org.apache.hadoop.hbase.ipc.CallRunner>> getQueues();
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field queues:Ljava/util/List;
+       4: areturn
+
+  protected void startHandlers(int);
+    Code:
+       0: aload_0
+       1: invokevirtual #89                 // Method getQueues:()Ljava/util/List;
+       4: astore_2
+       5: aload_0
+       6: aconst_null
+       7: aload_0
+       8: getfield      #3                  // Field handlerCount:I
+      11: aload_2
+      12: iconst_0
+      13: aload_2
+      14: invokeinterface #90,  1           // InterfaceMethod java/util/List.size:()I
+      19: iload_1
+      20: aload_0
+      21: getfield      #18                 // Field activeHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+      24: invokevirtual #91                 // Method startHandlers:(Ljava/lang/String;ILjava/util/List;IIILjava/util/concurrent/atomic/AtomicInteger;)V
+      27: return
+
+  protected org.apache.hadoop.hbase.ipc.RpcExecutor$Handler getHandler(java.lang.String, double, java.util.concurrent.BlockingQueue<org.apache.hadoop.hbase.ipc.CallRunner>, java.util.concurrent.atomic.AtomicInteger);
+    Code:
+       0: new           #92                 // class org/apache/hadoop/hbase/ipc/RpcExecutor$Handler
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: dload_2
+       7: aload         4
+       9: aload         5
+      11: invokespecial #93                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor$Handler."<init>":(Lorg/apache/hadoop/hbase/ipc/RpcExecutor;Ljava/lang/String;DLjava/util/concurrent/BlockingQueue;Ljava/util/concurrent/atomic/AtomicInteger;)V
+      14: areturn
+
+  protected void startHandlers(java.lang.String, int, java.util.List<java.util.concurrent.BlockingQueue<org.apache.hadoop.hbase.ipc.CallRunner>>, int, int, int, java.util.concurrent.atomic.AtomicInteger);
+    Code:
+       0: new           #34                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+       7: aload_0
+       8: getfield      #21                 // Field name:Ljava/lang/String;
+      11: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      14: aload_1
+      15: invokestatic  #20                 // Method org/apache/hbase/thirdparty/com/google/common/base/Strings.nullToEmpty:(Ljava/lang/String;)Ljava/lang/String;
+      18: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      21: invokevirtual #38                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      24: astore        8
+      26: aload_0
+      27: getfield      #19                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      30: ifnonnull     37
+      33: dconst_1
+      34: goto          49
+      37: aload_0
+      38: getfield      #19                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      41: ldc           #95                 // String hbase.regionserver.handler.abort.on.error.percent
+      43: ldc2_w        #96                 // double 0.5d
+      46: invokevirtual #54                 // Method org/apache/hadoop/conf/Configuration.getDouble:(Ljava/lang/String;D)D
+      49: dstore        9
+      51: iconst_0
+      52: istore        11
+      54: iload         11
+      56: iload_2
+      57: if_icmpge     175
+      60: iload         4
+      62: iload         11
+      64: iload         5
+      66: irem
+      67: iadd
+      68: istore        12
+      70: new           #34                 // class java/lang/StringBuilder
+      73: dup
+      74: invokespecial #35                 // Method java/lang/StringBuilder."<init>":()V
+      77: ldc           #98                 // String RpcServer.
+      79: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      82: aload         8
+      84: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: ldc           #99                 // String .handler=
+      89: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      92: aload_0
+      93: getfield      #31                 // Field handlers:Ljava/util/List;
+      96: invokeinterface #90,  1           // InterfaceMethod java/util/List.size:()I
+     101: invokevirtual #100                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     104: ldc           #101                // String ,queue=
+     106: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     109: iload         12
+     111: invokevirtual #100                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     114: ldc           #102                // String ,port=
+     116: invokevirtual #36                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     119: iload         6
+     121: invokevirtual #100                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     124: invokevirtual #38                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     127: astore        13
+     129: aload_0
+     130: aload         13
+     132: dload         9
+     134: aload_3
+     135: iload         12
+     137: invokeinterface #103,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     142: checkcast     #67                 // class java/util/concurrent/BlockingQueue
+     145: aload         7
+     147: invokevirtual #104                // Method getHandler:(Ljava/lang/String;DLjava/util/concurrent/BlockingQueue;Ljava/util/concurrent/atomic/AtomicInteger;)Lorg/apache/hadoop/hbase/ipc/RpcExecutor$Handler;
+     150: astore        14
+     152: aload         14
+     154: invokevirtual #105                // Method org/apache/hadoop/hbase/ipc/RpcExecutor$Handler.start:()V
+     157: aload_0
+     158: getfield      #31                 // Field handlers:Ljava/util/List;
+     161: aload         14
+     163: invokeinterface #85,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     168: pop
+     169: iinc          11, 1
+     172: goto          54
+     175: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+     178: ldc           #106                // String Started handlerCount={} with threadPrefix={}, numCallQueues={}, port={}
+     180: iconst_4
+     181: anewarray     #39                 // class java/lang/Object
+     184: dup
+     185: iconst_0
+     186: aload_0
+     187: getfield      #31                 // Field handlers:Ljava/util/List;
+     190: invokeinterface #90,  1           // InterfaceMethod java/util/List.size:()I
+     195: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     198: aastore
+     199: dup
+     200: iconst_1
+     201: aload         8
+     203: aastore
+     204: dup
+     205: iconst_2
+     206: iload         5
+     208: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     211: aastore
+     212: dup
+     213: iconst_3
+     214: iload         6
+     216: invokestatic  #40                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     219: aastore
+     220: invokeinterface #107,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;[Ljava/lang/Object;)V
+     225: return
+
+  public static org.apache.hadoop.hbase.ipc.RpcExecutor$QueueBalancer getBalancer(int);
+    Code:
+       0: iload_0
+       1: ifle          8
+       4: iconst_1
+       5: goto          9
+       8: iconst_0
+       9: ldc           #108                // String Queue size is <= 0, must be at least 1
+      11: invokestatic  #109                // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/Object;)V
+      14: iload_0
+      15: iconst_1
+      16: if_icmpne     23
+      19: getstatic     #110                // Field ONE_QUEUE:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+      22: areturn
+      23: new           #111                // class org/apache/hadoop/hbase/ipc/RpcExecutor$RandomQueueBalancer
+      26: dup
+      27: iload_0
+      28: invokespecial #112                // Method org/apache/hadoop/hbase/ipc/RpcExecutor$RandomQueueBalancer."<init>":(I)V
+      31: areturn
+
+  public static boolean isDeadlineQueueType(java.lang.String);
+    Code:
+       0: aload_0
+       1: ldc           #113                // String deadline
+       3: invokevirtual #114                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       6: ireturn
+
+  public static boolean isCodelQueueType(java.lang.String);
+    Code:
+       0: aload_0
+       1: ldc           #115                // String codel
+       3: invokevirtual #114                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       6: ireturn
+
+  public static boolean isFifoQueueType(java.lang.String);
+    Code:
+       0: aload_0
+       1: ldc           #8                  // String fifo
+       3: invokevirtual #114                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+       6: ireturn
+
+  public long getNumGeneralCallsDropped();
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field numGeneralCallsDropped:Ljava/util/concurrent/atomic/LongAdder;
+       4: invokevirtual #116                // Method java/util/concurrent/atomic/LongAdder.longValue:()J
+       7: lreturn
+
+  public long getNumLifoModeSwitches();
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field numLifoModeSwitches:Ljava/util/concurrent/atomic/LongAdder;
+       4: invokevirtual #116                // Method java/util/concurrent/atomic/LongAdder.longValue:()J
+       7: lreturn
+
+  public int getActiveHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field activeHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: invokevirtual #117                // Method java/util/concurrent/atomic/AtomicInteger.get:()I
+       7: ireturn
+
+  public int getActiveWriteHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveReadHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveScanHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getQueueLength();
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aload_0
+       3: getfield      #29                 // Field queues:Ljava/util/List;
+       6: invokeinterface #64,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      11: astore_2
+      12: aload_2
+      13: invokeinterface #65,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      18: ifeq          43
+      21: aload_2
+      22: invokeinterface #66,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      27: checkcast     #67                 // class java/util/concurrent/BlockingQueue
+      30: astore_3
+      31: iload_1
+      32: aload_3
+      33: invokeinterface #118,  1          // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      38: iadd
+      39: istore_1
+      40: goto          12
+      43: iload_1
+      44: ireturn
+
+  public int getReadQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getScanQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getWriteQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public java.lang.String getName();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field name:Ljava/lang/String;
+       4: areturn
+
+  public void resizeQueues(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: ldc           #120                // String hbase.ipc.server.max.callqueue.length
+       2: astore_2
+       3: aload_0
+       4: getfield      #21                 // Field name:Ljava/lang/String;
+       7: ifnull        55
+      10: aload_0
+      11: getfield      #21                 // Field name:Ljava/lang/String;
+      14: getstatic     #121                // Field java/util/Locale.ROOT:Ljava/util/Locale;
+      17: invokevirtual #122                // Method java/lang/String.toLowerCase:(Ljava/util/Locale;)Ljava/lang/String;
+      20: ldc           #123                // String priority
+      22: invokevirtual #124                // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+      25: ifeq          34
+      28: ldc           #125                // String hbase.ipc.server.priority.max.callqueue.length
+      30: astore_2
+      31: goto          55
+      34: aload_0
+      35: getfield      #21                 // Field name:Ljava/lang/String;
+      38: getstatic     #121                // Field java/util/Locale.ROOT:Ljava/util/Locale;
+      41: invokevirtual #122                // Method java/lang/String.toLowerCase:(Ljava/util/Locale;)Ljava/lang/String;
+      44: ldc           #126                // String replication
+      46: invokevirtual #124                // Method java/lang/String.contains:(Ljava/lang/CharSequence;)Z
+      49: ifeq          55
+      52: ldc           #127                // String hbase.ipc.server.replication.max.callqueue.length
+      54: astore_2
+      55: aload_0
+      56: aload_1
+      57: aload_2
+      58: aload_0
+      59: getfield      #83                 // Field currentQueueLimit:I
+      62: invokevirtual #49                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      65: putfield      #83                 // Field currentQueueLimit:I
+      68: return
+
+  public void onConfigurationChange(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_1
+       1: ldc           #48                 // String hbase.ipc.server.callqueue.codel.target.delay
+       3: bipush        100
+       5: invokevirtual #49                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       8: istore_2
+       9: aload_1
+      10: ldc           #50                 // String hbase.ipc.server.callqueue.codel.interval
+      12: bipush        100
+      14: invokevirtual #49                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      17: istore_3
+      18: aload_1
+      19: ldc           #51                 // String hbase.ipc.server.callqueue.codel.lifo.threshold
+      21: ldc2_w        #52                 // double 0.8d
+      24: invokevirtual #54                 // Method org/apache/hadoop/conf/Configuration.getDouble:(Ljava/lang/String;D)D
+      27: dstore        4
+      29: aload_0
+      30: getfield      #29                 // Field queues:Ljava/util/List;
+      33: invokeinterface #64,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      38: astore        6
+      40: aload         6
+      42: invokeinterface #65,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      47: ifeq          85
+      50: aload         6
+      52: invokeinterface #66,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      57: checkcast     #67                 // class java/util/concurrent/BlockingQueue
+      60: astore        7
+      62: aload         7
+      64: instanceof    #56                 // class org/apache/hadoop/hbase/ipc/AdaptiveLifoCoDelCallQueue
+      67: ifeq          82
+      70: aload         7
+      72: checkcast     #56                 // class org/apache/hadoop/hbase/ipc/AdaptiveLifoCoDelCallQueue
+      75: iload_2
+      76: iload_3
+      77: dload         4
+      79: invokevirtual #128                // Method org/apache/hadoop/hbase/ipc/AdaptiveLifoCoDelCallQueue.updateTunables:(IID)V
+      82: goto          40
+      85: return
+
+  static boolean access$000(org.apache.hadoop.hbase.ipc.RpcExecutor);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field running:Z
+       4: ireturn
+
+  static org.slf4j.Logger access$100();
+    Code:
+       0: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static java.util.concurrent.atomic.AtomicInteger access$200(org.apache.hadoop.hbase.ipc.RpcExecutor);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field failedHandlerCount:Ljava/util/concurrent/atomic/AtomicInteger;
+       4: areturn
+
+  static int access$300(org.apache.hadoop.hbase.ipc.RpcExecutor);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field handlerCount:I
+       4: ireturn
+
+  static org.apache.hadoop.hbase.Abortable access$400(org.apache.hadoop.hbase.ipc.RpcExecutor);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #1                  // class org/apache/hadoop/hbase/ipc/RpcExecutor
+       2: invokestatic  #129                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       8: new           #130                // class org/apache/hadoop/hbase/ipc/RpcExecutor$1
+      11: dup
+      12: invokespecial #131                // Method org/apache/hadoop/hbase/ipc/RpcExecutor$1."<init>":()V
+      15: putstatic     #110                // Field ONE_QUEUE:Lorg/apache/hadoop/hbase/ipc/RpcExecutor$QueueBalancer;
+      18: return
+}

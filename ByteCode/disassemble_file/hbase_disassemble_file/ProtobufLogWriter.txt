@@ -1,0 +1,191 @@
+Compiled from "ProtobufLogWriter.java"
+public class org.apache.hadoop.hbase.regionserver.wal.ProtobufLogWriter extends org.apache.hadoop.hbase.regionserver.wal.AbstractProtobufLogWriter implements org.apache.hadoop.hbase.wal.FSHLogProvider$Writer {
+  protected org.apache.hadoop.fs.FSDataOutputStream output;
+
+  public org.apache.hadoop.hbase.regionserver.wal.ProtobufLogWriter();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/regionserver/wal/AbstractProtobufLogWriter."<init>":()V
+       4: return
+
+  public void append(org.apache.hadoop.hbase.wal.WAL$Entry) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #2                  // Method org/apache/hadoop/hbase/wal/WAL$Entry.getKey:()Lorg/apache/hadoop/hbase/wal/WALKeyImpl;
+       4: aload_0
+       5: getfield      #3                  // Field compressor:Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringCompressor;
+       8: invokevirtual #4                  // Method org/apache/hadoop/hbase/wal/WALKeyImpl.getBuilder:(Lorg/apache/hadoop/hbase/regionserver/wal/WALCellCodec$ByteStringCompressor;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey$Builder;
+      11: aload_1
+      12: invokevirtual #5                  // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+      15: invokevirtual #6                  // Method org/apache/hadoop/hbase/wal/WALEdit.size:()I
+      18: invokevirtual #7                  // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey$Builder.setFollowingKvCount:(I)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey$Builder;
+      21: invokevirtual #8                  // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey;
+      24: aload_0
+      25: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      28: invokevirtual #10                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALKey.writeDelimitedTo:(Ljava/io/OutputStream;)V
+      31: aload_1
+      32: invokevirtual #5                  // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+      35: invokevirtual #11                 // Method org/apache/hadoop/hbase/wal/WALEdit.getCells:()Ljava/util/ArrayList;
+      38: invokevirtual #12                 // Method java/util/ArrayList.iterator:()Ljava/util/Iterator;
+      41: astore_2
+      42: aload_2
+      43: invokeinterface #13,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      48: ifeq          74
+      51: aload_2
+      52: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      57: checkcast     #15                 // class org/apache/hadoop/hbase/Cell
+      60: astore_3
+      61: aload_0
+      62: getfield      #16                 // Field cellEncoder:Lorg/apache/hadoop/hbase/codec/Codec$Encoder;
+      65: aload_3
+      66: invokeinterface #17,  2           // InterfaceMethod org/apache/hadoop/hbase/codec/Codec$Encoder.write:(Lorg/apache/hadoop/hbase/Cell;)V
+      71: goto          42
+      74: aload_0
+      75: getfield      #18                 // Field length:Ljava/util/concurrent/atomic/AtomicLong;
+      78: aload_0
+      79: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      82: invokevirtual #19                 // Method org/apache/hadoop/fs/FSDataOutputStream.getPos:()J
+      85: invokevirtual #20                 // Method java/util/concurrent/atomic/AtomicLong.set:(J)V
+      88: return
+
+  public void close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: ifnull        47
+       7: aload_0
+       8: getfield      #21                 // Field trailerWritten:Z
+      11: ifne          18
+      14: aload_0
+      15: invokevirtual #22                 // Method writeWALTrailer:()V
+      18: aload_0
+      19: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      22: invokevirtual #23                 // Method org/apache/hadoop/fs/FSDataOutputStream.close:()V
+      25: goto          42
+      28: astore_1
+      29: getstatic     #25                 // Field LOG:Lorg/slf4j/Logger;
+      32: aload_1
+      33: invokevirtual #26                 // Method java/lang/NullPointerException.toString:()Ljava/lang/String;
+      36: aload_1
+      37: invokeinterface #27,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      42: aload_0
+      43: aconst_null
+      44: putfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      47: return
+    Exception table:
+       from    to  target type
+           7    25    28   Class java/lang/NullPointerException
+
+  public void sync(boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: astore_2
+       5: aload_2
+       6: ifnonnull     10
+       9: return
+      10: aload_2
+      11: invokevirtual #28                 // Method org/apache/hadoop/fs/FSDataOutputStream.flush:()V
+      14: iload_1
+      15: ifeq          25
+      18: aload_2
+      19: invokevirtual #29                 // Method org/apache/hadoop/fs/FSDataOutputStream.hsync:()V
+      22: goto          29
+      25: aload_2
+      26: invokevirtual #30                 // Method org/apache/hadoop/fs/FSDataOutputStream.hflush:()V
+      29: return
+
+  public org.apache.hadoop.fs.FSDataOutputStream getStream();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: areturn
+
+  protected void initOutput(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, boolean, int, short, long) throws java.io.IOException, org.apache.hadoop.hbase.util.CommonFSUtils$StreamLacksCapabilityException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: iload_3
+       4: iload         4
+       6: iload         5
+       8: lload         6
+      10: iconst_0
+      11: invokestatic  #31                 // Method org/apache/hadoop/hbase/util/CommonFSUtils.createForWal:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;ZISJZ)Lorg/apache/hadoop/fs/FSDataOutputStream;
+      14: putfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      17: aload_1
+      18: invokevirtual #32                 // Method org/apache/hadoop/fs/FileSystem.getConf:()Lorg/apache/hadoop/conf/Configuration;
+      21: ldc           #34                 // String hbase.unsafe.stream.capability.enforce
+      23: iconst_1
+      24: invokevirtual #35                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      27: ifeq          74
+      30: aload_0
+      31: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      34: ldc           #36                 // String hflush
+      36: invokestatic  #37                 // Method org/apache/hadoop/hbase/util/CommonFSUtils.hasCapability:(Lorg/apache/hadoop/fs/FSDataOutputStream;Ljava/lang/String;)Z
+      39: ifne          52
+      42: new           #38                 // class org/apache/hadoop/hbase/util/CommonFSUtils$StreamLacksCapabilityException
+      45: dup
+      46: ldc           #36                 // String hflush
+      48: invokespecial #39                 // Method org/apache/hadoop/hbase/util/CommonFSUtils$StreamLacksCapabilityException."<init>":(Ljava/lang/String;)V
+      51: athrow
+      52: aload_0
+      53: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      56: ldc           #40                 // String hsync
+      58: invokestatic  #37                 // Method org/apache/hadoop/hbase/util/CommonFSUtils.hasCapability:(Lorg/apache/hadoop/fs/FSDataOutputStream;Ljava/lang/String;)Z
+      61: ifne          74
+      64: new           #38                 // class org/apache/hadoop/hbase/util/CommonFSUtils$StreamLacksCapabilityException
+      67: dup
+      68: ldc           #40                 // String hsync
+      70: invokespecial #39                 // Method org/apache/hadoop/hbase/util/CommonFSUtils$StreamLacksCapabilityException."<init>":(Ljava/lang/String;)V
+      73: athrow
+      74: return
+
+  protected long writeMagicAndWALHeader(byte[], org.apache.hadoop.hbase.shaded.protobuf.generated.WALProtos$WALHeader) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: aload_1
+       5: invokevirtual #41                 // Method org/apache/hadoop/fs/FSDataOutputStream.write:([B)V
+       8: aload_2
+       9: aload_0
+      10: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      13: invokevirtual #42                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALHeader.writeDelimitedTo:(Ljava/io/OutputStream;)V
+      16: aload_0
+      17: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      20: invokevirtual #19                 // Method org/apache/hadoop/fs/FSDataOutputStream.getPos:()J
+      23: lreturn
+
+  protected java.io.OutputStream getOutputStreamForCellEncoder();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       4: areturn
+
+  protected long writeWALTrailerAndMagic(org.apache.hadoop.hbase.shaded.protobuf.generated.WALProtos$WALTrailer, byte[]) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+       5: invokevirtual #43                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALTrailer.writeTo:(Ljava/io/OutputStream;)V
+       8: aload_0
+       9: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      12: aload_1
+      13: invokevirtual #44                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/WALProtos$WALTrailer.getSerializedSize:()I
+      16: invokevirtual #45                 // Method org/apache/hadoop/fs/FSDataOutputStream.writeInt:(I)V
+      19: aload_0
+      20: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      23: aload_2
+      24: invokevirtual #41                 // Method org/apache/hadoop/fs/FSDataOutputStream.write:([B)V
+      27: aload_0
+      28: getfield      #9                  // Field output:Lorg/apache/hadoop/fs/FSDataOutputStream;
+      31: invokevirtual #19                 // Method org/apache/hadoop/fs/FSDataOutputStream.getPos:()J
+      34: lreturn
+
+  static {};
+    Code:
+       0: ldc           #46                 // class org/apache/hadoop/hbase/regionserver/wal/ProtobufLogWriter
+       2: invokestatic  #47                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #25                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

@@ -1,0 +1,557 @@
+Compiled from "HFileBlock.java"
+class org.apache.hadoop.hbase.io.hfile.HFileBlock$Writer {
+  public org.apache.hadoop.hbase.io.hfile.HFileBlock$Writer(org.apache.hadoop.hbase.io.hfile.HFileDataBlockEncoder, org.apache.hadoop.hbase.io.hfile.HFileContext);
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: getstatic     #3                  // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.INIT:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       8: putfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+      11: aload_0
+      12: getstatic     #5                  // Field org/apache/hadoop/hbase/HConstants.EMPTY_BYTE_ARRAY:[B
+      15: putfield      #6                  // Field onDiskChecksum:[B
+      18: aload_2
+      19: invokevirtual #7                  // Method org/apache/hadoop/hbase/io/hfile/HFileContext.getBytesPerChecksum:()I
+      22: bipush        33
+      24: if_icmpge     57
+      27: new           #9                  // class java/lang/RuntimeException
+      30: dup
+      31: new           #10                 // class java/lang/StringBuilder
+      34: dup
+      35: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      38: ldc           #12                 // String Unsupported value of bytesPerChecksum.  Minimum is 33 but the configured value is
+      40: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: aload_2
+      44: invokevirtual #7                  // Method org/apache/hadoop/hbase/io/hfile/HFileContext.getBytesPerChecksum:()I
+      47: invokevirtual #14                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      50: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      53: invokespecial #16                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      56: athrow
+      57: aload_0
+      58: aload_1
+      59: ifnull        66
+      62: aload_1
+      63: goto          69
+      66: getstatic     #17                 // Field org/apache/hadoop/hbase/io/hfile/NoOpDataBlockEncoder.INSTANCE:Lorg/apache/hadoop/hbase/io/hfile/NoOpDataBlockEncoder;
+      69: putfield      #18                 // Field dataBlockEncoder:Lorg/apache/hadoop/hbase/io/hfile/HFileDataBlockEncoder;
+      72: aload_0
+      73: aload_0
+      74: getfield      #18                 // Field dataBlockEncoder:Lorg/apache/hadoop/hbase/io/hfile/HFileDataBlockEncoder;
+      77: getstatic     #19                 // Field org/apache/hadoop/hbase/HConstants.HFILEBLOCK_DUMMY_HEADER:[B
+      80: aload_2
+      81: invokeinterface #20,  3           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFileDataBlockEncoder.newDataBlockEncodingContext:([BLorg/apache/hadoop/hbase/io/hfile/HFileContext;)Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;
+      86: putfield      #21                 // Field dataBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;
+      89: aload_0
+      90: new           #22                 // class org/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext
+      93: dup
+      94: aconst_null
+      95: getstatic     #19                 // Field org/apache/hadoop/hbase/HConstants.HFILEBLOCK_DUMMY_HEADER:[B
+      98: aload_2
+      99: invokespecial #23                 // Method org/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext."<init>":(Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;[BLorg/apache/hadoop/hbase/io/hfile/HFileContext;)V
+     102: putfield      #24                 // Field defaultBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext;
+     105: aload_0
+     106: new           #25                 // class org/apache/hadoop/hbase/io/ByteArrayOutputStream
+     109: dup
+     110: invokespecial #26                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream."<init>":()V
+     113: putfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+     116: aload_0
+     117: invokestatic  #28                 // Method org/apache/hadoop/hbase/io/hfile/BlockType.values:()[Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     120: arraylength
+     121: newarray       long
+     123: putfield      #29                 // Field prevOffsetByType:[J
+     126: iconst_0
+     127: istore_3
+     128: iload_3
+     129: aload_0
+     130: getfield      #29                 // Field prevOffsetByType:[J
+     133: arraylength
+     134: if_icmpge     153
+     137: aload_0
+     138: getfield      #29                 // Field prevOffsetByType:[J
+     141: iload_3
+     142: invokestatic  #30                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.access$200:()I
+     145: i2l
+     146: lastore
+     147: iinc          3, 1
+     150: goto          128
+     153: aload_0
+     154: aload_2
+     155: putfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+     158: return
+
+  java.io.DataOutputStream startWriting(org.apache.hadoop.hbase.io.hfile.BlockType) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: getstatic     #32                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.BLOCK_READY:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       7: if_acmpne     37
+      10: aload_0
+      11: getfield      #33                 // Field startOffset:J
+      14: ldc2_w        #34                 // long -1l
+      17: lcmp
+      18: ifeq          37
+      21: aload_0
+      22: getfield      #29                 // Field prevOffsetByType:[J
+      25: aload_0
+      26: getfield      #36                 // Field blockType:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      29: invokevirtual #37                 // Method org/apache/hadoop/hbase/io/hfile/BlockType.getId:()I
+      32: aload_0
+      33: getfield      #33                 // Field startOffset:J
+      36: lastore
+      37: aload_0
+      38: ldc2_w        #34                 // long -1l
+      41: putfield      #33                 // Field startOffset:J
+      44: aload_0
+      45: aload_1
+      46: putfield      #36                 // Field blockType:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      49: aload_0
+      50: getfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      53: invokevirtual #38                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.reset:()V
+      56: aload_0
+      57: getfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      60: getstatic     #19                 // Field org/apache/hadoop/hbase/HConstants.HFILEBLOCK_DUMMY_HEADER:[B
+      63: invokevirtual #39                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.write:([B)V
+      66: aload_0
+      67: getstatic     #40                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.WRITING:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+      70: putfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+      73: aload_0
+      74: new           #41                 // class org/apache/hadoop/hbase/io/ByteBufferWriterDataOutputStream
+      77: dup
+      78: aload_0
+      79: getfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      82: invokespecial #42                 // Method org/apache/hadoop/hbase/io/ByteBufferWriterDataOutputStream."<init>":(Ljava/io/OutputStream;)V
+      85: putfield      #43                 // Field userDataStream:Ljava/io/DataOutputStream;
+      88: aload_1
+      89: getstatic     #44                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.DATA:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      92: if_acmpne     112
+      95: aload_0
+      96: getfield      #18                 // Field dataBlockEncoder:Lorg/apache/hadoop/hbase/io/hfile/HFileDataBlockEncoder;
+      99: aload_0
+     100: getfield      #21                 // Field dataBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;
+     103: aload_0
+     104: getfield      #43                 // Field userDataStream:Ljava/io/DataOutputStream;
+     107: invokeinterface #45,  3           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFileDataBlockEncoder.startBlockEncoding:(Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;Ljava/io/DataOutputStream;)V
+     112: aload_0
+     113: iconst_0
+     114: putfield      #46                 // Field unencodedDataSizeWritten:I
+     117: aload_0
+     118: iconst_0
+     119: putfield      #47                 // Field encodedDataSizeWritten:I
+     122: aload_0
+     123: getfield      #43                 // Field userDataStream:Ljava/io/DataOutputStream;
+     126: areturn
+
+  void write(org.apache.hadoop.hbase.Cell) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getstatic     #40                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.WRITING:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: invokespecial #48                 // Method expectState:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;)V
+       7: aload_0
+       8: getfield      #43                 // Field userDataStream:Ljava/io/DataOutputStream;
+      11: invokevirtual #49                 // Method java/io/DataOutputStream.size:()I
+      14: istore_2
+      15: aload_0
+      16: dup
+      17: getfield      #46                 // Field unencodedDataSizeWritten:I
+      20: aload_0
+      21: getfield      #18                 // Field dataBlockEncoder:Lorg/apache/hadoop/hbase/io/hfile/HFileDataBlockEncoder;
+      24: aload_1
+      25: aload_0
+      26: getfield      #21                 // Field dataBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;
+      29: aload_0
+      30: getfield      #43                 // Field userDataStream:Ljava/io/DataOutputStream;
+      33: invokeinterface #50,  4           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFileDataBlockEncoder.encode:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;Ljava/io/DataOutputStream;)I
+      38: iadd
+      39: putfield      #46                 // Field unencodedDataSizeWritten:I
+      42: aload_0
+      43: dup
+      44: getfield      #47                 // Field encodedDataSizeWritten:I
+      47: aload_0
+      48: getfield      #43                 // Field userDataStream:Ljava/io/DataOutputStream;
+      51: invokevirtual #49                 // Method java/io/DataOutputStream.size:()I
+      54: iload_2
+      55: isub
+      56: iadd
+      57: putfield      #47                 // Field encodedDataSizeWritten:I
+      60: return
+
+  java.io.DataOutputStream getUserDataStream();
+    Code:
+       0: aload_0
+       1: getstatic     #40                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.WRITING:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: invokespecial #48                 // Method expectState:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;)V
+       7: aload_0
+       8: getfield      #43                 // Field userDataStream:Ljava/io/DataOutputStream;
+      11: areturn
+
+  void ensureBlockReady() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: getstatic     #3                  // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.INIT:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       7: if_acmpeq     14
+      10: iconst_1
+      11: goto          15
+      14: iconst_0
+      15: new           #10                 // class java/lang/StringBuilder
+      18: dup
+      19: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      22: ldc           #51                 // String Unexpected state:
+      24: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: aload_0
+      28: getfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+      31: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      34: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      37: invokestatic  #53                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkState:(ZLjava/lang/Object;)V
+      40: aload_0
+      41: getfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+      44: getstatic     #32                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.BLOCK_READY:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+      47: if_acmpne     51
+      50: return
+      51: aload_0
+      52: invokespecial #54                 // Method finishBlock:()V
+      55: return
+
+  void writeHeaderAndData(org.apache.hadoop.fs.FSDataOutputStream) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #82                 // Method org/apache/hadoop/fs/FSDataOutputStream.getPos:()J
+       4: lstore_2
+       5: aload_0
+       6: getfield      #33                 // Field startOffset:J
+       9: invokestatic  #30                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.access$200:()I
+      12: i2l
+      13: lcmp
+      14: ifeq          77
+      17: lload_2
+      18: aload_0
+      19: getfield      #33                 // Field startOffset:J
+      22: lcmp
+      23: ifeq          77
+      26: new           #83                 // class java/io/IOException
+      29: dup
+      30: new           #10                 // class java/lang/StringBuilder
+      33: dup
+      34: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      37: ldc           #84                 // String A
+      39: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: aload_0
+      43: getfield      #36                 // Field blockType:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      46: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      49: ldc           #85                 // String  block written to a stream twice, first at offset
+      51: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      54: aload_0
+      55: getfield      #33                 // Field startOffset:J
+      58: invokevirtual #86                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      61: ldc           #87                 // String , then at
+      63: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: lload_2
+      67: invokevirtual #86                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      70: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      73: invokespecial #88                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      76: athrow
+      77: aload_0
+      78: lload_2
+      79: putfield      #33                 // Field startOffset:J
+      82: aload_0
+      83: aload_1
+      84: invokevirtual #89                 // Method finishBlockAndWriteHeaderAndData:(Ljava/io/DataOutputStream;)V
+      87: return
+
+  protected void finishBlockAndWriteHeaderAndData(java.io.DataOutputStream) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #90                 // Method ensureBlockReady:()V
+       4: invokestatic  #91                 // Method java/lang/System.currentTimeMillis:()J
+       7: lstore_2
+       8: aload_1
+       9: aload_0
+      10: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      13: invokevirtual #55                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.getBuffer:()[B
+      16: iconst_0
+      17: aload_0
+      18: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      21: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      24: invokevirtual #92                 // Method java/io/DataOutputStream.write:([BII)V
+      27: aload_1
+      28: aload_0
+      29: getfield      #6                  // Field onDiskChecksum:[B
+      32: invokevirtual #93                 // Method java/io/DataOutputStream.write:([B)V
+      35: invokestatic  #91                 // Method java/lang/System.currentTimeMillis:()J
+      38: lload_2
+      39: lsub
+      40: invokestatic  #94                 // Method org/apache/hadoop/hbase/io/hfile/HFile.updateWriteLatency:(J)V
+      43: return
+
+  byte[] getHeaderAndDataForTest() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #90                 // Method ensureBlockReady:()V
+       4: aload_0
+       5: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+       8: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      11: aload_0
+      12: getfield      #6                  // Field onDiskChecksum:[B
+      15: arraylength
+      16: iadd
+      17: newarray       byte
+      19: astore_1
+      20: aload_0
+      21: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      24: invokevirtual #55                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.getBuffer:()[B
+      27: iconst_0
+      28: aload_1
+      29: iconst_0
+      30: aload_0
+      31: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      34: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      37: invokestatic  #95                 // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      40: aload_0
+      41: getfield      #6                  // Field onDiskChecksum:[B
+      44: iconst_0
+      45: aload_1
+      46: aload_0
+      47: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      50: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      53: aload_0
+      54: getfield      #6                  // Field onDiskChecksum:[B
+      57: arraylength
+      58: invokestatic  #95                 // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      61: aload_1
+      62: areturn
+
+  void release();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field dataBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;
+       4: ifnull        21
+       7: aload_0
+       8: getfield      #21                 // Field dataBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;
+      11: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext.close:()V
+      16: aload_0
+      17: aconst_null
+      18: putfield      #21                 // Field dataBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;
+      21: aload_0
+      22: getfield      #24                 // Field defaultBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext;
+      25: ifnull        40
+      28: aload_0
+      29: getfield      #24                 // Field defaultBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext;
+      32: invokevirtual #97                 // Method org/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext.close:()V
+      35: aload_0
+      36: aconst_null
+      37: putfield      #24                 // Field defaultBlockEncodingCtx:Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext;
+      40: return
+
+  int getOnDiskSizeWithoutHeader();
+    Code:
+       0: aload_0
+       1: getstatic     #32                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.BLOCK_READY:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: invokespecial #48                 // Method expectState:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;)V
+       7: aload_0
+       8: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      11: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      14: aload_0
+      15: getfield      #6                  // Field onDiskChecksum:[B
+      18: arraylength
+      19: iadd
+      20: bipush        33
+      22: isub
+      23: ireturn
+
+  int getOnDiskSizeWithHeader();
+    Code:
+       0: aload_0
+       1: getstatic     #32                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.BLOCK_READY:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: invokespecial #48                 // Method expectState:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;)V
+       7: aload_0
+       8: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      11: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      14: aload_0
+      15: getfield      #6                  // Field onDiskChecksum:[B
+      18: arraylength
+      19: iadd
+      20: ireturn
+
+  int getUncompressedSizeWithoutHeader();
+    Code:
+       0: aload_0
+       1: getstatic     #32                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.BLOCK_READY:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: invokespecial #48                 // Method expectState:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;)V
+       7: aload_0
+       8: getfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      11: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      14: bipush        33
+      16: isub
+      17: ireturn
+
+  int getUncompressedSizeWithHeader();
+    Code:
+       0: aload_0
+       1: getstatic     #32                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.BLOCK_READY:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: invokespecial #48                 // Method expectState:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;)V
+       7: aload_0
+       8: getfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      11: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      14: ireturn
+
+  boolean isWriting();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: getstatic     #40                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.WRITING:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       7: if_acmpne     14
+      10: iconst_1
+      11: goto          15
+      14: iconst_0
+      15: ireturn
+
+  public int encodedBlockSizeWritten();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: getstatic     #40                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.WRITING:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       7: if_acmpeq     12
+      10: iconst_0
+      11: ireturn
+      12: aload_0
+      13: getfield      #47                 // Field encodedDataSizeWritten:I
+      16: ireturn
+
+  int blockSizeWritten();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field state:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: getstatic     #40                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.WRITING:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       7: if_acmpeq     12
+      10: iconst_0
+      11: ireturn
+      12: aload_0
+      13: getfield      #46                 // Field unencodedDataSizeWritten:I
+      16: ireturn
+
+  java.nio.ByteBuffer cloneUncompressedBufferWithHeader();
+    Code:
+       0: aload_0
+       1: getstatic     #32                 // Field org/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State.BLOCK_READY:Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;
+       4: invokespecial #48                 // Method expectState:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock$Writer$State;)V
+       7: aload_0
+       8: getfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      11: invokevirtual #98                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.toByteArray:()[B
+      14: astore_1
+      15: aload_0
+      16: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      19: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      22: i2l
+      23: aload_0
+      24: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      27: invokevirtual #7                  // Method org/apache/hadoop/hbase/io/hfile/HFileContext.getBytesPerChecksum:()I
+      30: invokestatic  #72                 // Method org/apache/hadoop/hbase/io/hfile/ChecksumUtil.numBytes:(JI)J
+      33: l2i
+      34: istore_2
+      35: aload_0
+      36: aload_1
+      37: iconst_0
+      38: aload_0
+      39: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      42: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      45: iload_2
+      46: iadd
+      47: aload_0
+      48: getfield      #27                 // Field baosInMemory:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      51: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      54: aload_0
+      55: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+      58: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+      61: invokespecial #81                 // Method putHeader:([BIIII)V
+      64: aload_1
+      65: invokestatic  #99                 // Method java/nio/ByteBuffer.wrap:([B)Ljava/nio/ByteBuffer;
+      68: areturn
+
+  void writeBlock(org.apache.hadoop.hbase.io.hfile.HFileBlock$BlockWritable, org.apache.hadoop.fs.FSDataOutputStream) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: aload_0
+       2: aload_1
+       3: invokeinterface #104,  1          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFileBlock$BlockWritable.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+       8: invokevirtual #105                // Method startWriting:(Lorg/apache/hadoop/hbase/io/hfile/BlockType;)Ljava/io/DataOutputStream;
+      11: invokeinterface #106,  2          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFileBlock$BlockWritable.writeToBlock:(Ljava/io/DataOutput;)V
+      16: aload_0
+      17: aload_2
+      18: invokevirtual #107                // Method writeHeaderAndData:(Lorg/apache/hadoop/fs/FSDataOutputStream;)V
+      21: return
+
+  org.apache.hadoop.hbase.io.hfile.HFileBlock getBlockForCaching(org.apache.hadoop.hbase.io.hfile.CacheConfig);
+    Code:
+       0: new           #108                // class org/apache/hadoop/hbase/io/hfile/HFileContextBuilder
+       3: dup
+       4: invokespecial #109                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder."<init>":()V
+       7: aload_0
+       8: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      11: invokevirtual #110                // Method org/apache/hadoop/hbase/io/hfile/HFileContext.getBlocksize:()I
+      14: invokevirtual #111                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withBlockSize:(I)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      17: iconst_0
+      18: invokevirtual #112                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withBytesPerCheckSum:(I)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      21: getstatic     #113                // Field org/apache/hadoop/hbase/util/ChecksumType.NULL:Lorg/apache/hadoop/hbase/util/ChecksumType;
+      24: invokevirtual #114                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withChecksumType:(Lorg/apache/hadoop/hbase/util/ChecksumType;)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      27: aload_0
+      28: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      31: invokevirtual #115                // Method org/apache/hadoop/hbase/io/hfile/HFileContext.getCompression:()Lorg/apache/hadoop/hbase/io/compress/Compression$Algorithm;
+      34: invokevirtual #116                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withCompression:(Lorg/apache/hadoop/hbase/io/compress/Compression$Algorithm;)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      37: aload_0
+      38: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      41: invokevirtual #117                // Method org/apache/hadoop/hbase/io/hfile/HFileContext.getDataBlockEncoding:()Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+      44: invokevirtual #118                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withDataBlockEncoding:(Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      47: aload_0
+      48: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      51: invokevirtual #119                // Method org/apache/hadoop/hbase/io/hfile/HFileContext.isUseHBaseChecksum:()Z
+      54: invokevirtual #120                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withHBaseCheckSum:(Z)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      57: aload_0
+      58: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      61: invokevirtual #121                // Method org/apache/hadoop/hbase/io/hfile/HFileContext.isCompressTags:()Z
+      64: invokevirtual #122                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withCompressTags:(Z)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      67: aload_0
+      68: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      71: invokevirtual #123                // Method org/apache/hadoop/hbase/io/hfile/HFileContext.isIncludesMvcc:()Z
+      74: invokevirtual #124                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withIncludesMvcc:(Z)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      77: aload_0
+      78: getfield      #31                 // Field fileContext:Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      81: invokevirtual #125                // Method org/apache/hadoop/hbase/io/hfile/HFileContext.isIncludesTags:()Z
+      84: invokevirtual #126                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.withIncludesTags:(Z)Lorg/apache/hadoop/hbase/io/hfile/HFileContextBuilder;
+      87: invokevirtual #127                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.build:()Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      90: astore_2
+      91: new           #1                  // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      94: dup
+      95: aload_0
+      96: getfield      #36                 // Field blockType:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      99: aload_0
+     100: invokevirtual #128                // Method getOnDiskSizeWithoutHeader:()I
+     103: aload_0
+     104: invokevirtual #129                // Method getUncompressedSizeWithoutHeader:()I
+     107: aload_0
+     108: getfield      #59                 // Field prevOffset:J
+     111: aload_1
+     112: aload_0
+     113: getfield      #36                 // Field blockType:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     116: invokevirtual #130                // Method org/apache/hadoop/hbase/io/hfile/BlockType.getCategory:()Lorg/apache/hadoop/hbase/io/hfile/BlockType$BlockCategory;
+     119: invokevirtual #131                // Method org/apache/hadoop/hbase/io/hfile/CacheConfig.shouldCacheCompressed:(Lorg/apache/hadoop/hbase/io/hfile/BlockType$BlockCategory;)Z
+     122: ifeq          132
+     125: aload_0
+     126: invokespecial #132                // Method cloneOnDiskBufferWithHeader:()Ljava/nio/ByteBuffer;
+     129: goto          136
+     132: aload_0
+     133: invokevirtual #133                // Method cloneUncompressedBufferWithHeader:()Ljava/nio/ByteBuffer;
+     136: iconst_1
+     137: aload_0
+     138: getfield      #33                 // Field startOffset:J
+     141: invokestatic  #30                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.access$200:()I
+     144: aload_0
+     145: getfield      #66                 // Field onDiskBlockBytesWithHeader:Lorg/apache/hadoop/hbase/io/ByteArrayOutputStream;
+     148: invokevirtual #61                 // Method org/apache/hadoop/hbase/io/ByteArrayOutputStream.size:()I
+     151: aload_0
+     152: getfield      #6                  // Field onDiskChecksum:[B
+     155: arraylength
+     156: iadd
+     157: aload_2
+     158: invokespecial #134                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock."<init>":(Lorg/apache/hadoop/hbase/io/hfile/BlockType;IIJLjava/nio/ByteBuffer;ZJIILorg/apache/hadoop/hbase/io/hfile/HFileContext;)V
+     161: areturn
+}

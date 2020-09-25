@@ -1,0 +1,563 @@
+Compiled from "AuthManager.java"
+public final class org.apache.hadoop.hbase.security.access.AuthManager {
+  org.apache.hadoop.hbase.security.access.AuthManager$PermissionCache<org.apache.hadoop.hbase.security.access.NamespacePermission> NS_NO_PERMISSION;
+
+  org.apache.hadoop.hbase.security.access.AuthManager$PermissionCache<org.apache.hadoop.hbase.security.access.TablePermission> TBL_NO_PERMISSION;
+
+  org.apache.hadoop.hbase.security.access.AuthManager(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache
+       8: dup
+       9: aconst_null
+      10: invokespecial #3                  // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache."<init>":(Lorg/apache/hadoop/hbase/security/access/AuthManager$1;)V
+      13: putfield      #4                  // Field NS_NO_PERMISSION:Lorg/apache/hadoop/hbase/security/access/AuthManager$PermissionCache;
+      16: aload_0
+      17: new           #2                  // class org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache
+      20: dup
+      21: aconst_null
+      22: invokespecial #3                  // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache."<init>":(Lorg/apache/hadoop/hbase/security/access/AuthManager$1;)V
+      25: putfield      #5                  // Field TBL_NO_PERMISSION:Lorg/apache/hadoop/hbase/security/access/AuthManager$PermissionCache;
+      28: aload_0
+      29: new           #6                  // class java/util/concurrent/ConcurrentHashMap
+      32: dup
+      33: invokespecial #7                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      36: putfield      #8                  // Field globalCache:Ljava/util/Map;
+      39: aload_0
+      40: new           #6                  // class java/util/concurrent/ConcurrentHashMap
+      43: dup
+      44: invokespecial #7                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      47: putfield      #9                  // Field namespaceCache:Ljava/util/concurrent/ConcurrentHashMap;
+      50: aload_0
+      51: new           #6                  // class java/util/concurrent/ConcurrentHashMap
+      54: dup
+      55: invokespecial #7                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      58: putfield      #10                 // Field tableCache:Ljava/util/concurrent/ConcurrentHashMap;
+      61: aload_0
+      62: new           #11                 // class java/util/concurrent/atomic/AtomicLong
+      65: dup
+      66: lconst_0
+      67: invokespecial #12                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      70: putfield      #13                 // Field mtime:Ljava/util/concurrent/atomic/AtomicLong;
+      73: aload_0
+      74: aload_1
+      75: putfield      #14                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      78: return
+
+  public void refreshTableCacheFromWritable(org.apache.hadoop.hbase.TableName, byte[]) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: ifnull        62
+       4: aload_2
+       5: arraylength
+       6: ifle          62
+       9: aload_2
+      10: aload_0
+      11: getfield      #14                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      14: invokestatic  #15                 // Method org/apache/hadoop/hbase/security/access/PermissionStorage.readPermissions:([BLorg/apache/hadoop/conf/Configuration;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ListMultimap;
+      17: astore_3
+      18: aload_3
+      19: ifnull        49
+      22: aload_1
+      23: invokevirtual #16                 // Method org/apache/hadoop/hbase/TableName.getName:()[B
+      26: getstatic     #17                 // Field org/apache/hadoop/hbase/security/access/PermissionStorage.ACL_GLOBAL_NAME:[B
+      29: invokestatic  #18                 // Method org/apache/hadoop/hbase/util/Bytes.equals:([B[B)Z
+      32: ifeq          43
+      35: aload_0
+      36: aload_3
+      37: invokespecial #19                 // Method updateGlobalCache:(Lorg/apache/hbase/thirdparty/com/google/common/collect/ListMultimap;)V
+      40: goto          49
+      43: aload_0
+      44: aload_1
+      45: aload_3
+      46: invokespecial #20                 // Method updateTableCache:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hbase/thirdparty/com/google/common/collect/ListMultimap;)V
+      49: goto          72
+      52: astore_3
+      53: new           #22                 // class java/io/IOException
+      56: dup
+      57: aload_3
+      58: invokespecial #23                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+      61: athrow
+      62: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      65: ldc           #25                 // String Skipping permission cache refresh because writable data is empty
+      67: invokeinterface #26,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      72: return
+    Exception table:
+       from    to  target type
+           9    49    52   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+
+  public void refreshNamespaceCacheFromWritable(java.lang.String, byte[]) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: ifnull        41
+       4: aload_2
+       5: arraylength
+       6: ifle          41
+       9: aload_2
+      10: aload_0
+      11: getfield      #14                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      14: invokestatic  #15                 // Method org/apache/hadoop/hbase/security/access/PermissionStorage.readPermissions:([BLorg/apache/hadoop/conf/Configuration;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ListMultimap;
+      17: astore_3
+      18: aload_3
+      19: ifnull        28
+      22: aload_0
+      23: aload_1
+      24: aload_3
+      25: invokespecial #27                 // Method updateNamespaceCache:(Ljava/lang/String;Lorg/apache/hbase/thirdparty/com/google/common/collect/ListMultimap;)V
+      28: goto          51
+      31: astore_3
+      32: new           #22                 // class java/io/IOException
+      35: dup
+      36: aload_3
+      37: invokespecial #23                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+      40: athrow
+      41: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      44: ldc           #25                 // String Skipping permission cache refresh because writable data is empty
+      46: invokeinterface #28,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      51: return
+    Exception table:
+       from    to  target type
+           9    28    31   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+
+  public boolean authorizeUserGlobal(org.apache.hadoop.hbase.security.User, org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_1
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_1
+       7: invokestatic  #50                 // Method org/apache/hadoop/hbase/security/Superusers.isSuperUser:(Lorg/apache/hadoop/hbase/security/User;)Z
+      10: ifeq          15
+      13: iconst_1
+      14: ireturn
+      15: aload_0
+      16: aload_0
+      17: getfield      #8                  // Field globalCache:Ljava/util/Map;
+      20: aload_1
+      21: invokevirtual #51                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      24: invokeinterface #52,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      29: checkcast     #39                 // class org/apache/hadoop/hbase/security/access/GlobalPermission
+      32: aload_2
+      33: invokespecial #53                 // Method authorizeGlobal:(Lorg/apache/hadoop/hbase/security/access/GlobalPermission;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      36: ifeq          41
+      39: iconst_1
+      40: ireturn
+      41: aload_1
+      42: invokevirtual #54                 // Method org/apache/hadoop/hbase/security/User.getGroupNames:()[Ljava/lang/String;
+      45: astore_3
+      46: aload_3
+      47: arraylength
+      48: istore        4
+      50: iconst_0
+      51: istore        5
+      53: iload         5
+      55: iload         4
+      57: if_icmpge     99
+      60: aload_3
+      61: iload         5
+      63: aaload
+      64: astore        6
+      66: aload_0
+      67: aload_0
+      68: getfield      #8                  // Field globalCache:Ljava/util/Map;
+      71: aload         6
+      73: invokestatic  #55                 // Method org/apache/hadoop/hbase/AuthUtil.toGroupEntry:(Ljava/lang/String;)Ljava/lang/String;
+      76: invokeinterface #52,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      81: checkcast     #39                 // class org/apache/hadoop/hbase/security/access/GlobalPermission
+      84: aload_2
+      85: invokespecial #53                 // Method authorizeGlobal:(Lorg/apache/hadoop/hbase/security/access/GlobalPermission;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      88: ifeq          93
+      91: iconst_1
+      92: ireturn
+      93: iinc          5, 1
+      96: goto          53
+      99: iconst_0
+     100: ireturn
+
+  public boolean authorizeUserNamespace(org.apache.hadoop.hbase.security.User, java.lang.String, org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_1
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_0
+       7: aload_1
+       8: aload_3
+       9: invokevirtual #57                 // Method authorizeUserGlobal:(Lorg/apache/hadoop/hbase/security/User;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      12: ifeq          17
+      15: iconst_1
+      16: ireturn
+      17: aload_0
+      18: getfield      #9                  // Field namespaceCache:Ljava/util/concurrent/ConcurrentHashMap;
+      21: aload_2
+      22: aload_0
+      23: getfield      #4                  // Field NS_NO_PERMISSION:Lorg/apache/hadoop/hbase/security/access/AuthManager$PermissionCache;
+      26: invokevirtual #44                 // Method java/util/concurrent/ConcurrentHashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      29: checkcast     #2                  // class org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache
+      32: astore        4
+      34: aload_0
+      35: aload         4
+      37: aload_1
+      38: invokevirtual #51                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      41: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+      44: aload_2
+      45: aload_3
+      46: invokespecial #59                 // Method authorizeNamespace:(Ljava/util/Set;Ljava/lang/String;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      49: ifeq          54
+      52: iconst_1
+      53: ireturn
+      54: aload_1
+      55: invokevirtual #54                 // Method org/apache/hadoop/hbase/security/User.getGroupNames:()[Ljava/lang/String;
+      58: astore        5
+      60: aload         5
+      62: arraylength
+      63: istore        6
+      65: iconst_0
+      66: istore        7
+      68: iload         7
+      70: iload         6
+      72: if_icmpge     109
+      75: aload         5
+      77: iload         7
+      79: aaload
+      80: astore        8
+      82: aload_0
+      83: aload         4
+      85: aload         8
+      87: invokestatic  #55                 // Method org/apache/hadoop/hbase/AuthUtil.toGroupEntry:(Ljava/lang/String;)Ljava/lang/String;
+      90: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+      93: aload_2
+      94: aload_3
+      95: invokespecial #59                 // Method authorizeNamespace:(Ljava/util/Set;Ljava/lang/String;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      98: ifeq          103
+     101: iconst_1
+     102: ireturn
+     103: iinc          7, 1
+     106: goto          68
+     109: iconst_0
+     110: ireturn
+
+  public boolean accessUserTable(org.apache.hadoop.hbase.security.User, org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_1
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_2
+       7: ifnonnull     14
+      10: getstatic     #62                 // Field org/apache/hadoop/hbase/security/access/PermissionStorage.ACL_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      13: astore_2
+      14: aload_0
+      15: aload_1
+      16: aload_2
+      17: invokevirtual #63                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+      20: aload_3
+      21: invokevirtual #64                 // Method authorizeUserNamespace:(Lorg/apache/hadoop/hbase/security/User;Ljava/lang/String;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      24: ifeq          29
+      27: iconst_1
+      28: ireturn
+      29: aload_0
+      30: getfield      #10                 // Field tableCache:Ljava/util/concurrent/ConcurrentHashMap;
+      33: aload_2
+      34: aload_0
+      35: getfield      #5                  // Field TBL_NO_PERMISSION:Lorg/apache/hadoop/hbase/security/access/AuthManager$PermissionCache;
+      38: invokevirtual #44                 // Method java/util/concurrent/ConcurrentHashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      41: checkcast     #2                  // class org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache
+      44: astore        4
+      46: aload_0
+      47: aload         4
+      49: aload_1
+      50: invokevirtual #51                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      53: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+      56: aload_3
+      57: invokespecial #65                 // Method hasAccessTable:(Ljava/util/Set;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      60: ifeq          65
+      63: iconst_1
+      64: ireturn
+      65: aload_1
+      66: invokevirtual #54                 // Method org/apache/hadoop/hbase/security/User.getGroupNames:()[Ljava/lang/String;
+      69: astore        5
+      71: aload         5
+      73: arraylength
+      74: istore        6
+      76: iconst_0
+      77: istore        7
+      79: iload         7
+      81: iload         6
+      83: if_icmpge     119
+      86: aload         5
+      88: iload         7
+      90: aaload
+      91: astore        8
+      93: aload_0
+      94: aload         4
+      96: aload         8
+      98: invokestatic  #55                 // Method org/apache/hadoop/hbase/AuthUtil.toGroupEntry:(Ljava/lang/String;)Ljava/lang/String;
+     101: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+     104: aload_3
+     105: invokespecial #65                 // Method hasAccessTable:(Ljava/util/Set;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+     108: ifeq          113
+     111: iconst_1
+     112: ireturn
+     113: iinc          7, 1
+     116: goto          79
+     119: iconst_0
+     120: ireturn
+
+  public boolean authorizeUserTable(org.apache.hadoop.hbase.security.User, org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aconst_null
+       4: aconst_null
+       5: aload_3
+       6: invokevirtual #67                 // Method authorizeUserTable:(Lorg/apache/hadoop/hbase/security/User;Lorg/apache/hadoop/hbase/TableName;[B[BLorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+       9: ireturn
+
+  public boolean authorizeUserTable(org.apache.hadoop.hbase.security.User, org.apache.hadoop.hbase.TableName, byte[], org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aconst_null
+       5: aload         4
+       7: invokevirtual #67                 // Method authorizeUserTable:(Lorg/apache/hadoop/hbase/security/User;Lorg/apache/hadoop/hbase/TableName;[B[BLorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      10: ireturn
+
+  public boolean authorizeUserTable(org.apache.hadoop.hbase.security.User, org.apache.hadoop.hbase.TableName, byte[], byte[], org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_1
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_2
+       7: ifnonnull     14
+      10: getstatic     #62                 // Field org/apache/hadoop/hbase/security/access/PermissionStorage.ACL_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      13: astore_2
+      14: aload_0
+      15: aload_1
+      16: aload_2
+      17: invokevirtual #63                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+      20: aload         5
+      22: invokevirtual #64                 // Method authorizeUserNamespace:(Lorg/apache/hadoop/hbase/security/User;Ljava/lang/String;Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      25: ifeq          30
+      28: iconst_1
+      29: ireturn
+      30: aload_0
+      31: getfield      #10                 // Field tableCache:Ljava/util/concurrent/ConcurrentHashMap;
+      34: aload_2
+      35: aload_0
+      36: getfield      #5                  // Field TBL_NO_PERMISSION:Lorg/apache/hadoop/hbase/security/access/AuthManager$PermissionCache;
+      39: invokevirtual #44                 // Method java/util/concurrent/ConcurrentHashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      42: checkcast     #2                  // class org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache
+      45: astore        6
+      47: aload_0
+      48: aload         6
+      50: aload_1
+      51: invokevirtual #51                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      54: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+      57: aload_2
+      58: aload_3
+      59: aload         4
+      61: aload         5
+      63: invokespecial #68                 // Method authorizeTable:(Ljava/util/Set;Lorg/apache/hadoop/hbase/TableName;[B[BLorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      66: ifeq          71
+      69: iconst_1
+      70: ireturn
+      71: aload_1
+      72: invokevirtual #54                 // Method org/apache/hadoop/hbase/security/User.getGroupNames:()[Ljava/lang/String;
+      75: astore        7
+      77: aload         7
+      79: arraylength
+      80: istore        8
+      82: iconst_0
+      83: istore        9
+      85: iload         9
+      87: iload         8
+      89: if_icmpge     130
+      92: aload         7
+      94: iload         9
+      96: aaload
+      97: astore        10
+      99: aload_0
+     100: aload         6
+     102: aload         10
+     104: invokestatic  #55                 // Method org/apache/hadoop/hbase/AuthUtil.toGroupEntry:(Ljava/lang/String;)Ljava/lang/String;
+     107: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+     110: aload_2
+     111: aload_3
+     112: aload         4
+     114: aload         5
+     116: invokespecial #68                 // Method authorizeTable:(Ljava/util/Set;Lorg/apache/hadoop/hbase/TableName;[B[BLorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+     119: ifeq          124
+     122: iconst_1
+     123: ireturn
+     124: iinc          9, 1
+     127: goto          85
+     130: iconst_0
+     131: ireturn
+
+  public boolean authorizeUserFamily(org.apache.hadoop.hbase.security.User, org.apache.hadoop.hbase.TableName, byte[], org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field tableCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: aload_2
+       5: aload_0
+       6: getfield      #5                  // Field TBL_NO_PERMISSION:Lorg/apache/hadoop/hbase/security/access/AuthManager$PermissionCache;
+       9: invokevirtual #44                 // Method java/util/concurrent/ConcurrentHashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      12: checkcast     #2                  // class org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache
+      15: astore        5
+      17: aload_0
+      18: aload         5
+      20: aload_1
+      21: invokevirtual #51                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      24: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+      27: aload_2
+      28: aload_3
+      29: aload         4
+      31: invokespecial #70                 // Method authorizeFamily:(Ljava/util/Set;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      34: ifeq          39
+      37: iconst_1
+      38: ireturn
+      39: aload_1
+      40: invokevirtual #54                 // Method org/apache/hadoop/hbase/security/User.getGroupNames:()[Ljava/lang/String;
+      43: astore        6
+      45: aload         6
+      47: arraylength
+      48: istore        7
+      50: iconst_0
+      51: istore        8
+      53: iload         8
+      55: iload         7
+      57: if_icmpge     96
+      60: aload         6
+      62: iload         8
+      64: aaload
+      65: astore        9
+      67: aload_0
+      68: aload         5
+      70: aload         9
+      72: invokestatic  #55                 // Method org/apache/hadoop/hbase/AuthUtil.toGroupEntry:(Ljava/lang/String;)Ljava/lang/String;
+      75: invokevirtual #58                 // Method org/apache/hadoop/hbase/security/access/AuthManager$PermissionCache.get:(Ljava/lang/String;)Ljava/util/Set;
+      78: aload_2
+      79: aload_3
+      80: aload         4
+      82: invokespecial #70                 // Method authorizeFamily:(Ljava/util/Set;Lorg/apache/hadoop/hbase/TableName;[BLorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+      85: ifeq          90
+      88: iconst_1
+      89: ireturn
+      90: iinc          8, 1
+      93: goto          53
+      96: iconst_0
+      97: ireturn
+
+  public boolean authorizeCell(org.apache.hadoop.hbase.security.User, org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.security.access.Permission$Action);
+    Code:
+       0: aload_1
+       1: aload_3
+       2: invokestatic  #72                 // Method org/apache/hadoop/hbase/security/access/PermissionStorage.getCellPermissionsForUser:(Lorg/apache/hadoop/hbase/security/User;Lorg/apache/hadoop/hbase/Cell;)Ljava/util/List;
+       5: astore        5
+       7: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      10: invokeinterface #73,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      15: ifeq          62
+      18: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      21: ldc           #74                 // String Perms for user {} in table {} in cell {}: {}
+      23: iconst_4
+      24: anewarray     #75                 // class java/lang/Object
+      27: dup
+      28: iconst_0
+      29: aload_1
+      30: invokevirtual #51                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      33: aastore
+      34: dup
+      35: iconst_1
+      36: aload_2
+      37: aastore
+      38: dup
+      39: iconst_2
+      40: aload_3
+      41: aastore
+      42: dup
+      43: iconst_3
+      44: aload         5
+      46: ifnull        54
+      49: aload         5
+      51: goto          56
+      54: ldc           #76                 // String
+      56: aastore
+      57: invokeinterface #77,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;[Ljava/lang/Object;)V
+      62: aload         5
+      64: ifnull        113
+      67: aload         5
+      69: invokeinterface #36,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      74: astore        6
+      76: aload         6
+      78: invokeinterface #32,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      83: ifeq          113
+      86: aload         6
+      88: invokeinterface #33,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      93: checkcast     #37                 // class org/apache/hadoop/hbase/security/access/Permission
+      96: astore        7
+      98: aload         7
+     100: aload         4
+     102: invokevirtual #78                 // Method org/apache/hadoop/hbase/security/access/Permission.implies:(Lorg/apache/hadoop/hbase/security/access/Permission$Action;)Z
+     105: ifeq          110
+     108: iconst_1
+     109: ireturn
+     110: goto          76
+     113: goto          145
+     116: astore        5
+     118: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+     121: new           #79                 // class java/lang/StringBuilder
+     124: dup
+     125: invokespecial #80                 // Method java/lang/StringBuilder."<init>":()V
+     128: ldc           #81                 // String Failed parse of ACL tag in cell
+     130: invokevirtual #82                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     133: aload_3
+     134: invokevirtual #83                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     137: invokevirtual #84                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     140: invokeinterface #85,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     145: iconst_0
+     146: ireturn
+    Exception table:
+       from    to  target type
+           0   109   116   Class java/io/IOException
+         110   113   116   Class java/io/IOException
+
+  public void removeNamespace(byte[]);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field namespaceCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: aload_1
+       5: invokestatic  #86                 // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+       8: invokevirtual #87                 // Method java/util/concurrent/ConcurrentHashMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      11: pop
+      12: return
+
+  public void removeTable(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field tableCache:Ljava/util/concurrent/ConcurrentHashMap;
+       4: aload_1
+       5: invokevirtual #87                 // Method java/util/concurrent/ConcurrentHashMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+       8: pop
+       9: return
+
+  public long getMTime();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field mtime:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #88                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  static {};
+    Code:
+       0: ldc           #89                 // class org/apache/hadoop/hbase/security/access/AuthManager
+       2: invokestatic  #90                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

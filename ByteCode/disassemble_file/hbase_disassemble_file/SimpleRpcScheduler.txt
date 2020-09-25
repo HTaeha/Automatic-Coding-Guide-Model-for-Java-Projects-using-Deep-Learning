@@ -1,0 +1,573 @@
+Compiled from "SimpleRpcScheduler.java"
+public class org.apache.hadoop.hbase.ipc.SimpleRpcScheduler extends org.apache.hadoop.hbase.ipc.RpcScheduler implements org.apache.hadoop.hbase.conf.ConfigurationObserver {
+  public org.apache.hadoop.hbase.ipc.SimpleRpcScheduler(org.apache.hadoop.conf.Configuration, int, int, int, int, org.apache.hadoop.hbase.ipc.PriorityFunction, org.apache.hadoop.hbase.Abortable, int);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/ipc/RpcScheduler."<init>":()V
+       4: aload_0
+       5: aconst_null
+       6: putfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+       9: aload_1
+      10: ldc           #4                  // String hbase.ipc.server.max.callqueue.length
+      12: iload_2
+      13: bipush        10
+      15: imul
+      16: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      19: istore        9
+      21: aload_1
+      22: ldc           #7                  // String hbase.ipc.server.priority.max.callqueue.length
+      24: iload_3
+      25: bipush        10
+      27: imul
+      28: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      31: istore        10
+      33: aload_1
+      34: ldc           #8                  // String hbase.ipc.server.replication.max.callqueue.length
+      36: iload         4
+      38: bipush        10
+      40: imul
+      41: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      44: istore        11
+      46: aload_0
+      47: aload         6
+      49: putfield      #9                  // Field priority:Lorg/apache/hadoop/hbase/ipc/PriorityFunction;
+      52: aload_0
+      53: iload         8
+      55: putfield      #10                 // Field highPriorityLevel:I
+      58: aload_0
+      59: aload         7
+      61: putfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+      64: aload_1
+      65: ldc           #12                 // String hbase.ipc.server.callqueue.type
+      67: ldc           #13                 // String fifo
+      69: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      72: astore        12
+      74: aload_1
+      75: ldc           #16                 // String hbase.ipc.server.callqueue.read.ratio
+      77: fconst_0
+      78: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      81: fstore        13
+      83: fload         13
+      85: fconst_0
+      86: fcmpl
+      87: ifle          118
+      90: aload_0
+      91: new           #15                 // class org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor
+      94: dup
+      95: ldc           #18                 // String default.RWQ
+      97: iconst_2
+      98: iload_2
+      99: invokestatic  #19                 // Method java/lang/Math.max:(II)I
+     102: iload         9
+     104: aload         6
+     106: aload_1
+     107: aload         7
+     109: invokespecial #20                 // Method org/apache/hadoop/hbase/ipc/RWQueueRpcExecutor."<init>":(Ljava/lang/String;IILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+     112: putfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     115: goto          179
+     118: aload         12
+     120: invokestatic  #22                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.isFifoQueueType:(Ljava/lang/String;)Z
+     123: ifne          134
+     126: aload         12
+     128: invokestatic  #23                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.isCodelQueueType:(Ljava/lang/String;)Z
+     131: ifeq          158
+     134: aload_0
+     135: new           #24                 // class org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor
+     138: dup
+     139: ldc           #25                 // String default.FPBQ
+     141: iload_2
+     142: iload         9
+     144: aload         6
+     146: aload_1
+     147: aload         7
+     149: invokespecial #26                 // Method org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor."<init>":(Ljava/lang/String;IILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+     152: putfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     155: goto          179
+     158: aload_0
+     159: new           #27                 // class org/apache/hadoop/hbase/ipc/BalancedQueueRpcExecutor
+     162: dup
+     163: ldc           #28                 // String default.BQ
+     165: iload_2
+     166: iload         9
+     168: aload         6
+     170: aload_1
+     171: aload         7
+     173: invokespecial #29                 // Method org/apache/hadoop/hbase/ipc/BalancedQueueRpcExecutor."<init>":(Ljava/lang/String;IILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+     176: putfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     179: aload_0
+     180: iload_3
+     181: ifle          208
+     184: new           #24                 // class org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor
+     187: dup
+     188: ldc           #30                 // String priority.FPBQ
+     190: iload_3
+     191: ldc           #13                 // String fifo
+     193: iload         10
+     195: aload         6
+     197: aload_1
+     198: aload_0
+     199: getfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+     202: invokespecial #31                 // Method org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor."<init>":(Ljava/lang/String;ILjava/lang/String;ILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+     205: goto          209
+     208: aconst_null
+     209: putfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     212: aload_0
+     213: iload         4
+     215: ifle          243
+     218: new           #24                 // class org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor
+     221: dup
+     222: ldc           #33                 // String replication.FPBQ
+     224: iload         4
+     226: ldc           #13                 // String fifo
+     228: iload         11
+     230: aload         6
+     232: aload_1
+     233: aload_0
+     234: getfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+     237: invokespecial #31                 // Method org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor."<init>":(Ljava/lang/String;ILjava/lang/String;ILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+     240: goto          244
+     243: aconst_null
+     244: putfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     247: aload_0
+     248: iload         5
+     250: ifle          278
+     253: new           #24                 // class org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor
+     256: dup
+     257: ldc           #35                 // String metaPriority.FPBQ
+     259: iload         5
+     261: ldc           #13                 // String fifo
+     263: iload         10
+     265: aload         6
+     267: aload_1
+     268: aload_0
+     269: getfield      #2                  // Field abortable:Lorg/apache/hadoop/hbase/Abortable;
+     272: invokespecial #31                 // Method org/apache/hadoop/hbase/ipc/FastPathBalancedQueueRpcExecutor."<init>":(Ljava/lang/String;ILjava/lang/String;ILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Abortable;)V
+     275: goto          279
+     278: aconst_null
+     279: putfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     282: return
+
+  public org.apache.hadoop.hbase.ipc.SimpleRpcScheduler(org.apache.hadoop.conf.Configuration, int, int, int, org.apache.hadoop.hbase.ipc.PriorityFunction, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: iload_3
+       4: iload         4
+       6: iconst_0
+       7: aload         5
+       9: aconst_null
+      10: iload         6
+      12: invokespecial #37                 // Method "<init>":(Lorg/apache/hadoop/conf/Configuration;IIIILorg/apache/hadoop/hbase/ipc/PriorityFunction;Lorg/apache/hadoop/hbase/Abortable;I)V
+      15: return
+
+  public void onConfigurationChange(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: aload_1
+       5: invokevirtual #38                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.resizeQueues:(Lorg/apache/hadoop/conf/Configuration;)V
+       8: aload_0
+       9: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      12: ifnull        23
+      15: aload_0
+      16: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      19: aload_1
+      20: invokevirtual #38                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.resizeQueues:(Lorg/apache/hadoop/conf/Configuration;)V
+      23: aload_0
+      24: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      27: ifnull        38
+      30: aload_0
+      31: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      34: aload_1
+      35: invokevirtual #38                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.resizeQueues:(Lorg/apache/hadoop/conf/Configuration;)V
+      38: aload_0
+      39: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      42: ifnull        53
+      45: aload_0
+      46: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      49: aload_1
+      50: invokevirtual #38                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.resizeQueues:(Lorg/apache/hadoop/conf/Configuration;)V
+      53: aload_1
+      54: ldc           #12                 // String hbase.ipc.server.callqueue.type
+      56: ldc           #13                 // String fifo
+      58: invokevirtual #14                 // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      61: astore_2
+      62: aload_2
+      63: invokestatic  #23                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.isCodelQueueType:(Ljava/lang/String;)Z
+      66: ifeq          77
+      69: aload_0
+      70: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      73: aload_1
+      74: invokevirtual #39                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.onConfigurationChange:(Lorg/apache/hadoop/conf/Configuration;)V
+      77: return
+
+  public void init(org.apache.hadoop.hbase.ipc.RpcScheduler$Context);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #40                 // Method org/apache/hadoop/hbase/ipc/RpcScheduler$Context.getListenerAddress:()Ljava/net/InetSocketAddress;
+       5: invokevirtual #41                 // Method java/net/InetSocketAddress.getPort:()I
+       8: putfield      #42                 // Field port:I
+      11: return
+
+  public void start();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: aload_0
+       5: getfield      #42                 // Field port:I
+       8: invokevirtual #43                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.start:(I)V
+      11: aload_0
+      12: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      15: ifnull        29
+      18: aload_0
+      19: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      22: aload_0
+      23: getfield      #42                 // Field port:I
+      26: invokevirtual #43                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.start:(I)V
+      29: aload_0
+      30: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      33: ifnull        47
+      36: aload_0
+      37: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      40: aload_0
+      41: getfield      #42                 // Field port:I
+      44: invokevirtual #43                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.start:(I)V
+      47: aload_0
+      48: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      51: ifnull        65
+      54: aload_0
+      55: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      58: aload_0
+      59: getfield      #42                 // Field port:I
+      62: invokevirtual #43                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.start:(I)V
+      65: return
+
+  public void stop();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #44                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.stop:()V
+       7: aload_0
+       8: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      11: ifnull        21
+      14: aload_0
+      15: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      18: invokevirtual #44                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.stop:()V
+      21: aload_0
+      22: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      25: ifnull        35
+      28: aload_0
+      29: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      32: invokevirtual #44                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.stop:()V
+      35: aload_0
+      36: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      39: ifnull        49
+      42: aload_0
+      43: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      46: invokevirtual #44                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.stop:()V
+      49: return
+
+  public boolean dispatch(org.apache.hadoop.hbase.ipc.CallRunner) throws java.lang.InterruptedException;
+    Code:
+       0: aload_1
+       1: invokevirtual #45                 // Method org/apache/hadoop/hbase/ipc/CallRunner.getRpcCall:()Lorg/apache/hadoop/hbase/ipc/RpcCall;
+       4: astore_2
+       5: aload_0
+       6: getfield      #9                  // Field priority:Lorg/apache/hadoop/hbase/ipc/PriorityFunction;
+       9: aload_2
+      10: invokeinterface #46,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getHeader:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$RequestHeader;
+      15: aload_2
+      16: invokeinterface #47,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getParam:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;
+      21: aload_2
+      22: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getRequestUser:()Ljava/util/Optional;
+      27: aconst_null
+      28: invokevirtual #49                 // Method java/util/Optional.orElse:(Ljava/lang/Object;)Ljava/lang/Object;
+      31: checkcast     #50                 // class org/apache/hadoop/hbase/security/User
+      34: invokeinterface #51,  4           // InterfaceMethod org/apache/hadoop/hbase/ipc/PriorityFunction.getPriority:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$RequestHeader;Lorg/apache/hbase/thirdparty/com/google/protobuf/Message;Lorg/apache/hadoop/hbase/security/User;)I
+      39: istore_3
+      40: iload_3
+      41: iconst_m1
+      42: if_icmpne     47
+      45: iconst_0
+      46: istore_3
+      47: aload_0
+      48: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      51: ifnull        70
+      54: iload_3
+      55: sipush        300
+      58: if_icmpne     70
+      61: aload_0
+      62: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      65: aload_1
+      66: invokevirtual #54                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.dispatch:(Lorg/apache/hadoop/hbase/ipc/CallRunner;)Z
+      69: ireturn
+      70: aload_0
+      71: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      74: ifnull        94
+      77: iload_3
+      78: aload_0
+      79: getfield      #10                 // Field highPriorityLevel:I
+      82: if_icmple     94
+      85: aload_0
+      86: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      89: aload_1
+      90: invokevirtual #54                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.dispatch:(Lorg/apache/hadoop/hbase/ipc/CallRunner;)Z
+      93: ireturn
+      94: aload_0
+      95: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      98: ifnull        115
+     101: iload_3
+     102: iconst_5
+     103: if_icmpne     115
+     106: aload_0
+     107: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     110: aload_1
+     111: invokevirtual #54                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.dispatch:(Lorg/apache/hadoop/hbase/ipc/CallRunner;)Z
+     114: ireturn
+     115: aload_0
+     116: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     119: aload_1
+     120: invokevirtual #54                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.dispatch:(Lorg/apache/hadoop/hbase/ipc/CallRunner;)Z
+     123: ireturn
+
+  public int getMetaPriorityQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: ifnonnull     11
+       7: iconst_0
+       8: goto          18
+      11: aload_0
+      12: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      15: invokevirtual #55                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getQueueLength:()I
+      18: ireturn
+
+  public int getGeneralQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #55                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getQueueLength:()I
+       7: ireturn
+
+  public int getPriorityQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: ifnonnull     11
+       7: iconst_0
+       8: goto          18
+      11: aload_0
+      12: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      15: invokevirtual #55                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getQueueLength:()I
+      18: ireturn
+
+  public int getReplicationQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: ifnonnull     11
+       7: iconst_0
+       8: goto          18
+      11: aload_0
+      12: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      15: invokevirtual #55                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getQueueLength:()I
+      18: ireturn
+
+  public int getActiveRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #56                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveHandlerCount:()I
+       7: aload_0
+       8: invokevirtual #57                 // Method getActivePriorityRpcHandlerCount:()I
+      11: iadd
+      12: aload_0
+      13: invokevirtual #58                 // Method getActiveReplicationRpcHandlerCount:()I
+      16: iadd
+      17: aload_0
+      18: invokevirtual #59                 // Method getActiveMetaPriorityRpcHandlerCount:()I
+      21: iadd
+      22: ireturn
+
+  public int getActiveMetaPriorityRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: ifnonnull     11
+       7: iconst_0
+       8: goto          18
+      11: aload_0
+      12: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      15: invokevirtual #56                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveHandlerCount:()I
+      18: ireturn
+
+  public int getActiveGeneralRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #56                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveHandlerCount:()I
+       7: ireturn
+
+  public int getActivePriorityRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: ifnonnull     11
+       7: iconst_0
+       8: goto          18
+      11: aload_0
+      12: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      15: invokevirtual #56                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveHandlerCount:()I
+      18: ireturn
+
+  public int getActiveReplicationRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: ifnonnull     11
+       7: iconst_0
+       8: goto          18
+      11: aload_0
+      12: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      15: invokevirtual #56                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveHandlerCount:()I
+      18: ireturn
+
+  public long getNumGeneralCallsDropped();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #60                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getNumGeneralCallsDropped:()J
+       7: lreturn
+
+  public long getNumLifoModeSwitches();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #61                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getNumLifoModeSwitches:()J
+       7: lreturn
+
+  public int getWriteQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #62                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getWriteQueueLength:()I
+       7: ireturn
+
+  public int getReadQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #63                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getReadQueueLength:()I
+       7: ireturn
+
+  public int getScanQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #64                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getScanQueueLength:()I
+       7: ireturn
+
+  public int getActiveWriteRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #65                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveWriteHandlerCount:()I
+       7: ireturn
+
+  public int getActiveReadRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #66                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveReadHandlerCount:()I
+       7: ireturn
+
+  public int getActiveScanRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+       4: invokevirtual #67                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getActiveScanHandlerCount:()I
+       7: ireturn
+
+  public org.apache.hadoop.hbase.ipc.CallQueueInfo getCallQueueInfo();
+    Code:
+       0: new           #68                 // class org/apache/hadoop/hbase/ipc/CallQueueInfo
+       3: dup
+       4: invokespecial #69                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo."<init>":()V
+       7: astore_2
+       8: aconst_null
+       9: aload_0
+      10: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      13: if_acmpeq     43
+      16: ldc           #70                 // String Call Queue
+      18: astore_1
+      19: aload_2
+      20: aload_1
+      21: aload_0
+      22: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      25: invokevirtual #71                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueCountsSummary:()Ljava/util/Map;
+      28: invokevirtual #72                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodCount:(Ljava/lang/String;Ljava/util/Map;)V
+      31: aload_2
+      32: aload_1
+      33: aload_0
+      34: getfield      #21                 // Field callExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      37: invokevirtual #73                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueSizeSummary:()Ljava/util/Map;
+      40: invokevirtual #74                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodSize:(Ljava/lang/String;Ljava/util/Map;)V
+      43: aconst_null
+      44: aload_0
+      45: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      48: if_acmpeq     78
+      51: ldc           #75                 // String Priority Queue
+      53: astore_1
+      54: aload_2
+      55: aload_1
+      56: aload_0
+      57: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      60: invokevirtual #71                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueCountsSummary:()Ljava/util/Map;
+      63: invokevirtual #72                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodCount:(Ljava/lang/String;Ljava/util/Map;)V
+      66: aload_2
+      67: aload_1
+      68: aload_0
+      69: getfield      #32                 // Field priorityExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      72: invokevirtual #73                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueSizeSummary:()Ljava/util/Map;
+      75: invokevirtual #74                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodSize:(Ljava/lang/String;Ljava/util/Map;)V
+      78: aconst_null
+      79: aload_0
+      80: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      83: if_acmpeq     113
+      86: ldc           #76                 // String Replication Queue
+      88: astore_1
+      89: aload_2
+      90: aload_1
+      91: aload_0
+      92: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+      95: invokevirtual #71                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueCountsSummary:()Ljava/util/Map;
+      98: invokevirtual #72                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodCount:(Ljava/lang/String;Ljava/util/Map;)V
+     101: aload_2
+     102: aload_1
+     103: aload_0
+     104: getfield      #34                 // Field replicationExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     107: invokevirtual #73                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueSizeSummary:()Ljava/util/Map;
+     110: invokevirtual #74                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodSize:(Ljava/lang/String;Ljava/util/Map;)V
+     113: aconst_null
+     114: aload_0
+     115: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     118: if_acmpeq     148
+     121: ldc           #77                 // String Meta Transition Queue
+     123: astore_1
+     124: aload_2
+     125: aload_1
+     126: aload_0
+     127: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     130: invokevirtual #71                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueCountsSummary:()Ljava/util/Map;
+     133: invokevirtual #72                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodCount:(Ljava/lang/String;Ljava/util/Map;)V
+     136: aload_2
+     137: aload_1
+     138: aload_0
+     139: getfield      #36                 // Field metaTransitionExecutor:Lorg/apache/hadoop/hbase/ipc/RpcExecutor;
+     142: invokevirtual #73                 // Method org/apache/hadoop/hbase/ipc/RpcExecutor.getCallQueueSizeSummary:()Ljava/util/Map;
+     145: invokevirtual #74                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodSize:(Ljava/lang/String;Ljava/util/Map;)V
+     148: aload_2
+     149: areturn
+}

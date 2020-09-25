@@ -1,0 +1,538 @@
+Compiled from "RegionStateNode.java"
+public class org.apache.hadoop.hbase.master.assignment.RegionStateNode implements java.lang.Comparable<org.apache.hadoop.hbase.master.assignment.RegionStateNode> {
+  final java.util.concurrent.locks.Lock lock;
+
+  static final boolean $assertionsDisabled;
+
+  org.apache.hadoop.hbase.master.assignment.RegionStateNode(org.apache.hadoop.hbase.client.RegionInfo, java.util.concurrent.ConcurrentMap<org.apache.hadoop.hbase.client.RegionInfo, org.apache.hadoop.hbase.master.assignment.RegionStateNode>);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/locks/ReentrantLock
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+      12: putfield      #4                  // Field lock:Ljava/util/concurrent/locks/Lock;
+      15: aload_0
+      16: aconst_null
+      17: putfield      #5                  // Field procedure:Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+      20: aload_0
+      21: aconst_null
+      22: putfield      #6                  // Field regionLocation:Lorg/apache/hadoop/hbase/ServerName;
+      25: aload_0
+      26: aconst_null
+      27: putfield      #7                  // Field lastHost:Lorg/apache/hadoop/hbase/ServerName;
+      30: aload_0
+      31: getstatic     #8                  // Field org/apache/hadoop/hbase/master/RegionState$State.OFFLINE:Lorg/apache/hadoop/hbase/master/RegionState$State;
+      34: putfield      #9                  // Field state:Lorg/apache/hadoop/hbase/master/RegionState$State;
+      37: aload_0
+      38: lconst_0
+      39: putfield      #10                 // Field lastUpdate:J
+      42: aload_0
+      43: ldc2_w        #12                 // long -1l
+      46: putfield      #14                 // Field openSeqNum:J
+      49: aload_0
+      50: aload_1
+      51: putfield      #15                 // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      54: aload_0
+      55: new           #16                 // class org/apache/hadoop/hbase/master/assignment/RegionStateNode$AssignmentProcedureEvent
+      58: dup
+      59: aload_1
+      60: invokespecial #17                 // Method org/apache/hadoop/hbase/master/assignment/RegionStateNode$AssignmentProcedureEvent."<init>":(Lorg/apache/hadoop/hbase/client/RegionInfo;)V
+      63: putfield      #18                 // Field event:Lorg/apache/hadoop/hbase/procedure2/ProcedureEvent;
+      66: aload_0
+      67: aload_2
+      68: putfield      #19                 // Field ritMap:Ljava/util/concurrent/ConcurrentMap;
+      71: return
+
+  public boolean setState(org.apache.hadoop.hbase.master.RegionState$State, org.apache.hadoop.hbase.master.RegionState$State...);
+    Code:
+       0: aload_0
+       1: aload_2
+       2: invokevirtual #20                 // Method isInState:([Lorg/apache/hadoop/hbase/master/RegionState$State;)Z
+       5: ifne          10
+       8: iconst_0
+       9: ireturn
+      10: aload_0
+      11: aload_1
+      12: putfield      #9                  // Field state:Lorg/apache/hadoop/hbase/master/RegionState$State;
+      15: aload_0
+      16: invokestatic  #21                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      19: putfield      #10                 // Field lastUpdate:J
+      22: iconst_1
+      23: ireturn
+
+  public org.apache.hadoop.hbase.ServerName offline();
+    Code:
+       0: aload_0
+       1: getstatic     #8                  // Field org/apache/hadoop/hbase/master/RegionState$State.OFFLINE:Lorg/apache/hadoop/hbase/master/RegionState$State;
+       4: iconst_0
+       5: anewarray     #22                 // class org/apache/hadoop/hbase/master/RegionState$State
+       8: invokevirtual #23                 // Method setState:(Lorg/apache/hadoop/hbase/master/RegionState$State;[Lorg/apache/hadoop/hbase/master/RegionState$State;)Z
+      11: pop
+      12: aload_0
+      13: aconst_null
+      14: invokevirtual #24                 // Method setRegionLocation:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/ServerName;
+      17: areturn
+
+  public void transitionState(org.apache.hadoop.hbase.master.RegionState$State, org.apache.hadoop.hbase.master.RegionState$State...) throws org.apache.hadoop.hbase.exceptions.UnexpectedStateException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokevirtual #23                 // Method setState:(Lorg/apache/hadoop/hbase/master/RegionState$State;[Lorg/apache/hadoop/hbase/master/RegionState$State;)Z
+       6: ifne          60
+       9: new           #25                 // class org/apache/hadoop/hbase/exceptions/UnexpectedStateException
+      12: dup
+      13: new           #26                 // class java/lang/StringBuilder
+      16: dup
+      17: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      20: ldc           #28                 // String Expected
+      22: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: aload_2
+      26: invokestatic  #30                 // Method java/util/Arrays.toString:([Ljava/lang/Object;)Ljava/lang/String;
+      29: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: ldc           #31                 // String  so could move to
+      34: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: aload_1
+      38: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      41: ldc           #33                 // String  but current state=
+      43: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_0
+      47: invokevirtual #34                 // Method getState:()Lorg/apache/hadoop/hbase/master/RegionState$State;
+      50: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      53: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      56: invokespecial #36                 // Method org/apache/hadoop/hbase/exceptions/UnexpectedStateException."<init>":(Ljava/lang/String;)V
+      59: athrow
+      60: return
+
+  public boolean isInState(org.apache.hadoop.hbase.master.RegionState$State...);
+    Code:
+       0: aload_1
+       1: arraylength
+       2: ifne          7
+       5: iconst_1
+       6: ireturn
+       7: aload_0
+       8: invokevirtual #34                 // Method getState:()Lorg/apache/hadoop/hbase/master/RegionState$State;
+      11: aload_1
+      12: invokevirtual #37                 // Method org/apache/hadoop/hbase/master/RegionState$State.matches:([Lorg/apache/hadoop/hbase/master/RegionState$State;)Z
+      15: ireturn
+
+  public boolean isStuck();
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: anewarray     #22                 // class org/apache/hadoop/hbase/master/RegionState$State
+       5: dup
+       6: iconst_0
+       7: getstatic     #38                 // Field org/apache/hadoop/hbase/master/RegionState$State.FAILED_OPEN:Lorg/apache/hadoop/hbase/master/RegionState$State;
+      10: aastore
+      11: invokevirtual #20                 // Method isInState:([Lorg/apache/hadoop/hbase/master/RegionState$State;)Z
+      14: ifeq          28
+      17: aload_0
+      18: invokevirtual #39                 // Method getProcedure:()Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+      21: ifnull        28
+      24: iconst_1
+      25: goto          29
+      28: iconst_0
+      29: ireturn
+
+  public boolean isInTransition();
+    Code:
+       0: aload_0
+       1: invokevirtual #39                 // Method getProcedure:()Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+       4: ifnull        11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+
+  public long getLastUpdate();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field procedure:Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+       4: astore_1
+       5: aload_1
+       6: ifnull        29
+       9: aload_1
+      10: invokevirtual #40                 // Method org/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure.getLastUpdate:()J
+      13: lstore_2
+      14: lload_2
+      15: lconst_0
+      16: lcmp
+      17: ifeq          24
+      20: lload_2
+      21: goto          28
+      24: aload_1
+      25: invokevirtual #41                 // Method org/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure.getSubmittedTime:()J
+      28: lreturn
+      29: aload_0
+      30: getfield      #10                 // Field lastUpdate:J
+      33: lreturn
+
+  public void setLastHost(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #7                  // Field lastHost:Lorg/apache/hadoop/hbase/ServerName;
+       5: return
+
+  public void setOpenSeqNum(long);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: putfield      #14                 // Field openSeqNum:J
+       5: return
+
+  public org.apache.hadoop.hbase.ServerName setRegionLocation(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field regionLocation:Lorg/apache/hadoop/hbase/ServerName;
+       4: astore_2
+       5: getstatic     #42                 // Field LOG:Lorg/slf4j/Logger;
+       8: invokeinterface #43,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      13: ifeq          56
+      16: aload_1
+      17: ifnonnull     56
+      20: getstatic     #42                 // Field LOG:Lorg/slf4j/Logger;
+      23: new           #26                 // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #44                 // String Tracking when we are set to null
+      32: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload_0
+      36: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      39: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      42: new           #45                 // class java/lang/Throwable
+      45: dup
+      46: ldc           #46                 // String TRACE
+      48: invokespecial #47                 // Method java/lang/Throwable."<init>":(Ljava/lang/String;)V
+      51: invokeinterface #48,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      56: aload_0
+      57: aload_1
+      58: putfield      #6                  // Field regionLocation:Lorg/apache/hadoop/hbase/ServerName;
+      61: aload_0
+      62: invokestatic  #21                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      65: putfield      #10                 // Field lastUpdate:J
+      68: aload_2
+      69: areturn
+
+  public void setProcedure(org.apache.hadoop.hbase.master.assignment.TransitRegionStateProcedure);
+    Code:
+       0: getstatic     #49                 // Field $assertionsDisabled:Z
+       3: ifne          21
+       6: aload_0
+       7: getfield      #5                  // Field procedure:Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+      10: ifnull        21
+      13: new           #50                 // class java/lang/AssertionError
+      16: dup
+      17: invokespecial #51                 // Method java/lang/AssertionError."<init>":()V
+      20: athrow
+      21: aload_0
+      22: aload_1
+      23: putfield      #5                  // Field procedure:Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+      26: aload_0
+      27: getfield      #19                 // Field ritMap:Ljava/util/concurrent/ConcurrentMap;
+      30: aload_0
+      31: getfield      #15                 // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      34: aload_0
+      35: invokeinterface #52,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      40: pop
+      41: return
+
+  public void unsetProcedure(org.apache.hadoop.hbase.master.assignment.TransitRegionStateProcedure);
+    Code:
+       0: getstatic     #49                 // Field $assertionsDisabled:Z
+       3: ifne          22
+       6: aload_0
+       7: getfield      #5                  // Field procedure:Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+      10: aload_1
+      11: if_acmpeq     22
+      14: new           #50                 // class java/lang/AssertionError
+      17: dup
+      18: invokespecial #51                 // Method java/lang/AssertionError."<init>":()V
+      21: athrow
+      22: aload_0
+      23: aconst_null
+      24: putfield      #5                  // Field procedure:Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+      27: aload_0
+      28: getfield      #19                 // Field ritMap:Ljava/util/concurrent/ConcurrentMap;
+      31: aload_0
+      32: getfield      #15                 // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      35: aload_0
+      36: invokeinterface #53,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+      41: pop
+      42: return
+
+  public org.apache.hadoop.hbase.master.assignment.TransitRegionStateProcedure getProcedure();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field procedure:Lorg/apache/hadoop/hbase/master/assignment/TransitRegionStateProcedure;
+       4: areturn
+
+  public org.apache.hadoop.hbase.procedure2.ProcedureEvent<?> getProcedureEvent();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field event:Lorg/apache/hadoop/hbase/procedure2/ProcedureEvent;
+       4: areturn
+
+  public org.apache.hadoop.hbase.client.RegionInfo getRegionInfo();
+    Code:
+       0: aload_0
+       1: getfield      #15                 // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: areturn
+
+  public org.apache.hadoop.hbase.TableName getTable();
+    Code:
+       0: aload_0
+       1: invokevirtual #54                 // Method getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: invokeinterface #55,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+       9: areturn
+
+  public boolean isSystemTable();
+    Code:
+       0: aload_0
+       1: invokevirtual #56                 // Method getTable:()Lorg/apache/hadoop/hbase/TableName;
+       4: invokevirtual #57                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+       7: ireturn
+
+  public org.apache.hadoop.hbase.ServerName getLastHost();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field lastHost:Lorg/apache/hadoop/hbase/ServerName;
+       4: areturn
+
+  public org.apache.hadoop.hbase.ServerName getRegionLocation();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field regionLocation:Lorg/apache/hadoop/hbase/ServerName;
+       4: areturn
+
+  public org.apache.hadoop.hbase.master.RegionState$State getState();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field state:Lorg/apache/hadoop/hbase/master/RegionState$State;
+       4: areturn
+
+  public long getOpenSeqNum();
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field openSeqNum:J
+       4: lreturn
+
+  public int getFormatVersion();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public org.apache.hadoop.hbase.master.RegionState toRegionState();
+    Code:
+       0: new           #58                 // class org/apache/hadoop/hbase/master/RegionState
+       3: dup
+       4: aload_0
+       5: invokevirtual #54                 // Method getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       8: aload_0
+       9: invokevirtual #34                 // Method getState:()Lorg/apache/hadoop/hbase/master/RegionState$State;
+      12: aload_0
+      13: invokevirtual #59                 // Method getLastUpdate:()J
+      16: aload_0
+      17: invokevirtual #60                 // Method getRegionLocation:()Lorg/apache/hadoop/hbase/ServerName;
+      20: invokespecial #61                 // Method org/apache/hadoop/hbase/master/RegionState."<init>":(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/master/RegionState$State;JLorg/apache/hadoop/hbase/ServerName;)V
+      23: areturn
+
+  public int compareTo(org.apache.hadoop.hbase.master.assignment.RegionStateNode);
+    Code:
+       0: getstatic     #62                 // Field org/apache/hadoop/hbase/client/RegionInfo.COMPARATOR:Ljava/util/Comparator;
+       3: aload_0
+       4: invokevirtual #54                 // Method getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       7: aload_1
+       8: invokevirtual #54                 // Method getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      11: invokeinterface #63,  3           // InterfaceMethod java/util/Comparator.compare:(Ljava/lang/Object;Ljava/lang/Object;)I
+      16: ireturn
+
+  public int hashCode();
+    Code:
+       0: aload_0
+       1: invokevirtual #54                 // Method getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: invokevirtual #64                 // Method java/lang/Object.hashCode:()I
+       7: ireturn
+
+  public boolean equals(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: if_acmpne     7
+       5: iconst_1
+       6: ireturn
+       7: aload_1
+       8: instanceof    #65                 // class org/apache/hadoop/hbase/master/assignment/RegionStateNode
+      11: ifne          16
+      14: iconst_0
+      15: ireturn
+      16: aload_0
+      17: aload_1
+      18: checkcast     #65                 // class org/apache/hadoop/hbase/master/assignment/RegionStateNode
+      21: invokevirtual #66                 // Method compareTo:(Lorg/apache/hadoop/hbase/master/assignment/RegionStateNode;)I
+      24: ifne          31
+      27: iconst_1
+      28: goto          32
+      31: iconst_0
+      32: ireturn
+
+  public java.lang.String toString();
+    Code:
+       0: aload_0
+       1: invokevirtual #67                 // Method toDescriptiveString:()Ljava/lang/String;
+       4: areturn
+
+  public java.lang.String toShortString();
+    Code:
+       0: ldc           #68                 // String rit=%s, location=%s
+       2: iconst_2
+       3: anewarray     #69                 // class java/lang/Object
+       6: dup
+       7: iconst_0
+       8: aload_0
+       9: invokevirtual #34                 // Method getState:()Lorg/apache/hadoop/hbase/master/RegionState$State;
+      12: aastore
+      13: dup
+      14: iconst_1
+      15: aload_0
+      16: invokevirtual #60                 // Method getRegionLocation:()Lorg/apache/hadoop/hbase/ServerName;
+      19: aastore
+      20: invokestatic  #70                 // Method java/lang/String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      23: areturn
+
+  public java.lang.String toDescriptiveString();
+    Code:
+       0: ldc           #71                 // String %s, table=%s, region=%s
+       2: iconst_3
+       3: anewarray     #69                 // class java/lang/Object
+       6: dup
+       7: iconst_0
+       8: aload_0
+       9: invokevirtual #72                 // Method toShortString:()Ljava/lang/String;
+      12: aastore
+      13: dup
+      14: iconst_1
+      15: aload_0
+      16: invokevirtual #56                 // Method getTable:()Lorg/apache/hadoop/hbase/TableName;
+      19: aastore
+      20: dup
+      21: iconst_2
+      22: aload_0
+      23: invokevirtual #54                 // Method getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      26: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      31: aastore
+      32: invokestatic  #70                 // Method java/lang/String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      35: areturn
+
+  public void checkOnline() throws org.apache.hadoop.hbase.client.DoNotRetryRegionException;
+    Code:
+       0: aload_0
+       1: invokevirtual #54                 // Method getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+       4: astore_1
+       5: aload_0
+       6: getfield      #9                  // Field state:Lorg/apache/hadoop/hbase/master/RegionState$State;
+       9: astore_2
+      10: aload_2
+      11: getstatic     #74                 // Field org/apache/hadoop/hbase/master/RegionState$State.OPEN:Lorg/apache/hadoop/hbase/master/RegionState$State;
+      14: if_acmpeq     53
+      17: new           #75                 // class org/apache/hadoop/hbase/client/DoNotRetryRegionException
+      20: dup
+      21: new           #26                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      28: aload_1
+      29: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      34: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: ldc           #76                 // String  is no OPEN; state=
+      39: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: aload_2
+      43: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      46: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      49: invokespecial #77                 // Method org/apache/hadoop/hbase/client/DoNotRetryRegionException."<init>":(Ljava/lang/String;)V
+      52: athrow
+      53: aload_1
+      54: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isSplitParent:()Z
+      59: ifeq          94
+      62: new           #75                 // class org/apache/hadoop/hbase/client/DoNotRetryRegionException
+      65: dup
+      66: new           #26                 // class java/lang/StringBuilder
+      69: dup
+      70: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+      73: aload_1
+      74: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      79: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      82: ldc           #79                 // String  is not online (splitParent=true)
+      84: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      90: invokespecial #77                 // Method org/apache/hadoop/hbase/client/DoNotRetryRegionException."<init>":(Ljava/lang/String;)V
+      93: athrow
+      94: aload_1
+      95: invokeinterface #80,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isSplit:()Z
+     100: ifeq          135
+     103: new           #75                 // class org/apache/hadoop/hbase/client/DoNotRetryRegionException
+     106: dup
+     107: new           #26                 // class java/lang/StringBuilder
+     110: dup
+     111: invokespecial #27                 // Method java/lang/StringBuilder."<init>":()V
+     114: aload_1
+     115: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     120: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     123: ldc           #81                 // String  has split=true
+     125: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     128: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     131: invokespecial #77                 // Method org/apache/hadoop/hbase/client/DoNotRetryRegionException."<init>":(Ljava/lang/String;)V
+     134: athrow
+     135: aload_1
+     136: invokeinterface #82,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isOffline:()Z
+     141: ifeq          165
+     144: new           #75                 // class org/apache/hadoop/hbase/client/DoNotRetryRegionException
+     147: dup
+     148: new           #83                 // class org/apache/hadoop/hbase/client/RegionOfflineException
+     151: dup
+     152: aload_1
+     153: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     158: invokespecial #84                 // Method org/apache/hadoop/hbase/client/RegionOfflineException."<init>":(Ljava/lang/String;)V
+     161: invokespecial #85                 // Method org/apache/hadoop/hbase/client/DoNotRetryRegionException."<init>":(Ljava/lang/Throwable;)V
+     164: athrow
+     165: return
+
+  public void lock();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: invokeinterface #86,  1           // InterfaceMethod java/util/concurrent/locks/Lock.lock:()V
+       9: return
+
+  public void unlock();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field lock:Ljava/util/concurrent/locks/Lock;
+       4: invokeinterface #87,  1           // InterfaceMethod java/util/concurrent/locks/Lock.unlock:()V
+       9: return
+
+  public int compareTo(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #65                 // class org/apache/hadoop/hbase/master/assignment/RegionStateNode
+       5: invokevirtual #66                 // Method compareTo:(Lorg/apache/hadoop/hbase/master/assignment/RegionStateNode;)I
+       8: ireturn
+
+  static {};
+    Code:
+       0: ldc           #65                 // class org/apache/hadoop/hbase/master/assignment/RegionStateNode
+       2: invokevirtual #88                 // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #49                 // Field $assertionsDisabled:Z
+      16: ldc           #65                 // class org/apache/hadoop/hbase/master/assignment/RegionStateNode
+      18: invokestatic  #89                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      21: putstatic     #42                 // Field LOG:Lorg/slf4j/Logger;
+      24: return
+}

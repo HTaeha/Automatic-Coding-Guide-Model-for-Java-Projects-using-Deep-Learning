@@ -1,0 +1,91 @@
+Compiled from "NettyHBaseRpcConnectionHeaderHandler.java"
+public class org.apache.hadoop.hbase.security.NettyHBaseRpcConnectionHeaderHandler extends org.apache.hbase.thirdparty.io.netty.channel.SimpleChannelInboundHandler<org.apache.hbase.thirdparty.io.netty.buffer.ByteBuf> {
+  public org.apache.hadoop.hbase.security.NettyHBaseRpcConnectionHeaderHandler(org.apache.hbase.thirdparty.io.netty.util.concurrent.Promise<java.lang.Boolean>, org.apache.hadoop.conf.Configuration, org.apache.hbase.thirdparty.io.netty.buffer.ByteBuf);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hbase/thirdparty/io/netty/channel/SimpleChannelInboundHandler."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #2                  // Field saslPromise:Lorg/apache/hbase/thirdparty/io/netty/util/concurrent/Promise;
+       9: aload_0
+      10: aload_2
+      11: putfield      #3                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      14: aload_0
+      15: aload_3
+      16: putfield      #4                  // Field connectionHeaderWithLength:Lorg/apache/hbase/thirdparty/io/netty/buffer/ByteBuf;
+      19: return
+
+  protected void channelRead0(org.apache.hbase.thirdparty.io.netty.channel.ChannelHandlerContext, org.apache.hbase.thirdparty.io.netty.buffer.ByteBuf) throws java.lang.Exception;
+    Code:
+       0: aload_2
+       1: invokevirtual #5                  // Method org/apache/hbase/thirdparty/io/netty/buffer/ByteBuf.readInt:()I
+       4: istore_3
+       5: iload_3
+       6: newarray       byte
+       8: astore        4
+      10: aload_2
+      11: aload         4
+      13: invokevirtual #6                  // Method org/apache/hbase/thirdparty/io/netty/buffer/ByteBuf.readBytes:([B)Lorg/apache/hbase/thirdparty/io/netty/buffer/ByteBuf;
+      16: pop
+      17: aload         4
+      19: invokestatic  #7                  // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeaderResponse.parseFrom:([B)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeaderResponse;
+      22: astore        5
+      24: aload         5
+      26: invokevirtual #8                  // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeaderResponse.hasCryptoCipherMeta:()Z
+      29: ifeq          58
+      32: aload         5
+      34: invokevirtual #9                  // Method org/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$ConnectionHeaderResponse.getCryptoCipherMeta:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$CryptoCipherMeta;
+      37: aload_0
+      38: getfield      #3                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      41: invokestatic  #10                 // Method org/apache/hadoop/hbase/security/EncryptionUtil.createCryptoAES:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/RPCProtos$CryptoCipherMeta;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/io/crypto/aes/CryptoAES;
+      44: astore        6
+      46: aload_0
+      47: aload_1
+      48: invokeinterface #11,  1           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/channel/ChannelHandlerContext.pipeline:()Lorg/apache/hbase/thirdparty/io/netty/channel/ChannelPipeline;
+      53: aload         6
+      55: invokespecial #12                 // Method setupCryptoAESHandler:(Lorg/apache/hbase/thirdparty/io/netty/channel/ChannelPipeline;Lorg/apache/hadoop/hbase/io/crypto/aes/CryptoAES;)V
+      58: aload_0
+      59: getfield      #2                  // Field saslPromise:Lorg/apache/hbase/thirdparty/io/netty/util/concurrent/Promise;
+      62: iconst_1
+      63: invokestatic  #13                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      66: invokeinterface #14,  2           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/util/concurrent/Promise.setSuccess:(Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/io/netty/util/concurrent/Promise;
+      71: pop
+      72: return
+
+  public void handlerAdded(org.apache.hbase.thirdparty.io.netty.channel.ChannelHandlerContext);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #4                  // Field connectionHeaderWithLength:Lorg/apache/hbase/thirdparty/io/netty/buffer/ByteBuf;
+       5: invokevirtual #15                 // Method org/apache/hbase/thirdparty/io/netty/buffer/ByteBuf.retainedDuplicate:()Lorg/apache/hbase/thirdparty/io/netty/buffer/ByteBuf;
+       8: invokeinterface #16,  2           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/channel/ChannelHandlerContext.writeAndFlush:(Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/io/netty/channel/ChannelFuture;
+      13: pop
+      14: goto          24
+      17: astore_2
+      18: aload_0
+      19: aload_1
+      20: aload_2
+      21: invokevirtual #18                 // Method exceptionCaught:(Lorg/apache/hbase/thirdparty/io/netty/channel/ChannelHandlerContext;Ljava/lang/Throwable;)V
+      24: return
+    Exception table:
+       from    to  target type
+           0    14    17   Class java/lang/Exception
+
+  public void exceptionCaught(org.apache.hbase.thirdparty.io.netty.channel.ChannelHandlerContext, java.lang.Throwable);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field saslPromise:Lorg/apache/hbase/thirdparty/io/netty/util/concurrent/Promise;
+       4: aload_2
+       5: invokeinterface #19,  2           // InterfaceMethod org/apache/hbase/thirdparty/io/netty/util/concurrent/Promise.tryFailure:(Ljava/lang/Throwable;)Z
+      10: pop
+      11: return
+
+  protected void channelRead0(org.apache.hbase.thirdparty.io.netty.channel.ChannelHandlerContext, java.lang.Object) throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: checkcast     #31                 // class org/apache/hbase/thirdparty/io/netty/buffer/ByteBuf
+       6: invokevirtual #32                 // Method channelRead0:(Lorg/apache/hbase/thirdparty/io/netty/channel/ChannelHandlerContext;Lorg/apache/hbase/thirdparty/io/netty/buffer/ByteBuf;)V
+       9: return
+}

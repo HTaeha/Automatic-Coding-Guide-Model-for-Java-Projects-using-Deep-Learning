@@ -1,0 +1,91 @@
+Compiled from "ConnectionCache.java"
+class org.apache.hadoop.hbase.util.ConnectionCache$ConnectionInfo {
+  final org.apache.hadoop.hbase.client.Connection connection;
+
+  final java.lang.String userName;
+
+  volatile org.apache.hadoop.hbase.client.Admin admin;
+
+  final org.apache.hadoop.hbase.util.ConnectionCache this$0;
+
+  org.apache.hadoop.hbase.util.ConnectionCache$ConnectionInfo(org.apache.hadoop.hbase.util.ConnectionCache, org.apache.hadoop.hbase.client.Connection, java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/ConnectionCache;
+       5: aload_0
+       6: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       9: aload_0
+      10: invokestatic  #3                  // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      13: putfield      #4                  // Field lastAccessTime:J
+      16: aload_0
+      17: aload_2
+      18: putfield      #5                  // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      21: aload_0
+      22: iconst_0
+      23: putfield      #6                  // Field closed:Z
+      26: aload_0
+      27: aload_3
+      28: putfield      #7                  // Field userName:Ljava/lang/String;
+      31: return
+
+  synchronized boolean updateAccessTime();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field closed:Z
+       4: ifeq          9
+       7: iconst_0
+       8: ireturn
+       9: aload_0
+      10: getfield      #5                  // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      13: invokeinterface #8,  1            // InterfaceMethod org/apache/hadoop/hbase/client/Connection.isAborted:()Z
+      18: ifne          33
+      21: aload_0
+      22: getfield      #5                  // Field connection:Lorg/apache/hadoop/hbase/client/Connection;
+      25: invokeinterface #9,  1            // InterfaceMethod org/apache/hadoop/hbase/client/Connection.isClosed:()Z
+      30: ifeq          62
+      33: invokestatic  #10                 // Method org/apache/hadoop/hbase/util/ConnectionCache.access$200:()Lorg/slf4j/Logger;
+      36: ldc           #11                 // String Unexpected: cached Connection is aborted/closed, removed from cache
+      38: invokeinterface #12,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      43: aload_0
+      44: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/ConnectionCache;
+      47: invokestatic  #13                 // Method org/apache/hadoop/hbase/util/ConnectionCache.access$100:(Lorg/apache/hadoop/hbase/util/ConnectionCache;)Ljava/util/Map;
+      50: aload_0
+      51: getfield      #7                  // Field userName:Ljava/lang/String;
+      54: invokeinterface #14,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      59: pop
+      60: iconst_0
+      61: ireturn
+      62: aload_0
+      63: invokestatic  #3                  // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      66: putfield      #4                  // Field lastAccessTime:J
+      69: iconst_1
+      70: ireturn
+
+  synchronized boolean timedOut(int);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field lastAccessTime:J
+       4: iload_1
+       5: i2l
+       6: ladd
+       7: lstore_2
+       8: invokestatic  #3                  // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+      11: lload_2
+      12: lcmp
+      13: ifle          40
+      16: aload_0
+      17: getfield      #1                  // Field this$0:Lorg/apache/hadoop/hbase/util/ConnectionCache;
+      20: invokestatic  #13                 // Method org/apache/hadoop/hbase/util/ConnectionCache.access$100:(Lorg/apache/hadoop/hbase/util/ConnectionCache;)Ljava/util/Map;
+      23: aload_0
+      24: getfield      #7                  // Field userName:Ljava/lang/String;
+      27: invokeinterface #14,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      32: pop
+      33: aload_0
+      34: iconst_1
+      35: putfield      #6                  // Field closed:Z
+      38: iconst_1
+      39: ireturn
+      40: iconst_0
+      41: ireturn
+}

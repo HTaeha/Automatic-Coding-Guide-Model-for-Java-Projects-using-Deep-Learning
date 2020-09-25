@@ -1,0 +1,304 @@
+Compiled from "MasterQuotasObserver.java"
+public class org.apache.hadoop.hbase.quotas.MasterQuotasObserver implements org.apache.hadoop.hbase.coprocessor.MasterCoprocessor,org.apache.hadoop.hbase.coprocessor.MasterObserver {
+  public static final java.lang.String REMOVE_QUOTA_ON_TABLE_DELETE;
+
+  public static final boolean REMOVE_QUOTA_ON_TABLE_DELETE_DEFAULT;
+
+  public org.apache.hadoop.hbase.quotas.MasterQuotasObserver();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #2                  // Field quotasEnabled:Z
+       9: return
+
+  public java.util.Optional<org.apache.hadoop.hbase.coprocessor.MasterObserver> getMasterObserver();
+    Code:
+       0: aload_0
+       1: invokestatic  #3                  // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+       4: areturn
+
+  public void start(org.apache.hadoop.hbase.CoprocessorEnvironment) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #4                  // Field cpEnv:Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+       5: aload_0
+       6: aload_0
+       7: getfield      #4                  // Field cpEnv:Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      10: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/CoprocessorEnvironment.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      15: putfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      18: aload_0
+      19: aload_0
+      20: getfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      23: invokestatic  #7                  // Method org/apache/hadoop/hbase/quotas/QuotaUtil.isQuotaEnabled:(Lorg/apache/hadoop/conf/Configuration;)Z
+      26: putfield      #2                  // Field quotasEnabled:Z
+      29: return
+
+  public void postDeleteTable(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment>, org.apache.hadoop.hbase.TableName) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field quotasEnabled:Z
+       4: ifne          8
+       7: return
+       8: aload_1
+       9: invokeinterface #8,  1            // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      14: checkcast     #9                  // class org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment
+      17: invokeinterface #10,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      22: astore_3
+      23: aload_3
+      24: aload_2
+      25: invokestatic  #11                 // Method org/apache/hadoop/hbase/quotas/QuotaUtil.getTableQuota:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas;
+      28: astore        4
+      30: aload         4
+      32: ifnull        293
+      35: aload         4
+      37: invokevirtual #12                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas.hasSpace:()Z
+      40: ifeq          164
+      43: aload_2
+      44: invokestatic  #13                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.removeTableSpaceLimit:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      47: astore        5
+      49: aload_3
+      50: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      55: astore        6
+      57: aconst_null
+      58: astore        7
+      60: aload         6
+      62: aload         5
+      64: invokeinterface #15,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      69: aload         6
+      71: ifnull        164
+      74: aload         7
+      76: ifnull        101
+      79: aload         6
+      81: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+      86: goto          164
+      89: astore        8
+      91: aload         7
+      93: aload         8
+      95: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      98: goto          164
+     101: aload         6
+     103: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     108: goto          164
+     111: astore        8
+     113: aload         8
+     115: astore        7
+     117: aload         8
+     119: athrow
+     120: astore        9
+     122: aload         6
+     124: ifnull        161
+     127: aload         7
+     129: ifnull        154
+     132: aload         6
+     134: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     139: goto          161
+     142: astore        10
+     144: aload         7
+     146: aload         10
+     148: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     151: goto          161
+     154: aload         6
+     156: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     161: aload         9
+     163: athrow
+     164: aload         4
+     166: invokevirtual #19                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas.hasThrottle:()Z
+     169: ifeq          293
+     172: aload_2
+     173: invokestatic  #20                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     176: astore        5
+     178: aload_3
+     179: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     184: astore        6
+     186: aconst_null
+     187: astore        7
+     189: aload         6
+     191: aload         5
+     193: invokeinterface #15,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     198: aload         6
+     200: ifnull        293
+     203: aload         7
+     205: ifnull        230
+     208: aload         6
+     210: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     215: goto          293
+     218: astore        8
+     220: aload         7
+     222: aload         8
+     224: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     227: goto          293
+     230: aload         6
+     232: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     237: goto          293
+     240: astore        8
+     242: aload         8
+     244: astore        7
+     246: aload         8
+     248: athrow
+     249: astore        11
+     251: aload         6
+     253: ifnull        290
+     256: aload         7
+     258: ifnull        283
+     261: aload         6
+     263: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     268: goto          290
+     271: astore        12
+     273: aload         7
+     275: aload         12
+     277: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     280: goto          290
+     283: aload         6
+     285: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     290: aload         11
+     292: athrow
+     293: return
+    Exception table:
+       from    to  target type
+          79    86    89   Class java/lang/Throwable
+          60    69   111   Class java/lang/Throwable
+          60    69   120   any
+         132   139   142   Class java/lang/Throwable
+         111   122   120   any
+         208   215   218   Class java/lang/Throwable
+         189   198   240   Class java/lang/Throwable
+         189   198   249   any
+         261   268   271   Class java/lang/Throwable
+         240   251   249   any
+
+  public void postDeleteNamespace(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment>, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field quotasEnabled:Z
+       4: ifne          8
+       7: return
+       8: aload_1
+       9: invokeinterface #8,  1            // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      14: checkcast     #9                  // class org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment
+      17: invokeinterface #10,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      22: astore_3
+      23: aload_3
+      24: aload_2
+      25: invokestatic  #21                 // Method org/apache/hadoop/hbase/quotas/QuotaUtil.getNamespaceQuota:(Lorg/apache/hadoop/hbase/client/Connection;Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas;
+      28: astore        4
+      30: aload         4
+      32: ifnull        293
+      35: aload         4
+      37: invokevirtual #12                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas.hasSpace:()Z
+      40: ifeq          164
+      43: aload_2
+      44: invokestatic  #22                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.removeNamespaceSpaceLimit:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      47: astore        5
+      49: aload_3
+      50: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      55: astore        6
+      57: aconst_null
+      58: astore        7
+      60: aload         6
+      62: aload         5
+      64: invokeinterface #15,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      69: aload         6
+      71: ifnull        164
+      74: aload         7
+      76: ifnull        101
+      79: aload         6
+      81: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+      86: goto          164
+      89: astore        8
+      91: aload         7
+      93: aload         8
+      95: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      98: goto          164
+     101: aload         6
+     103: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     108: goto          164
+     111: astore        8
+     113: aload         8
+     115: astore        7
+     117: aload         8
+     119: athrow
+     120: astore        9
+     122: aload         6
+     124: ifnull        161
+     127: aload         7
+     129: ifnull        154
+     132: aload         6
+     134: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     139: goto          161
+     142: astore        10
+     144: aload         7
+     146: aload         10
+     148: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     151: goto          161
+     154: aload         6
+     156: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     161: aload         9
+     163: athrow
+     164: aload         4
+     166: invokevirtual #19                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas.hasThrottle:()Z
+     169: ifeq          293
+     172: aload_2
+     173: invokestatic  #23                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleNamespace:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     176: astore        5
+     178: aload_3
+     179: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     184: astore        6
+     186: aconst_null
+     187: astore        7
+     189: aload         6
+     191: aload         5
+     193: invokeinterface #15,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     198: aload         6
+     200: ifnull        293
+     203: aload         7
+     205: ifnull        230
+     208: aload         6
+     210: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     215: goto          293
+     218: astore        8
+     220: aload         7
+     222: aload         8
+     224: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     227: goto          293
+     230: aload         6
+     232: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     237: goto          293
+     240: astore        8
+     242: aload         8
+     244: astore        7
+     246: aload         8
+     248: athrow
+     249: astore        11
+     251: aload         6
+     253: ifnull        290
+     256: aload         7
+     258: ifnull        283
+     261: aload         6
+     263: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     268: goto          290
+     271: astore        12
+     273: aload         7
+     275: aload         12
+     277: invokevirtual #18                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     280: goto          290
+     283: aload         6
+     285: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     290: aload         11
+     292: athrow
+     293: return
+    Exception table:
+       from    to  target type
+          79    86    89   Class java/lang/Throwable
+          60    69   111   Class java/lang/Throwable
+          60    69   120   any
+         132   139   142   Class java/lang/Throwable
+         111   122   120   any
+         208   215   218   Class java/lang/Throwable
+         189   198   240   Class java/lang/Throwable
+         189   198   249   any
+         261   268   271   Class java/lang/Throwable
+         240   251   249   any
+}

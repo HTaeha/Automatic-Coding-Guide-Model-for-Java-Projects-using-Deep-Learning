@@ -1,0 +1,467 @@
+Compiled from "TinyLfuBlockCache.java"
+public final class org.apache.hadoop.hbase.io.hfile.TinyLfuBlockCache implements org.apache.hadoop.hbase.io.hfile.FirstLevelBlockCache {
+  final com.github.benmanes.caffeine.cache.Cache<org.apache.hadoop.hbase.io.hfile.BlockCacheKey, org.apache.hadoop.hbase.io.hfile.Cacheable> cache;
+
+  public org.apache.hadoop.hbase.io.hfile.TinyLfuBlockCache(long, long, java.util.concurrent.Executor, org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: lload_3
+       3: aload         6
+       5: ldc           #4                  // String hbase.tinylfu.max.block.size
+       7: ldc2_w        #5                  // long 16777216l
+      10: invokevirtual #7                  // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      13: aload         5
+      15: invokespecial #8                  // Method "<init>":(JJJLjava/util/concurrent/Executor;)V
+      18: return
+
+  public org.apache.hadoop.hbase.io.hfile.TinyLfuBlockCache(long, long, long, java.util.concurrent.Executor);
+    Code:
+       0: aload_0
+       1: invokespecial #9                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: invokestatic  #10                 // Method com/github/benmanes/caffeine/cache/Caffeine.newBuilder:()Lcom/github/benmanes/caffeine/cache/Caffeine;
+       8: aload         7
+      10: invokevirtual #11                 // Method com/github/benmanes/caffeine/cache/Caffeine.executor:(Ljava/util/concurrent/Executor;)Lcom/github/benmanes/caffeine/cache/Caffeine;
+      13: lload_1
+      14: invokevirtual #12                 // Method com/github/benmanes/caffeine/cache/Caffeine.maximumWeight:(J)Lcom/github/benmanes/caffeine/cache/Caffeine;
+      17: new           #13                 // class org/apache/hadoop/hbase/io/hfile/TinyLfuBlockCache$EvictionListener
+      20: dup
+      21: aload_0
+      22: aconst_null
+      23: invokespecial #14                 // Method org/apache/hadoop/hbase/io/hfile/TinyLfuBlockCache$EvictionListener."<init>":(Lorg/apache/hadoop/hbase/io/hfile/TinyLfuBlockCache;Lorg/apache/hadoop/hbase/io/hfile/TinyLfuBlockCache$1;)V
+      26: invokevirtual #15                 // Method com/github/benmanes/caffeine/cache/Caffeine.removalListener:(Lcom/github/benmanes/caffeine/cache/RemovalListener;)Lcom/github/benmanes/caffeine/cache/Caffeine;
+      29: invokedynamic #16,  0             // InvokeDynamic #0:weigh:()Lcom/github/benmanes/caffeine/cache/Weigher;
+      34: invokevirtual #17                 // Method com/github/benmanes/caffeine/cache/Caffeine.weigher:(Lcom/github/benmanes/caffeine/cache/Weigher;)Lcom/github/benmanes/caffeine/cache/Caffeine;
+      37: ldc2_w        #18                 // double 1.2d
+      40: lload_1
+      41: l2d
+      42: dmul
+      43: lload_3
+      44: l2d
+      45: ddiv
+      46: invokestatic  #20                 // Method java/lang/Math.ceil:(D)D
+      49: d2i
+      50: invokevirtual #21                 // Method com/github/benmanes/caffeine/cache/Caffeine.initialCapacity:(I)Lcom/github/benmanes/caffeine/cache/Caffeine;
+      53: invokevirtual #22                 // Method com/github/benmanes/caffeine/cache/Caffeine.build:()Lcom/github/benmanes/caffeine/cache/Cache;
+      56: putfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+      59: aload_0
+      60: lload         5
+      62: putfield      #24                 // Field maxBlockSize:J
+      65: aload_0
+      66: aload_0
+      67: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+      70: invokeinterface #25,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.policy:()Lcom/github/benmanes/caffeine/cache/Policy;
+      75: invokeinterface #26,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Policy.eviction:()Ljava/util/Optional;
+      80: invokevirtual #27                 // Method java/util/Optional.get:()Ljava/lang/Object;
+      83: checkcast     #28                 // class com/github/benmanes/caffeine/cache/Policy$Eviction
+      86: putfield      #29                 // Field policy:Lcom/github/benmanes/caffeine/cache/Policy$Eviction;
+      89: aload_0
+      90: new           #30                 // class org/apache/hadoop/hbase/io/hfile/CacheStats
+      93: dup
+      94: aload_0
+      95: invokevirtual #31                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      98: invokevirtual #32                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+     101: invokespecial #33                 // Method org/apache/hadoop/hbase/io/hfile/CacheStats."<init>":(Ljava/lang/String;)V
+     104: putfield      #34                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     107: aload_0
+     108: new           #35                 // class org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder
+     111: dup
+     112: invokespecial #36                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder."<init>":()V
+     115: ldc           #37                 // String TinyLfuBlockCacheStatsExecutor
+     117: invokevirtual #38                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setNameFormat:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+     120: iconst_1
+     121: invokevirtual #39                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setDaemon:(Z)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+     124: invokevirtual #40                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.build:()Ljava/util/concurrent/ThreadFactory;
+     127: invokestatic  #41                 // Method java/util/concurrent/Executors.newSingleThreadScheduledExecutor:(Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;
+     130: putfield      #42                 // Field statsThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+     133: aload_0
+     134: getfield      #42                 // Field statsThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+     137: aload_0
+     138: invokedynamic #43,  0             // InvokeDynamic #1:run:(Lorg/apache/hadoop/hbase/io/hfile/TinyLfuBlockCache;)Ljava/lang/Runnable;
+     143: ldc2_w        #44                 // long 300l
+     146: ldc2_w        #44                 // long 300l
+     149: getstatic     #46                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     152: invokeinterface #47,  7           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+     157: pop
+     158: return
+
+  public void setVictimCache(org.apache.hadoop.hbase.io.hfile.BlockCache);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+       4: ifnull        17
+       7: new           #48                 // class java/lang/IllegalArgumentException
+      10: dup
+      11: ldc           #49                 // String The victim cache has already been set
+      13: invokespecial #50                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_0
+      18: aload_1
+      19: invokestatic  #51                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      22: checkcast     #52                 // class org/apache/hadoop/hbase/io/hfile/BlockCache
+      25: putfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      28: return
+
+  public long size();
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field policy:Lcom/github/benmanes/caffeine/cache/Policy$Eviction;
+       4: invokeinterface #53,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Policy$Eviction.getMaximum:()J
+       9: lreturn
+
+  public long getFreeSize();
+    Code:
+       0: aload_0
+       1: invokevirtual #54                 // Method size:()J
+       4: aload_0
+       5: invokevirtual #55                 // Method getCurrentSize:()J
+       8: lsub
+       9: lreturn
+
+  public long getCurrentSize();
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field policy:Lcom/github/benmanes/caffeine/cache/Policy$Eviction;
+       4: invokeinterface #56,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Policy$Eviction.weightedSize:()Ljava/util/OptionalLong;
+       9: invokevirtual #57                 // Method java/util/OptionalLong.getAsLong:()J
+      12: lreturn
+
+  public long getBlockCount();
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+       4: invokeinterface #58,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.estimatedSize:()J
+       9: lreturn
+
+  public long heapSize();
+    Code:
+       0: aload_0
+       1: invokevirtual #55                 // Method getCurrentSize:()J
+       4: lreturn
+
+  public void setMaxSize(long);
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field policy:Lcom/github/benmanes/caffeine/cache/Policy$Eviction;
+       4: lload_1
+       5: invokeinterface #59,  3           // InterfaceMethod com/github/benmanes/caffeine/cache/Policy$Eviction.setMaximum:(J)V
+      10: return
+
+  public boolean containsBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey);
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+       4: invokeinterface #60,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.asMap:()Ljava/util/concurrent/ConcurrentMap;
+       9: aload_1
+      10: invokeinterface #61,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.containsKey:(Ljava/lang/Object;)Z
+      15: ireturn
+
+  public org.apache.hadoop.hbase.io.hfile.Cacheable getBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey, boolean, boolean, boolean);
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+       4: aload_1
+       5: invokeinterface #62,  2           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.getIfPresent:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #63                 // class org/apache/hadoop/hbase/io/hfile/Cacheable
+      13: astore        5
+      15: aload         5
+      17: ifnonnull     118
+      20: iload_3
+      21: ifeq          26
+      24: aconst_null
+      25: areturn
+      26: iload         4
+      28: ifeq          47
+      31: aload_0
+      32: getfield      #34                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+      35: iload_2
+      36: aload_1
+      37: invokevirtual #64                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.isPrimary:()Z
+      40: aload_1
+      41: invokevirtual #65                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      44: invokevirtual #66                 // Method org/apache/hadoop/hbase/io/hfile/CacheStats.miss:(ZZLorg/apache/hadoop/hbase/io/hfile/BlockType;)V
+      47: aload_0
+      48: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      51: ifnull        139
+      54: aload_0
+      55: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      58: aload_1
+      59: iload_2
+      60: iload_3
+      61: iload         4
+      63: invokeinterface #67,  5           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.getBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;ZZZ)Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+      68: astore        5
+      70: aload         5
+      72: ifnull        139
+      75: iload_2
+      76: ifeq          139
+      79: aload         5
+      81: instanceof    #68                 // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      84: ifeq          108
+      87: aload         5
+      89: checkcast     #68                 // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      92: invokevirtual #69                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.usesSharedMemory:()Z
+      95: ifeq          108
+      98: aload         5
+     100: checkcast     #68                 // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+     103: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.deepClone:()Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;
+     106: astore        5
+     108: aload_0
+     109: aload_1
+     110: aload         5
+     112: invokevirtual #71                 // Method cacheBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+     115: goto          139
+     118: iload         4
+     120: ifeq          139
+     123: aload_0
+     124: getfield      #34                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     127: iload_2
+     128: aload_1
+     129: invokevirtual #64                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.isPrimary:()Z
+     132: aload_1
+     133: invokevirtual #65                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     136: invokevirtual #72                 // Method org/apache/hadoop/hbase/io/hfile/CacheStats.hit:(ZZLorg/apache/hadoop/hbase/io/hfile/BlockType;)V
+     139: aload         5
+     141: areturn
+
+  public void cacheBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey, org.apache.hadoop.hbase.io.hfile.Cacheable, boolean);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokevirtual #71                 // Method cacheBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+       6: return
+
+  public void cacheBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey, org.apache.hadoop.hbase.io.hfile.Cacheable);
+    Code:
+       0: aload_2
+       1: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/Cacheable.heapSize:()J
+       6: aload_0
+       7: getfield      #24                 // Field maxBlockSize:J
+      10: lcmp
+      11: ifle          88
+      14: aload_0
+      15: getfield      #34                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+      18: invokevirtual #74                 // Method org/apache/hadoop/hbase/io/hfile/CacheStats.failInsert:()J
+      21: ldc2_w        #75                 // long 50l
+      24: lrem
+      25: lconst_0
+      26: lcmp
+      27: ifne          99
+      30: getstatic     #77                 // Field LOG:Lorg/slf4j/Logger;
+      33: ldc           #78                 // String Trying to cache too large a block %s @ %,d is %,d which is larger than %,d
+      35: iconst_4
+      36: anewarray     #79                 // class java/lang/Object
+      39: dup
+      40: iconst_0
+      41: aload_1
+      42: invokevirtual #80                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getHfileName:()Ljava/lang/String;
+      45: aastore
+      46: dup
+      47: iconst_1
+      48: aload_1
+      49: invokevirtual #81                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getOffset:()J
+      52: invokestatic  #82                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      55: aastore
+      56: dup
+      57: iconst_2
+      58: aload_2
+      59: invokeinterface #73,  1           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/Cacheable.heapSize:()J
+      64: invokestatic  #82                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      67: aastore
+      68: dup
+      69: iconst_3
+      70: ldc2_w        #5                  // long 16777216l
+      73: invokestatic  #82                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      76: aastore
+      77: invokestatic  #83                 // Method java/lang/String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      80: invokeinterface #84,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      85: goto          99
+      88: aload_0
+      89: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+      92: aload_1
+      93: aload_2
+      94: invokeinterface #85,  3           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.put:(Ljava/lang/Object;Ljava/lang/Object;)V
+      99: return
+
+  public boolean evictBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey);
+    Code:
+       0: aload_0
+       1: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+       4: invokeinterface #60,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.asMap:()Ljava/util/concurrent/ConcurrentMap;
+       9: aload_1
+      10: invokeinterface #86,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      15: checkcast     #63                 // class org/apache/hadoop/hbase/io/hfile/Cacheable
+      18: astore_2
+      19: aload_2
+      20: ifnull        27
+      23: iconst_1
+      24: goto          28
+      27: iconst_0
+      28: ireturn
+
+  public int evictBlocksByHfileName(java.lang.String);
+    Code:
+       0: iconst_0
+       1: istore_2
+       2: aload_0
+       3: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+       6: invokeinterface #60,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.asMap:()Ljava/util/concurrent/ConcurrentMap;
+      11: invokeinterface #87,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.keySet:()Ljava/util/Set;
+      16: invokeinterface #88,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      21: astore_3
+      22: aload_3
+      23: invokeinterface #89,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      28: ifeq          69
+      31: aload_3
+      32: invokeinterface #90,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      37: checkcast     #91                 // class org/apache/hadoop/hbase/io/hfile/BlockCacheKey
+      40: astore        4
+      42: aload         4
+      44: invokevirtual #80                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getHfileName:()Ljava/lang/String;
+      47: aload_1
+      48: invokevirtual #92                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      51: ifeq          66
+      54: aload_0
+      55: aload         4
+      57: invokevirtual #93                 // Method evictBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;)Z
+      60: ifeq          66
+      63: iinc          2, 1
+      66: goto          22
+      69: aload_0
+      70: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      73: ifnull        89
+      76: iload_2
+      77: aload_0
+      78: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      81: aload_1
+      82: invokeinterface #94,  2           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.evictBlocksByHfileName:(Ljava/lang/String;)I
+      87: iadd
+      88: istore_2
+      89: iload_2
+      90: ireturn
+
+  public org.apache.hadoop.hbase.io.hfile.CacheStats getStats();
+    Code:
+       0: aload_0
+       1: getfield      #34                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+       4: areturn
+
+  public void shutdown();
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+       4: ifnull        16
+       7: aload_0
+       8: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      11: invokeinterface #95,  1           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.shutdown:()V
+      16: aload_0
+      17: getfield      #42                 // Field statsThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      20: invokeinterface #96,  1           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.shutdown:()V
+      25: return
+
+  public org.apache.hadoop.hbase.io.hfile.BlockCache[] getBlockCaches();
+    Code:
+       0: aconst_null
+       1: areturn
+
+  public java.util.Iterator<org.apache.hadoop.hbase.io.hfile.CachedBlock> iterator();
+    Code:
+       0: invokestatic  #97                 // Method java/lang/System.nanoTime:()J
+       3: lstore_1
+       4: aload_0
+       5: getfield      #23                 // Field cache:Lcom/github/benmanes/caffeine/cache/Cache;
+       8: invokeinterface #60,  1           // InterfaceMethod com/github/benmanes/caffeine/cache/Cache.asMap:()Ljava/util/concurrent/ConcurrentMap;
+      13: invokeinterface #98,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.entrySet:()Ljava/util/Set;
+      18: invokeinterface #99,  1           // InterfaceMethod java/util/Set.stream:()Ljava/util/stream/Stream;
+      23: lload_1
+      24: invokedynamic #100,  0            // InvokeDynamic #2:apply:(J)Ljava/util/function/Function;
+      29: invokeinterface #101,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      34: invokeinterface #102,  1          // InterfaceMethod java/util/stream/Stream.iterator:()Ljava/util/Iterator;
+      39: areturn
+
+  public void returnBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey, org.apache.hadoop.hbase.io.hfile.Cacheable);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+       4: ifnull        18
+       7: aload_0
+       8: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      11: aload_1
+      12: aload_2
+      13: invokeinterface #103,  3          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.returnBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+      18: return
+
+  public java.lang.String toString();
+    Code:
+       0: aload_0
+       1: invokestatic  #137                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects.toStringHelper:(Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+       4: ldc           #138                // String blockCount
+       6: aload_0
+       7: invokevirtual #114                // Method getBlockCount:()J
+      10: invokevirtual #139                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;J)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      13: ldc           #140                // String currentSize
+      15: aload_0
+      16: invokevirtual #55                 // Method getCurrentSize:()J
+      19: invokevirtual #139                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;J)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      22: ldc           #141                // String freeSize
+      24: aload_0
+      25: invokevirtual #111                // Method getFreeSize:()J
+      28: invokevirtual #139                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;J)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      31: ldc           #142                // String maxSize
+      33: aload_0
+      34: invokevirtual #54                 // Method size:()J
+      37: invokevirtual #139                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;J)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      40: ldc           #143                // String heapSize
+      42: aload_0
+      43: invokevirtual #108                // Method heapSize:()J
+      46: invokevirtual #139                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;J)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      49: ldc           #144                // String victimCache
+      51: aload_0
+      52: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      55: ifnull        62
+      58: iconst_1
+      59: goto          63
+      62: iconst_0
+      63: invokevirtual #145                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Z)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      66: invokevirtual #146                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.toString:()Ljava/lang/String;
+      69: areturn
+
+  public long getMaxSize();
+    Code:
+       0: aload_0
+       1: invokevirtual #54                 // Method size:()J
+       4: lreturn
+
+  public long getCurrentDataSize();
+    Code:
+       0: aload_0
+       1: invokevirtual #55                 // Method getCurrentSize:()J
+       4: lreturn
+
+  public long getDataBlockCount();
+    Code:
+       0: aload_0
+       1: invokevirtual #114                // Method getBlockCount:()J
+       4: lreturn
+
+  static void access$100(org.apache.hadoop.hbase.io.hfile.TinyLfuBlockCache);
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method recordEviction:()V
+       4: return
+
+  static org.apache.hadoop.hbase.io.hfile.BlockCache access$200(org.apache.hadoop.hbase.io.hfile.TinyLfuBlockCache);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field victimCache:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #3                  // class org/apache/hadoop/hbase/io/hfile/TinyLfuBlockCache
+       2: invokestatic  #160                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #77                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

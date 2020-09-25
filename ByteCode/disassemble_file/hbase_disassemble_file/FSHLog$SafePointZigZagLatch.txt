@@ -1,0 +1,74 @@
+Compiled from "FSHLog.java"
+class org.apache.hadoop.hbase.regionserver.wal.FSHLog$SafePointZigZagLatch {
+  org.apache.hadoop.hbase.regionserver.wal.FSHLog$SafePointZigZagLatch();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/CountDownLatch
+       8: dup
+       9: iconst_1
+      10: invokespecial #3                  // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+      13: putfield      #4                  // Field safePointAttainedLatch:Ljava/util/concurrent/CountDownLatch;
+      16: aload_0
+      17: new           #2                  // class java/util/concurrent/CountDownLatch
+      20: dup
+      21: iconst_1
+      22: invokespecial #3                  // Method java/util/concurrent/CountDownLatch."<init>":(I)V
+      25: putfield      #5                  // Field safePointReleasedLatch:Ljava/util/concurrent/CountDownLatch;
+      28: return
+
+  org.apache.hadoop.hbase.regionserver.wal.SyncFuture waitSafePoint(org.apache.hadoop.hbase.regionserver.wal.SyncFuture) throws java.lang.InterruptedException, org.apache.hadoop.hbase.regionserver.wal.FailedSyncBeforeLogCloseException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field safePointAttainedLatch:Ljava/util/concurrent/CountDownLatch;
+       4: lconst_1
+       5: getstatic     #10                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+       8: invokevirtual #11                 // Method java/util/concurrent/CountDownLatch.await:(JLjava/util/concurrent/TimeUnit;)Z
+      11: ifne          22
+      14: aload_0
+      15: aload_1
+      16: invokespecial #12                 // Method checkIfSyncFailed:(Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;)V
+      19: goto          0
+      22: aload_0
+      23: aload_1
+      24: invokespecial #12                 // Method checkIfSyncFailed:(Lorg/apache/hadoop/hbase/regionserver/wal/SyncFuture;)V
+      27: aload_1
+      28: areturn
+
+  void safePointAttained() throws java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field safePointAttainedLatch:Ljava/util/concurrent/CountDownLatch;
+       4: invokevirtual #13                 // Method java/util/concurrent/CountDownLatch.countDown:()V
+       7: aload_0
+       8: getfield      #5                  // Field safePointReleasedLatch:Ljava/util/concurrent/CountDownLatch;
+      11: invokevirtual #14                 // Method java/util/concurrent/CountDownLatch.await:()V
+      14: return
+
+  void releaseSafePoint();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field safePointReleasedLatch:Ljava/util/concurrent/CountDownLatch;
+       4: invokevirtual #13                 // Method java/util/concurrent/CountDownLatch.countDown:()V
+       7: return
+
+  boolean isCocked();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field safePointAttainedLatch:Ljava/util/concurrent/CountDownLatch;
+       4: invokevirtual #15                 // Method java/util/concurrent/CountDownLatch.getCount:()J
+       7: lconst_0
+       8: lcmp
+       9: ifle          28
+      12: aload_0
+      13: getfield      #5                  // Field safePointReleasedLatch:Ljava/util/concurrent/CountDownLatch;
+      16: invokevirtual #15                 // Method java/util/concurrent/CountDownLatch.getCount:()J
+      19: lconst_0
+      20: lcmp
+      21: ifle          28
+      24: iconst_1
+      25: goto          29
+      28: iconst_0
+      29: ireturn
+}

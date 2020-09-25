@@ -1,0 +1,1317 @@
+Compiled from "TestBucketCache.java"
+public class org.apache.hadoop.hbase.io.hfile.bucket.TestBucketCache {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public int constructedBlockSize;
+
+  public int[] constructedBlockSizes;
+
+  org.apache.hadoop.hbase.io.hfile.bucket.BucketCache cache;
+
+  final int CACHE_SIZE;
+
+  final int NUM_BLOCKS;
+
+  final int BLOCK_SIZE;
+
+  final int NUM_THREADS;
+
+  final int NUM_QUERIES;
+
+  final long capacitySize;
+
+  final int writeThreads;
+
+  final int writerQLen;
+
+  java.lang.String ioEngineName;
+
+  java.lang.String persistencePath;
+
+  public org.apache.hadoop.hbase.io.hfile.bucket.TestBucketCache();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: ldc           #2                  // int 1000000
+       7: putfield      #3                  // Field CACHE_SIZE:I
+      10: aload_0
+      11: bipush        100
+      13: putfield      #4                  // Field NUM_BLOCKS:I
+      16: aload_0
+      17: sipush        10000
+      20: putfield      #6                  // Field BLOCK_SIZE:I
+      23: aload_0
+      24: bipush        100
+      26: putfield      #7                  // Field NUM_THREADS:I
+      29: aload_0
+      30: sipush        10000
+      33: putfield      #8                  // Field NUM_QUERIES:I
+      36: aload_0
+      37: ldc2_w        #9                  // long 33554432l
+      40: putfield      #11                 // Field capacitySize:J
+      43: aload_0
+      44: iconst_3
+      45: putfield      #13                 // Field writeThreads:I
+      48: aload_0
+      49: bipush        64
+      51: putfield      #14                 // Field writerQLen:I
+      54: aload_0
+      55: ldc           #15                 // String offheap
+      57: putfield      #16                 // Field ioEngineName:Ljava/lang/String;
+      60: aload_0
+      61: aconst_null
+      62: putfield      #17                 // Field persistencePath:Ljava/lang/String;
+      65: return
+
+  public static java.lang.Iterable<java.lang.Object[]> data();
+    Code:
+       0: iconst_2
+       1: anewarray     #18                 // class "[Ljava/lang/Object;"
+       4: dup
+       5: iconst_0
+       6: iconst_2
+       7: anewarray     #19                 // class java/lang/Object
+      10: dup
+      11: iconst_0
+      12: sipush        8192
+      15: invokestatic  #20                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: aconst_null
+      22: aastore
+      23: aastore
+      24: dup
+      25: iconst_1
+      26: iconst_2
+      27: anewarray     #19                 // class java/lang/Object
+      30: dup
+      31: iconst_0
+      32: sipush        16384
+      35: invokestatic  #20                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      38: aastore
+      39: dup
+      40: iconst_1
+      41: bipush        9
+      43: newarray       int
+      45: dup
+      46: iconst_0
+      47: sipush        3072
+      50: iastore
+      51: dup
+      52: iconst_1
+      53: sipush        5120
+      56: iastore
+      57: dup
+      58: iconst_2
+      59: sipush        9216
+      62: iastore
+      63: dup
+      64: iconst_3
+      65: sipush        17408
+      68: iastore
+      69: dup
+      70: iconst_4
+      71: sipush        29696
+      74: iastore
+      75: dup
+      76: iconst_5
+      77: ldc           #21                 // int 33792
+      79: iastore
+      80: dup
+      81: bipush        6
+      83: ldc           #22                 // int 66560
+      85: iastore
+      86: dup
+      87: bipush        7
+      89: ldc           #23                 // int 99328
+      91: iastore
+      92: dup
+      93: bipush        8
+      95: ldc           #24                 // int 132096
+      97: iastore
+      98: aastore
+      99: aastore
+     100: invokestatic  #25                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+     103: areturn
+
+  public void setup() throws java.io.FileNotFoundException, java.io.IOException;
+    Code:
+       0: aload_0
+       1: new           #26                 // class org/apache/hadoop/hbase/io/hfile/bucket/TestBucketCache$MockedBucketCache
+       4: dup
+       5: aload_0
+       6: getfield      #16                 // Field ioEngineName:Ljava/lang/String;
+       9: ldc2_w        #9                  // long 33554432l
+      12: aload_0
+      13: getfield      #27                 // Field constructedBlockSize:I
+      16: aload_0
+      17: getfield      #28                 // Field constructedBlockSizes:[I
+      20: iconst_3
+      21: bipush        64
+      23: aload_0
+      24: getfield      #17                 // Field persistencePath:Ljava/lang/String;
+      27: invokespecial #29                 // Method org/apache/hadoop/hbase/io/hfile/bucket/TestBucketCache$MockedBucketCache."<init>":(Ljava/lang/String;JI[IIILjava/lang/String;)V
+      30: putfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+      33: return
+
+  public void tearDown();
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+       4: invokevirtual #31                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.shutdown:()V
+       7: return
+
+  public void testBucketAllocator() throws org.apache.hadoop.hbase.io.hfile.bucket.BucketAllocatorException;
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+       4: invokevirtual #36                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getAllocator:()Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator;
+       7: astore_1
+       8: iconst_4
+       9: anewarray     #37                 // class java/lang/Integer
+      12: dup
+      13: iconst_0
+      14: sipush        4096
+      17: invokestatic  #20                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      20: aastore
+      21: dup
+      22: iconst_1
+      23: sipush        8192
+      26: invokestatic  #20                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      29: aastore
+      30: dup
+      31: iconst_2
+      32: ldc           #38                 // int 65536
+      34: invokestatic  #20                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      37: aastore
+      38: dup
+      39: iconst_3
+      40: ldc           #39                 // int 98304
+      42: invokestatic  #20                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      45: aastore
+      46: invokestatic  #25                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+      49: astore_2
+      50: iconst_0
+      51: istore_3
+      52: new           #40                 // class java/util/ArrayList
+      55: dup
+      56: invokespecial #41                 // Method java/util/ArrayList."<init>":()V
+      59: astore        4
+      61: new           #40                 // class java/util/ArrayList
+      64: dup
+      65: aload_2
+      66: invokespecial #42                 // Method java/util/ArrayList."<init>":(Ljava/util/Collection;)V
+      69: astore        5
+      71: iload_3
+      72: ifne          136
+      75: aconst_null
+      76: astore        6
+      78: aload         5
+      80: invokestatic  #43                 // Method randFrom:(Ljava/util/List;)Ljava/lang/Object;
+      83: checkcast     #37                 // class java/lang/Integer
+      86: astore        6
+      88: aload         4
+      90: aload_1
+      91: aload         6
+      93: invokevirtual #44                 // Method java/lang/Integer.intValue:()I
+      96: invokevirtual #45                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.allocateBlock:(I)J
+      99: invokestatic  #46                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     102: invokevirtual #47                 // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+     105: pop
+     106: goto          133
+     109: astore        7
+     111: aload         5
+     113: aload         6
+     115: invokeinterface #49,  2           // InterfaceMethod java/util/List.remove:(Ljava/lang/Object;)Z
+     120: pop
+     121: aload         5
+     123: invokeinterface #50,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     128: ifeq          133
+     131: iconst_1
+     132: istore_3
+     133: goto          71
+     136: aload_2
+     137: invokeinterface #51,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     142: astore        6
+     144: aload         6
+     146: invokeinterface #52,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     151: ifeq          216
+     154: aload         6
+     156: invokeinterface #53,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     161: checkcast     #37                 // class java/lang/Integer
+     164: astore        7
+     166: aload_1
+     167: aload         7
+     169: invokevirtual #44                 // Method java/lang/Integer.intValue:()I
+     172: invokevirtual #54                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.roundUpToBucketSizeInfo:(I)Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator$BucketSizeInfo;
+     175: astore        8
+     177: aload         8
+     179: invokevirtual #55                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator$BucketSizeInfo.statistics:()Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator$IndexStatistics;
+     182: astore        9
+     184: new           #56                 // class java/lang/StringBuilder
+     187: dup
+     188: invokespecial #57                 // Method java/lang/StringBuilder."<init>":()V
+     191: ldc           #58                 // String unexpected freeCount for
+     193: invokevirtual #59                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     196: aload         8
+     198: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     201: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     204: lconst_0
+     205: aload         9
+     207: invokevirtual #62                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator$IndexStatistics.freeCount:()J
+     210: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+     213: goto          144
+     216: aload         4
+     218: invokevirtual #64                 // Method java/util/ArrayList.iterator:()Ljava/util/Iterator;
+     221: astore        6
+     223: aload         6
+     225: invokeinterface #52,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     230: ifeq          268
+     233: aload         6
+     235: invokeinterface #53,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     240: checkcast     #65                 // class java/lang/Long
+     243: invokevirtual #66                 // Method java/lang/Long.longValue:()J
+     246: lstore        7
+     248: aload_1
+     249: lload         7
+     251: invokevirtual #67                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.sizeOfAllocation:(J)I
+     254: i2l
+     255: aload_1
+     256: lload         7
+     258: invokevirtual #68                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.freeBlock:(J)I
+     261: i2l
+     262: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     265: goto          223
+     268: lconst_0
+     269: aload_1
+     270: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getUsedSize:()J
+     273: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     276: return
+    Exception table:
+       from    to  target type
+          78   106   109   Class org/apache/hadoop/hbase/io/hfile/bucket/CacheFullException
+
+  public void testCacheSimple() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+       4: sipush        10000
+       7: sipush        10000
+      10: invokestatic  #71                 // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.testCacheSimple:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;II)V
+      13: return
+
+  public void testCacheMultiThreadedSingleKey() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+       4: sipush        10000
+       7: sipush        200
+      10: sipush        20000
+      13: invokestatic  #72                 // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.hammerSingleKey:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;III)V
+      16: return
+
+  public void testHeapSizeChanges() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+       4: invokevirtual #73                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.stopWriterThreads:()V
+       7: aload_0
+       8: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+      11: sipush        10000
+      14: invokestatic  #74                 // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.testHeapSizeChanges:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;I)V
+      17: return
+
+  public void testMemoryLeak() throws java.lang.Exception;
+    Code:
+       0: new           #83                 // class org/apache/hadoop/hbase/io/hfile/BlockCacheKey
+       3: dup
+       4: ldc           #84                 // String dummy
+       6: lconst_1
+       7: invokespecial #85                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey."<init>":(Ljava/lang/String;J)V
+      10: astore_1
+      11: aload_0
+      12: aload_0
+      13: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+      16: aload_1
+      17: new           #86                 // class org/apache/hadoop/hbase/io/hfile/CacheTestUtils$ByteArrayCacheable
+      20: dup
+      21: bipush        10
+      23: newarray       byte
+      25: invokespecial #87                 // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils$ByteArrayCacheable."<init>":([B)V
+      28: invokespecial #88                 // Method cacheAndWaitUntilFlushedToBucket:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+      31: aload_0
+      32: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+      35: getfield      #75                 // Field org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.backingMap:Ljava/util/concurrent/ConcurrentMap;
+      38: aload_1
+      39: invokeinterface #89,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      44: checkcast     #90                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry
+      47: invokevirtual #91                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry.offset:()J
+      50: lstore_2
+      51: aload_0
+      52: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+      55: getfield      #92                 // Field org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.offsetLock:Lorg/apache/hadoop/hbase/util/IdReadWriteLock;
+      58: lload_2
+      59: invokestatic  #46                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      62: invokevirtual #93                 // Method org/apache/hadoop/hbase/util/IdReadWriteLock.getLock:(Ljava/lang/Object;)Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      65: astore        4
+      67: aload         4
+      69: invokevirtual #94                 // Method java/util/concurrent/locks/ReentrantReadWriteLock.writeLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      72: invokevirtual #95                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.lock:()V
+      75: new           #96                 // class org/apache/hadoop/hbase/io/hfile/bucket/TestBucketCache$1
+      78: dup
+      79: aload_0
+      80: ldc           #97                 // String evict-block
+      82: aload_1
+      83: invokespecial #98                 // Method org/apache/hadoop/hbase/io/hfile/bucket/TestBucketCache$1."<init>":(Lorg/apache/hadoop/hbase/io/hfile/bucket/TestBucketCache;Ljava/lang/String;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;)V
+      86: astore        5
+      88: aload         5
+      90: invokevirtual #99                 // Method java/lang/Thread.start:()V
+      93: aload_0
+      94: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+      97: getfield      #92                 // Field org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.offsetLock:Lorg/apache/hadoop/hbase/util/IdReadWriteLock;
+     100: lload_2
+     101: invokestatic  #46                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     104: iconst_1
+     105: invokevirtual #100                // Method org/apache/hadoop/hbase/util/IdReadWriteLock.waitForWaiters:(Ljava/lang/Object;I)V
+     108: aload_0
+     109: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     112: aload_1
+     113: aload_0
+     114: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     117: getfield      #75                 // Field org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.backingMap:Ljava/util/concurrent/ConcurrentMap;
+     120: aload_1
+     121: invokeinterface #101,  2          // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     126: checkcast     #90                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry
+     129: iconst_1
+     130: invokevirtual #102                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.blockEvicted:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry;Z)V
+     133: aload_0
+     134: aload_0
+     135: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     138: aload_1
+     139: new           #86                 // class org/apache/hadoop/hbase/io/hfile/CacheTestUtils$ByteArrayCacheable
+     142: dup
+     143: bipush        10
+     145: newarray       byte
+     147: invokespecial #87                 // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils$ByteArrayCacheable."<init>":([B)V
+     150: invokespecial #88                 // Method cacheAndWaitUntilFlushedToBucket:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+     153: aload         4
+     155: invokevirtual #94                 // Method java/util/concurrent/locks/ReentrantReadWriteLock.writeLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+     158: invokevirtual #103                // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.unlock:()V
+     161: aload         5
+     163: invokevirtual #104                // Method java/lang/Thread.join:()V
+     166: lconst_1
+     167: aload_0
+     168: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     171: invokevirtual #105                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getBlockCount:()J
+     174: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     177: aload_0
+     178: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     181: invokevirtual #106                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getCurrentSize:()J
+     184: lconst_0
+     185: lcmp
+     186: ifle          193
+     189: iconst_1
+     190: goto          194
+     193: iconst_0
+     194: invokestatic  #107                // Method org/junit/Assert.assertTrue:(Z)V
+     197: ldc           #108                // String We should have a block!
+     199: aload_0
+     200: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     203: invokevirtual #109                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.iterator:()Ljava/util/Iterator;
+     206: invokeinterface #52,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     211: invokestatic  #110                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     214: return
+
+  public void testRetrieveFromFile() throws java.lang.Exception;
+    Code:
+       0: new           #111                // class org/apache/hadoop/hbase/HBaseTestingUtility
+       3: dup
+       4: invokespecial #112                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: invokevirtual #113                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDir:()Lorg/apache/hadoop/fs/Path;
+      12: astore_2
+      13: aload_1
+      14: invokevirtual #114                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      17: aload_2
+      18: invokevirtual #115                // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+      21: pop
+      22: new           #56                 // class java/lang/StringBuilder
+      25: dup
+      26: invokespecial #57                 // Method java/lang/StringBuilder."<init>":()V
+      29: ldc           #116                // String file:
+      31: invokevirtual #59                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: aload_2
+      35: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      38: ldc           #117                // String /bucket.cache
+      40: invokevirtual #59                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      43: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      46: astore_3
+      47: new           #56                 // class java/lang/StringBuilder
+      50: dup
+      51: invokespecial #57                 // Method java/lang/StringBuilder."<init>":()V
+      54: aload_2
+      55: invokevirtual #60                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      58: ldc           #118                // String /bucket.persistence
+      60: invokevirtual #59                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      66: astore        4
+      68: new           #12                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache
+      71: dup
+      72: aload_3
+      73: ldc2_w        #9                  // long 33554432l
+      76: aload_0
+      77: getfield      #27                 // Field constructedBlockSize:I
+      80: aload_0
+      81: getfield      #28                 // Field constructedBlockSizes:[I
+      84: iconst_3
+      85: bipush        64
+      87: aload         4
+      89: invokespecial #119                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache."<init>":(Ljava/lang/String;JI[IIILjava/lang/String;)V
+      92: astore        5
+      94: aload         5
+      96: invokevirtual #36                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getAllocator:()Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator;
+      99: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getUsedSize:()J
+     102: lstore        6
+     104: lconst_0
+     105: lload         6
+     107: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     110: aload_0
+     111: getfield      #27                 // Field constructedBlockSize:I
+     114: iconst_1
+     115: invokestatic  #120                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.generateHFileBlocks:(II)[Lorg/apache/hadoop/hbase/io/hfile/CacheTestUtils$HFileBlockPair;
+     118: astore        8
+     120: aload         8
+     122: astore        9
+     124: aload         9
+     126: arraylength
+     127: istore        10
+     129: iconst_0
+     130: istore        11
+     132: iload         11
+     134: iload         10
+     136: if_icmpge     167
+     139: aload         9
+     141: iload         11
+     143: aaload
+     144: astore        12
+     146: aload         5
+     148: aload         12
+     150: invokevirtual #121                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils$HFileBlockPair.getBlockName:()Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;
+     153: aload         12
+     155: invokevirtual #122                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils$HFileBlockPair.getBlock:()Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;
+     158: invokevirtual #81                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.cacheBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+     161: iinc          11, 1
+     164: goto          132
+     167: aload         8
+     169: astore        9
+     171: aload         9
+     173: arraylength
+     174: istore        10
+     176: iconst_0
+     177: istore        11
+     179: iload         11
+     181: iload         10
+     183: if_icmpge     215
+     186: aload         9
+     188: iload         11
+     190: aaload
+     191: astore        12
+     193: aload_0
+     194: aload         5
+     196: aload         12
+     198: invokevirtual #121                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils$HFileBlockPair.getBlockName:()Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;
+     201: aload         12
+     203: invokevirtual #122                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils$HFileBlockPair.getBlock:()Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;
+     206: invokespecial #88                 // Method cacheAndWaitUntilFlushedToBucket:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+     209: iinc          11, 1
+     212: goto          179
+     215: aload         5
+     217: invokevirtual #36                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getAllocator:()Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator;
+     220: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getUsedSize:()J
+     223: lstore        6
+     225: lconst_0
+     226: lload         6
+     228: invokestatic  #123                // Method org/junit/Assert.assertNotEquals:(JJ)V
+     231: aload         5
+     233: invokevirtual #31                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.shutdown:()V
+     236: new           #124                // class java/io/File
+     239: dup
+     240: aload         4
+     242: invokespecial #125                // Method java/io/File."<init>":(Ljava/lang/String;)V
+     245: invokevirtual #126                // Method java/io/File.exists:()Z
+     248: invokestatic  #107                // Method org/junit/Assert.assertTrue:(Z)V
+     251: new           #12                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache
+     254: dup
+     255: aload_3
+     256: ldc2_w        #9                  // long 33554432l
+     259: aload_0
+     260: getfield      #27                 // Field constructedBlockSize:I
+     263: aload_0
+     264: getfield      #28                 // Field constructedBlockSizes:[I
+     267: iconst_3
+     268: bipush        64
+     270: aload         4
+     272: invokespecial #119                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache."<init>":(Ljava/lang/String;JI[IIILjava/lang/String;)V
+     275: astore        5
+     277: new           #124                // class java/io/File
+     280: dup
+     281: aload         4
+     283: invokespecial #125                // Method java/io/File."<init>":(Ljava/lang/String;)V
+     286: invokevirtual #126                // Method java/io/File.exists:()Z
+     289: invokestatic  #127                // Method org/junit/Assert.assertFalse:(Z)V
+     292: lload         6
+     294: aload         5
+     296: invokevirtual #36                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getAllocator:()Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator;
+     299: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getUsedSize:()J
+     302: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     305: aload         5
+     307: invokevirtual #31                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.shutdown:()V
+     310: new           #124                // class java/io/File
+     313: dup
+     314: aload         4
+     316: invokespecial #125                // Method java/io/File."<init>":(Ljava/lang/String;)V
+     319: invokevirtual #126                // Method java/io/File.exists:()Z
+     322: invokestatic  #107                // Method org/junit/Assert.assertTrue:(Z)V
+     325: iconst_2
+     326: newarray       int
+     328: dup
+     329: iconst_0
+     330: sipush        3072
+     333: iastore
+     334: dup
+     335: iconst_1
+     336: sipush        5120
+     339: iastore
+     340: astore        9
+     342: new           #12                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache
+     345: dup
+     346: aload_3
+     347: ldc2_w        #9                  // long 33554432l
+     350: aload_0
+     351: getfield      #27                 // Field constructedBlockSize:I
+     354: aload         9
+     356: iconst_3
+     357: bipush        64
+     359: aload         4
+     361: invokespecial #119                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache."<init>":(Ljava/lang/String;JI[IIILjava/lang/String;)V
+     364: astore        5
+     366: new           #124                // class java/io/File
+     369: dup
+     370: aload         4
+     372: invokespecial #125                // Method java/io/File."<init>":(Ljava/lang/String;)V
+     375: invokevirtual #126                // Method java/io/File.exists:()Z
+     378: invokestatic  #127                // Method org/junit/Assert.assertFalse:(Z)V
+     381: lconst_0
+     382: aload         5
+     384: invokevirtual #36                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getAllocator:()Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator;
+     387: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getUsedSize:()J
+     390: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     393: lconst_0
+     394: aload         5
+     396: getfield      #75                 // Field org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.backingMap:Ljava/util/concurrent/ConcurrentMap;
+     399: invokeinterface #128,  1          // InterfaceMethod java/util/concurrent/ConcurrentMap.size:()I
+     404: i2l
+     405: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     408: aload_1
+     409: invokevirtual #129                // Method org/apache/hadoop/hbase/HBaseTestingUtility.cleanupTestDir:()Z
+     412: pop
+     413: return
+
+  public void testBucketAllocatorLargeBuckets() throws org.apache.hadoop.hbase.io.hfile.bucket.BucketAllocatorException;
+    Code:
+       0: ldc2_w        #130                // long 21474836480l
+       3: lstore_1
+       4: iconst_3
+       5: newarray       int
+       7: dup
+       8: iconst_0
+       9: sipush        1024
+      12: iastore
+      13: dup
+      14: iconst_1
+      15: ldc           #132                // int 1048576
+      17: iastore
+      18: dup
+      19: iconst_2
+      20: ldc           #133                // int 1073741824
+      22: iastore
+      23: astore_3
+      24: new           #134                // class org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator
+      27: dup
+      28: lload_1
+      29: aload_3
+      30: invokespecial #135                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator."<init>":(J[I)V
+      33: astore        4
+      35: aload         4
+      37: invokevirtual #136                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getBuckets:()[Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator$Bucket;
+      40: arraylength
+      41: ifle          48
+      44: iconst_1
+      45: goto          49
+      48: iconst_0
+      49: invokestatic  #107                // Method org/junit/Assert.assertTrue:(Z)V
+      52: return
+
+  public void testGetPartitionSize() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+       5: ldc           #137                // float 0.25f
+       7: ldc           #138                // float 0.85f
+       9: invokespecial #139                // Method validateGetPartitionSize:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;FF)V
+      12: invokestatic  #140                // Method org/apache/hadoop/hbase/HBaseConfiguration.create:()Lorg/apache/hadoop/conf/Configuration;
+      15: astore_1
+      16: aload_1
+      17: ldc           #141                // String hbase.bucketcache.minfactor
+      19: ldc           #142                // float 0.5f
+      21: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      24: aload_1
+      25: ldc           #144                // String hbase.bucketcache.single.factor
+      27: ldc           #145                // float 0.1f
+      29: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      32: aload_1
+      33: ldc           #146                // String hbase.bucketcache.multi.factor
+      35: ldc           #147                // float 0.7f
+      37: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      40: aload_1
+      41: ldc           #148                // String hbase.bucketcache.memory.factor
+      43: ldc           #149                // float 0.2f
+      45: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      48: new           #12                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache
+      51: dup
+      52: aload_0
+      53: getfield      #16                 // Field ioEngineName:Ljava/lang/String;
+      56: ldc2_w        #9                  // long 33554432l
+      59: aload_0
+      60: getfield      #27                 // Field constructedBlockSize:I
+      63: aload_0
+      64: getfield      #28                 // Field constructedBlockSizes:[I
+      67: iconst_3
+      68: bipush        64
+      70: aload_0
+      71: getfield      #17                 // Field persistencePath:Ljava/lang/String;
+      74: bipush        100
+      76: aload_1
+      77: invokespecial #150                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache."<init>":(Ljava/lang/String;JI[IIILjava/lang/String;ILorg/apache/hadoop/conf/Configuration;)V
+      80: astore_2
+      81: aload_0
+      82: aload_2
+      83: ldc           #145                // float 0.1f
+      85: ldc           #142                // float 0.5f
+      87: invokespecial #139                // Method validateGetPartitionSize:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;FF)V
+      90: aload_0
+      91: aload_2
+      92: ldc           #147                // float 0.7f
+      94: ldc           #142                // float 0.5f
+      96: invokespecial #139                // Method validateGetPartitionSize:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;FF)V
+      99: aload_0
+     100: aload_2
+     101: ldc           #149                // float 0.2f
+     103: ldc           #142                // float 0.5f
+     105: invokespecial #139                // Method validateGetPartitionSize:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;FF)V
+     108: return
+
+  public void testValidBucketCacheConfigs() throws java.io.IOException;
+    Code:
+       0: invokestatic  #140                // Method org/apache/hadoop/hbase/HBaseConfiguration.create:()Lorg/apache/hadoop/conf/Configuration;
+       3: astore_1
+       4: aload_1
+       5: ldc           #151                // String hbase.bucketcache.acceptfactor
+       7: ldc           #152                // float 0.9f
+       9: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      12: aload_1
+      13: ldc           #141                // String hbase.bucketcache.minfactor
+      15: ldc           #142                // float 0.5f
+      17: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      20: aload_1
+      21: ldc           #153                // String hbase.bucketcache.extrafreefactor
+      23: ldc           #142                // float 0.5f
+      25: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      28: aload_1
+      29: ldc           #144                // String hbase.bucketcache.single.factor
+      31: ldc           #145                // float 0.1f
+      33: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      36: aload_1
+      37: ldc           #146                // String hbase.bucketcache.multi.factor
+      39: ldc           #147                // float 0.7f
+      41: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      44: aload_1
+      45: ldc           #148                // String hbase.bucketcache.memory.factor
+      47: ldc           #149                // float 0.2f
+      49: invokevirtual #143                // Method org/apache/hadoop/conf/Configuration.setFloat:(Ljava/lang/String;F)V
+      52: new           #12                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache
+      55: dup
+      56: aload_0
+      57: getfield      #16                 // Field ioEngineName:Ljava/lang/String;
+      60: ldc2_w        #9                  // long 33554432l
+      63: aload_0
+      64: getfield      #27                 // Field constructedBlockSize:I
+      67: aload_0
+      68: getfield      #28                 // Field constructedBlockSizes:[I
+      71: iconst_3
+      72: bipush        64
+      74: aload_0
+      75: getfield      #17                 // Field persistencePath:Ljava/lang/String;
+      78: bipush        100
+      80: aload_1
+      81: invokespecial #150                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache."<init>":(Ljava/lang/String;JI[IIILjava/lang/String;ILorg/apache/hadoop/conf/Configuration;)V
+      84: astore_2
+      85: ldc           #154                // String hbase.bucketcache.acceptfactor failed to propagate.
+      87: ldc           #152                // float 0.9f
+      89: aload_2
+      90: invokevirtual #155                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getAcceptableFactor:()F
+      93: fconst_0
+      94: invokestatic  #156                // Method org/junit/Assert.assertEquals:(Ljava/lang/String;FFF)V
+      97: ldc           #157                // String hbase.bucketcache.minfactor failed to propagate.
+      99: ldc           #142                // float 0.5f
+     101: aload_2
+     102: invokevirtual #158                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getMinFactor:()F
+     105: fconst_0
+     106: invokestatic  #156                // Method org/junit/Assert.assertEquals:(Ljava/lang/String;FFF)V
+     109: ldc           #159                // String hbase.bucketcache.extrafreefactor failed to propagate.
+     111: ldc           #142                // float 0.5f
+     113: aload_2
+     114: invokevirtual #160                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getExtraFreeFactor:()F
+     117: fconst_0
+     118: invokestatic  #156                // Method org/junit/Assert.assertEquals:(Ljava/lang/String;FFF)V
+     121: ldc           #161                // String hbase.bucketcache.single.factor failed to propagate.
+     123: ldc           #145                // float 0.1f
+     125: aload_2
+     126: invokevirtual #162                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getSingleFactor:()F
+     129: fconst_0
+     130: invokestatic  #156                // Method org/junit/Assert.assertEquals:(Ljava/lang/String;FFF)V
+     133: ldc           #163                // String hbase.bucketcache.multi.factor failed to propagate.
+     135: ldc           #147                // float 0.7f
+     137: aload_2
+     138: invokevirtual #164                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getMultiFactor:()F
+     141: fconst_0
+     142: invokestatic  #156                // Method org/junit/Assert.assertEquals:(Ljava/lang/String;FFF)V
+     145: ldc           #165                // String hbase.bucketcache.memory.factor failed to propagate.
+     147: ldc           #149                // float 0.2f
+     149: aload_2
+     150: invokevirtual #166                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getMemoryFactor:()F
+     153: fconst_0
+     154: invokestatic  #156                // Method org/junit/Assert.assertEquals:(Ljava/lang/String;FFF)V
+     157: return
+
+  public void testInvalidAcceptFactorConfig() throws java.io.IOException;
+    Code:
+       0: iconst_4
+       1: newarray       float
+       3: dup
+       4: iconst_0
+       5: ldc           #167                // float -1.0f
+       7: fastore
+       8: dup
+       9: iconst_1
+      10: ldc           #149                // float 0.2f
+      12: fastore
+      13: dup
+      14: iconst_2
+      15: ldc           #168                // float 0.86f
+      17: fastore
+      18: dup
+      19: iconst_3
+      20: ldc           #169                // float 1.05f
+      22: fastore
+      23: astore_1
+      24: iconst_4
+      25: newarray       boolean
+      27: dup
+      28: iconst_0
+      29: iconst_0
+      30: bastore
+      31: dup
+      32: iconst_1
+      33: iconst_0
+      34: bastore
+      35: dup
+      36: iconst_2
+      37: iconst_1
+      38: bastore
+      39: dup
+      40: iconst_3
+      41: iconst_0
+      42: bastore
+      43: astore_2
+      44: ldc           #151                // String hbase.bucketcache.acceptfactor
+      46: aload_1
+      47: invokestatic  #170                // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.of:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+      50: astore_3
+      51: invokestatic  #140                // Method org/apache/hadoop/hbase/HBaseConfiguration.create:()Lorg/apache/hadoop/conf/Configuration;
+      54: astore        4
+      56: aload_0
+      57: aload         4
+      59: aload_3
+      60: aload_2
+      61: invokespecial #171                // Method checkConfigValues:(Lorg/apache/hadoop/conf/Configuration;Ljava/util/Map;[Z)V
+      64: return
+
+  public void testInvalidMinFactorConfig() throws java.io.IOException;
+    Code:
+       0: iconst_4
+       1: newarray       float
+       3: dup
+       4: iconst_0
+       5: ldc           #167                // float -1.0f
+       7: fastore
+       8: dup
+       9: iconst_1
+      10: fconst_0
+      11: fastore
+      12: dup
+      13: iconst_2
+      14: ldc           #172                // float 0.96f
+      16: fastore
+      17: dup
+      18: iconst_3
+      19: ldc           #169                // float 1.05f
+      21: fastore
+      22: astore_1
+      23: iconst_4
+      24: newarray       boolean
+      26: dup
+      27: iconst_0
+      28: iconst_0
+      29: bastore
+      30: dup
+      31: iconst_1
+      32: iconst_1
+      33: bastore
+      34: dup
+      35: iconst_2
+      36: iconst_0
+      37: bastore
+      38: dup
+      39: iconst_3
+      40: iconst_0
+      41: bastore
+      42: astore_2
+      43: ldc           #141                // String hbase.bucketcache.minfactor
+      45: aload_1
+      46: invokestatic  #170                // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.of:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+      49: astore_3
+      50: invokestatic  #140                // Method org/apache/hadoop/hbase/HBaseConfiguration.create:()Lorg/apache/hadoop/conf/Configuration;
+      53: astore        4
+      55: aload_0
+      56: aload         4
+      58: aload_3
+      59: aload_2
+      60: invokespecial #171                // Method checkConfigValues:(Lorg/apache/hadoop/conf/Configuration;Ljava/util/Map;[Z)V
+      63: return
+
+  public void testInvalidExtraFreeFactorConfig() throws java.io.IOException;
+    Code:
+       0: iconst_4
+       1: newarray       float
+       3: dup
+       4: iconst_0
+       5: ldc           #167                // float -1.0f
+       7: fastore
+       8: dup
+       9: iconst_1
+      10: fconst_0
+      11: fastore
+      12: dup
+      13: iconst_2
+      14: ldc           #149                // float 0.2f
+      16: fastore
+      17: dup
+      18: iconst_3
+      19: ldc           #169                // float 1.05f
+      21: fastore
+      22: astore_1
+      23: iconst_4
+      24: newarray       boolean
+      26: dup
+      27: iconst_0
+      28: iconst_0
+      29: bastore
+      30: dup
+      31: iconst_1
+      32: iconst_1
+      33: bastore
+      34: dup
+      35: iconst_2
+      36: iconst_1
+      37: bastore
+      38: dup
+      39: iconst_3
+      40: iconst_1
+      41: bastore
+      42: astore_2
+      43: ldc           #153                // String hbase.bucketcache.extrafreefactor
+      45: aload_1
+      46: invokestatic  #170                // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.of:(Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+      49: astore_3
+      50: invokestatic  #140                // Method org/apache/hadoop/hbase/HBaseConfiguration.create:()Lorg/apache/hadoop/conf/Configuration;
+      53: astore        4
+      55: aload_0
+      56: aload         4
+      58: aload_3
+      59: aload_2
+      60: invokespecial #171                // Method checkConfigValues:(Lorg/apache/hadoop/conf/Configuration;Ljava/util/Map;[Z)V
+      63: return
+
+  public void testInvalidCacheSplitFactorConfig() throws java.io.IOException;
+    Code:
+       0: iconst_4
+       1: newarray       float
+       3: dup
+       4: iconst_0
+       5: ldc           #149                // float 0.2f
+       7: fastore
+       8: dup
+       9: iconst_1
+      10: fconst_0
+      11: fastore
+      12: dup
+      13: iconst_2
+      14: ldc           #173                // float -0.2f
+      16: fastore
+      17: dup
+      18: iconst_3
+      19: fconst_1
+      20: fastore
+      21: astore_1
+      22: iconst_4
+      23: newarray       float
+      25: dup
+      26: iconst_0
+      27: ldc           #174                // float 0.4f
+      29: fastore
+      30: dup
+      31: iconst_1
+      32: fconst_0
+      33: fastore
+      34: dup
+      35: iconst_2
+      36: fconst_1
+      37: fastore
+      38: dup
+      39: iconst_3
+      40: ldc           #175                // float 0.05f
+      42: fastore
+      43: astore_2
+      44: iconst_4
+      45: newarray       float
+      47: dup
+      48: iconst_0
+      49: ldc           #174                // float 0.4f
+      51: fastore
+      52: dup
+      53: iconst_1
+      54: fconst_0
+      55: fastore
+      56: dup
+      57: iconst_2
+      58: ldc           #149                // float 0.2f
+      60: fastore
+      61: dup
+      62: iconst_3
+      63: ldc           #142                // float 0.5f
+      65: fastore
+      66: astore_3
+      67: iconst_4
+      68: newarray       boolean
+      70: dup
+      71: iconst_0
+      72: iconst_1
+      73: bastore
+      74: dup
+      75: iconst_1
+      76: iconst_0
+      77: bastore
+      78: dup
+      79: iconst_2
+      80: iconst_0
+      81: bastore
+      82: dup
+      83: iconst_3
+      84: iconst_0
+      85: bastore
+      86: astore        4
+      88: ldc           #144                // String hbase.bucketcache.single.factor
+      90: aload_1
+      91: ldc           #146                // String hbase.bucketcache.multi.factor
+      93: aload_2
+      94: ldc           #148                // String hbase.bucketcache.memory.factor
+      96: aload_3
+      97: invokestatic  #176                // Method org/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap.of:(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/collect/ImmutableMap;
+     100: astore        5
+     102: invokestatic  #140                // Method org/apache/hadoop/hbase/HBaseConfiguration.create:()Lorg/apache/hadoop/conf/Configuration;
+     105: astore        6
+     107: aload_0
+     108: aload         6
+     110: aload         5
+     112: aload         4
+     114: invokespecial #171                // Method checkConfigValues:(Lorg/apache/hadoop/conf/Configuration;Ljava/util/Map;[Z)V
+     117: return
+
+  public void testOffsetProducesPositiveOutput();
+    Code:
+       0: ldc2_w        #190                // long 549888460800l
+       3: lstore_1
+       4: new           #90                 // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry
+       7: dup
+       8: lload_1
+       9: bipush        10
+      11: ldc2_w        #192                // long 10l
+      14: iconst_1
+      15: invokespecial #194                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry."<init>":(JIJZ)V
+      18: astore_3
+      19: lload_1
+      20: aload_3
+      21: invokevirtual #91                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry.offset:()J
+      24: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+      27: return
+
+  public void testCacheBlockNextBlockMetadataMissing() throws java.lang.Exception;
+    Code:
+       0: bipush        100
+       2: istore_1
+       3: bipush        33
+       5: iload_1
+       6: iadd
+       7: istore_2
+       8: iload_2
+       9: newarray       byte
+      11: astore_3
+      12: aload_3
+      13: iconst_0
+      14: iload_1
+      15: invokestatic  #196                // Method java/nio/ByteBuffer.wrap:([BII)Ljava/nio/ByteBuffer;
+      18: astore        4
+      20: new           #197                // class org/apache/hadoop/hbase/io/hfile/HFileContextBuilder
+      23: dup
+      24: invokespecial #198                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder."<init>":()V
+      27: invokevirtual #199                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.build:()Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      30: astore        5
+      32: new           #200                // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      35: dup
+      36: getstatic     #201                // Field org/apache/hadoop/hbase/io/hfile/BlockType.DATA:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      39: iload_1
+      40: iload_1
+      41: ldc2_w        #202                // long -1l
+      44: aload         4
+      46: iconst_1
+      47: ldc2_w        #202                // long -1l
+      50: bipush        52
+      52: iconst_m1
+      53: aload         5
+      55: invokespecial #204                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock."<init>":(Lorg/apache/hadoop/hbase/io/hfile/BlockType;IIJLjava/nio/ByteBuffer;ZJIILorg/apache/hadoop/hbase/io/hfile/HFileContext;)V
+      58: astore        6
+      60: new           #200                // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      63: dup
+      64: getstatic     #201                // Field org/apache/hadoop/hbase/io/hfile/BlockType.DATA:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      67: iload_1
+      68: iload_1
+      69: ldc2_w        #202                // long -1l
+      72: aload         4
+      74: iconst_1
+      75: ldc2_w        #202                // long -1l
+      78: iconst_m1
+      79: iconst_m1
+      80: aload         5
+      82: invokespecial #204                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock."<init>":(Lorg/apache/hadoop/hbase/io/hfile/BlockType;IIJLjava/nio/ByteBuffer;ZJIILorg/apache/hadoop/hbase/io/hfile/HFileContext;)V
+      85: astore        7
+      87: new           #83                 // class org/apache/hadoop/hbase/io/hfile/BlockCacheKey
+      90: dup
+      91: ldc           #205                // String key1
+      93: lconst_0
+      94: invokespecial #85                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey."<init>":(Ljava/lang/String;J)V
+      97: astore        8
+      99: iload_2
+     100: invokestatic  #206                // Method java/nio/ByteBuffer.allocate:(I)Ljava/nio/ByteBuffer;
+     103: astore        9
+     105: iload_2
+     106: invokestatic  #206                // Method java/nio/ByteBuffer.allocate:(I)Ljava/nio/ByteBuffer;
+     109: astore        10
+     111: iload_2
+     112: invokestatic  #206                // Method java/nio/ByteBuffer.allocate:(I)Ljava/nio/ByteBuffer;
+     115: astore        11
+     117: aload         6
+     119: aload         10
+     121: iconst_1
+     122: invokevirtual #207                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.serialize:(Ljava/nio/ByteBuffer;Z)V
+     125: aload         7
+     127: aload         11
+     129: iconst_1
+     130: invokevirtual #207                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.serialize:(Ljava/nio/ByteBuffer;Z)V
+     133: aload_0
+     134: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     137: aload         8
+     139: aload         6
+     141: aload         9
+     143: aload         10
+     145: invokestatic  #208                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.getBlockAndAssertEquals:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;Ljava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)V
+     148: aload_0
+     149: aload_0
+     150: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     153: aload         8
+     155: invokespecial #82                 // Method waitUntilFlushedToBucket:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;)V
+     158: aload_0
+     159: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     162: aload         8
+     164: aload         7
+     166: aload         9
+     168: aload         10
+     170: invokestatic  #208                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.getBlockAndAssertEquals:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;Ljava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)V
+     173: aload_0
+     174: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     177: aload         8
+     179: invokevirtual #209                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.evictBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;)Z
+     182: pop
+     183: aload_0
+     184: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     187: aload         8
+     189: iconst_0
+     190: iconst_0
+     191: iconst_0
+     192: invokevirtual #210                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache.getBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;ZZZ)Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+     195: invokestatic  #211                // Method org/junit/Assert.assertNull:(Ljava/lang/Object;)V
+     198: aload_0
+     199: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     202: aload         8
+     204: aload         7
+     206: aload         9
+     208: aload         11
+     210: invokestatic  #208                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.getBlockAndAssertEquals:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;Ljava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)V
+     213: aload_0
+     214: aload_0
+     215: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     218: aload         8
+     220: invokespecial #82                 // Method waitUntilFlushedToBucket:(Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;)V
+     223: aload_0
+     224: getfield      #30                 // Field cache:Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache;
+     227: aload         8
+     229: aload         6
+     231: aload         9
+     233: aload         10
+     235: invokestatic  #208                // Method org/apache/hadoop/hbase/io/hfile/CacheTestUtils.getBlockAndAssertEquals:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;Ljava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)V
+     238: return
+
+  public void testFreeBlockWhenIOEngineWriteFailure() throws java.io.IOException;
+    Code:
+       0: bipush        100
+       2: istore_1
+       3: bipush        20
+       5: istore_2
+       6: bipush        33
+       8: iload_1
+       9: iadd
+      10: istore_3
+      11: iload_3
+      12: invokestatic  #206                // Method java/nio/ByteBuffer.allocate:(I)Ljava/nio/ByteBuffer;
+      15: astore        4
+      17: new           #197                // class org/apache/hadoop/hbase/io/hfile/HFileContextBuilder
+      20: dup
+      21: invokespecial #198                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder."<init>":()V
+      24: invokevirtual #199                // Method org/apache/hadoop/hbase/io/hfile/HFileContextBuilder.build:()Lorg/apache/hadoop/hbase/io/hfile/HFileContext;
+      27: astore        5
+      29: new           #200                // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      32: dup
+      33: getstatic     #201                // Field org/apache/hadoop/hbase/io/hfile/BlockType.DATA:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      36: iload_1
+      37: iload_1
+      38: ldc2_w        #202                // long -1l
+      41: aload         4
+      43: iconst_1
+      44: iload_2
+      45: i2l
+      46: bipush        52
+      48: iconst_m1
+      49: aload         5
+      51: invokespecial #204                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock."<init>":(Lorg/apache/hadoop/hbase/io/hfile/BlockType;IIJLjava/nio/ByteBuffer;ZJIILorg/apache/hadoop/hbase/io/hfile/HFileContext;)V
+      54: astore        6
+      56: ldc           #212                // class org/apache/hadoop/hbase/io/hfile/bucket/IOEngine
+      58: invokestatic  #213                // Method org/mockito/Mockito.mock:(Ljava/lang/Class;)Ljava/lang/Object;
+      61: checkcast     #212                // class org/apache/hadoop/hbase/io/hfile/bucket/IOEngine
+      64: astore        7
+      66: aload         7
+      68: invokeinterface #214,  1          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/bucket/IOEngine.usesSharedMemory:()Z
+      73: invokestatic  #215                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      76: invokestatic  #216                // Method org/mockito/Mockito.when:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      79: iconst_0
+      80: invokestatic  #215                // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      83: invokeinterface #217,  2          // InterfaceMethod org/mockito/stubbing/OngoingStubbing.thenReturn:(Ljava/lang/Object;)Lorg/mockito/stubbing/OngoingStubbing;
+      88: pop
+      89: ldc           #218                // class java/lang/RuntimeException
+      91: invokestatic  #219                // Method org/mockito/Mockito.doThrow:(Ljava/lang/Class;)Lorg/mockito/stubbing/Stubber;
+      94: aload         7
+      96: invokeinterface #220,  2          // InterfaceMethod org/mockito/stubbing/Stubber.when:(Ljava/lang/Object;)Ljava/lang/Object;
+     101: checkcast     #212                // class org/apache/hadoop/hbase/io/hfile/bucket/IOEngine
+     104: ldc           #221                // class java/nio/ByteBuffer
+     106: invokestatic  #222                // Method org/mockito/Mockito.any:(Ljava/lang/Class;)Ljava/lang/Object;
+     109: checkcast     #221                // class java/nio/ByteBuffer
+     112: invokestatic  #223                // Method org/mockito/Mockito.anyLong:()J
+     115: invokeinterface #224,  4          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/bucket/IOEngine.write:(Ljava/nio/ByteBuffer;J)V
+     120: ldc           #218                // class java/lang/RuntimeException
+     122: invokestatic  #219                // Method org/mockito/Mockito.doThrow:(Ljava/lang/Class;)Lorg/mockito/stubbing/Stubber;
+     125: aload         7
+     127: invokeinterface #220,  2          // InterfaceMethod org/mockito/stubbing/Stubber.when:(Ljava/lang/Object;)Ljava/lang/Object;
+     132: checkcast     #212                // class org/apache/hadoop/hbase/io/hfile/bucket/IOEngine
+     135: ldc           #225                // class org/apache/hadoop/hbase/nio/ByteBuff
+     137: invokestatic  #222                // Method org/mockito/Mockito.any:(Ljava/lang/Class;)Ljava/lang/Object;
+     140: checkcast     #225                // class org/apache/hadoop/hbase/nio/ByteBuff
+     143: invokestatic  #223                // Method org/mockito/Mockito.anyLong:()J
+     146: invokeinterface #226,  4          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/bucket/IOEngine.write:(Lorg/apache/hadoop/hbase/nio/ByteBuff;J)V
+     151: ldc2_w        #227                // long 1073741824l
+     154: lstore        8
+     156: new           #134                // class org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator
+     159: dup
+     160: lload         8
+     162: aconst_null
+     163: invokespecial #135                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator."<init>":(J[I)V
+     166: astore        10
+     168: new           #83                 // class org/apache/hadoop/hbase/io/hfile/BlockCacheKey
+     171: dup
+     172: ldc           #84                 // String dummy
+     174: lconst_1
+     175: invokespecial #85                 // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey."<init>":(Ljava/lang/String;J)V
+     178: astore        11
+     180: new           #229                // class org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$RAMQueueEntry
+     183: dup
+     184: aload         11
+     186: aload         6
+     188: lconst_1
+     189: iconst_1
+     190: invokespecial #230                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$RAMQueueEntry."<init>":(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;JZ)V
+     193: astore        12
+     195: lconst_0
+     196: aload         10
+     198: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getUsedSize:()J
+     201: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     204: aload         12
+     206: aload         7
+     208: aload         10
+     210: aconst_null
+     211: invokevirtual #231                // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketCache$RAMQueueEntry.writeToCache:(Lorg/apache/hadoop/hbase/io/hfile/bucket/IOEngine;Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator;Ljava/util/concurrent/atomic/LongAdder;)Lorg/apache/hadoop/hbase/io/hfile/bucket/BucketCache$BucketEntry;
+     214: pop
+     215: invokestatic  #232                // Method org/junit/Assert.fail:()V
+     218: goto          223
+     221: astore        13
+     223: lconst_0
+     224: aload         10
+     226: invokevirtual #70                 // Method org/apache/hadoop/hbase/io/hfile/bucket/BucketAllocator.getUsedSize:()J
+     229: invokestatic  #69                 // Method org/junit/Assert.assertEquals:(JJ)V
+     232: return
+    Exception table:
+       from    to  target type
+         204   218   221   Class java/lang/Exception
+
+  static {};
+    Code:
+       0: ldc           #5                  // class org/apache/hadoop/hbase/io/hfile/bucket/TestBucketCache
+       2: invokestatic  #234                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #235                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: new           #236                // class java/util/Random
+      11: dup
+      12: invokespecial #237                // Method java/util/Random."<init>":()V
+      15: putstatic     #32                 // Field RAND:Ljava/util/Random;
+      18: return
+}

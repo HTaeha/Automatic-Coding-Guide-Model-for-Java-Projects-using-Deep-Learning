@@ -1,0 +1,780 @@
+Compiled from "CompactSplit.java"
+public class org.apache.hadoop.hbase.regionserver.CompactSplit implements org.apache.hadoop.hbase.regionserver.compactions.CompactionRequester,org.apache.hadoop.hbase.conf.PropagatingConfigurationObserver {
+  public static final java.lang.String LARGE_COMPACTION_THREADS;
+
+  public static final int LARGE_COMPACTION_THREADS_DEFAULT;
+
+  public static final java.lang.String SMALL_COMPACTION_THREADS;
+
+  public static final int SMALL_COMPACTION_THREADS_DEFAULT;
+
+  public static final java.lang.String SPLIT_THREADS;
+
+  public static final int SPLIT_THREADS_DEFAULT;
+
+  public static final java.lang.String REGION_SERVER_REGION_SPLIT_LIMIT;
+
+  public static final int DEFAULT_REGION_SERVER_REGION_SPLIT_LIMIT;
+
+  public static final java.lang.String HBASE_REGION_SERVER_ENABLE_COMPACTION;
+
+  org.apache.hadoop.hbase.regionserver.CompactSplit(org.apache.hadoop.hbase.regionserver.HRegionServer);
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #5                  // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       9: aload_0
+      10: aload_1
+      11: invokevirtual #9                  // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      14: putfield      #10                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      17: aload_0
+      18: aload_0
+      19: getfield      #10                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      22: ldc           #12                 // String hbase.regionserver.compaction.enabled
+      24: iconst_1
+      25: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      28: putfield      #14                 // Field compactionsEnabled:Z
+      31: aload_0
+      32: invokespecial #15                 // Method createCompactionExecutors:()V
+      35: aload_0
+      36: invokespecial #16                 // Method createSplitExcecutors:()V
+      39: aload_0
+      40: aload_1
+      41: aload_0
+      42: getfield      #10                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      45: invokestatic  #17                 // Method org/apache/hadoop/hbase/regionserver/throttle/CompactionThroughputControllerFactory.create:(Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/regionserver/throttle/ThroughputController;
+      48: putfield      #2                  // Field compactionThroughputController:Lorg/apache/hadoop/hbase/regionserver/throttle/ThroughputController;
+      51: return
+
+  public java.lang.String toString();
+    Code:
+       0: new           #49                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #51                 // String compactionQueue=(longCompactions=
+       9: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      16: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+      19: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      24: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      27: ldc           #56                 // String :shortCompactions=
+      29: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: aload_0
+      33: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      36: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+      39: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      44: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      47: ldc           #57                 // String ), splitQueue=
+      49: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      52: aload_0
+      53: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+      56: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+      59: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      64: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      67: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      70: areturn
+
+  public java.lang.String dumpQueue();
+    Code:
+       0: new           #49                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: ldc           #59                 // String Compaction/Split Queue dump:\n
+      11: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      14: pop
+      15: aload_1
+      16: ldc           #60                 // String   LargeCompation Queue:\n
+      18: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      21: pop
+      22: aload_0
+      23: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      26: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+      29: astore_2
+      30: aload_2
+      31: invokeinterface #61,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.iterator:()Ljava/util/Iterator;
+      36: astore_3
+      37: aload_3
+      38: invokeinterface #62,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      43: ifeq          91
+      46: aload_1
+      47: new           #49                 // class java/lang/StringBuilder
+      50: dup
+      51: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      54: ldc           #63                 // String
+      56: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: aload_3
+      60: invokeinterface #64,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      65: checkcast     #65                 // class java/lang/Runnable
+      68: invokevirtual #66                 // Method java/lang/Object.toString:()Ljava/lang/String;
+      71: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      74: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      77: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      80: pop
+      81: aload_1
+      82: ldc           #67                 // String \n
+      84: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: pop
+      88: goto          37
+      91: aload_0
+      92: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      95: ifnull        181
+      98: aload_1
+      99: ldc           #67                 // String \n
+     101: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     104: pop
+     105: aload_1
+     106: ldc           #68                 // String   SmallCompation Queue:\n
+     108: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     111: pop
+     112: aload_0
+     113: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     116: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+     119: astore_2
+     120: aload_2
+     121: invokeinterface #61,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.iterator:()Ljava/util/Iterator;
+     126: astore_3
+     127: aload_3
+     128: invokeinterface #62,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     133: ifeq          181
+     136: aload_1
+     137: new           #49                 // class java/lang/StringBuilder
+     140: dup
+     141: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     144: ldc           #63                 // String
+     146: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     149: aload_3
+     150: invokeinterface #64,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     155: checkcast     #65                 // class java/lang/Runnable
+     158: invokevirtual #66                 // Method java/lang/Object.toString:()Ljava/lang/String;
+     161: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     164: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     167: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     170: pop
+     171: aload_1
+     172: ldc           #67                 // String \n
+     174: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     177: pop
+     178: goto          127
+     181: aload_1
+     182: ldc           #67                 // String \n
+     184: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     187: pop
+     188: aload_1
+     189: ldc           #69                 // String   Split Queue:\n
+     191: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     194: pop
+     195: aload_0
+     196: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     199: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+     202: astore_2
+     203: aload_2
+     204: invokeinterface #61,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.iterator:()Ljava/util/Iterator;
+     209: astore_3
+     210: aload_3
+     211: invokeinterface #62,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     216: ifeq          264
+     219: aload_1
+     220: new           #49                 // class java/lang/StringBuilder
+     223: dup
+     224: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     227: ldc           #63                 // String
+     229: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     232: aload_3
+     233: invokeinterface #64,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     238: checkcast     #65                 // class java/lang/Runnable
+     241: invokevirtual #66                 // Method java/lang/Object.toString:()Ljava/lang/String;
+     244: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     247: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     250: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     253: pop
+     254: aload_1
+     255: ldc           #67                 // String \n
+     257: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     260: pop
+     261: goto          210
+     264: aload_1
+     265: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     268: areturn
+
+  public synchronized boolean requestSplit(org.apache.hadoop.hbase.regionserver.Region);
+    Code:
+       0: aload_0
+       1: invokespecial #70                 // Method shouldSplitRegion:()Z
+       4: ifeq          38
+       7: aload_1
+       8: checkcast     #71                 // class org/apache/hadoop/hbase/regionserver/HRegion
+      11: invokevirtual #72                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCompactPriority:()I
+      14: iconst_1
+      15: if_icmplt     38
+      18: aload_1
+      19: checkcast     #71                 // class org/apache/hadoop/hbase/regionserver/HRegion
+      22: invokevirtual #73                 // Method org/apache/hadoop/hbase/regionserver/HRegion.checkSplit:()[B
+      25: astore_2
+      26: aload_2
+      27: ifnull        38
+      30: aload_0
+      31: aload_1
+      32: aload_2
+      33: invokevirtual #74                 // Method requestSplit:(Lorg/apache/hadoop/hbase/regionserver/Region;[B)V
+      36: iconst_1
+      37: ireturn
+      38: iconst_0
+      39: ireturn
+
+  public synchronized void requestSplit(org.apache.hadoop.hbase.regionserver.Region, byte[]);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aconst_null
+       4: invokevirtual #75                 // Method requestSplit:(Lorg/apache/hadoop/hbase/regionserver/Region;[BLorg/apache/hadoop/hbase/security/User;)V
+       7: return
+
+  public synchronized void requestSplit(org.apache.hadoop.hbase.regionserver.Region, byte[], org.apache.hadoop.hbase.security.User);
+    Code:
+       0: aload_2
+       1: ifnonnull     64
+       4: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+       7: new           #49                 // class java/lang/StringBuilder
+      10: dup
+      11: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      14: ldc           #76                 // String Region
+      16: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: aload_1
+      20: invokeinterface #77,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      25: invokeinterface #78,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+      30: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: ldc           #79                 // String  not splittable because midkey=null
+      35: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      41: invokeinterface #80,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      46: aload_1
+      47: checkcast     #71                 // class org/apache/hadoop/hbase/regionserver/HRegion
+      50: invokevirtual #81                 // Method org/apache/hadoop/hbase/regionserver/HRegion.shouldForceSplit:()Z
+      53: ifeq          63
+      56: aload_1
+      57: checkcast     #71                 // class org/apache/hadoop/hbase/regionserver/HRegion
+      60: invokevirtual #82                 // Method org/apache/hadoop/hbase/regionserver/HRegion.clearSplit:()V
+      63: return
+      64: aload_0
+      65: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+      68: new           #83                 // class org/apache/hadoop/hbase/regionserver/SplitRequest
+      71: dup
+      72: aload_1
+      73: aload_2
+      74: aload_0
+      75: getfield      #5                  // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      78: aload_3
+      79: invokespecial #84                 // Method org/apache/hadoop/hbase/regionserver/SplitRequest."<init>":(Lorg/apache/hadoop/hbase/regionserver/Region;[BLorg/apache/hadoop/hbase/regionserver/HRegionServer;Lorg/apache/hadoop/hbase/security/User;)V
+      82: invokevirtual #85                 // Method java/util/concurrent/ThreadPoolExecutor.execute:(Ljava/lang/Runnable;)V
+      85: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+      88: invokeinterface #86,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      93: ifeq          132
+      96: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+      99: new           #49                 // class java/lang/StringBuilder
+     102: dup
+     103: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     106: ldc           #87                 // String Splitting
+     108: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     111: aload_1
+     112: invokevirtual #88                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     115: ldc           #89                 // String ,
+     117: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     120: aload_0
+     121: invokevirtual #88                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     124: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     127: invokeinterface #80,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     132: goto          166
+     135: astore        4
+     137: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     140: new           #49                 // class java/lang/StringBuilder
+     143: dup
+     144: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     147: ldc           #91                 // String Could not execute split for
+     149: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     152: aload_1
+     153: invokevirtual #88                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     156: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     159: aload         4
+     161: invokeinterface #92,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     166: return
+    Exception table:
+       from    to  target type
+          64   132   135   Class java/util/concurrent/RejectedExecutionException
+
+  public synchronized void requestCompaction(org.apache.hadoop.hbase.regionserver.HRegion, java.lang.String, int, org.apache.hadoop.hbase.regionserver.compactions.CompactionLifeCycleTracker, org.apache.hadoop.hbase.security.User) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: iload_3
+       4: iconst_1
+       5: aload         4
+       7: aload_0
+       8: aload         4
+      10: aload_1
+      11: invokedynamic #99,  0             // InvokeDynamic #0:getAsInt:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)Ljava/util/function/IntSupplier;
+      16: invokespecial #100                // Method getCompleteTracker:(Lorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;Ljava/util/function/IntSupplier;)Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;
+      19: aload         5
+      21: invokespecial #101                // Method requestCompactionInternal:(Lorg/apache/hadoop/hbase/regionserver/HRegion;Ljava/lang/String;IZLorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;Lorg/apache/hadoop/hbase/security/User;)V
+      24: return
+
+  public synchronized void requestCompaction(org.apache.hadoop.hbase.regionserver.HRegion, org.apache.hadoop.hbase.regionserver.HStore, java.lang.String, int, org.apache.hadoop.hbase.regionserver.compactions.CompactionLifeCycleTracker, org.apache.hadoop.hbase.security.User) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: iload         4
+       6: iconst_1
+       7: aload         5
+       9: aload_0
+      10: aload         5
+      12: invokedynamic #102,  0            // InvokeDynamic #1:getAsInt:()Ljava/util/function/IntSupplier;
+      17: invokespecial #100                // Method getCompleteTracker:(Lorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;Ljava/util/function/IntSupplier;)Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;
+      20: aload         6
+      22: invokespecial #103                // Method requestCompactionInternal:(Lorg/apache/hadoop/hbase/regionserver/HRegion;Lorg/apache/hadoop/hbase/regionserver/HStore;Ljava/lang/String;IZLorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;Lorg/apache/hadoop/hbase/security/User;)V
+      25: return
+
+  public void switchCompaction(boolean);
+    Code:
+       0: iload_1
+       1: ifeq          28
+       4: aload_0
+       5: invokevirtual #104                // Method isCompactionsEnabled:()Z
+       8: ifne          42
+      11: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+      14: ldc           #105                // String Re-Initializing compactions because user switched on compactions
+      16: invokeinterface #106,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      21: aload_0
+      22: invokespecial #107                // Method reInitializeCompactionsExecutors:()V
+      25: goto          42
+      28: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+      31: ldc           #108                // String Interrupting running compactions because user switched off compactions
+      33: invokeinterface #106,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      38: aload_0
+      39: invokespecial #109                // Method interrupt:()V
+      42: aload_0
+      43: iload_1
+      44: invokevirtual #110                // Method setCompactionsEnabled:(Z)V
+      47: return
+
+  public synchronized void requestSystemCompaction(org.apache.hadoop.hbase.regionserver.HRegion, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: ldc           #143                // int -2147483648
+       5: iconst_0
+       6: getstatic     #94                 // Field org/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker.DUMMY:Lorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;
+       9: getstatic     #95                 // Field DUMMY_COMPLETE_TRACKER:Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;
+      12: aconst_null
+      13: invokespecial #101                // Method requestCompactionInternal:(Lorg/apache/hadoop/hbase/regionserver/HRegion;Ljava/lang/String;IZLorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;Lorg/apache/hadoop/hbase/security/User;)V
+      16: return
+
+  public synchronized void requestSystemCompaction(org.apache.hadoop.hbase.regionserver.HRegion, org.apache.hadoop.hbase.regionserver.HStore, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: ldc           #143                // int -2147483648
+       6: iconst_0
+       7: getstatic     #94                 // Field org/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker.DUMMY:Lorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;
+      10: getstatic     #95                 // Field DUMMY_COMPLETE_TRACKER:Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;
+      13: aconst_null
+      14: invokespecial #103                // Method requestCompactionInternal:(Lorg/apache/hadoop/hbase/regionserver/HRegion;Lorg/apache/hadoop/hbase/regionserver/HStore;Ljava/lang/String;IZLorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;Lorg/apache/hadoop/hbase/security/User;)V
+      17: return
+
+  void interruptIfNecessary();
+    Code:
+       0: aload_0
+       1: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #152                // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+       7: aload_0
+       8: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      11: invokevirtual #152                // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+      14: aload_0
+      15: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      18: invokevirtual #152                // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+      21: return
+
+  void join();
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+       5: ldc           #159                // String Split Thread
+       7: invokespecial #160                // Method waitFor:(Ljava/util/concurrent/ThreadPoolExecutor;Ljava/lang/String;)V
+      10: aload_0
+      11: aload_0
+      12: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      15: ldc           #161                // String Large Compaction Thread
+      17: invokespecial #160                // Method waitFor:(Ljava/util/concurrent/ThreadPoolExecutor;Ljava/lang/String;)V
+      20: aload_0
+      21: aload_0
+      22: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      25: ldc           #162                // String Small Compaction Thread
+      27: invokespecial #160                // Method waitFor:(Ljava/util/concurrent/ThreadPoolExecutor;Ljava/lang/String;)V
+      30: return
+
+  public int getCompactionQueueSize();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+       7: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      12: aload_0
+      13: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      16: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+      19: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      24: iadd
+      25: ireturn
+
+  public int getLargeCompactionQueueSize();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+       7: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      12: ireturn
+
+  public int getSmallCompactionQueueSize();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+       7: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      12: ireturn
+
+  public int getSplitQueueSize();
+    Code:
+       0: aload_0
+       1: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+       7: invokeinterface #54,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      12: ireturn
+
+  public int getRegionSplitLimit();
+    Code:
+       0: aload_0
+       1: getfield      #28                 // Field regionSplitLimit:I
+       4: ireturn
+
+  public void onConfigurationChange(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: iconst_1
+       1: aload_1
+       2: ldc           #29                 // String hbase.regionserver.thread.compaction.large
+       4: iconst_1
+       5: invokevirtual #21                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       8: invokestatic  #30                 // Method java/lang/Math.max:(II)I
+      11: istore_2
+      12: aload_0
+      13: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      16: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+      19: iload_2
+      20: if_icmpeq     111
+      23: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+      26: new           #49                 // class java/lang/StringBuilder
+      29: dup
+      30: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+      33: ldc           #169                // String Changing the value of hbase.regionserver.thread.compaction.large from
+      35: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: aload_0
+      39: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      42: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+      45: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      48: ldc           #170                // String  to
+      50: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: iload_2
+      54: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      57: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      60: invokeinterface #106,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      65: aload_0
+      66: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      69: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+      72: iload_2
+      73: if_icmpge     95
+      76: aload_0
+      77: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      80: iload_2
+      81: invokevirtual #171                // Method java/util/concurrent/ThreadPoolExecutor.setMaximumPoolSize:(I)V
+      84: aload_0
+      85: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      88: iload_2
+      89: invokevirtual #172                // Method java/util/concurrent/ThreadPoolExecutor.setCorePoolSize:(I)V
+      92: goto          111
+      95: aload_0
+      96: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+      99: iload_2
+     100: invokevirtual #172                // Method java/util/concurrent/ThreadPoolExecutor.setCorePoolSize:(I)V
+     103: aload_0
+     104: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     107: iload_2
+     108: invokevirtual #171                // Method java/util/concurrent/ThreadPoolExecutor.setMaximumPoolSize:(I)V
+     111: aload_1
+     112: ldc           #31                 // String hbase.regionserver.thread.compaction.small
+     114: iconst_1
+     115: invokevirtual #21                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     118: istore_3
+     119: aload_0
+     120: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     123: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+     126: iload_3
+     127: if_icmpeq     218
+     130: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     133: new           #49                 // class java/lang/StringBuilder
+     136: dup
+     137: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     140: ldc           #173                // String Changing the value of hbase.regionserver.thread.compaction.small from
+     142: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     145: aload_0
+     146: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     149: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+     152: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     155: ldc           #170                // String  to
+     157: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     160: iload_3
+     161: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     164: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     167: invokeinterface #106,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     172: aload_0
+     173: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     176: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+     179: iload_3
+     180: if_icmpge     202
+     183: aload_0
+     184: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     187: iload_3
+     188: invokevirtual #171                // Method java/util/concurrent/ThreadPoolExecutor.setMaximumPoolSize:(I)V
+     191: aload_0
+     192: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     195: iload_3
+     196: invokevirtual #172                // Method java/util/concurrent/ThreadPoolExecutor.setCorePoolSize:(I)V
+     199: goto          218
+     202: aload_0
+     203: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     206: iload_3
+     207: invokevirtual #172                // Method java/util/concurrent/ThreadPoolExecutor.setCorePoolSize:(I)V
+     210: aload_0
+     211: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+     214: iload_3
+     215: invokevirtual #171                // Method java/util/concurrent/ThreadPoolExecutor.setMaximumPoolSize:(I)V
+     218: aload_1
+     219: ldc           #20                 // String hbase.regionserver.thread.split
+     221: iconst_1
+     222: invokevirtual #21                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     225: istore        4
+     227: aload_0
+     228: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     231: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+     234: iload         4
+     236: if_icmpeq     333
+     239: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+     242: new           #49                 // class java/lang/StringBuilder
+     245: dup
+     246: invokespecial #50                 // Method java/lang/StringBuilder."<init>":()V
+     249: ldc           #174                // String Changing the value of hbase.regionserver.thread.split from
+     251: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     254: aload_0
+     255: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     258: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+     261: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     264: ldc           #170                // String  to
+     266: invokevirtual #52                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     269: iload         4
+     271: invokevirtual #55                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     274: invokevirtual #58                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     277: invokeinterface #106,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     282: aload_0
+     283: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     286: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+     289: iload         4
+     291: if_icmpge     315
+     294: aload_0
+     295: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     298: iload         4
+     300: invokevirtual #171                // Method java/util/concurrent/ThreadPoolExecutor.setMaximumPoolSize:(I)V
+     303: aload_0
+     304: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     307: iload         4
+     309: invokevirtual #172                // Method java/util/concurrent/ThreadPoolExecutor.setCorePoolSize:(I)V
+     312: goto          333
+     315: aload_0
+     316: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     319: iload         4
+     321: invokevirtual #172                // Method java/util/concurrent/ThreadPoolExecutor.setCorePoolSize:(I)V
+     324: aload_0
+     325: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+     328: iload         4
+     330: invokevirtual #171                // Method java/util/concurrent/ThreadPoolExecutor.setMaximumPoolSize:(I)V
+     333: aload_0
+     334: getfield      #2                  // Field compactionThroughputController:Lorg/apache/hadoop/hbase/regionserver/throttle/ThroughputController;
+     337: astore        5
+     339: aload         5
+     341: ifnull        353
+     344: aload         5
+     346: ldc           #175                // String configuration change
+     348: invokeinterface #176,  2          // InterfaceMethod org/apache/hadoop/hbase/regionserver/throttle/ThroughputController.stop:(Ljava/lang/String;)V
+     353: aload_0
+     354: aload_0
+     355: getfield      #5                  // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     358: aload_1
+     359: invokestatic  #17                 // Method org/apache/hadoop/hbase/regionserver/throttle/CompactionThroughputControllerFactory.create:(Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/regionserver/throttle/ThroughputController;
+     362: putfield      #2                  // Field compactionThroughputController:Lorg/apache/hadoop/hbase/regionserver/throttle/ThroughputController;
+     365: aload_0
+     366: getfield      #10                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     369: invokevirtual #177                // Method org/apache/hadoop/conf/Configuration.reloadConfiguration:()V
+     372: return
+
+  protected int getSmallCompactionThreadNum();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+       7: ireturn
+
+  protected int getLargeCompactionThreadNum();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+       7: ireturn
+
+  protected int getSplitThreadNum();
+    Code:
+       0: aload_0
+       1: getfield      #26                 // Field splits:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #168                // Method java/util/concurrent/ThreadPoolExecutor.getCorePoolSize:()I
+       7: ireturn
+
+  public void registerChildren(org.apache.hadoop.hbase.conf.ConfigurationManager);
+    Code:
+       0: return
+
+  public void deregisterChildren(org.apache.hadoop.hbase.conf.ConfigurationManager);
+    Code:
+       0: return
+
+  public org.apache.hadoop.hbase.regionserver.throttle.ThroughputController getCompactionThroughputController();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field compactionThroughputController:Lorg/apache/hadoop/hbase/regionserver/throttle/ThroughputController;
+       4: areturn
+
+  void shutdownLongCompactions();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #152                // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+       7: return
+
+  public void clearLongCompactionsQueue();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+       7: invokeinterface #178,  1          // InterfaceMethod java/util/concurrent/BlockingQueue.clear:()V
+      12: return
+
+  public void clearShortCompactionsQueue();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #53                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+       7: invokeinterface #178,  1          // InterfaceMethod java/util/concurrent/BlockingQueue.clear:()V
+      12: return
+
+  public boolean isCompactionsEnabled();
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field compactionsEnabled:Z
+       4: ireturn
+
+  public void setCompactionsEnabled(boolean);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #14                 // Field compactionsEnabled:Z
+       5: aload_0
+       6: getfield      #10                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       9: ldc           #12                 // String hbase.regionserver.compaction.enabled
+      11: iload_1
+      12: invokestatic  #179                // Method java/lang/String.valueOf:(Z)Ljava/lang/String;
+      15: invokevirtual #180                // Method org/apache/hadoop/conf/Configuration.set:(Ljava/lang/String;Ljava/lang/String;)V
+      18: return
+
+  java.util.concurrent.ThreadPoolExecutor getLongCompactions();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: areturn
+
+  java.util.concurrent.ThreadPoolExecutor getShortCompactions();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: areturn
+
+  static java.util.Optional access$300(org.apache.hadoop.hbase.regionserver.CompactSplit, org.apache.hadoop.hbase.regionserver.HRegion, org.apache.hadoop.hbase.regionserver.HStore, int, org.apache.hadoop.hbase.regionserver.compactions.CompactionLifeCycleTracker, org.apache.hadoop.hbase.regionserver.CompactSplit$CompactionCompleteTracker, org.apache.hadoop.hbase.security.User) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: iload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: invokespecial #7                  // Method selectCompaction:(Lorg/apache/hadoop/hbase/regionserver/HRegion;Lorg/apache/hadoop/hbase/regionserver/HStore;ILorg/apache/hadoop/hbase/regionserver/compactions/CompactionLifeCycleTracker;Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;Lorg/apache/hadoop/hbase/security/User;)Ljava/util/Optional;
+      13: areturn
+
+  static org.slf4j.Logger access$400();
+    Code:
+       0: getstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static org.apache.hadoop.hbase.regionserver.HRegionServer access$500(org.apache.hadoop.hbase.regionserver.CompactSplit);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field server:Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       4: areturn
+
+  static java.util.concurrent.ThreadPoolExecutor access$600(org.apache.hadoop.hbase.regionserver.CompactSplit);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field longCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: areturn
+
+  static java.util.concurrent.ThreadPoolExecutor access$700(org.apache.hadoop.hbase.regionserver.CompactSplit);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field shortCompactions:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: areturn
+
+  static org.apache.hadoop.hbase.regionserver.throttle.ThroughputController access$800(org.apache.hadoop.hbase.regionserver.CompactSplit);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field compactionThroughputController:Lorg/apache/hadoop/hbase/regionserver/throttle/ThroughputController;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #11                 // class org/apache/hadoop/hbase/regionserver/CompactSplit
+       2: invokestatic  #182                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #6                  // Field LOG:Lorg/slf4j/Logger;
+       8: new           #183                // class org/apache/hadoop/hbase/regionserver/CompactSplit$4
+      11: dup
+      12: invokespecial #184                // Method org/apache/hadoop/hbase/regionserver/CompactSplit$4."<init>":()V
+      15: putstatic     #95                 // Field DUMMY_COMPLETE_TRACKER:Lorg/apache/hadoop/hbase/regionserver/CompactSplit$CompactionCompleteTracker;
+      18: new           #185                // class org/apache/hadoop/hbase/regionserver/CompactSplit$5
+      21: dup
+      22: invokespecial #186                // Method org/apache/hadoop/hbase/regionserver/CompactSplit$5."<init>":()V
+      25: putstatic     #34                 // Field COMPARATOR:Ljava/util/Comparator;
+      28: return
+}

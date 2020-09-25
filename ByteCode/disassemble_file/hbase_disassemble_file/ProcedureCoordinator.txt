@@ -1,0 +1,534 @@
+Compiled from "ProcedureCoordinator.java"
+public class org.apache.hadoop.hbase.procedure.ProcedureCoordinator {
+  static final long KEEP_ALIVE_MILLIS_DEFAULT;
+
+  static final long TIMEOUT_MILLIS_DEFAULT;
+
+  static final long WAKE_MILLIS_DEFAULT;
+
+  public org.apache.hadoop.hbase.procedure.ProcedureCoordinator(org.apache.hadoop.hbase.procedure.ProcedureCoordinatorRpcs, java.util.concurrent.ThreadPoolExecutor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: ldc2_w        #2                  // long 60000l
+       6: ldc2_w        #4                  // long 500l
+       9: invokespecial #6                  // Method "<init>":(Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs;Ljava/util/concurrent/ThreadPoolExecutor;JJ)V
+      12: return
+
+  public org.apache.hadoop.hbase.procedure.ProcedureCoordinator(org.apache.hadoop.hbase.procedure.ProcedureCoordinatorRpcs, java.util.concurrent.ThreadPoolExecutor, long, long);
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #8                  // class org/apache/hbase/thirdparty/com/google/common/collect/MapMaker
+       8: dup
+       9: invokespecial #9                  // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker."<init>":()V
+      12: iconst_4
+      13: invokevirtual #10                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.concurrencyLevel:(I)Lorg/apache/hbase/thirdparty/com/google/common/collect/MapMaker;
+      16: invokevirtual #11                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.weakValues:()Lorg/apache/hbase/thirdparty/com/google/common/collect/MapMaker;
+      19: invokevirtual #12                 // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.makeMap:()Ljava/util/concurrent/ConcurrentMap;
+      22: putfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+      25: aload_0
+      26: lload_3
+      27: putfield      #14                 // Field timeoutMillis:J
+      30: aload_0
+      31: lload         5
+      33: putfield      #15                 // Field wakeTimeMillis:J
+      36: aload_0
+      37: aload_1
+      38: putfield      #16                 // Field rpcs:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs;
+      41: aload_0
+      42: aload_2
+      43: putfield      #17                 // Field pool:Ljava/util/concurrent/ExecutorService;
+      46: aload_0
+      47: getfield      #16                 // Field rpcs:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs;
+      50: aload_0
+      51: invokeinterface #18,  2           // InterfaceMethod org/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs.start:(Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;)Z
+      56: pop
+      57: return
+
+  public static java.util.concurrent.ThreadPoolExecutor defaultPool(java.lang.String, int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: ldc2_w        #19                 // long 5000l
+       5: invokestatic  #21                 // Method defaultPool:(Ljava/lang/String;IJ)Ljava/util/concurrent/ThreadPoolExecutor;
+       8: areturn
+
+  public static java.util.concurrent.ThreadPoolExecutor defaultPool(java.lang.String, int, long);
+    Code:
+       0: new           #22                 // class java/util/concurrent/ThreadPoolExecutor
+       3: dup
+       4: iconst_1
+       5: iload_1
+       6: lload_2
+       7: getstatic     #23                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      10: new           #24                 // class java/util/concurrent/SynchronousQueue
+      13: dup
+      14: invokespecial #25                 // Method java/util/concurrent/SynchronousQueue."<init>":()V
+      17: new           #26                 // class org/apache/hadoop/hbase/DaemonThreadFactory
+      20: dup
+      21: new           #27                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      28: ldc           #29                 // String (
+      30: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload_0
+      34: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: ldc           #31                 // String )-proc-coordinator-pool
+      39: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      45: invokespecial #33                 // Method org/apache/hadoop/hbase/DaemonThreadFactory."<init>":(Ljava/lang/String;)V
+      48: invokespecial #34                 // Method java/util/concurrent/ThreadPoolExecutor."<init>":(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;)V
+      51: areturn
+
+  public void close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field pool:Ljava/util/concurrent/ExecutorService;
+       4: invokeinterface #35,  1           // InterfaceMethod java/util/concurrent/ExecutorService.shutdownNow:()Ljava/util/List;
+       9: pop
+      10: aload_0
+      11: getfield      #16                 // Field rpcs:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs;
+      14: invokeinterface #36,  1           // InterfaceMethod org/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs.close:()V
+      19: return
+
+  boolean submitProcedure(org.apache.hadoop.hbase.procedure.Procedure);
+    Code:
+       0: aload_1
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_1
+       7: invokevirtual #37                 // Method org/apache/hadoop/hbase/procedure/Procedure.getName:()Ljava/lang/String;
+      10: astore_2
+      11: aload_0
+      12: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+      15: aload_2
+      16: invokeinterface #38,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      21: checkcast     #39                 // class org/apache/hadoop/hbase/procedure/Procedure
+      24: astore_3
+      25: aload_3
+      26: ifnull        235
+      29: aload_3
+      30: invokevirtual #40                 // Method org/apache/hadoop/hbase/procedure/Procedure.isCompleted:()Z
+      33: ifne          70
+      36: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      39: new           #27                 // class java/lang/StringBuilder
+      42: dup
+      43: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      46: ldc           #42                 // String Procedure
+      48: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: aload_2
+      52: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      55: ldc           #43                 // String  currently running.  Rejecting new request
+      57: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      63: invokeinterface #44,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      68: iconst_0
+      69: ireturn
+      70: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      73: new           #27                 // class java/lang/StringBuilder
+      76: dup
+      77: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      80: ldc           #42                 // String Procedure
+      82: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      85: aload_2
+      86: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      89: ldc           #45                 // String  was in running list but was completed.  Accepting new attempt.
+      91: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      94: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      97: invokeinterface #46,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     102: aload_0
+     103: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+     106: aload_2
+     107: aload_3
+     108: invokeinterface #47,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     113: ifne          150
+     116: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+     119: new           #27                 // class java/lang/StringBuilder
+     122: dup
+     123: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     126: ldc           #42                 // String Procedure
+     128: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     131: aload_2
+     132: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     135: ldc           #48                 // String  has been resubmitted by another thread. Rejecting this request.
+     137: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     140: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     143: invokeinterface #44,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     148: iconst_0
+     149: ireturn
+     150: goto          235
+     153: astore        4
+     155: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+     158: new           #27                 // class java/lang/StringBuilder
+     161: dup
+     162: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     165: ldc           #42                 // String Procedure
+     167: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     170: aload_2
+     171: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     174: ldc           #50                 // String  was in running list but has exception.  Accepting new attempt.
+     176: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     179: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     182: invokeinterface #46,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     187: aload_0
+     188: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+     191: aload_2
+     192: aload_3
+     193: invokeinterface #47,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     198: ifne          235
+     201: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+     204: new           #27                 // class java/lang/StringBuilder
+     207: dup
+     208: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     211: ldc           #42                 // String Procedure
+     213: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     216: aload_2
+     217: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     220: ldc           #48                 // String  has been resubmitted by another thread. Rejecting this request.
+     222: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     225: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     228: invokeinterface #44,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     233: iconst_0
+     234: ireturn
+     235: aload_0
+     236: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+     239: aload_2
+     240: aload_1
+     241: invokeinterface #51,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     246: ifnonnull     289
+     249: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+     252: new           #27                 // class java/lang/StringBuilder
+     255: dup
+     256: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     259: ldc           #52                 // String Submitting procedure
+     261: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     264: aload_2
+     265: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     268: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     271: invokeinterface #46,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     276: aload_0
+     277: getfield      #17                 // Field pool:Ljava/util/concurrent/ExecutorService;
+     280: aload_1
+     281: invokeinterface #53,  2           // InterfaceMethod java/util/concurrent/ExecutorService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+     286: pop
+     287: iconst_1
+     288: ireturn
+     289: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+     292: new           #27                 // class java/lang/StringBuilder
+     295: dup
+     296: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     299: ldc           #54                 // String Another thread has submitted procedure '
+     301: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     304: aload_2
+     305: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     308: ldc           #55                 // String '. Ignoring this attempt.
+     310: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     313: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     316: invokeinterface #56,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+     321: iconst_0
+     322: ireturn
+     323: astore        4
+     325: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+     328: new           #27                 // class java/lang/StringBuilder
+     331: dup
+     332: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     335: ldc           #42                 // String Procedure
+     337: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     340: aload_2
+     341: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     344: ldc           #58                 // String  rejected by execution pool.  Propagating error.
+     346: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     349: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     352: aload         4
+     354: invokeinterface #59,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     359: aload_0
+     360: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+     363: aload_2
+     364: aload_1
+     365: invokeinterface #47,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     370: pop
+     371: aload_1
+     372: new           #49                 // class org/apache/hadoop/hbase/errorhandling/ForeignException
+     375: dup
+     376: aload_2
+     377: aload         4
+     379: invokespecial #60                 // Method org/apache/hadoop/hbase/errorhandling/ForeignException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     382: invokevirtual #61                 // Method org/apache/hadoop/hbase/procedure/Procedure.receive:(Lorg/apache/hadoop/hbase/errorhandling/ForeignException;)V
+     385: iconst_0
+     386: ireturn
+    Exception table:
+       from    to  target type
+          29    69   153   Class org/apache/hadoop/hbase/errorhandling/ForeignException
+          70   149   153   Class org/apache/hadoop/hbase/errorhandling/ForeignException
+         235   288   323   Class java/util/concurrent/RejectedExecutionException
+         289   322   323   Class java/util/concurrent/RejectedExecutionException
+
+  void rpcConnectionFailure(java.lang.String, java.io.IOException);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+       4: invokeinterface #62,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.values:()Ljava/util/Collection;
+       9: astore_3
+      10: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      13: invokeinterface #63,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      18: istore        4
+      20: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      23: new           #27                 // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #64                 // String received connection failure:
+      32: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload_1
+      36: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      42: aload_2
+      43: invokeinterface #65,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      48: aload_3
+      49: invokeinterface #66,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      54: astore        5
+      56: aload         5
+      58: invokeinterface #67,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      63: ifeq          143
+      66: aload         5
+      68: invokeinterface #68,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      73: checkcast     #39                 // class org/apache/hadoop/hbase/procedure/Procedure
+      76: astore        6
+      78: aload         6
+      80: ifnonnull     86
+      83: goto          56
+      86: iload         4
+      88: ifeq          122
+      91: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      94: new           #27                 // class java/lang/StringBuilder
+      97: dup
+      98: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     101: ldc           #69                 // String connection failure - notify procedure:
+     103: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     106: aload         6
+     108: invokevirtual #37                 // Method org/apache/hadoop/hbase/procedure/Procedure.getName:()Ljava/lang/String;
+     111: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     114: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     117: invokeinterface #70,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     122: aload         6
+     124: new           #49                 // class org/apache/hadoop/hbase/errorhandling/ForeignException
+     127: dup
+     128: aload         6
+     130: invokevirtual #37                 // Method org/apache/hadoop/hbase/procedure/Procedure.getName:()Ljava/lang/String;
+     133: aload_2
+     134: invokespecial #60                 // Method org/apache/hadoop/hbase/errorhandling/ForeignException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     137: invokevirtual #61                 // Method org/apache/hadoop/hbase/procedure/Procedure.receive:(Lorg/apache/hadoop/hbase/errorhandling/ForeignException;)V
+     140: goto          56
+     143: return
+
+  public void abortProcedure(java.lang.String, org.apache.hadoop.hbase.errorhandling.ForeignException);
+    Code:
+       0: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+       3: new           #27                 // class java/lang/StringBuilder
+       6: dup
+       7: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      10: ldc           #71                 // String abort procedure
+      12: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      15: aload_1
+      16: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      22: aload_2
+      23: invokeinterface #65,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      28: aload_0
+      29: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+      32: aload_1
+      33: invokeinterface #38,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      38: checkcast     #39                 // class org/apache/hadoop/hbase/procedure/Procedure
+      41: astore_3
+      42: aload_3
+      43: ifnonnull     47
+      46: return
+      47: aload_3
+      48: aload_2
+      49: invokevirtual #61                 // Method org/apache/hadoop/hbase/procedure/Procedure.receive:(Lorg/apache/hadoop/hbase/errorhandling/ForeignException;)V
+      52: return
+
+  org.apache.hadoop.hbase.procedure.Procedure createProcedure(org.apache.hadoop.hbase.errorhandling.ForeignExceptionDispatcher, java.lang.String, byte[], java.util.List<java.lang.String>);
+    Code:
+       0: new           #39                 // class org/apache/hadoop/hbase/procedure/Procedure
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: aload_0
+       7: getfield      #15                 // Field wakeTimeMillis:J
+      10: aload_0
+      11: getfield      #14                 // Field timeoutMillis:J
+      14: aload_2
+      15: aload_3
+      16: aload         4
+      18: invokespecial #72                 // Method org/apache/hadoop/hbase/procedure/Procedure."<init>":(Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinator;Lorg/apache/hadoop/hbase/errorhandling/ForeignExceptionDispatcher;JJLjava/lang/String;[BLjava/util/List;)V
+      21: areturn
+
+  public org.apache.hadoop.hbase.procedure.Procedure startProcedure(org.apache.hadoop.hbase.errorhandling.ForeignExceptionDispatcher, java.lang.String, byte[], java.util.List<java.lang.String>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: invokevirtual #73                 // Method createProcedure:(Lorg/apache/hadoop/hbase/errorhandling/ForeignExceptionDispatcher;Ljava/lang/String;[BLjava/util/List;)Lorg/apache/hadoop/hbase/procedure/Procedure;
+       9: astore        5
+      11: aload_0
+      12: aload         5
+      14: invokevirtual #74                 // Method submitProcedure:(Lorg/apache/hadoop/hbase/procedure/Procedure;)Z
+      17: ifne          54
+      20: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      23: new           #27                 // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #75                 // String Failed to submit procedure '
+      32: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload_2
+      36: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: ldc           #76                 // String '
+      41: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      47: invokeinterface #56,  2           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;)V
+      52: aconst_null
+      53: areturn
+      54: aload         5
+      56: areturn
+
+  void memberAcquiredBarrier(java.lang.String, java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #38,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #39                 // class org/apache/hadoop/hbase/procedure/Procedure
+      13: astore_3
+      14: aload_3
+      15: ifnonnull     60
+      18: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      21: new           #27                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      28: ldc           #77                 // String Member '
+      30: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: aload_2
+      34: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      37: ldc           #78                 // String ' is trying to acquire an unknown procedure '
+      39: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: aload_1
+      43: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: ldc           #76                 // String '
+      48: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: invokeinterface #44,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      59: return
+      60: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      63: invokeinterface #63,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      68: ifeq          112
+      71: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      74: new           #27                 // class java/lang/StringBuilder
+      77: dup
+      78: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      81: ldc           #77                 // String Member '
+      83: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: aload_2
+      87: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      90: ldc           #79                 // String ' acquired procedure '
+      92: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      95: aload_1
+      96: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      99: ldc           #76                 // String '
+     101: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     104: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     107: invokeinterface #70,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     112: aload_3
+     113: aload_2
+     114: invokevirtual #80                 // Method org/apache/hadoop/hbase/procedure/Procedure.barrierAcquiredByMember:(Ljava/lang/String;)V
+     117: return
+
+  void memberFinishedBarrier(java.lang.String, java.lang.String, byte[]);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #38,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #39                 // class org/apache/hadoop/hbase/procedure/Procedure
+      13: astore        4
+      15: aload         4
+      17: ifnonnull     62
+      20: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      23: new           #27                 // class java/lang/StringBuilder
+      26: dup
+      27: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      30: ldc           #77                 // String Member '
+      32: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      35: aload_2
+      36: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: ldc           #81                 // String ' is trying to release an unknown procedure '
+      41: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      44: aload_1
+      45: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      48: ldc           #76                 // String '
+      50: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      56: invokeinterface #44,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      61: return
+      62: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      65: invokeinterface #63,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      70: ifeq          114
+      73: getstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+      76: new           #27                 // class java/lang/StringBuilder
+      79: dup
+      80: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      83: ldc           #77                 // String Member '
+      85: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      88: aload_2
+      89: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      92: ldc           #82                 // String ' released procedure '
+      94: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      97: aload_1
+      98: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     101: ldc           #76                 // String '
+     103: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     106: invokevirtual #32                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     109: invokeinterface #70,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     114: aload         4
+     116: aload_2
+     117: aload_3
+     118: invokevirtual #83                 // Method org/apache/hadoop/hbase/procedure/Procedure.barrierReleasedByMember:(Ljava/lang/String;[B)V
+     121: return
+
+  org.apache.hadoop.hbase.procedure.ProcedureCoordinatorRpcs getRpcs();
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field rpcs:Lorg/apache/hadoop/hbase/procedure/ProcedureCoordinatorRpcs;
+       4: areturn
+
+  public org.apache.hadoop.hbase.procedure.Procedure getProcedure(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #38,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #39                 // class org/apache/hadoop/hbase/procedure/Procedure
+      13: areturn
+
+  public java.util.Set<java.lang.String> getProcedureNames();
+    Code:
+       0: new           #84                 // class java/util/HashSet
+       3: dup
+       4: aload_0
+       5: getfield      #13                 // Field procedures:Ljava/util/concurrent/ConcurrentMap;
+       8: invokeinterface #85,  1           // InterfaceMethod java/util/concurrent/ConcurrentMap.keySet:()Ljava/util/Set;
+      13: invokespecial #86                 // Method java/util/HashSet."<init>":(Ljava/util/Collection;)V
+      16: areturn
+
+  static {};
+    Code:
+       0: ldc           #1                  // class org/apache/hadoop/hbase/procedure/ProcedureCoordinator
+       2: invokestatic  #87                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #41                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

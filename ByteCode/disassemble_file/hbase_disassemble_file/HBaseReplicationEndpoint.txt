@@ -1,0 +1,290 @@
+Compiled from "HBaseReplicationEndpoint.java"
+public abstract class org.apache.hadoop.hbase.replication.HBaseReplicationEndpoint extends org.apache.hadoop.hbase.replication.BaseReplicationEndpoint implements org.apache.hadoop.hbase.Abortable {
+  public org.apache.hadoop.hbase.replication.HBaseReplicationEndpoint();
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method org/apache/hadoop/hbase/replication/BaseReplicationEndpoint."<init>":()V
+       4: aload_0
+       5: aconst_null
+       6: putfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       9: aload_0
+      10: new           #4                  // class java/util/ArrayList
+      13: dup
+      14: iconst_0
+      15: invokespecial #5                  // Method java/util/ArrayList."<init>":(I)V
+      18: putfield      #6                  // Field regionServers:Ljava/util/List;
+      21: return
+
+  protected synchronized void disconnect();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: ifnull        14
+       7: aload_0
+       8: getfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      11: invokevirtual #7                  // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.close:()V
+      14: return
+
+  protected void reconnect(org.apache.zookeeper.KeeperException);
+    Code:
+       0: aload_1
+       1: instanceof    #8                  // class org/apache/zookeeper/KeeperException$ConnectionLossException
+       4: ifne          21
+       7: aload_1
+       8: instanceof    #9                  // class org/apache/zookeeper/KeeperException$SessionExpiredException
+      11: ifne          21
+      14: aload_1
+      15: instanceof    #10                 // class org/apache/zookeeper/KeeperException$AuthFailedException
+      18: ifeq          96
+      21: aload_0
+      22: getfield      #11                 // Field ctx:Lorg/apache/hadoop/hbase/replication/ReplicationEndpoint$Context;
+      25: invokevirtual #12                 // Method org/apache/hadoop/hbase/replication/ReplicationEndpoint$Context.getPeerConfig:()Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;
+      28: invokevirtual #13                 // Method org/apache/hadoop/hbase/replication/ReplicationPeerConfig.getClusterKey:()Ljava/lang/String;
+      31: astore_2
+      32: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      35: new           #14                 // class java/lang/StringBuilder
+      38: dup
+      39: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      42: ldc           #16                 // String Lost the ZooKeeper connection for peer
+      44: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      47: aload_2
+      48: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: aload_1
+      55: invokeinterface #19,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      60: aload_0
+      61: invokevirtual #20                 // Method reloadZkWatcher:()V
+      64: goto          96
+      67: astore_3
+      68: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      71: new           #14                 // class java/lang/StringBuilder
+      74: dup
+      75: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      78: ldc           #22                 // String Creation of ZookeeperWatcher failed for peer
+      80: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: aload_2
+      84: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      90: aload_3
+      91: invokeinterface #19,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      96: return
+    Exception table:
+       from    to  target type
+          60    64    67   Class java/io/IOException
+
+  public void start();
+    Code:
+       0: aload_0
+       1: invokevirtual #23                 // Method startAsync:()Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/Service;
+       4: pop
+       5: return
+
+  public void stop();
+    Code:
+       0: aload_0
+       1: invokevirtual #24                 // Method stopAsync:()Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/Service;
+       4: pop
+       5: return
+
+  protected void doStart();
+    Code:
+       0: aload_0
+       1: invokevirtual #20                 // Method reloadZkWatcher:()V
+       4: aload_0
+       5: invokevirtual #25                 // Method notifyStarted:()V
+       8: goto          17
+      11: astore_1
+      12: aload_0
+      13: aload_1
+      14: invokevirtual #26                 // Method notifyFailed:(Ljava/lang/Throwable;)V
+      17: return
+    Exception table:
+       from    to  target type
+           0     8    11   Class java/io/IOException
+
+  protected void doStop();
+    Code:
+       0: aload_0
+       1: invokevirtual #27                 // Method disconnect:()V
+       4: aload_0
+       5: invokevirtual #28                 // Method notifyStopped:()V
+       8: return
+
+  public synchronized java.util.UUID getPeerUUID();
+    Code:
+       0: aconst_null
+       1: astore_1
+       2: aload_0
+       3: getfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       6: invokestatic  #29                 // Method org/apache/hadoop/hbase/zookeeper/ZKClusterId.getUUIDForCluster:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;)Ljava/util/UUID;
+       9: astore_1
+      10: goto          19
+      13: astore_2
+      14: aload_0
+      15: aload_2
+      16: invokevirtual #31                 // Method reconnect:(Lorg/apache/zookeeper/KeeperException;)V
+      19: aload_1
+      20: areturn
+    Exception table:
+       from    to  target type
+           2    10    13   Class org/apache/zookeeper/KeeperException
+
+  protected synchronized org.apache.hadoop.hbase.zookeeper.ZKWatcher getZkw();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: areturn
+
+  synchronized void reloadZkWatcher() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       4: ifnull        14
+       7: aload_0
+       8: getfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      11: invokevirtual #7                  // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.close:()V
+      14: aload_0
+      15: new           #32                 // class org/apache/hadoop/hbase/zookeeper/ZKWatcher
+      18: dup
+      19: aload_0
+      20: getfield      #11                 // Field ctx:Lorg/apache/hadoop/hbase/replication/ReplicationEndpoint$Context;
+      23: invokevirtual #33                 // Method org/apache/hadoop/hbase/replication/ReplicationEndpoint$Context.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      26: new           #14                 // class java/lang/StringBuilder
+      29: dup
+      30: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      33: ldc           #34                 // String connection to cluster:
+      35: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: aload_0
+      39: getfield      #11                 // Field ctx:Lorg/apache/hadoop/hbase/replication/ReplicationEndpoint$Context;
+      42: invokevirtual #35                 // Method org/apache/hadoop/hbase/replication/ReplicationEndpoint$Context.getPeerId:()Ljava/lang/String;
+      45: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      48: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      51: aload_0
+      52: invokespecial #36                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher."<init>":(Lorg/apache/hadoop/conf/Configuration;Ljava/lang/String;Lorg/apache/hadoop/hbase/Abortable;)V
+      55: putfield      #3                  // Field zkw:Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      58: aload_0
+      59: invokevirtual #37                 // Method getZkw:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+      62: new           #38                 // class org/apache/hadoop/hbase/replication/HBaseReplicationEndpoint$PeerRegionServerListener
+      65: dup
+      66: aload_0
+      67: invokespecial #39                 // Method org/apache/hadoop/hbase/replication/HBaseReplicationEndpoint$PeerRegionServerListener."<init>":(Lorg/apache/hadoop/hbase/replication/HBaseReplicationEndpoint;)V
+      70: invokevirtual #40                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.registerListener:(Lorg/apache/hadoop/hbase/zookeeper/ZKListener;)V
+      73: return
+
+  public void abort(java.lang.String, java.lang.Throwable);
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: new           #14                 // class java/lang/StringBuilder
+       6: dup
+       7: invokespecial #15                 // Method java/lang/StringBuilder."<init>":()V
+      10: ldc           #41                 // String The HBaseReplicationEndpoint corresponding to peer
+      12: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      15: aload_0
+      16: getfield      #11                 // Field ctx:Lorg/apache/hadoop/hbase/replication/ReplicationEndpoint$Context;
+      19: invokevirtual #35                 // Method org/apache/hadoop/hbase/replication/ReplicationEndpoint$Context.getPeerId:()Ljava/lang/String;
+      22: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      25: ldc           #42                 // String  was aborted for the following reason(s):
+      27: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      30: aload_1
+      31: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      37: aload_2
+      38: invokeinterface #43,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      43: return
+
+  public boolean isAborted();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  protected static java.util.List<org.apache.hadoop.hbase.ServerName> fetchSlavesAddresses(org.apache.hadoop.hbase.zookeeper.ZKWatcher) throws org.apache.zookeeper.KeeperException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: invokevirtual #44                 // Method org/apache/hadoop/hbase/zookeeper/ZKWatcher.getZNodePaths:()Lorg/apache/hadoop/hbase/zookeeper/ZNodePaths;
+       5: getfield      #45                 // Field org/apache/hadoop/hbase/zookeeper/ZNodePaths.rsZNode:Ljava/lang/String;
+       8: invokestatic  #46                 // Method org/apache/hadoop/hbase/zookeeper/ZKUtil.listChildrenAndWatchForNewChildren:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Ljava/lang/String;)Ljava/util/List;
+      11: astore_1
+      12: aload_1
+      13: ifnonnull     20
+      16: invokestatic  #47                 // Method java/util/Collections.emptyList:()Ljava/util/List;
+      19: areturn
+      20: new           #4                  // class java/util/ArrayList
+      23: dup
+      24: aload_1
+      25: invokeinterface #48,  1           // InterfaceMethod java/util/List.size:()I
+      30: invokespecial #5                  // Method java/util/ArrayList."<init>":(I)V
+      33: astore_2
+      34: aload_1
+      35: invokeinterface #49,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      40: astore_3
+      41: aload_3
+      42: invokeinterface #50,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      47: ifeq          76
+      50: aload_3
+      51: invokeinterface #51,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      56: checkcast     #52                 // class java/lang/String
+      59: astore        4
+      61: aload_2
+      62: aload         4
+      64: invokestatic  #53                 // Method org/apache/hadoop/hbase/ServerName.parseServerName:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/ServerName;
+      67: invokeinterface #54,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      72: pop
+      73: goto          41
+      76: aload_2
+      77: areturn
+
+  public synchronized java.util.List<org.apache.hadoop.hbase.ServerName> getRegionServers();
+    Code:
+       0: aload_0
+       1: aload_0
+       2: invokevirtual #37                 // Method getZkw:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+       5: invokestatic  #55                 // Method fetchSlavesAddresses:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;)Ljava/util/List;
+       8: invokevirtual #56                 // Method setRegionServers:(Ljava/util/List;)V
+      11: goto          42
+      14: astore_1
+      15: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      18: invokeinterface #57,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      23: ifeq          37
+      26: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      29: ldc           #58                 // String Fetch slaves addresses failed
+      31: aload_1
+      32: invokeinterface #59,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      37: aload_0
+      38: aload_1
+      39: invokevirtual #31                 // Method reconnect:(Lorg/apache/zookeeper/KeeperException;)V
+      42: aload_0
+      43: getfield      #6                  // Field regionServers:Ljava/util/List;
+      46: areturn
+    Exception table:
+       from    to  target type
+           0    11    14   Class org/apache/zookeeper/KeeperException
+
+  public synchronized void setRegionServers(java.util.List<org.apache.hadoop.hbase.ServerName>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #6                  // Field regionServers:Ljava/util/List;
+       5: aload_0
+       6: invokestatic  #60                 // Method java/lang/System.currentTimeMillis:()J
+       9: putfield      #61                 // Field lastRegionServerUpdate:J
+      12: return
+
+  public long getLastRegionServerUpdate();
+    Code:
+       0: aload_0
+       1: getfield      #61                 // Field lastRegionServerUpdate:J
+       4: lreturn
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #62                 // class org/apache/hadoop/hbase/replication/HBaseReplicationEndpoint
+       2: invokestatic  #63                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

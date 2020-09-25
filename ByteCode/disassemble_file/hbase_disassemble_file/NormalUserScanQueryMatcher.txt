@@ -1,0 +1,176 @@
+Compiled from "NormalUserScanQueryMatcher.java"
+public abstract class org.apache.hadoop.hbase.regionserver.querymatcher.NormalUserScanQueryMatcher extends org.apache.hadoop.hbase.regionserver.querymatcher.UserScanQueryMatcher {
+  protected final boolean seePastDeleteMarkers;
+
+  protected org.apache.hadoop.hbase.regionserver.querymatcher.NormalUserScanQueryMatcher(org.apache.hadoop.hbase.client.Scan, org.apache.hadoop.hbase.regionserver.ScanInfo, org.apache.hadoop.hbase.regionserver.querymatcher.ColumnTracker, boolean, org.apache.hadoop.hbase.regionserver.querymatcher.DeleteTracker, long, long);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: iload         4
+       6: lload         6
+       8: lload         8
+      10: invokespecial #1                  // Method org/apache/hadoop/hbase/regionserver/querymatcher/UserScanQueryMatcher."<init>":(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/regionserver/ScanInfo;Lorg/apache/hadoop/hbase/regionserver/querymatcher/ColumnTracker;ZJJ)V
+      13: aload_0
+      14: aload         5
+      16: putfield      #2                  // Field deletes:Lorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;
+      19: aload_0
+      20: aload_1
+      21: invokevirtual #3                  // Method org/apache/hadoop/hbase/client/Scan.isGetScan:()Z
+      24: putfield      #4                  // Field get:Z
+      27: aload_0
+      28: aload_2
+      29: invokevirtual #5                  // Method org/apache/hadoop/hbase/regionserver/ScanInfo.getKeepDeletedCells:()Lorg/apache/hadoop/hbase/KeepDeletedCells;
+      32: getstatic     #6                  // Field org/apache/hadoop/hbase/KeepDeletedCells.FALSE:Lorg/apache/hadoop/hbase/KeepDeletedCells;
+      35: if_acmpeq     42
+      38: iconst_1
+      39: goto          43
+      42: iconst_0
+      43: putfield      #7                  // Field seePastDeleteMarkers:Z
+      46: return
+
+  public void beforeShipped() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #8                  // Method org/apache/hadoop/hbase/regionserver/querymatcher/UserScanQueryMatcher.beforeShipped:()V
+       4: aload_0
+       5: getfield      #2                  // Field deletes:Lorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;
+       8: invokeinterface #9,  1            // InterfaceMethod org/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker.beforeShipped:()V
+      13: return
+
+  public org.apache.hadoop.hbase.regionserver.querymatcher.ScanQueryMatcher$MatchCode match(org.apache.hadoop.hbase.Cell) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field filter:Lorg/apache/hadoop/hbase/filter/Filter;
+       4: ifnull        21
+       7: aload_0
+       8: getfield      #10                 // Field filter:Lorg/apache/hadoop/hbase/filter/Filter;
+      11: invokevirtual #11                 // Method org/apache/hadoop/hbase/filter/Filter.filterAllRemaining:()Z
+      14: ifeq          21
+      17: getstatic     #12                 // Field org/apache/hadoop/hbase/regionserver/querymatcher/ScanQueryMatcher$MatchCode.DONE_SCAN:Lorg/apache/hadoop/hbase/regionserver/querymatcher/ScanQueryMatcher$MatchCode;
+      20: areturn
+      21: aload_0
+      22: aload_1
+      23: invokevirtual #13                 // Method preCheck:(Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/regionserver/querymatcher/ScanQueryMatcher$MatchCode;
+      26: astore_2
+      27: aload_2
+      28: ifnull        33
+      31: aload_2
+      32: areturn
+      33: aload_1
+      34: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/Cell.getTimestamp:()J
+      39: lstore_3
+      40: aload_1
+      41: invokeinterface #15,  1           // InterfaceMethod org/apache/hadoop/hbase/Cell.getTypeByte:()B
+      46: istore        5
+      48: iload         5
+      50: invokestatic  #16                 // Method org/apache/hadoop/hbase/PrivateCellUtil.isDelete:(B)Z
+      53: ifeq          103
+      56: aload_0
+      57: getfield      #7                  // Field seePastDeleteMarkers:Z
+      60: ifeq          74
+      63: aload_0
+      64: getfield      #17                 // Field tr:Lorg/apache/hadoop/hbase/io/TimeRange;
+      67: lload_3
+      68: invokevirtual #18                 // Method org/apache/hadoop/hbase/io/TimeRange.withinTimeRange:(J)Z
+      71: goto          82
+      74: aload_0
+      75: getfield      #17                 // Field tr:Lorg/apache/hadoop/hbase/io/TimeRange;
+      78: lload_3
+      79: invokevirtual #19                 // Method org/apache/hadoop/hbase/io/TimeRange.withinOrAfterTimeRange:(J)Z
+      82: istore        6
+      84: iload         6
+      86: ifeq          99
+      89: aload_0
+      90: getfield      #2                  // Field deletes:Lorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;
+      93: aload_1
+      94: invokeinterface #20,  2           // InterfaceMethod org/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker.add:(Lorg/apache/hadoop/hbase/Cell;)V
+      99: getstatic     #21                 // Field org/apache/hadoop/hbase/regionserver/querymatcher/ScanQueryMatcher$MatchCode.SKIP:Lorg/apache/hadoop/hbase/regionserver/querymatcher/ScanQueryMatcher$MatchCode;
+     102: areturn
+     103: aload_0
+     104: aload_0
+     105: getfield      #2                  // Field deletes:Lorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;
+     108: aload_1
+     109: invokevirtual #22                 // Method checkDeleted:(Lorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/regionserver/querymatcher/ScanQueryMatcher$MatchCode;
+     112: astore_2
+     113: aload_2
+     114: ifnull        119
+     117: aload_2
+     118: areturn
+     119: aload_0
+     120: aload_1
+     121: lload_3
+     122: iload         5
+     124: invokevirtual #23                 // Method matchColumn:(Lorg/apache/hadoop/hbase/Cell;JB)Lorg/apache/hadoop/hbase/regionserver/querymatcher/ScanQueryMatcher$MatchCode;
+     127: areturn
+
+  protected void reset();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field deletes:Lorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;
+       4: invokeinterface #24,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker.reset:()V
+       9: return
+
+  protected boolean isGet();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field get:Z
+       4: ireturn
+
+  public static org.apache.hadoop.hbase.regionserver.querymatcher.NormalUserScanQueryMatcher create(org.apache.hadoop.hbase.client.Scan, org.apache.hadoop.hbase.regionserver.ScanInfo, org.apache.hadoop.hbase.regionserver.querymatcher.ColumnTracker, org.apache.hadoop.hbase.regionserver.querymatcher.DeleteTracker, boolean, long, long) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokevirtual #25                 // Method org/apache/hadoop/hbase/client/Scan.isReversed:()Z
+       4: ifeq          50
+       7: aload_0
+       8: invokevirtual #26                 // Method org/apache/hadoop/hbase/client/Scan.includeStopRow:()Z
+      11: ifeq          32
+      14: new           #27                 // class org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$1
+      17: dup
+      18: aload_0
+      19: aload_1
+      20: aload_2
+      21: iload         4
+      23: aload_3
+      24: lload         5
+      26: lload         7
+      28: invokespecial #28                 // Method org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$1."<init>":(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/regionserver/ScanInfo;Lorg/apache/hadoop/hbase/regionserver/querymatcher/ColumnTracker;ZLorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;JJ)V
+      31: areturn
+      32: new           #29                 // class org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$2
+      35: dup
+      36: aload_0
+      37: aload_1
+      38: aload_2
+      39: iload         4
+      41: aload_3
+      42: lload         5
+      44: lload         7
+      46: invokespecial #30                 // Method org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$2."<init>":(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/regionserver/ScanInfo;Lorg/apache/hadoop/hbase/regionserver/querymatcher/ColumnTracker;ZLorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;JJ)V
+      49: areturn
+      50: aload_0
+      51: invokevirtual #26                 // Method org/apache/hadoop/hbase/client/Scan.includeStopRow:()Z
+      54: ifeq          75
+      57: new           #31                 // class org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$3
+      60: dup
+      61: aload_0
+      62: aload_1
+      63: aload_2
+      64: iload         4
+      66: aload_3
+      67: lload         5
+      69: lload         7
+      71: invokespecial #32                 // Method org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$3."<init>":(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/regionserver/ScanInfo;Lorg/apache/hadoop/hbase/regionserver/querymatcher/ColumnTracker;ZLorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;JJ)V
+      74: areturn
+      75: new           #33                 // class org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$4
+      78: dup
+      79: aload_0
+      80: aload_1
+      81: aload_2
+      82: iload         4
+      84: aload_3
+      85: lload         5
+      87: lload         7
+      89: invokespecial #34                 // Method org/apache/hadoop/hbase/regionserver/querymatcher/NormalUserScanQueryMatcher$4."<init>":(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/regionserver/ScanInfo;Lorg/apache/hadoop/hbase/regionserver/querymatcher/ColumnTracker;ZLorg/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker;JJ)V
+      92: areturn
+}

@@ -1,0 +1,225 @@
+Compiled from "Compressor.java"
+public class org.apache.hadoop.hbase.regionserver.wal.Compressor {
+  public org.apache.hadoop.hbase.regionserver.wal.Compressor();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void main(java.lang.String[]) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: arraylength
+       2: iconst_2
+       3: if_icmpne     28
+       6: aload_0
+       7: iconst_0
+       8: aaload
+       9: ldc           #2                  // String --help
+      11: invokevirtual #3                  // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      14: ifne          28
+      17: aload_0
+      18: iconst_0
+      19: aaload
+      20: ldc           #4                  // String -h
+      22: invokevirtual #3                  // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      25: ifeq          35
+      28: invokestatic  #5                  // Method printHelp:()V
+      31: iconst_m1
+      32: invokestatic  #6                  // Method java/lang/System.exit:(I)V
+      35: new           #7                  // class org/apache/hadoop/fs/Path
+      38: dup
+      39: aload_0
+      40: iconst_0
+      41: aaload
+      42: invokespecial #8                  // Method org/apache/hadoop/fs/Path."<init>":(Ljava/lang/String;)V
+      45: astore_1
+      46: new           #7                  // class org/apache/hadoop/fs/Path
+      49: dup
+      50: aload_0
+      51: iconst_1
+      52: aaload
+      53: invokespecial #8                  // Method org/apache/hadoop/fs/Path."<init>":(Ljava/lang/String;)V
+      56: astore_2
+      57: aload_1
+      58: aload_2
+      59: invokestatic  #9                  // Method transformFile:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)V
+      62: return
+
+  static byte[] readCompressed(java.io.DataInput, org.apache.hadoop.hbase.io.util.Dictionary) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokeinterface #35,  1           // InterfaceMethod java/io/DataInput.readByte:()B
+       6: istore_2
+       7: iload_2
+       8: iconst_m1
+       9: if_icmpne     48
+      12: aload_0
+      13: invokestatic  #37                 // Method org/apache/hadoop/io/WritableUtils.readVInt:(Ljava/io/DataInput;)I
+      16: istore_3
+      17: iload_3
+      18: newarray       byte
+      20: astore        4
+      22: aload_0
+      23: aload         4
+      25: invokeinterface #38,  2           // InterfaceMethod java/io/DataInput.readFully:([B)V
+      30: aload_1
+      31: ifnull        45
+      34: aload_1
+      35: aload         4
+      37: iconst_0
+      38: iload_3
+      39: invokeinterface #39,  4           // InterfaceMethod org/apache/hadoop/hbase/io/util/Dictionary.addEntry:([BII)S
+      44: pop
+      45: aload         4
+      47: areturn
+      48: iload_2
+      49: aload_0
+      50: invokeinterface #35,  1           // InterfaceMethod java/io/DataInput.readByte:()B
+      55: invokestatic  #40                 // Method toShort:(BB)S
+      58: istore_3
+      59: aload_1
+      60: iload_3
+      61: invokeinterface #41,  2           // InterfaceMethod org/apache/hadoop/hbase/io/util/Dictionary.getEntry:(S)[B
+      66: astore        4
+      68: aload         4
+      70: ifnonnull     100
+      73: new           #42                 // class java/io/IOException
+      76: dup
+      77: new           #19                 // class java/lang/StringBuilder
+      80: dup
+      81: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+      84: ldc           #43                 // String Missing dictionary entry for index
+      86: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      89: iload_3
+      90: invokevirtual #44                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      93: invokevirtual #25                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      96: invokespecial #45                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      99: athrow
+     100: aload         4
+     102: areturn
+
+  static int uncompressIntoArray(byte[], int, java.io.DataInput, org.apache.hadoop.hbase.io.util.Dictionary) throws java.io.IOException;
+    Code:
+       0: aload_2
+       1: invokeinterface #35,  1           // InterfaceMethod java/io/DataInput.readByte:()B
+       6: istore        4
+       8: iload         4
+      10: iconst_m1
+      11: if_icmpne     44
+      14: aload_2
+      15: invokestatic  #37                 // Method org/apache/hadoop/io/WritableUtils.readVInt:(Ljava/io/DataInput;)I
+      18: istore        5
+      20: aload_2
+      21: aload_0
+      22: iload_1
+      23: iload         5
+      25: invokeinterface #46,  4           // InterfaceMethod java/io/DataInput.readFully:([BII)V
+      30: aload_3
+      31: aload_0
+      32: iload_1
+      33: iload         5
+      35: invokeinterface #39,  4           // InterfaceMethod org/apache/hadoop/hbase/io/util/Dictionary.addEntry:([BII)S
+      40: pop
+      41: iload         5
+      43: ireturn
+      44: iload         4
+      46: aload_2
+      47: invokeinterface #35,  1           // InterfaceMethod java/io/DataInput.readByte:()B
+      52: invokestatic  #40                 // Method toShort:(BB)S
+      55: istore        5
+      57: aload_3
+      58: iload         5
+      60: invokeinterface #41,  2           // InterfaceMethod org/apache/hadoop/hbase/io/util/Dictionary.getEntry:(S)[B
+      65: astore        6
+      67: goto          84
+      70: astore        7
+      72: new           #42                 // class java/io/IOException
+      75: dup
+      76: ldc           #48                 // String Unable to uncompress the log entry
+      78: aload         7
+      80: invokespecial #49                 // Method java/io/IOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      83: athrow
+      84: aload         6
+      86: ifnonnull     117
+      89: new           #42                 // class java/io/IOException
+      92: dup
+      93: new           #19                 // class java/lang/StringBuilder
+      96: dup
+      97: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+     100: ldc           #43                 // String Missing dictionary entry for index
+     102: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     105: iload         5
+     107: invokevirtual #44                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     110: invokevirtual #25                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     113: invokespecial #45                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     116: athrow
+     117: aload_0
+     118: iload_1
+     119: aload         6
+     121: iconst_0
+     122: aload         6
+     124: arraylength
+     125: invokestatic  #50                 // Method org/apache/hadoop/hbase/util/Bytes.putBytes:([BI[BII)I
+     128: pop
+     129: aload         6
+     131: arraylength
+     132: ireturn
+    Exception table:
+       from    to  target type
+          57    67    70   Class java/lang/Exception
+
+  static void writeCompressed(byte[], int, int, java.io.DataOutput, org.apache.hadoop.hbase.io.util.Dictionary) throws java.io.IOException;
+    Code:
+       0: iconst_m1
+       1: istore        5
+       3: aload         4
+       5: ifnull        20
+       8: aload         4
+      10: aload_0
+      11: iload_1
+      12: iload_2
+      13: invokeinterface #51,  4           // InterfaceMethod org/apache/hadoop/hbase/io/util/Dictionary.findEntry:([BII)S
+      18: istore        5
+      20: iload         5
+      22: iconst_m1
+      23: if_icmpne     50
+      26: aload_3
+      27: iconst_m1
+      28: invokeinterface #52,  2           // InterfaceMethod java/io/DataOutput.writeByte:(I)V
+      33: aload_3
+      34: iload_2
+      35: invokestatic  #53                 // Method org/apache/hadoop/io/WritableUtils.writeVInt:(Ljava/io/DataOutput;I)V
+      38: aload_3
+      39: aload_0
+      40: iload_1
+      41: iload_2
+      42: invokeinterface #54,  4           // InterfaceMethod java/io/DataOutput.write:([BII)V
+      47: goto          58
+      50: aload_3
+      51: iload         5
+      53: invokeinterface #55,  2           // InterfaceMethod java/io/DataOutput.writeShort:(I)V
+      58: return
+
+  static short toShort(byte, byte);
+    Code:
+       0: iload_0
+       1: sipush        255
+       4: iand
+       5: bipush        8
+       7: ishl
+       8: iload_1
+       9: sipush        255
+      12: iand
+      13: ior
+      14: i2s
+      15: istore_2
+      16: iload_2
+      17: iflt          24
+      20: iconst_1
+      21: goto          25
+      24: iconst_0
+      25: invokestatic  #56                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkArgument:(Z)V
+      28: iload_2
+      29: ireturn
+}

@@ -1,0 +1,2383 @@
+Compiled from "RawAsyncHBaseAdmin.java"
+class org.apache.hadoop.hbase.client.RawAsyncHBaseAdmin implements org.apache.hadoop.hbase.client.AsyncAdmin {
+  public static final java.lang.String FLUSH_TABLE_PROCEDURE_SIGNATURE;
+
+  org.apache.hadoop.hbase.client.RawAsyncHBaseAdmin(org.apache.hadoop.hbase.client.AsyncConnectionImpl, org.apache.hbase.thirdparty.io.netty.util.HashedWheelTimer, org.apache.hadoop.hbase.client.AsyncAdminBuilderBase);
+    Code:
+       0: aload_0
+       1: invokespecial #6                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       9: aload_0
+      10: aload_2
+      11: putfield      #7                  // Field retryTimer:Lorg/apache/hbase/thirdparty/io/netty/util/HashedWheelTimer;
+      14: aload_0
+      15: aload_1
+      16: getstatic     #8                  // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      19: invokevirtual #9                  // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTable;
+      22: putfield      #10                 // Field metaTable:Lorg/apache/hadoop/hbase/client/AsyncTable;
+      25: aload_0
+      26: aload_3
+      27: getfield      #11                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.rpcTimeoutNs:J
+      30: putfield      #12                 // Field rpcTimeoutNs:J
+      33: aload_0
+      34: aload_3
+      35: getfield      #13                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.operationTimeoutNs:J
+      38: putfield      #14                 // Field operationTimeoutNs:J
+      41: aload_0
+      42: aload_3
+      43: getfield      #15                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.pauseNs:J
+      46: putfield      #2                  // Field pauseNs:J
+      49: aload_3
+      50: getfield      #16                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.pauseForCQTBENs:J
+      53: aload_3
+      54: getfield      #15                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.pauseNs:J
+      57: lcmp
+      58: ifge          108
+      61: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+      64: ldc           #17                 // String Configured value of pauseForCQTBENs is {} ms, which is less than the normal pause value {} ms, use the greater one instead
+      66: getstatic     #18                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+      69: aload_3
+      70: getfield      #16                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.pauseForCQTBENs:J
+      73: invokevirtual #19                 // Method java/util/concurrent/TimeUnit.toMillis:(J)J
+      76: invokestatic  #20                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      79: getstatic     #18                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+      82: aload_3
+      83: getfield      #15                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.pauseNs:J
+      86: invokevirtual #19                 // Method java/util/concurrent/TimeUnit.toMillis:(J)J
+      89: invokestatic  #20                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      92: invokeinterface #21,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      97: aload_0
+      98: aload_3
+      99: getfield      #15                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.pauseNs:J
+     102: putfield      #22                 // Field pauseForCQTBENs:J
+     105: goto          116
+     108: aload_0
+     109: aload_3
+     110: getfield      #16                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.pauseForCQTBENs:J
+     113: putfield      #22                 // Field pauseForCQTBENs:J
+     116: aload_0
+     117: aload_3
+     118: getfield      #23                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.maxAttempts:I
+     121: putfield      #3                  // Field maxAttempts:I
+     124: aload_0
+     125: aload_3
+     126: getfield      #24                 // Field org/apache/hadoop/hbase/client/AsyncAdminBuilderBase.startLogErrorsCnt:I
+     129: putfield      #25                 // Field startLogErrorsCnt:I
+     132: aload_0
+     133: aload_1
+     134: invokevirtual #26                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getNonceGenerator:()Lorg/apache/hadoop/hbase/client/NonceGenerator;
+     137: putfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+     140: return
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> tableExists(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_1
+       1: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.isMetaTableName:(Lorg/apache/hadoop/hbase/TableName;)Z
+       4: ifeq          15
+       7: iconst_1
+       8: invokestatic  #62                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      11: invokestatic  #63                 // Method java/util/concurrent/CompletableFuture.completedFuture:(Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+      15: aload_0
+      16: getfield      #10                 // Field metaTable:Lorg/apache/hadoop/hbase/client/AsyncTable;
+      19: aload_1
+      20: invokestatic  #64                 // Method org/apache/hadoop/hbase/AsyncMetaTableAccessor.tableExists:(Lorg/apache/hadoop/hbase/client/AsyncTable;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      23: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.TableDescriptor>> listTableDescriptors(boolean);
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: iload_1
+       3: invokestatic  #65                 // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildGetTableDescriptorsRequest:(Ljava/util/regex/Pattern;Z)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableDescriptorsRequest;
+       6: invokespecial #66                 // Method getTableDescriptors:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableDescriptorsRequest;)Ljava/util/concurrent/CompletableFuture;
+       9: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.TableDescriptor>> listTableDescriptors(java.util.regex.Pattern, boolean);
+    Code:
+       0: aload_1
+       1: ldc           #67                 // String pattern is null. If you don't specify a pattern, use listTables(boolean) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_0
+       8: aload_1
+       9: iload_2
+      10: invokestatic  #65                 // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildGetTableDescriptorsRequest:(Ljava/util/regex/Pattern;Z)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableDescriptorsRequest;
+      13: invokespecial #66                 // Method getTableDescriptors:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableDescriptorsRequest;)Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.TableDescriptor>> listTableDescriptors(java.util.List<org.apache.hadoop.hbase.TableName>);
+    Code:
+       0: aload_1
+       1: ldc           #69                 // String tableNames is null. If you don't specify tableNames, use listTables(boolean) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_1
+       8: invokeinterface #70,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      13: ifeq          23
+      16: invokestatic  #71                 // Method java/util/Collections.emptyList:()Ljava/util/List;
+      19: invokestatic  #63                 // Method java/util/concurrent/CompletableFuture.completedFuture:(Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+      23: aload_0
+      24: aload_1
+      25: invokestatic  #72                 // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildGetTableDescriptorsRequest:(Ljava/util/List;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableDescriptorsRequest;
+      28: invokespecial #66                 // Method getTableDescriptors:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableDescriptorsRequest;)Ljava/util/concurrent/CompletableFuture;
+      31: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.TableName>> listTableNames(boolean);
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: iload_1
+       3: invokestatic  #74                 // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildGetTableNamesRequest:(Ljava/util/regex/Pattern;Z)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableNamesRequest;
+       6: invokespecial #75                 // Method getTableNames:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableNamesRequest;)Ljava/util/concurrent/CompletableFuture;
+       9: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.TableName>> listTableNames(java.util.regex.Pattern, boolean);
+    Code:
+       0: aload_1
+       1: ldc           #76                 // String pattern is null. If you don't specify a pattern, use listTableNames(boolean) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_0
+       8: aload_1
+       9: iload_2
+      10: invokestatic  #74                 // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildGetTableNamesRequest:(Ljava/util/regex/Pattern;Z)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableNamesRequest;
+      13: invokespecial #75                 // Method getTableNames:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$GetTableNamesRequest;)Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.TableDescriptor>> listTableDescriptorsByNamespace(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #78,  0             // InvokeDynamic #5:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/lang/String;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.TableName>> listTableNamesByNamespace(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #79,  0             // InvokeDynamic #6:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/lang/String;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.TableDescriptor> getDescriptor(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      12: aload_1
+      13: invokevirtual #80                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.priority:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      16: aload_0
+      17: aload_1
+      18: invokedynamic #81,  0             // InvokeDynamic #7:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      23: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      26: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      29: aload_2
+      30: aload_1
+      31: invokedynamic #82,  0             // InvokeDynamic #8:accept:(Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      36: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      39: aload_2
+      40: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> createTable(org.apache.hadoop.hbase.client.TableDescriptor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+       7: aload_1
+       8: aconst_null
+       9: checkcast     #84                 // class "[[B"
+      12: aload_0
+      13: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      16: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      21: aload_0
+      22: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      25: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      30: invokestatic  #87                 // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildCreateTableRequest:(Lorg/apache/hadoop/hbase/client/TableDescriptor;[[BJJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$CreateTableRequest;
+      33: invokespecial #88                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$CreateTableRequest;)Ljava/util/concurrent/CompletableFuture;
+      36: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> createTable(org.apache.hadoop.hbase.client.TableDescriptor, byte[], byte[], int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_0
+       3: aload_2
+       4: aload_3
+       5: iload         4
+       7: invokespecial #89                 // Method getSplitKeys:([B[BI)[[B
+      10: invokevirtual #90                 // Method createTable:(Lorg/apache/hadoop/hbase/client/TableDescriptor;[[B)Ljava/util/concurrent/CompletableFuture;
+      13: areturn
+      14: astore        5
+      16: aload_0
+      17: aload         5
+      19: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+    Exception table:
+       from    to  target type
+           0    13    14   Class java/lang/IllegalArgumentException
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> createTable(org.apache.hadoop.hbase.client.TableDescriptor, byte[][]);
+    Code:
+       0: aload_2
+       1: ldc           #93                 // String splitKeys is null. If you don't specify splitKeys, use createTable(TableDescriptor) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_0
+       8: aload_2
+       9: invokespecial #94                 // Method verifySplitKeys:([[B)V
+      12: aload_0
+      13: aload_1
+      14: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      19: aload_1
+      20: aload_2
+      21: aload_0
+      22: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      25: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      30: aload_0
+      31: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      34: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      39: invokestatic  #87                 // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildCreateTableRequest:(Lorg/apache/hadoop/hbase/client/TableDescriptor;[[BJJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$CreateTableRequest;
+      42: invokespecial #88                 // Method createTable:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$CreateTableRequest;)Ljava/util/concurrent/CompletableFuture;
+      45: areturn
+      46: astore_3
+      47: aload_0
+      48: aload_3
+      49: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      52: areturn
+    Exception table:
+       from    to  target type
+           7    45    46   Class java/lang/IllegalArgumentException
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> modifyTable(org.apache.hadoop.hbase.client.TableDescriptor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+       7: aload_1
+       8: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      13: aload_1
+      14: aload_0
+      15: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      18: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      23: aload_0
+      24: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      27: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      32: invokestatic  #101                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildModifyTableRequest:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/TableDescriptor;JJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$ModifyTableRequest;
+      35: invokedynamic #102,  0            // InvokeDynamic #11:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      40: invokedynamic #103,  0            // InvokeDynamic #12:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      45: new           #104                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ModifyTableProcedureBiConsumer
+      48: dup
+      49: aload_0
+      50: aload_1
+      51: invokeinterface #83,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      56: invokespecial #105                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ModifyTableProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/client/AsyncAdmin;Lorg/apache/hadoop/hbase/TableName;)V
+      59: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      62: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteTable(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: aload_0
+       4: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       7: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      12: aload_0
+      13: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      16: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      21: invokestatic  #106                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildDeleteTableRequest:(Lorg/apache/hadoop/hbase/TableName;JJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$DeleteTableRequest;
+      24: invokedynamic #107,  0            // InvokeDynamic #13:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      29: invokedynamic #108,  0            // InvokeDynamic #14:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      34: new           #109                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DeleteTableProcedureBiConsumer
+      37: dup
+      38: aload_0
+      39: aload_1
+      40: invokespecial #110                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DeleteTableProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/TableName;)V
+      43: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      46: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> truncateTable(org.apache.hadoop.hbase.TableName, boolean);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: iload_2
+       4: aload_0
+       5: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       8: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      13: aload_0
+      14: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      17: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      22: invokestatic  #111                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildTruncateTableRequest:(Lorg/apache/hadoop/hbase/TableName;ZJJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$TruncateTableRequest;
+      25: invokedynamic #112,  0            // InvokeDynamic #15:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      30: invokedynamic #113,  0            // InvokeDynamic #16:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      35: new           #114                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$TruncateTableProcedureBiConsumer
+      38: dup
+      39: aload_1
+      40: invokespecial #115                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$TruncateTableProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      43: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      46: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> enableTable(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: aload_0
+       4: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       7: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      12: aload_0
+      13: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      16: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      21: invokestatic  #116                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildEnableTableRequest:(Lorg/apache/hadoop/hbase/TableName;JJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$EnableTableRequest;
+      24: invokedynamic #117,  0            // InvokeDynamic #17:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      29: invokedynamic #118,  0            // InvokeDynamic #18:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      34: new           #119                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$EnableTableProcedureBiConsumer
+      37: dup
+      38: aload_1
+      39: invokespecial #120                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$EnableTableProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      42: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      45: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> disableTable(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: aload_0
+       4: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       7: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      12: aload_0
+      13: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      16: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      21: invokestatic  #121                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildDisableTableRequest:(Lorg/apache/hadoop/hbase/TableName;JJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$DisableTableRequest;
+      24: invokedynamic #122,  0            // InvokeDynamic #19:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      29: invokedynamic #123,  0            // InvokeDynamic #20:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      34: new           #124                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DisableTableProcedureBiConsumer
+      37: dup
+      38: aload_1
+      39: invokespecial #125                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DisableTableProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      42: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      45: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isTableEnabled(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_1
+       1: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.isMetaTableName:(Lorg/apache/hadoop/hbase/TableName;)Z
+       4: ifeq          15
+       7: iconst_1
+       8: invokestatic  #62                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      11: invokestatic  #63                 // Method java/util/concurrent/CompletableFuture.completedFuture:(Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+      15: new           #43                 // class java/util/concurrent/CompletableFuture
+      18: dup
+      19: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      22: astore_2
+      23: aload_0
+      24: getfield      #10                 // Field metaTable:Lorg/apache/hadoop/hbase/client/AsyncTable;
+      27: aload_1
+      28: invokestatic  #126                // Method org/apache/hadoop/hbase/AsyncMetaTableAccessor.getTableState:(Lorg/apache/hadoop/hbase/client/AsyncTable;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      31: aload_2
+      32: aload_1
+      33: invokedynamic #127,  0            // InvokeDynamic #21:accept:(Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      38: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      41: aload_2
+      42: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isTableDisabled(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_1
+       1: invokestatic  #61                 // Method org/apache/hadoop/hbase/TableName.isMetaTableName:(Lorg/apache/hadoop/hbase/TableName;)Z
+       4: ifeq          15
+       7: iconst_0
+       8: invokestatic  #62                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      11: invokestatic  #63                 // Method java/util/concurrent/CompletableFuture.completedFuture:(Ljava/lang/Object;)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+      15: new           #43                 // class java/util/concurrent/CompletableFuture
+      18: dup
+      19: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      22: astore_2
+      23: aload_0
+      24: getfield      #10                 // Field metaTable:Lorg/apache/hadoop/hbase/client/AsyncTable;
+      27: aload_1
+      28: invokestatic  #126                // Method org/apache/hadoop/hbase/AsyncMetaTableAccessor.getTableState:(Lorg/apache/hadoop/hbase/client/AsyncTable;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      31: aload_2
+      32: aload_1
+      33: invokedynamic #128,  0            // InvokeDynamic #22:accept:(Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      38: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      41: aload_2
+      42: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isTableAvailable(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #129                // Method java/util/Optional.empty:()Ljava/util/Optional;
+       5: invokespecial #130                // Method isTableAvailable:(Lorg/apache/hadoop/hbase/TableName;Ljava/util/Optional;)Ljava/util/concurrent/CompletableFuture;
+       8: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> addColumnFamily(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.ColumnFamilyDescriptor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: aload_2
+       4: aload_0
+       5: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       8: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      13: aload_0
+      14: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      17: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      22: invokestatic  #145                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildAddColumnRequest:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;JJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$AddColumnRequest;
+      25: invokedynamic #146,  0            // InvokeDynamic #25:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      30: invokedynamic #147,  0            // InvokeDynamic #26:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      35: new           #148                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$AddColumnFamilyProcedureBiConsumer
+      38: dup
+      39: aload_1
+      40: invokespecial #149                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$AddColumnFamilyProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      43: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      46: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteColumnFamily(org.apache.hadoop.hbase.TableName, byte[]);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: aload_2
+       4: aload_0
+       5: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       8: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      13: aload_0
+      14: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      17: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      22: invokestatic  #150                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildDeleteColumnRequest:(Lorg/apache/hadoop/hbase/TableName;[BJJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$DeleteColumnRequest;
+      25: invokedynamic #151,  0            // InvokeDynamic #27:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      30: invokedynamic #152,  0            // InvokeDynamic #28:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      35: new           #153                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DeleteColumnFamilyProcedureBiConsumer
+      38: dup
+      39: aload_1
+      40: invokespecial #154                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DeleteColumnFamilyProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      43: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      46: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> modifyColumnFamily(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.ColumnFamilyDescriptor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_1
+       3: aload_2
+       4: aload_0
+       5: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+       8: invokeinterface #85,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      13: aload_0
+      14: getfield      #27                 // Field ng:Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      17: invokeinterface #86,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      22: invokestatic  #155                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildModifyColumnRequest:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;JJ)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$ModifyColumnRequest;
+      25: invokedynamic #156,  0            // InvokeDynamic #29:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      30: invokedynamic #157,  0            // InvokeDynamic #30:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      35: new           #158                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ModifyColumnFamilyProcedureBiConsumer
+      38: dup
+      39: aload_1
+      40: invokespecial #159                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ModifyColumnFamilyProcedureBiConsumer."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      43: invokespecial #100                // Method procedureCall:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      46: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> createNamespace(org.apache.hadoop.hbase.NamespaceDescriptor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #160                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildCreateNamespaceRequest:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$CreateNamespaceRequest;
+       5: invokedynamic #161,  0            // InvokeDynamic #31:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      10: invokedynamic #162,  0            // InvokeDynamic #32:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      15: new           #163                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$CreateNamespaceProcedureBiConsumer
+      18: dup
+      19: aload_1
+      20: invokevirtual #164                // Method org/apache/hadoop/hbase/NamespaceDescriptor.getName:()Ljava/lang/String;
+      23: invokespecial #165                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$CreateNamespaceProcedureBiConsumer."<init>":(Ljava/lang/String;)V
+      26: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      29: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> modifyNamespace(org.apache.hadoop.hbase.NamespaceDescriptor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #167                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildModifyNamespaceRequest:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$ModifyNamespaceRequest;
+       5: invokedynamic #168,  0            // InvokeDynamic #33:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      10: invokedynamic #169,  0            // InvokeDynamic #34:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      15: new           #170                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ModifyNamespaceProcedureBiConsumer
+      18: dup
+      19: aload_1
+      20: invokevirtual #164                // Method org/apache/hadoop/hbase/NamespaceDescriptor.getName:()Ljava/lang/String;
+      23: invokespecial #171                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ModifyNamespaceProcedureBiConsumer."<init>":(Ljava/lang/String;)V
+      26: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      29: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteNamespace(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #172                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildDeleteNamespaceRequest:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$DeleteNamespaceRequest;
+       5: invokedynamic #173,  0            // InvokeDynamic #35:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      10: invokedynamic #174,  0            // InvokeDynamic #36:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      15: new           #175                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DeleteNamespaceProcedureBiConsumer
+      18: dup
+      19: aload_1
+      20: invokespecial #176                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$DeleteNamespaceProcedureBiConsumer."<init>":(Ljava/lang/String;)V
+      23: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      26: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.NamespaceDescriptor> getNamespaceDescriptor(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #177,  0            // InvokeDynamic #37:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/lang/String;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<java.lang.String>> listNamespaces();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #178,  0            // InvokeDynamic #38:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.NamespaceDescriptor>> listNamespaceDescriptors();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #179,  0            // InvokeDynamic #39:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.RegionInfo>> getRegions(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: invokespecial #180                // Method newAdminCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #181,  0            // InvokeDynamic #40:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;
+      10: invokevirtual #182                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      13: aload_1
+      14: invokevirtual #183                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.serverName:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      17: invokevirtual #184                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      20: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.RegionInfo>> getRegions(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_1
+       1: getstatic     #8                  // Field org/apache/hadoop/hbase/TableName.META_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       4: invokevirtual #185                // Method org/apache/hadoop/hbase/TableName.equals:(Ljava/lang/Object;)Z
+       7: ifeq          31
+      10: aload_0
+      11: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      14: getfield      #131                // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.registry:Lorg/apache/hadoop/hbase/client/AsyncRegistry;
+      17: invokeinterface #132,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRegistry.getMetaRegionLocation:()Ljava/util/concurrent/CompletableFuture;
+      22: invokedynamic #186,  0            // InvokeDynamic #41:apply:()Ljava/util/function/Function;
+      27: invokevirtual #134                // Method java/util/concurrent/CompletableFuture.thenApply:(Ljava/util/function/Function;)Ljava/util/concurrent/CompletableFuture;
+      30: areturn
+      31: aload_0
+      32: getfield      #10                 // Field metaTable:Lorg/apache/hadoop/hbase/client/AsyncTable;
+      35: aload_1
+      36: invokestatic  #187                // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+      39: invokestatic  #188                // Method org/apache/hadoop/hbase/AsyncMetaTableAccessor.getTableHRegionLocations:(Lorg/apache/hadoop/hbase/client/AsyncTable;Ljava/util/Optional;)Ljava/util/concurrent/CompletableFuture;
+      42: invokedynamic #189,  0            // InvokeDynamic #42:apply:()Ljava/util/function/Function;
+      47: invokevirtual #134                // Method java/util/concurrent/CompletableFuture.thenApply:(Ljava/util/function/Function;)Ljava/util/concurrent/CompletableFuture;
+      50: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> flush(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #190                // Method tableExists:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: aload_1
+      16: invokedynamic #191,  0            // InvokeDynamic #43:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_2
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> flushRegion(byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #192                // Method getRegionLocation:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: aload_1
+      16: invokedynamic #193,  0            // InvokeDynamic #44:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;[B)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_2
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> flushRegionServer(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #195                // Method getRegions:(Lorg/apache/hadoop/hbase/ServerName;)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: aload_1
+      16: invokedynamic #196,  0            // InvokeDynamic #46:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/ServerName;)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_2
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> compact(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.CompactType);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aconst_null
+       3: iconst_0
+       4: aload_2
+       5: invokespecial #197                // Method compact:(Lorg/apache/hadoop/hbase/TableName;[BZLorg/apache/hadoop/hbase/client/CompactType;)Ljava/util/concurrent/CompletableFuture;
+       8: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> compact(org.apache.hadoop.hbase.TableName, byte[], org.apache.hadoop.hbase.client.CompactType);
+    Code:
+       0: aload_2
+       1: ldc           #198                // String columnFamily is null. If you don't specify a columnFamily, use compact(TableName) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_0
+       8: aload_1
+       9: aload_2
+      10: iconst_0
+      11: aload_3
+      12: invokespecial #197                // Method compact:(Lorg/apache/hadoop/hbase/TableName;[BZLorg/apache/hadoop/hbase/client/CompactType;)Ljava/util/concurrent/CompletableFuture;
+      15: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> compactRegion(byte[]);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aconst_null
+       3: iconst_0
+       4: invokespecial #199                // Method compactRegion:([B[BZ)Ljava/util/concurrent/CompletableFuture;
+       7: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> compactRegion(byte[], byte[]);
+    Code:
+       0: aload_2
+       1: ldc           #200                // String columnFamily is null. If you don't specify a columnFamily, use compactRegion(regionName) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_0
+       8: aload_1
+       9: aload_2
+      10: iconst_0
+      11: invokespecial #199                // Method compactRegion:([B[BZ)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> majorCompact(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.CompactType);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aconst_null
+       3: iconst_1
+       4: aload_2
+       5: invokespecial #197                // Method compact:(Lorg/apache/hadoop/hbase/TableName;[BZLorg/apache/hadoop/hbase/client/CompactType;)Ljava/util/concurrent/CompletableFuture;
+       8: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> majorCompact(org.apache.hadoop.hbase.TableName, byte[], org.apache.hadoop.hbase.client.CompactType);
+    Code:
+       0: aload_2
+       1: ldc           #201                // String columnFamily is null.If you don't specify a columnFamily, use compact(TableName) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_0
+       8: aload_1
+       9: aload_2
+      10: iconst_1
+      11: aload_3
+      12: invokespecial #197                // Method compact:(Lorg/apache/hadoop/hbase/TableName;[BZLorg/apache/hadoop/hbase/client/CompactType;)Ljava/util/concurrent/CompletableFuture;
+      15: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> majorCompactRegion(byte[]);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aconst_null
+       3: iconst_1
+       4: invokespecial #199                // Method compactRegion:([B[BZ)Ljava/util/concurrent/CompletableFuture;
+       7: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> majorCompactRegion(byte[], byte[]);
+    Code:
+       0: aload_2
+       1: ldc           #202                // String columnFamily is null. If you don't specify a columnFamily, use majorCompactRegion(regionName) instead
+       3: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       6: pop
+       7: aload_0
+       8: aload_1
+       9: aload_2
+      10: iconst_1
+      11: invokespecial #199                // Method compactRegion:([B[BZ)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> compactRegionServer(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_0
+       3: invokespecial #203                // Method compactRegionServer:(Lorg/apache/hadoop/hbase/ServerName;Z)Ljava/util/concurrent/CompletableFuture;
+       6: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> majorCompactRegionServer(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: invokespecial #203                // Method compactRegionServer:(Lorg/apache/hadoop/hbase/ServerName;Z)Ljava/util/concurrent/CompletableFuture;
+       6: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> mergeSwitch(boolean, boolean);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: getstatic     #231                // Field org/apache/hadoop/hbase/client/MasterSwitchType.MERGE:Lorg/apache/hadoop/hbase/client/MasterSwitchType;
+       6: invokespecial #232                // Method setSplitOrMergeOn:(ZZLorg/apache/hadoop/hbase/client/MasterSwitchType;)Ljava/util/concurrent/CompletableFuture;
+       9: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isMergeEnabled();
+    Code:
+       0: aload_0
+       1: getstatic     #231                // Field org/apache/hadoop/hbase/client/MasterSwitchType.MERGE:Lorg/apache/hadoop/hbase/client/MasterSwitchType;
+       4: invokespecial #233                // Method isSplitOrMergeOn:(Lorg/apache/hadoop/hbase/client/MasterSwitchType;)Ljava/util/concurrent/CompletableFuture;
+       7: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> splitSwitch(boolean, boolean);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: iload_2
+       3: getstatic     #234                // Field org/apache/hadoop/hbase/client/MasterSwitchType.SPLIT:Lorg/apache/hadoop/hbase/client/MasterSwitchType;
+       6: invokespecial #232                // Method setSplitOrMergeOn:(ZZLorg/apache/hadoop/hbase/client/MasterSwitchType;)Ljava/util/concurrent/CompletableFuture;
+       9: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isSplitEnabled();
+    Code:
+       0: aload_0
+       1: getstatic     #234                // Field org/apache/hadoop/hbase/client/MasterSwitchType.SPLIT:Lorg/apache/hadoop/hbase/client/MasterSwitchType;
+       4: invokespecial #233                // Method isSplitOrMergeOn:(Lorg/apache/hadoop/hbase/client/MasterSwitchType;)Ljava/util/concurrent/CompletableFuture;
+       7: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> mergeRegions(java.util.List<byte[]>, boolean);
+    Code:
+       0: aload_1
+       1: invokeinterface #240,  1          // InterfaceMethod java/util/List.size:()I
+       6: iconst_2
+       7: if_icmpge     51
+      10: aload_0
+      11: new           #91                 // class java/lang/IllegalArgumentException
+      14: dup
+      15: new           #215                // class java/lang/StringBuilder
+      18: dup
+      19: invokespecial #216                // Method java/lang/StringBuilder."<init>":()V
+      22: ldc           #241                // String Can not merge only
+      24: invokevirtual #218                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: aload_1
+      28: invokeinterface #240,  1          // InterfaceMethod java/util/List.size:()I
+      33: invokevirtual #242                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      36: ldc           #243                // String  region
+      38: invokevirtual #218                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      41: invokevirtual #220                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      44: invokespecial #221                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      47: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      50: areturn
+      51: new           #43                 // class java/util/concurrent/CompletableFuture
+      54: dup
+      55: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      58: astore_3
+      59: aload_1
+      60: invokeinterface #244,  1          // InterfaceMethod java/util/List.stream:()Ljava/util/stream/Stream;
+      65: aload_0
+      66: invokedynamic #245,  0            // InvokeDynamic #56:apply:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Ljava/util/function/Function;
+      71: invokeinterface #246,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      76: invokedynamic #247,  0            // InvokeDynamic #57:apply:()Ljava/util/function/IntFunction;
+      81: invokeinterface #248,  2          // InterfaceMethod java/util/stream/Stream.toArray:(Ljava/util/function/IntFunction;)[Ljava/lang/Object;
+      86: checkcast     #84                 // class "[[B"
+      89: astore        4
+      91: aload_0
+      92: aload         4
+      94: invokespecial #249                // Method checkRegionsAndGetTableName:([[B)Ljava/util/concurrent/CompletableFuture;
+      97: aload_0
+      98: aload_3
+      99: aload         4
+     101: iload_2
+     102: invokedynamic #250,  0            // InvokeDynamic #58:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;[[BZ)Ljava/util/function/BiConsumer;
+     107: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+     110: aload_3
+     111: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> split(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #190                // Method tableExists:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: aload_1
+      16: invokedynamic #251,  0            // InvokeDynamic #59:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_2
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> split(org.apache.hadoop.hbase.TableName, byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_3
+       8: aload_2
+       9: ifnonnull     26
+      12: aload_0
+      13: new           #91                 // class java/lang/IllegalArgumentException
+      16: dup
+      17: ldc           #252                // String splitPoint can not be null.
+      19: invokespecial #221                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      22: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      25: areturn
+      26: aload_0
+      27: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      30: aload_1
+      31: invokevirtual #253                // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getRegionLocator:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTableRegionLocator;
+      34: aload_2
+      35: iconst_1
+      36: invokeinterface #254,  3          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTableRegionLocator.getRegionLocation:([BZ)Ljava/util/concurrent/CompletableFuture;
+      41: aload_0
+      42: aload_3
+      43: aload_2
+      44: invokedynamic #255,  0            // InvokeDynamic #60:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;[B)Ljava/util/function/BiConsumer;
+      49: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      52: aload_3
+      53: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> splitRegion(byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #192                // Method getRegionLocation:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: aload_1
+      16: invokedynamic #256,  0            // InvokeDynamic #61:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;[B)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_2
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> splitRegion(byte[], byte[]);
+    Code:
+       0: aload_2
+       1: ldc_w         #257                // String splitPoint is null. If you don't specify a splitPoint, use splitRegion(byte[]) instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: new           #43                 // class java/util/concurrent/CompletableFuture
+      11: dup
+      12: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      15: astore_3
+      16: aload_0
+      17: aload_1
+      18: invokevirtual #192                // Method getRegionLocation:([B)Ljava/util/concurrent/CompletableFuture;
+      21: aload_0
+      22: aload_3
+      23: aload_1
+      24: aload_2
+      25: invokedynamic #258,  0            // InvokeDynamic #62:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;[B[B)Ljava/util/function/BiConsumer;
+      30: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      33: aload_3
+      34: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> assign(byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokespecial #268                // Method getRegionInfo:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: invokedynamic #269,  0            // InvokeDynamic #66:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      20: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      23: aload_2
+      24: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> unassign(byte[], boolean);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_3
+       8: aload_0
+       9: aload_1
+      10: invokespecial #268                // Method getRegionInfo:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_3
+      15: iload_2
+      16: invokedynamic #270,  0            // InvokeDynamic #67:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Z)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_3
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> offline(byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokespecial #268                // Method getRegionInfo:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: invokedynamic #271,  0            // InvokeDynamic #68:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      20: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      23: aload_2
+      24: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> move(byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokespecial #268                // Method getRegionInfo:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: invokedynamic #272,  0            // InvokeDynamic #69:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      20: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      23: aload_2
+      24: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> move(byte[], org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_2
+       1: ldc_w         #273                // String destServerName is null. If you don't specify a destServerName, use move(byte[]) instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: new           #43                 // class java/util/concurrent/CompletableFuture
+      11: dup
+      12: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      15: astore_3
+      16: aload_0
+      17: aload_1
+      18: invokespecial #268                // Method getRegionInfo:([B)Ljava/util/concurrent/CompletableFuture;
+      21: aload_0
+      22: aload_3
+      23: aload_2
+      24: invokedynamic #274,  0            // InvokeDynamic #70:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/ServerName;)Ljava/util/function/BiConsumer;
+      29: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      32: aload_3
+      33: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> setQuota(org.apache.hadoop.hbase.quotas.QuotaSettings);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #276,  0            // InvokeDynamic #72:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.quotas.QuotaSettings>> getQuota(org.apache.hadoop.hbase.quotas.QuotaFilter);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_1
+       9: invokestatic  #277                // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.makeScan:(Lorg/apache/hadoop/hbase/quotas/QuotaFilter;)Lorg/apache/hadoop/hbase/client/Scan;
+      12: astore_3
+      13: aload_0
+      14: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      17: getstatic     #278                // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      20: invokevirtual #279                // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getTableBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTableBuilder;
+      23: invokeinterface #280,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTableBuilder.build:()Lorg/apache/hadoop/hbase/client/AsyncTable;
+      28: aload_3
+      29: new           #281                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$3
+      32: dup
+      33: aload_0
+      34: aload_2
+      35: invokespecial #282                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$3."<init>":(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)V
+      38: invokeinterface #283,  3          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncTable.scan:(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/client/ScanResultConsumerBase;)V
+      43: aload_2
+      44: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> addReplicationPeer(java.lang.String, org.apache.hadoop.hbase.replication.ReplicationPeerConfig, boolean);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: iload_3
+       4: invokestatic  #284                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildAddReplicationPeerRequest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;Z)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$AddReplicationPeerRequest;
+       7: invokedynamic #285,  0            // InvokeDynamic #73:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      12: invokedynamic #286,  0            // InvokeDynamic #74:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      17: new           #287                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer
+      20: dup
+      21: aload_1
+      22: invokedynamic #288,  0            // InvokeDynamic #75:get:()Ljava/util/function/Supplier;
+      27: invokespecial #289                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer."<init>":(Ljava/lang/String;Ljava/util/function/Supplier;)V
+      30: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      33: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> removeReplicationPeer(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #290                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildRemoveReplicationPeerRequest:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$RemoveReplicationPeerRequest;
+       5: invokedynamic #291,  0            // InvokeDynamic #76:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      10: invokedynamic #292,  0            // InvokeDynamic #77:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      15: new           #287                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer
+      18: dup
+      19: aload_1
+      20: invokedynamic #293,  0            // InvokeDynamic #78:get:()Ljava/util/function/Supplier;
+      25: invokespecial #289                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer."<init>":(Ljava/lang/String;Ljava/util/function/Supplier;)V
+      28: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      31: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> enableReplicationPeer(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #294                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildEnableReplicationPeerRequest:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$EnableReplicationPeerRequest;
+       5: invokedynamic #295,  0            // InvokeDynamic #79:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      10: invokedynamic #296,  0            // InvokeDynamic #80:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      15: new           #287                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer
+      18: dup
+      19: aload_1
+      20: invokedynamic #297,  0            // InvokeDynamic #81:get:()Ljava/util/function/Supplier;
+      25: invokespecial #289                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer."<init>":(Ljava/lang/String;Ljava/util/function/Supplier;)V
+      28: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      31: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> disableReplicationPeer(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #298                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildDisableReplicationPeerRequest:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$DisableReplicationPeerRequest;
+       5: invokedynamic #299,  0            // InvokeDynamic #82:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      10: invokedynamic #300,  0            // InvokeDynamic #83:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      15: new           #287                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer
+      18: dup
+      19: aload_1
+      20: invokedynamic #301,  0            // InvokeDynamic #84:get:()Ljava/util/function/Supplier;
+      25: invokespecial #289                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer."<init>":(Ljava/lang/String;Ljava/util/function/Supplier;)V
+      28: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      31: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.replication.ReplicationPeerConfig> getReplicationPeerConfig(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #302,  0            // InvokeDynamic #85:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/lang/String;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> updateReplicationPeerConfig(java.lang.String, org.apache.hadoop.hbase.replication.ReplicationPeerConfig);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokestatic  #303                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildUpdateReplicationPeerConfigRequest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/ReplicationPeerConfig;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$UpdateReplicationPeerConfigRequest;
+       6: invokedynamic #304,  0            // InvokeDynamic #86:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      11: invokedynamic #305,  0            // InvokeDynamic #87:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      16: new           #287                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer
+      19: dup
+      20: aload_1
+      21: invokedynamic #306,  0            // InvokeDynamic #88:get:()Ljava/util/function/Supplier;
+      26: invokespecial #289                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer."<init>":(Ljava/lang/String;Ljava/util/function/Supplier;)V
+      29: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      32: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> transitReplicationPeerSyncReplicationState(java.lang.String, org.apache.hadoop.hbase.replication.SyncReplicationState);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokestatic  #307                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildTransitReplicationPeerSyncReplicationStateRequest:(Ljava/lang/String;Lorg/apache/hadoop/hbase/replication/SyncReplicationState;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$TransitReplicationPeerSyncReplicationStateRequest;
+       6: invokedynamic #308,  0            // InvokeDynamic #89:call:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;
+      11: invokedynamic #309,  0            // InvokeDynamic #90:convert:()Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      16: new           #287                // class org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer
+      19: dup
+      20: aload_1
+      21: invokedynamic #310,  0            // InvokeDynamic #91:get:()Ljava/util/function/Supplier;
+      26: invokespecial #289                // Method org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ReplicationProcedureBiConsumer."<init>":(Ljava/lang/String;Ljava/util/function/Supplier;)V
+      29: invokespecial #166                // Method procedureCall:(Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$MasterRpcCall;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$ProcedureBiConsumer;)Ljava/util/concurrent/CompletableFuture;
+      32: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> appendReplicationPeerTableCFs(java.lang.String, java.util.Map<org.apache.hadoop.hbase.TableName, java.util.List<java.lang.String>>);
+    Code:
+       0: aload_2
+       1: ifnonnull     19
+       4: aload_0
+       5: new           #311                // class org/apache/hadoop/hbase/replication/ReplicationException
+       8: dup
+       9: ldc_w         #312                // String tableCfs is null
+      12: invokespecial #313                // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;)V
+      15: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+      19: new           #43                 // class java/util/concurrent/CompletableFuture
+      22: dup
+      23: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      26: astore_3
+      27: aload_0
+      28: aload_1
+      29: invokevirtual #314                // Method getReplicationPeerConfig:(Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
+      32: aload_0
+      33: aload_3
+      34: aload_2
+      35: aload_1
+      36: invokedynamic #315,  0            // InvokeDynamic #92:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Ljava/util/Map;Ljava/lang/String;)Ljava/util/function/BiConsumer;
+      41: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      44: aload_3
+      45: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> removeReplicationPeerTableCFs(java.lang.String, java.util.Map<org.apache.hadoop.hbase.TableName, java.util.List<java.lang.String>>);
+    Code:
+       0: aload_2
+       1: ifnonnull     19
+       4: aload_0
+       5: new           #311                // class org/apache/hadoop/hbase/replication/ReplicationException
+       8: dup
+       9: ldc_w         #312                // String tableCfs is null
+      12: invokespecial #313                // Method org/apache/hadoop/hbase/replication/ReplicationException."<init>":(Ljava/lang/String;)V
+      15: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+      19: new           #43                 // class java/util/concurrent/CompletableFuture
+      22: dup
+      23: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      26: astore_3
+      27: aload_0
+      28: aload_1
+      29: invokevirtual #314                // Method getReplicationPeerConfig:(Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
+      32: aload_0
+      33: aload_3
+      34: aload_2
+      35: aload_1
+      36: invokedynamic #316,  0            // InvokeDynamic #93:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Ljava/util/Map;Ljava/lang/String;)Ljava/util/function/BiConsumer;
+      41: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      44: aload_3
+      45: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.replication.ReplicationPeerDescription>> listReplicationPeers();
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: invokestatic  #317                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildListReplicationPeersRequest:(Ljava/util/regex/Pattern;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$ListReplicationPeersRequest;
+       5: invokespecial #318                // Method listReplicationPeers:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$ListReplicationPeersRequest;)Ljava/util/concurrent/CompletableFuture;
+       8: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.replication.ReplicationPeerDescription>> listReplicationPeers(java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ldc_w         #319                // String pattern is null. If you don't specify a pattern, use listReplicationPeers() instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_0
+       9: aload_1
+      10: invokestatic  #317                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildListReplicationPeersRequest:(Ljava/util/regex/Pattern;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$ListReplicationPeersRequest;
+      13: invokespecial #318                // Method listReplicationPeers:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ReplicationProtos$ListReplicationPeersRequest;)Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.replication.TableCFs>> listReplicatedTableCFs();
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: invokevirtual #321                // Method listTableDescriptors:()Ljava/util/concurrent/CompletableFuture;
+      12: aload_0
+      13: aload_1
+      14: invokedynamic #322,  0            // InvokeDynamic #95:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      19: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      22: aload_1
+      23: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> snapshot(org.apache.hadoop.hbase.client.SnapshotDescription);
+    Code:
+       0: aload_1
+       1: invokestatic  #323                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.createHBaseProtosSnapshotDesc:(Lorg/apache/hadoop/hbase/client/SnapshotDescription;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;
+       4: astore_2
+       5: aload_2
+       6: invokestatic  #324                // Method org/apache/hadoop/hbase/snapshot/ClientSnapshotDescriptionUtils.assertSnapshotRequestIsValid:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)V
+       9: goto          19
+      12: astore_3
+      13: aload_0
+      14: aload_3
+      15: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+      19: new           #43                 // class java/util/concurrent/CompletableFuture
+      22: dup
+      23: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      26: astore_3
+      27: invokestatic  #325                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$SnapshotRequest.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$SnapshotRequest$Builder;
+      30: aload_2
+      31: invokevirtual #326                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$SnapshotRequest$Builder.setSnapshot:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$SnapshotRequest$Builder;
+      34: invokevirtual #327                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$SnapshotRequest$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$SnapshotRequest;
+      37: astore        4
+      39: aload_0
+      40: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      43: aload_0
+      44: aload         4
+      46: invokedynamic #328,  0            // InvokeDynamic #96:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$SnapshotRequest;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      51: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      54: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      57: aload_0
+      58: aload_3
+      59: aload_1
+      60: aload_2
+      61: invokedynamic #329,  0            // InvokeDynamic #97:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/client/SnapshotDescription;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/SnapshotProtos$SnapshotDescription;)Ljava/util/function/BiConsumer;
+      66: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      69: aload_3
+      70: areturn
+    Exception table:
+       from    to  target type
+           5     9    12   Class java/lang/IllegalArgumentException
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isSnapshotFinished(org.apache.hadoop.hbase.client.SnapshotDescription);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #330,  0            // InvokeDynamic #98:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/client/SnapshotDescription;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> restoreSnapshot(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       4: invokevirtual #206                // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       7: ldc_w         #331                // String hbase.snapshot.restore.take.failsafe.snapshot
+      10: iconst_1
+      11: invokevirtual #332                // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      14: istore_2
+      15: aload_0
+      16: aload_1
+      17: iload_2
+      18: invokevirtual #333                // Method restoreSnapshot:(Ljava/lang/String;Z)Ljava/util/concurrent/CompletableFuture;
+      21: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> restoreSnapshot(java.lang.String, boolean, boolean);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore        4
+       9: aload_0
+      10: aload_1
+      11: invokestatic  #334                // Method java/util/regex/Pattern.compile:(Ljava/lang/String;)Ljava/util/regex/Pattern;
+      14: invokevirtual #335                // Method listSnapshots:(Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+      17: aload_0
+      18: aload         4
+      20: aload_1
+      21: iload_3
+      22: iload_2
+      23: invokedynamic #336,  0            // InvokeDynamic #99:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Ljava/lang/String;ZZ)Ljava/util/function/BiConsumer;
+      28: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      31: aload         4
+      33: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> cloneSnapshot(java.lang.String, org.apache.hadoop.hbase.TableName, boolean);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore        4
+       9: aload_0
+      10: aload_2
+      11: invokevirtual #190                // Method tableExists:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      14: aload_0
+      15: aload         4
+      17: aload_2
+      18: aload_1
+      19: iload_3
+      20: invokedynamic #355,  0            // InvokeDynamic #102:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;Z)Ljava/util/function/BiConsumer;
+      25: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      28: aload         4
+      30: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.SnapshotDescription>> listSnapshots();
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: invokespecial #362                // Method getCompletedSnapshots:(Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+       5: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.SnapshotDescription>> listSnapshots(java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ldc_w         #363                // String pattern is null. If you don't specify a pattern, use listSnapshots() instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_0
+       9: aload_1
+      10: invokespecial #362                // Method getCompletedSnapshots:(Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+      13: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.SnapshotDescription>> listTableSnapshots(java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ldc_w         #365                // String tableNamePattern is null. If you don't specify a tableNamePattern, use listSnapshots() instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_0
+       9: aload_1
+      10: aconst_null
+      11: invokespecial #366                // Method getCompletedSnapshots:(Ljava/util/regex/Pattern;Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.SnapshotDescription>> listTableSnapshots(java.util.regex.Pattern, java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ldc_w         #367                // String tableNamePattern is null. If you don't specify a tableNamePattern, use listSnapshots(Pattern) instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_2
+       9: ldc_w         #368                // String snapshotNamePattern is null. If you don't specify a snapshotNamePattern, use listTableSnapshots(Pattern) instead
+      12: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      15: pop
+      16: aload_0
+      17: aload_1
+      18: aload_2
+      19: invokespecial #366                // Method getCompletedSnapshots:(Ljava/util/regex/Pattern;Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteSnapshot(java.lang.String);
+    Code:
+       0: aload_0
+       1: new           #371                // class org/apache/hadoop/hbase/client/SnapshotDescription
+       4: dup
+       5: aload_1
+       6: invokespecial #372                // Method org/apache/hadoop/hbase/client/SnapshotDescription."<init>":(Ljava/lang/String;)V
+       9: invokespecial #373                // Method internalDeleteSnapshot:(Lorg/apache/hadoop/hbase/client/SnapshotDescription;)Ljava/util/concurrent/CompletableFuture;
+      12: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteSnapshots();
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: aconst_null
+       3: invokespecial #374                // Method internalDeleteSnapshots:(Ljava/util/regex/Pattern;Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+       6: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteSnapshots(java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ldc_w         #375                // String snapshotNamePattern is null. If you don't specify a snapshotNamePattern, use deleteSnapshots() instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_0
+       9: aconst_null
+      10: aload_1
+      11: invokespecial #374                // Method internalDeleteSnapshots:(Ljava/util/regex/Pattern;Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteTableSnapshots(java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ldc_w         #376                // String tableNamePattern is null. If you don't specify a tableNamePattern, use deleteSnapshots() instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_0
+       9: aload_1
+      10: aconst_null
+      11: invokespecial #374                // Method internalDeleteSnapshots:(Ljava/util/regex/Pattern;Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+      14: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> deleteTableSnapshots(java.util.regex.Pattern, java.util.regex.Pattern);
+    Code:
+       0: aload_1
+       1: ldc_w         #377                // String tableNamePattern is null. If you don't specify a tableNamePattern, use deleteSnapshots(Pattern) instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_2
+       9: ldc_w         #378                // String snapshotNamePattern is null. If you don't specify a snapshotNamePattern, use deleteSnapshots(Pattern) instead
+      12: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      15: pop
+      16: aload_0
+      17: aload_1
+      18: aload_2
+      19: invokespecial #374                // Method internalDeleteSnapshots:(Ljava/util/regex/Pattern;Ljava/util/regex/Pattern;)Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> execProcedure(java.lang.String, java.lang.String, java.util.Map<java.lang.String, java.lang.String>);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore        4
+       9: aload_1
+      10: aload_2
+      11: aload_3
+      12: invokestatic  #381                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.buildProcedureDescription:(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;
+      15: astore        5
+      17: aload_0
+      18: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      21: aload_0
+      22: aload         5
+      24: invokedynamic #382,  0            // InvokeDynamic #108:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      29: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      32: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      35: aload_0
+      36: aload         4
+      38: aload_1
+      39: aload_2
+      40: aload_3
+      41: invokedynamic #383,  0            // InvokeDynamic #109:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Ljava/util/function/BiConsumer;
+      46: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      49: aload         4
+      51: areturn
+
+  public java.util.concurrent.CompletableFuture<byte[]> execProcedureWithReturn(java.lang.String, java.lang.String, java.util.Map<java.lang.String, java.lang.String>);
+    Code:
+       0: aload_1
+       1: aload_2
+       2: aload_3
+       3: invokestatic  #381                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.buildProcedureDescription:(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;
+       6: astore        4
+       8: aload_0
+       9: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      12: aload_0
+      13: aload         4
+      15: invokedynamic #384,  0            // InvokeDynamic #110:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      20: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      23: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      26: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isProcedureFinished(java.lang.String, java.lang.String, java.util.Map<java.lang.String, java.lang.String>);
+    Code:
+       0: aload_1
+       1: aload_2
+       2: aload_3
+       3: invokestatic  #381                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.buildProcedureDescription:(Ljava/lang/String;Ljava/lang/String;Ljava/util/Map;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;
+       6: astore        4
+       8: aload_0
+       9: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      12: aload_0
+      13: aload         4
+      15: invokedynamic #385,  0            // InvokeDynamic #111:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$ProcedureDescription;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      20: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      23: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      26: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> abortProcedure(long, boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: lload_1
+       6: invokedynamic #386,  0            // InvokeDynamic #112:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;J)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.String> getProcedures();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #387,  0            // InvokeDynamic #113:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.String> getLocks();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #388,  0            // InvokeDynamic #114:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> decommissionRegionServers(java.util.List<org.apache.hadoop.hbase.ServerName>, boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: iload_2
+       7: invokedynamic #389,  0            // InvokeDynamic #115:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/List;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      12: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      15: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.ServerName>> listDecommissionedRegionServers();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #390,  0            // InvokeDynamic #116:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> recommissionRegionServer(org.apache.hadoop.hbase.ServerName, java.util.List<byte[]>);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: invokedynamic #391,  0            // InvokeDynamic #117:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/ServerName;Ljava/util/List;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      12: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      15: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+
+  java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.HRegionLocation> getRegionLocation(byte[]);
+    Code:
+       0: aload_1
+       1: ifnonnull     19
+       4: aload_0
+       5: new           #91                 // class java/lang/IllegalArgumentException
+       8: dup
+       9: ldc_w         #392                // String Passed region name can't be null
+      12: invokespecial #221                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      15: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+      19: aload_1
+      20: invokestatic  #223                // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isEncodedRegionName:([B)Z
+      23: ifeq          77
+      26: aload_1
+      27: invokestatic  #393                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      30: astore_3
+      31: aload_3
+      32: invokevirtual #394                // Method java/lang/String.length:()I
+      35: bipush        32
+      37: if_icmpge     65
+      40: aload_0
+      41: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      44: getfield      #131                // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.registry:Lorg/apache/hadoop/hbase/client/AsyncRegistry;
+      47: invokeinterface #132,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRegistry.getMetaRegionLocation:()Ljava/util/concurrent/CompletableFuture;
+      52: aload_3
+      53: invokedynamic #396,  0            // InvokeDynamic #118:apply:(Ljava/lang/String;)Ljava/util/function/Function;
+      58: invokevirtual #134                // Method java/util/concurrent/CompletableFuture.thenApply:(Ljava/util/function/Function;)Ljava/util/concurrent/CompletableFuture;
+      61: astore_2
+      62: goto          74
+      65: aload_0
+      66: getfield      #10                 // Field metaTable:Lorg/apache/hadoop/hbase/client/AsyncTable;
+      69: aload_1
+      70: invokestatic  #397                // Method org/apache/hadoop/hbase/AsyncMetaTableAccessor.getRegionLocationWithEncodedName:(Lorg/apache/hadoop/hbase/client/AsyncTable;[B)Ljava/util/concurrent/CompletableFuture;
+      73: astore_2
+      74: goto          125
+      77: aload_1
+      78: invokestatic  #398                // Method org/apache/hadoop/hbase/MetaTableAccessor.parseRegionInfoFromRegionName:([B)Lorg/apache/hadoop/hbase/client/RegionInfo;
+      81: astore_3
+      82: aload_3
+      83: invokeinterface #399,  1          // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isMetaRegion:()Z
+      88: ifeq          116
+      91: aload_0
+      92: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      95: getfield      #131                // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.registry:Lorg/apache/hadoop/hbase/client/AsyncRegistry;
+      98: invokeinterface #132,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRegistry.getMetaRegionLocation:()Ljava/util/concurrent/CompletableFuture;
+     103: aload_3
+     104: invokedynamic #400,  0            // InvokeDynamic #119:apply:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Ljava/util/function/Function;
+     109: invokevirtual #134                // Method java/util/concurrent/CompletableFuture.thenApply:(Ljava/util/function/Function;)Ljava/util/concurrent/CompletableFuture;
+     112: astore_2
+     113: goto          125
+     116: aload_0
+     117: getfield      #10                 // Field metaTable:Lorg/apache/hadoop/hbase/client/AsyncTable;
+     120: aload_1
+     121: invokestatic  #401                // Method org/apache/hadoop/hbase/AsyncMetaTableAccessor.getRegionLocation:(Lorg/apache/hadoop/hbase/client/AsyncTable;[B)Ljava/util/concurrent/CompletableFuture;
+     124: astore_2
+     125: new           #43                 // class java/util/concurrent/CompletableFuture
+     128: dup
+     129: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+     132: astore_3
+     133: aload_2
+     134: aload_3
+     135: aload_1
+     136: invokedynamic #402,  0            // InvokeDynamic #120:accept:(Ljava/util/concurrent/CompletableFuture;[B)Ljava/util/function/BiConsumer;
+     141: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+     144: aload_3
+     145: areturn
+     146: astore_2
+     147: aload_0
+     148: aload_2
+     149: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+     152: areturn
+    Exception table:
+       from    to  target type
+          19   145   146   Class java/io/IOException
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.ClusterMetrics> getClusterMetrics();
+    Code:
+       0: aload_0
+       1: ldc_w         #422                // class org/apache/hadoop/hbase/ClusterMetrics$Option
+       4: invokestatic  #423                // Method java/util/EnumSet.allOf:(Ljava/lang/Class;)Ljava/util/EnumSet;
+       7: invokevirtual #424                // Method getClusterMetrics:(Ljava/util/EnumSet;)Ljava/util/concurrent/CompletableFuture;
+      10: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.ClusterMetrics> getClusterMetrics(java.util.EnumSet<org.apache.hadoop.hbase.ClusterMetrics$Option>);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #425,  0            // InvokeDynamic #125:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/EnumSet;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> shutdown();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: sipush        200
+       7: invokevirtual #426                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.priority:(I)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      10: aload_0
+      11: invokedynamic #427,  0            // InvokeDynamic #126:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      16: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      19: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> stopMaster();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: sipush        200
+       7: invokevirtual #426                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.priority:(I)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      10: aload_0
+      11: invokedynamic #428,  0            // InvokeDynamic #127:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      16: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      19: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> stopRegionServer(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: new           #215                // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #216                // Method java/lang/StringBuilder."<init>":()V
+       7: ldc_w         #429                // String Called by admin client
+      10: invokevirtual #218                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      13: aload_0
+      14: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      17: invokevirtual #430                // Method java/lang/Object.toString:()Ljava/lang/String;
+      20: invokevirtual #218                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      23: invokevirtual #220                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      26: invokestatic  #431                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildStopServerRequest:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$StopServerRequest;
+      29: astore_2
+      30: aload_0
+      31: invokespecial #180                // Method newAdminCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      34: sipush        200
+      37: invokevirtual #432                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.priority:(I)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      40: aload_0
+      41: aload_2
+      42: invokedynamic #433,  0            // InvokeDynamic #128:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$StopServerRequest;)Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;
+      47: invokevirtual #182                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      50: aload_1
+      51: invokevirtual #183                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.serverName:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      54: invokevirtual #184                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      57: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> updateConfiguration(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: invokespecial #180                // Method newAdminCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #434,  0            // InvokeDynamic #129:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;
+      10: invokevirtual #182                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      13: aload_1
+      14: invokevirtual #183                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.serverName:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      17: invokevirtual #184                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      20: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> updateConfiguration();
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getstatic     #435                // Field org/apache/hadoop/hbase/ClusterMetrics$Option.LIVE_SERVERS:Lorg/apache/hadoop/hbase/ClusterMetrics$Option;
+      12: getstatic     #436                // Field org/apache/hadoop/hbase/ClusterMetrics$Option.MASTER:Lorg/apache/hadoop/hbase/ClusterMetrics$Option;
+      15: getstatic     #437                // Field org/apache/hadoop/hbase/ClusterMetrics$Option.BACKUP_MASTERS:Lorg/apache/hadoop/hbase/ClusterMetrics$Option;
+      18: invokestatic  #438                // Method java/util/EnumSet.of:(Ljava/lang/Enum;Ljava/lang/Enum;Ljava/lang/Enum;)Ljava/util/EnumSet;
+      21: invokevirtual #424                // Method getClusterMetrics:(Ljava/util/EnumSet;)Ljava/util/concurrent/CompletableFuture;
+      24: aload_0
+      25: aload_1
+      26: invokedynamic #439,  0            // InvokeDynamic #130:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      31: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      34: aload_1
+      35: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> rollWALWriter(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: invokespecial #180                // Method newAdminCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #440,  0            // InvokeDynamic #131:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;
+      10: invokevirtual #182                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      13: aload_1
+      14: invokevirtual #183                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.serverName:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      17: invokevirtual #184                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      20: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> clearCompactionQueues(org.apache.hadoop.hbase.ServerName, java.util.Set<java.lang.String>);
+    Code:
+       0: aload_0
+       1: invokespecial #180                // Method newAdminCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+       4: aload_0
+       5: aload_2
+       6: invokedynamic #441,  0            // InvokeDynamic #132:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/Set;)Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;
+      11: invokevirtual #182                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      14: aload_1
+      15: invokevirtual #183                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.serverName:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      18: invokevirtual #184                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      21: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.security.SecurityCapability>> getSecurityCapabilities();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #442,  0            // InvokeDynamic #133:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.RegionMetrics>> getRegionMetrics(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: invokestatic  #443                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$GetRegionLoadRequest.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$GetRegionLoadRequest$Builder;
+       4: invokevirtual #444                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$GetRegionLoadRequest$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$GetRegionLoadRequest;
+       7: aload_1
+       8: invokespecial #445                // Method getRegionMetrics:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$GetRegionLoadRequest;Lorg/apache/hadoop/hbase/ServerName;)Ljava/util/concurrent/CompletableFuture;
+      11: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.RegionMetrics>> getRegionMetrics(org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_2
+       1: ldc_w         #446                // String tableName is null. If you don't specify a tableName, use getRegionLoads() instead
+       4: invokestatic  #68                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+       7: pop
+       8: aload_0
+       9: aload_2
+      10: invokestatic  #447                // Method org/apache/hadoop/hbase/shaded/protobuf/RequestConverter.buildGetRegionLoadRequest:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$GetRegionLoadRequest;
+      13: aload_1
+      14: invokespecial #445                // Method getRegionMetrics:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$GetRegionLoadRequest;Lorg/apache/hadoop/hbase/ServerName;)Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isMasterInMaintenanceMode();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #449,  0            // InvokeDynamic #135:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.CompactionState> getCompactionState(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.CompactType);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_3
+       8: getstatic     #209                // Field org/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$6.$SwitchMap$org$apache$hadoop$hbase$client$CompactType:[I
+      11: aload_2
+      12: invokevirtual #210                // Method org/apache/hadoop/hbase/client/CompactType.ordinal:()I
+      15: iaload
+      16: lookupswitch  { // 2
+                     1: 44
+                     2: 70
+               default: 88
+          }
+      44: aload_0
+      45: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      48: getfield      #131                // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.registry:Lorg/apache/hadoop/hbase/client/AsyncRegistry;
+      51: invokeinterface #211,  1          // InterfaceMethod org/apache/hadoop/hbase/client/AsyncRegistry.getMasterAddress:()Ljava/util/concurrent/CompletableFuture;
+      56: aload_0
+      57: aload_3
+      58: aload_1
+      59: invokedynamic #450,  0            // InvokeDynamic #136:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      64: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      67: goto          115
+      70: aload_0
+      71: aload_1
+      72: invokespecial #213                // Method getTableHRegionLocations:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      75: aload_0
+      76: aload_3
+      77: invokedynamic #451,  0            // InvokeDynamic #137:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      82: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      85: goto          115
+      88: new           #91                 // class java/lang/IllegalArgumentException
+      91: dup
+      92: new           #215                // class java/lang/StringBuilder
+      95: dup
+      96: invokespecial #216                // Method java/lang/StringBuilder."<init>":()V
+      99: ldc           #217                // String Unknown compactType:
+     101: invokevirtual #218                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     104: aload_2
+     105: invokevirtual #219                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     108: invokevirtual #220                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     111: invokespecial #221                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+     114: athrow
+     115: aload_3
+     116: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.CompactionState> getCompactionStateForRegion(byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokevirtual #192                // Method getRegionLocation:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: aload_1
+      16: invokedynamic #452,  0            // InvokeDynamic #138:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;[B)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_2
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.Optional<java.lang.Long>> getLastMajorCompactionTimestamp(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: invokestatic  #453                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$MajorCompactionTimestampRequest.newBuilder:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$MajorCompactionTimestampRequest$Builder;
+       3: aload_1
+       4: invokestatic  #454                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toProtoTableName:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$TableName;
+       7: invokevirtual #455                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$MajorCompactionTimestampRequest$Builder.setTableName:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$TableName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$MajorCompactionTimestampRequest$Builder;
+      10: invokevirtual #456                // Method org/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$MajorCompactionTimestampRequest$Builder.build:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$MajorCompactionTimestampRequest;
+      13: astore_2
+      14: aload_0
+      15: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      18: aload_0
+      19: aload_2
+      20: invokedynamic #457,  0            // InvokeDynamic #139:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/MasterProtos$MajorCompactionTimestampRequest;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      25: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      28: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      31: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.Optional<java.lang.Long>> getLastMajorCompactionTimestampForRegion(byte[]);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokespecial #268                // Method getRegionInfo:([B)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: aload_1
+      16: invokedynamic #458,  0            // InvokeDynamic #140:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;[B)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_2
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.Map<org.apache.hadoop.hbase.ServerName, java.lang.Boolean>> compactionSwitch(boolean, java.util.List<java.lang.String>);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_3
+       8: aload_0
+       9: aload_2
+      10: invokespecial #459                // Method getRegionServerList:(Ljava/util/List;)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_3
+      15: iload_1
+      16: invokedynamic #460,  0            // InvokeDynamic #141:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Z)Ljava/util/function/BiConsumer;
+      21: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      24: aload_3
+      25: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> balancerSwitch(boolean, boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: iload_1
+       6: iload_2
+       7: invokedynamic #474,  0            // InvokeDynamic #144:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;ZZ)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      12: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      15: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> balance(boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: iload_1
+       6: invokedynamic #475,  0            // InvokeDynamic #145:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isBalancerEnabled();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #476,  0            // InvokeDynamic #146:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> normalizerSwitch(boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: iload_1
+       6: invokedynamic #477,  0            // InvokeDynamic #147:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isNormalizerEnabled();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #478,  0            // InvokeDynamic #148:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> normalize();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #479,  0            // InvokeDynamic #149:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> cleanerChoreSwitch(boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: iload_1
+       6: invokedynamic #480,  0            // InvokeDynamic #150:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isCleanerChoreEnabled();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #481,  0            // InvokeDynamic #151:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> runCleanerChore();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #482,  0            // InvokeDynamic #152:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> catalogJanitorSwitch(boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: iload_1
+       6: invokedynamic #483,  0            // InvokeDynamic #153:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isCatalogJanitorEnabled();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #484,  0            // InvokeDynamic #154:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Integer> runCatalogJanitor();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #485,  0            // InvokeDynamic #155:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public <S, R> java.util.concurrent.CompletableFuture<R> coprocessorService(java.util.function.Function<com.google.protobuf.RpcChannel, S>, org.apache.hadoop.hbase.client.ServiceCaller<S, R>);
+    Code:
+       0: new           #486                // class org/apache/hadoop/hbase/client/MasterCoprocessorRpcChannelImpl
+       3: dup
+       4: aload_0
+       5: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       8: invokespecial #487                // Method org/apache/hadoop/hbase/client/MasterCoprocessorRpcChannelImpl."<init>":(Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;)V
+      11: astore_3
+      12: aload_1
+      13: aload_3
+      14: invokeinterface #488,  2          // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+      19: astore        4
+      21: new           #43                 // class java/util/concurrent/CompletableFuture
+      24: dup
+      25: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      28: astore        5
+      30: new           #489                // class org/apache/hadoop/hbase/client/ClientCoprocessorRpcController
+      33: dup
+      34: invokespecial #490                // Method org/apache/hadoop/hbase/client/ClientCoprocessorRpcController."<init>":()V
+      37: astore        6
+      39: aload_2
+      40: aload         4
+      42: aload         6
+      44: aload         6
+      46: aload         5
+      48: invokedynamic #491,  0            // InvokeDynamic #156:run:(Lorg/apache/hadoop/hbase/client/ClientCoprocessorRpcController;Ljava/util/concurrent/CompletableFuture;)Lcom/google/protobuf/RpcCallback;
+      53: invokeinterface #492,  4          // InterfaceMethod org/apache/hadoop/hbase/client/ServiceCaller.call:(Ljava/lang/Object;Lcom/google/protobuf/RpcController;Lcom/google/protobuf/RpcCallback;)V
+      58: aload         5
+      60: areturn
+
+  public <S, R> java.util.concurrent.CompletableFuture<R> coprocessorService(java.util.function.Function<com.google.protobuf.RpcChannel, S>, org.apache.hadoop.hbase.client.ServiceCaller<S, R>, org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: new           #493                // class org/apache/hadoop/hbase/client/RegionServerCoprocessorRpcChannelImpl
+       3: dup
+       4: aload_0
+       5: invokespecial #494                // Method newServerCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$ServerRequestCallerBuilder;
+       8: aload_3
+       9: invokevirtual #495                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$ServerRequestCallerBuilder.serverName:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$ServerRequestCallerBuilder;
+      12: invokespecial #496                // Method org/apache/hadoop/hbase/client/RegionServerCoprocessorRpcChannelImpl."<init>":(Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$ServerRequestCallerBuilder;)V
+      15: astore        4
+      17: aload_1
+      18: aload         4
+      20: invokeinterface #488,  2          // InterfaceMethod java/util/function/Function.apply:(Ljava/lang/Object;)Ljava/lang/Object;
+      25: astore        5
+      27: new           #43                 // class java/util/concurrent/CompletableFuture
+      30: dup
+      31: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      34: astore        6
+      36: new           #489                // class org/apache/hadoop/hbase/client/ClientCoprocessorRpcController
+      39: dup
+      40: invokespecial #490                // Method org/apache/hadoop/hbase/client/ClientCoprocessorRpcController."<init>":()V
+      43: astore        7
+      45: aload_2
+      46: aload         5
+      48: aload         7
+      50: aload         7
+      52: aload         6
+      54: invokedynamic #497,  0            // InvokeDynamic #157:run:(Lorg/apache/hadoop/hbase/client/ClientCoprocessorRpcController;Ljava/util/concurrent/CompletableFuture;)Lcom/google/protobuf/RpcCallback;
+      59: invokeinterface #492,  4          // InterfaceMethod org/apache/hadoop/hbase/client/ServiceCaller.call:(Ljava/lang/Object;Lcom/google/protobuf/RpcController;Lcom/google/protobuf/RpcCallback;)V
+      64: aload         6
+      66: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.ServerName>> clearDeadServers(java.util.List<org.apache.hadoop.hbase.ServerName>);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #498,  0            // InvokeDynamic #158:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/List;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> enableTableReplication(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_1
+       1: ifnonnull     19
+       4: aload_0
+       5: new           #91                 // class java/lang/IllegalArgumentException
+       8: dup
+       9: ldc_w         #506                // String Table name is null
+      12: invokespecial #221                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      15: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+      19: new           #43                 // class java/util/concurrent/CompletableFuture
+      22: dup
+      23: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      26: astore_2
+      27: aload_0
+      28: aload_1
+      29: invokevirtual #190                // Method tableExists:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      32: aload_0
+      33: aload_2
+      34: aload_1
+      35: invokedynamic #507,  0            // InvokeDynamic #159:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      40: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      43: aload_2
+      44: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> disableTableReplication(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_1
+       1: ifnonnull     19
+       4: aload_0
+       5: new           #91                 // class java/lang/IllegalArgumentException
+       8: dup
+       9: ldc_w         #506                // String Table name is null
+      12: invokespecial #221                // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      15: invokespecial #92                 // Method failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+      19: new           #43                 // class java/util/concurrent/CompletableFuture
+      22: dup
+      23: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      26: astore_2
+      27: aload_0
+      28: aload_1
+      29: invokevirtual #190                // Method tableExists:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      32: aload_0
+      33: aload_2
+      34: aload_1
+      35: invokedynamic #508,  0            // InvokeDynamic #160:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;)Ljava/util/function/BiConsumer;
+      40: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      43: aload_2
+      44: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.CacheEvictionStats> clearBlockCache(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: aload_0
+       9: aload_1
+      10: invokespecial #213                // Method getTableHRegionLocations:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      13: aload_0
+      14: aload_2
+      15: invokedynamic #521,  0            // InvokeDynamic #167:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;)Ljava/util/function/BiConsumer;
+      20: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      23: aload_2
+      24: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> cloneTableSchema(org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.TableName, boolean);
+    Code:
+       0: new           #43                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #44                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore        4
+       9: aload_0
+      10: aload_1
+      11: invokevirtual #190                // Method tableExists:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      14: aload_0
+      15: aload         4
+      17: aload_1
+      18: aload_2
+      19: iload_3
+      20: invokedynamic #522,  0            // InvokeDynamic #168:accept:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/util/concurrent/CompletableFuture;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/TableName;Z)Ljava/util/function/BiConsumer;
+      25: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/FutureUtils.addListener:(Ljava/util/concurrent/CompletableFuture;Ljava/util/function/BiConsumer;)V
+      28: aload         4
+      30: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> switchRpcThrottle(boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: iload_1
+       6: invokedynamic #524,  0            // InvokeDynamic #170:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: astore_2
+      18: aload_2
+      19: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> isRpcThrottleEnabled();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #525,  0            // InvokeDynamic #171:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: astore_1
+      17: aload_1
+      18: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Boolean> exceedThrottleQuotaSwitch(boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: iload_1
+       6: invokedynamic #526,  0            // InvokeDynamic #172:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: astore_2
+      18: aload_2
+      19: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.Map<org.apache.hadoop.hbase.TableName, java.lang.Long>> getSpaceQuotaTableSizes();
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #527,  0            // InvokeDynamic #173:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      10: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      13: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.Map<org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot>> getRegionServerSpaceQuotaSnapshots(org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: invokespecial #180                // Method newAdminCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+       4: aload_0
+       5: invokedynamic #528,  0            // InvokeDynamic #174:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;)Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;
+      10: invokevirtual #182                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncAdminRequestRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      13: aload_1
+      14: invokevirtual #183                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.serverName:(Lorg/apache/hadoop/hbase/ServerName;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder;
+      17: invokevirtual #184                // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$AdminRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      20: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot> getCurrentSpaceQuotaSnapshot(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokedynamic #530,  0            // InvokeDynamic #176:convert:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+       7: invokespecial #531                // Method getCurrentSpaceQuotaSnapshot:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;)Ljava/util/concurrent/CompletableFuture;
+      10: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot> getCurrentSpaceQuotaSnapshot(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_1
+       1: invokestatic  #454                // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toProtoTableName:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$TableName;
+       4: astore_2
+       5: aload_0
+       6: aload_2
+       7: invokedynamic #532,  0            // InvokeDynamic #177:convert:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/HBaseProtos$TableName;)Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;
+      12: invokespecial #531                // Method getCurrentSpaceQuotaSnapshot:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin$Converter;)Ljava/util/concurrent/CompletableFuture;
+      15: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> grant(org.apache.hadoop.hbase.security.access.UserPermission, boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: iload_2
+       7: invokedynamic #533,  0            // InvokeDynamic #178:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/security/access/UserPermission;Z)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      12: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      15: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> revoke(org.apache.hadoop.hbase.security.access.UserPermission);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #534,  0            // InvokeDynamic #179:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/security/access/UserPermission;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.security.access.UserPermission>> getUserPermissions(org.apache.hadoop.hbase.security.access.GetUserPermissionsRequest);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: invokedynamic #535,  0            // InvokeDynamic #180:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Lorg/apache/hadoop/hbase/security/access/GetUserPermissionsRequest;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      11: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      14: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      17: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<java.lang.Boolean>> hasUserPermissions(java.lang.String, java.util.List<org.apache.hadoop.hbase.security.access.Permission>);
+    Code:
+       0: aload_0
+       1: invokespecial #54                 // Method newMasterCaller:()Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: invokedynamic #536,  0            // InvokeDynamic #181:call:(Lorg/apache/hadoop/hbase/client/RawAsyncHBaseAdmin;Ljava/lang/String;Ljava/util/List;)Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;
+      12: invokevirtual #56                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncMasterRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder;
+      15: invokevirtual #58                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$MasterRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      18: areturn
+
+  static org.slf4j.Logger access$100();
+    Code:
+       0: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static org.apache.hadoop.hbase.client.AsyncConnectionImpl access$200(org.apache.hadoop.hbase.client.RawAsyncHBaseAdmin);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field connection:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       4: areturn
+
+  static int access$300(org.apache.hadoop.hbase.client.RawAsyncHBaseAdmin);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field maxAttempts:I
+       4: ireturn
+
+  static long access$400(org.apache.hadoop.hbase.client.RawAsyncHBaseAdmin);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field pauseNs:J
+       4: lreturn
+
+  static {};
+    Code:
+       0: ldc_w         #1310               // class org/apache/hadoop/hbase/client/AsyncHBaseAdmin
+       3: invokestatic  #1311               // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       6: putstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       9: return
+}

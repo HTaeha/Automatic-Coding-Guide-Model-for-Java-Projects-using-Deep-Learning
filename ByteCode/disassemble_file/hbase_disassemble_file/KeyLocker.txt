@@ -1,0 +1,103 @@
+Compiled from "KeyLocker.java"
+public class org.apache.hadoop.hbase.util.KeyLocker<K> {
+  public org.apache.hadoop.hbase.util.KeyLocker();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/apache/hadoop/hbase/util/WeakObjectPool
+       8: dup
+       9: new           #3                  // class org/apache/hadoop/hbase/util/KeyLocker$1
+      12: dup
+      13: aload_0
+      14: invokespecial #4                  // Method org/apache/hadoop/hbase/util/KeyLocker$1."<init>":(Lorg/apache/hadoop/hbase/util/KeyLocker;)V
+      17: sipush        1000
+      20: invokespecial #6                  // Method org/apache/hadoop/hbase/util/WeakObjectPool."<init>":(Lorg/apache/hadoop/hbase/util/ObjectPool$ObjectFactory;I)V
+      23: putfield      #7                  // Field lockPool:Lorg/apache/hadoop/hbase/util/WeakObjectPool;
+      26: return
+
+  public java.util.concurrent.locks.ReentrantLock acquireLock(K);
+    Code:
+       0: aload_1
+       1: ifnonnull     14
+       4: new           #8                  // class java/lang/IllegalArgumentException
+       7: dup
+       8: ldc           #9                  // String key must not be null
+      10: invokespecial #10                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      13: athrow
+      14: aload_0
+      15: getfield      #7                  // Field lockPool:Lorg/apache/hadoop/hbase/util/WeakObjectPool;
+      18: invokevirtual #11                 // Method org/apache/hadoop/hbase/util/WeakObjectPool.purge:()V
+      21: aload_0
+      22: getfield      #7                  // Field lockPool:Lorg/apache/hadoop/hbase/util/WeakObjectPool;
+      25: aload_1
+      26: invokevirtual #12                 // Method org/apache/hadoop/hbase/util/WeakObjectPool.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      29: checkcast     #13                 // class java/util/concurrent/locks/ReentrantLock
+      32: astore_2
+      33: aload_2
+      34: invokevirtual #14                 // Method java/util/concurrent/locks/ReentrantLock.lock:()V
+      37: aload_2
+      38: areturn
+
+  public java.util.Map<K, java.util.concurrent.locks.Lock> acquireLocks(java.util.Set<? extends K>);
+    Code:
+       0: aload_1
+       1: invokeinterface #15,  1           // InterfaceMethod java/util/Set.toArray:()[Ljava/lang/Object;
+       6: astore_2
+       7: aload_2
+       8: invokestatic  #16                 // Method java/util/Arrays.sort:([Ljava/lang/Object;)V
+      11: aload_0
+      12: getfield      #7                  // Field lockPool:Lorg/apache/hadoop/hbase/util/WeakObjectPool;
+      15: invokevirtual #11                 // Method org/apache/hadoop/hbase/util/WeakObjectPool.purge:()V
+      18: new           #17                 // class java/util/LinkedHashMap
+      21: dup
+      22: aload_2
+      23: arraylength
+      24: invokespecial #18                 // Method java/util/LinkedHashMap."<init>":(I)V
+      27: astore_3
+      28: aload_2
+      29: astore        4
+      31: aload         4
+      33: arraylength
+      34: istore        5
+      36: iconst_0
+      37: istore        6
+      39: iload         6
+      41: iload         5
+      43: if_icmpge     88
+      46: aload         4
+      48: iload         6
+      50: aaload
+      51: astore        7
+      53: aload         7
+      55: astore        8
+      57: aload_0
+      58: getfield      #7                  // Field lockPool:Lorg/apache/hadoop/hbase/util/WeakObjectPool;
+      61: aload         8
+      63: invokevirtual #12                 // Method org/apache/hadoop/hbase/util/WeakObjectPool.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      66: checkcast     #13                 // class java/util/concurrent/locks/ReentrantLock
+      69: astore        9
+      71: aload_3
+      72: aload         8
+      74: aload         9
+      76: invokeinterface #19,  3           // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      81: pop
+      82: iinc          6, 1
+      85: goto          39
+      88: aload_3
+      89: invokeinterface #20,  1           // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+      94: invokeinterface #21,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      99: astore        4
+     101: aload         4
+     103: invokeinterface #22,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     108: ifeq          133
+     111: aload         4
+     113: invokeinterface #23,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     118: checkcast     #24                 // class java/util/concurrent/locks/Lock
+     121: astore        5
+     123: aload         5
+     125: invokeinterface #25,  1           // InterfaceMethod java/util/concurrent/locks/Lock.lock:()V
+     130: goto          101
+     133: aload_3
+     134: areturn
+}

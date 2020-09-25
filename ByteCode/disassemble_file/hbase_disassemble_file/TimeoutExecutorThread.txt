@@ -1,0 +1,188 @@
+Compiled from "TimeoutExecutorThread.java"
+class org.apache.hadoop.hbase.procedure2.TimeoutExecutorThread<TEnvironment> extends org.apache.hadoop.hbase.procedure2.StoppableThread {
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.procedure2.TimeoutExecutorThread(org.apache.hadoop.hbase.procedure2.ProcedureExecutor<TEnvironment>, java.lang.ThreadGroup);
+    Code:
+       0: aload_0
+       1: aload_2
+       2: ldc           #1                  // String ProcExecTimeout
+       4: invokespecial #2                  // Method org/apache/hadoop/hbase/procedure2/StoppableThread."<init>":(Ljava/lang/ThreadGroup;Ljava/lang/String;)V
+       7: aload_0
+       8: new           #3                  // class java/util/concurrent/DelayQueue
+      11: dup
+      12: invokespecial #4                  // Method java/util/concurrent/DelayQueue."<init>":()V
+      15: putfield      #5                  // Field queue:Ljava/util/concurrent/DelayQueue;
+      18: aload_0
+      19: iconst_1
+      20: invokevirtual #6                  // Method setDaemon:(Z)V
+      23: aload_0
+      24: aload_1
+      25: putfield      #7                  // Field executor:Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      28: return
+
+  public void sendStopSignal();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field queue:Ljava/util/concurrent/DelayQueue;
+       4: getstatic     #8                  // Field org/apache/hadoop/hbase/procedure2/util/DelayedUtil.DELAYED_POISON:Lorg/apache/hadoop/hbase/procedure2/util/DelayedUtil$DelayedWithTimeout;
+       7: invokevirtual #9                  // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      10: pop
+      11: return
+
+  public void run();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field executor:Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+       4: invokevirtual #10                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.isRunning:()Z
+       7: ifeq          96
+      10: aload_0
+      11: getfield      #5                  // Field queue:Ljava/util/concurrent/DelayQueue;
+      14: invokestatic  #11                 // Method org/apache/hadoop/hbase/procedure2/util/DelayedUtil.takeWithoutInterrupt:(Ljava/util/concurrent/DelayQueue;)Ljava/util/concurrent/Delayed;
+      17: checkcast     #12                 // class org/apache/hadoop/hbase/procedure2/util/DelayedUtil$DelayedWithTimeout
+      20: astore_1
+      21: aload_1
+      22: ifnull        0
+      25: aload_1
+      26: getstatic     #8                  // Field org/apache/hadoop/hbase/procedure2/util/DelayedUtil.DELAYED_POISON:Lorg/apache/hadoop/hbase/procedure2/util/DelayedUtil$DelayedWithTimeout;
+      29: if_acmpne     35
+      32: goto          0
+      35: getstatic     #13                 // Field LOG:Lorg/slf4j/Logger;
+      38: ldc           #14                 // String Executing {}
+      40: aload_1
+      41: invokeinterface #15,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      46: aload_1
+      47: instanceof    #16                 // class org/apache/hadoop/hbase/procedure2/InlineChore
+      50: ifeq          64
+      53: aload_0
+      54: aload_1
+      55: checkcast     #16                 // class org/apache/hadoop/hbase/procedure2/InlineChore
+      58: invokespecial #17                 // Method execInlineChore:(Lorg/apache/hadoop/hbase/procedure2/InlineChore;)V
+      61: goto          93
+      64: aload_1
+      65: instanceof    #18                 // class org/apache/hadoop/hbase/procedure2/DelayedProcedure
+      68: ifeq          82
+      71: aload_0
+      72: aload_1
+      73: checkcast     #18                 // class org/apache/hadoop/hbase/procedure2/DelayedProcedure
+      76: invokespecial #19                 // Method execDelayedProcedure:(Lorg/apache/hadoop/hbase/procedure2/DelayedProcedure;)V
+      79: goto          93
+      82: getstatic     #13                 // Field LOG:Lorg/slf4j/Logger;
+      85: ldc           #20                 // String CODE-BUG unknown timeout task type {}
+      87: aload_1
+      88: invokeinterface #21,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;)V
+      93: goto          0
+      96: return
+
+  public void add(org.apache.hadoop.hbase.procedure2.InlineChore);
+    Code:
+       0: aload_1
+       1: invokevirtual #22                 // Method org/apache/hadoop/hbase/procedure2/InlineChore.refreshTimeout:()V
+       4: aload_0
+       5: getfield      #5                  // Field queue:Ljava/util/concurrent/DelayQueue;
+       8: aload_1
+       9: invokevirtual #9                  // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      12: pop
+      13: return
+
+  public void add(org.apache.hadoop.hbase.procedure2.Procedure<TEnvironment>);
+    Code:
+       0: getstatic     #23                 // Field $assertionsDisabled:Z
+       3: ifne          24
+       6: aload_1
+       7: invokevirtual #24                 // Method org/apache/hadoop/hbase/procedure2/Procedure.getState:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ProcedureProtos$ProcedureState;
+      10: getstatic     #25                 // Field org/apache/hadoop/hbase/shaded/protobuf/generated/ProcedureProtos$ProcedureState.WAITING_TIMEOUT:Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ProcedureProtos$ProcedureState;
+      13: if_acmpeq     24
+      16: new           #26                 // class java/lang/AssertionError
+      19: dup
+      20: invokespecial #27                 // Method java/lang/AssertionError."<init>":()V
+      23: athrow
+      24: getstatic     #13                 // Field LOG:Lorg/slf4j/Logger;
+      27: ldc           #28                 // String ADDED {}; timeout={}, timestamp={}
+      29: iconst_3
+      30: anewarray     #29                 // class java/lang/Object
+      33: dup
+      34: iconst_0
+      35: aload_1
+      36: aastore
+      37: dup
+      38: iconst_1
+      39: aload_1
+      40: invokevirtual #30                 // Method org/apache/hadoop/hbase/procedure2/Procedure.getTimeout:()I
+      43: invokestatic  #31                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      46: aastore
+      47: dup
+      48: iconst_2
+      49: aload_1
+      50: invokevirtual #32                 // Method org/apache/hadoop/hbase/procedure2/Procedure.getTimeoutTimestamp:()J
+      53: invokestatic  #33                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      56: aastore
+      57: invokeinterface #34,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+      62: aload_0
+      63: getfield      #5                  // Field queue:Ljava/util/concurrent/DelayQueue;
+      66: new           #18                 // class org/apache/hadoop/hbase/procedure2/DelayedProcedure
+      69: dup
+      70: aload_1
+      71: invokespecial #35                 // Method org/apache/hadoop/hbase/procedure2/DelayedProcedure."<init>":(Lorg/apache/hadoop/hbase/procedure2/Procedure;)V
+      74: invokevirtual #9                  // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      77: pop
+      78: return
+
+  public boolean remove(org.apache.hadoop.hbase.procedure2.Procedure<TEnvironment>);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field queue:Ljava/util/concurrent/DelayQueue;
+       4: new           #18                 // class org/apache/hadoop/hbase/procedure2/DelayedProcedure
+       7: dup
+       8: aload_1
+       9: invokespecial #35                 // Method org/apache/hadoop/hbase/procedure2/DelayedProcedure."<init>":(Lorg/apache/hadoop/hbase/procedure2/Procedure;)V
+      12: invokevirtual #36                 // Method java/util/concurrent/DelayQueue.remove:(Ljava/lang/Object;)Z
+      15: ireturn
+
+  protected void executeTimedoutProcedure(org.apache.hadoop.hbase.procedure2.Procedure<TEnvironment>);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #7                  // Field executor:Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+       5: invokevirtual #48                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getEnvironment:()Ljava/lang/Object;
+       8: invokevirtual #54                 // Method org/apache/hadoop/hbase/procedure2/Procedure.setTimeoutFailure:(Ljava/lang/Object;)Z
+      11: ifeq          67
+      14: aload_0
+      15: getfield      #7                  // Field executor:Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      18: aload_1
+      19: invokevirtual #55                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getRootProcedureId:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)Ljava/lang/Long;
+      22: invokevirtual #56                 // Method java/lang/Long.longValue:()J
+      25: lstore_2
+      26: aload_0
+      27: getfield      #7                  // Field executor:Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      30: lload_2
+      31: invokevirtual #57                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getProcStack:(J)Lorg/apache/hadoop/hbase/procedure2/RootProcedureState;
+      34: astore        4
+      36: aload         4
+      38: invokevirtual #58                 // Method org/apache/hadoop/hbase/procedure2/RootProcedureState.abort:()V
+      41: aload_0
+      42: getfield      #7                  // Field executor:Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      45: invokevirtual #59                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getStore:()Lorg/apache/hadoop/hbase/procedure2/store/ProcedureStore;
+      48: aload_1
+      49: invokeinterface #60,  2           // InterfaceMethod org/apache/hadoop/hbase/procedure2/store/ProcedureStore.update:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)V
+      54: aload_0
+      55: getfield      #7                  // Field executor:Lorg/apache/hadoop/hbase/procedure2/ProcedureExecutor;
+      58: invokevirtual #61                 // Method org/apache/hadoop/hbase/procedure2/ProcedureExecutor.getScheduler:()Lorg/apache/hadoop/hbase/procedure2/ProcedureScheduler;
+      61: aload_1
+      62: invokeinterface #62,  2           // InterfaceMethod org/apache/hadoop/hbase/procedure2/ProcedureScheduler.addFront:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)V
+      67: return
+
+  static {};
+    Code:
+       0: ldc           #63                 // class org/apache/hadoop/hbase/procedure2/TimeoutExecutorThread
+       2: invokevirtual #64                 // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #23                 // Field $assertionsDisabled:Z
+      16: ldc           #63                 // class org/apache/hadoop/hbase/procedure2/TimeoutExecutorThread
+      18: invokestatic  #65                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      21: putstatic     #13                 // Field LOG:Lorg/slf4j/Logger;
+      24: return
+}

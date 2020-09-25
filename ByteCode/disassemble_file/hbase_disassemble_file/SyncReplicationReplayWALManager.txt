@@ -1,0 +1,421 @@
+Compiled from "SyncReplicationReplayWALManager.java"
+public class org.apache.hadoop.hbase.master.replication.SyncReplicationReplayWALManager {
+  public org.apache.hadoop.hbase.master.replication.SyncReplicationReplayWALManager(org.apache.hadoop.hbase.master.MasterServices) throws java.io.IOException, org.apache.hadoop.hbase.replication.ReplicationException;
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #3                  // class java/util/concurrent/ConcurrentHashMap
+       8: dup
+       9: invokespecial #4                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      12: putfield      #1                  // Field usedWorkersByPeer:Ljava/util/concurrent/ConcurrentMap;
+      15: aload_0
+      16: aload_1
+      17: invokeinterface #5,  1            // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getServerManager:()Lorg/apache/hadoop/hbase/master/ServerManager;
+      22: putfield      #6                  // Field serverManager:Lorg/apache/hadoop/hbase/master/ServerManager;
+      25: aload_0
+      26: aload_1
+      27: invokeinterface #7,  1            // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      32: invokevirtual #8                  // Method org/apache/hadoop/hbase/master/MasterFileSystem.getWALFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      35: putfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      38: aload_0
+      39: aload_1
+      40: invokeinterface #7,  1            // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getMasterFileSystem:()Lorg/apache/hadoop/hbase/master/MasterFileSystem;
+      45: invokevirtual #10                 // Method org/apache/hadoop/hbase/master/MasterFileSystem.getWALRootDir:()Lorg/apache/hadoop/fs/Path;
+      48: putfield      #11                 // Field walRootDir:Lorg/apache/hadoop/fs/Path;
+      51: aload_0
+      52: new           #12                 // class org/apache/hadoop/fs/Path
+      55: dup
+      56: aload_0
+      57: getfield      #11                 // Field walRootDir:Lorg/apache/hadoop/fs/Path;
+      60: ldc           #14                 // String remoteWALs
+      62: invokespecial #15                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      65: putfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+      68: aload_0
+      69: getfield      #6                  // Field serverManager:Lorg/apache/hadoop/hbase/master/ServerManager;
+      72: new           #17                 // class org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$1
+      75: dup
+      76: aload_0
+      77: aload_1
+      78: invokespecial #18                 // Method org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$1."<init>":(Lorg/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager;Lorg/apache/hadoop/hbase/master/MasterServices;)V
+      81: invokevirtual #19                 // Method org/apache/hadoop/hbase/master/ServerManager.registerListener:(Lorg/apache/hadoop/hbase/master/ServerListener;)V
+      84: return
+
+  public void registerPeer(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field usedWorkersByPeer:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: new           #20                 // class org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer
+       8: dup
+       9: aload_1
+      10: invokespecial #21                 // Method org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer."<init>":(Ljava/lang/String;)V
+      13: invokeinterface #22,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      18: pop
+      19: return
+
+  public void unregisterPeer(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field usedWorkersByPeer:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #23,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: pop
+      11: return
+
+  public org.apache.hadoop.hbase.ServerName acquirePeerWorker(java.lang.String, org.apache.hadoop.hbase.procedure2.Procedure<?>) throws org.apache.hadoop.hbase.procedure2.ProcedureSuspendedException;
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field usedWorkersByPeer:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #24,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #20                 // class org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer
+      13: astore_3
+      14: aload_3
+      15: dup
+      16: astore        4
+      18: monitorenter
+      19: aload_3
+      20: aload_0
+      21: getfield      #6                  // Field serverManager:Lorg/apache/hadoop/hbase/master/ServerManager;
+      24: invokevirtual #25                 // Method org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer.acquire:(Lorg/apache/hadoop/hbase/master/ServerManager;)Ljava/util/Optional;
+      27: astore        5
+      29: aload         5
+      31: invokevirtual #26                 // Method java/util/Optional.isPresent:()Z
+      34: ifeq          49
+      37: aload         5
+      39: invokevirtual #27                 // Method java/util/Optional.get:()Ljava/lang/Object;
+      42: checkcast     #28                 // class org/apache/hadoop/hbase/ServerName
+      45: aload         4
+      47: monitorexit
+      48: areturn
+      49: aload_3
+      50: aload_2
+      51: invokevirtual #29                 // Method org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer.suspend:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)V
+      54: aload         4
+      56: monitorexit
+      57: goto          68
+      60: astore        6
+      62: aload         4
+      64: monitorexit
+      65: aload         6
+      67: athrow
+      68: new           #30                 // class org/apache/hadoop/hbase/procedure2/ProcedureSuspendedException
+      71: dup
+      72: invokespecial #31                 // Method org/apache/hadoop/hbase/procedure2/ProcedureSuspendedException."<init>":()V
+      75: athrow
+    Exception table:
+       from    to  target type
+          19    48    60   any
+          49    57    60   any
+          60    65    60   any
+
+  public void releasePeerWorker(java.lang.String, org.apache.hadoop.hbase.ServerName, org.apache.hadoop.hbase.master.procedure.MasterProcedureScheduler);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field usedWorkersByPeer:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #24,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #20                 // class org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer
+      13: astore        4
+      15: aload         4
+      17: dup
+      18: astore        5
+      20: monitorenter
+      21: aload         4
+      23: aload_2
+      24: invokevirtual #32                 // Method org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer.release:(Lorg/apache/hadoop/hbase/ServerName;)V
+      27: aload         4
+      29: aload_3
+      30: invokevirtual #33                 // Method org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer.wake:(Lorg/apache/hadoop/hbase/master/procedure/MasterProcedureScheduler;)V
+      33: aload         5
+      35: monitorexit
+      36: goto          47
+      39: astore        6
+      41: aload         5
+      43: monitorexit
+      44: aload         6
+      46: athrow
+      47: return
+    Exception table:
+       from    to  target type
+          21    36    39   any
+          39    44    39   any
+
+  public void addUsedPeerWorker(java.lang.String, org.apache.hadoop.hbase.ServerName);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field usedWorkersByPeer:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #24,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #20                 // class org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer
+      13: aload_2
+      14: invokevirtual #34                 // Method org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager$UsedReplayWorkersForPeer.used:(Lorg/apache/hadoop/hbase/ServerName;)V
+      17: return
+
+  public void createPeerRemoteWALDir(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+       4: aload_1
+       5: invokestatic  #35                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerRemoteWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       8: astore_2
+       9: aload_0
+      10: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      13: aload_2
+      14: invokevirtual #36                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      17: ifne          58
+      20: aload_0
+      21: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      24: aload_2
+      25: invokevirtual #37                 // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;)Z
+      28: ifne          58
+      31: new           #38                 // class java/io/IOException
+      34: dup
+      35: new           #39                 // class java/lang/StringBuilder
+      38: dup
+      39: invokespecial #40                 // Method java/lang/StringBuilder."<init>":()V
+      42: ldc           #41                 // String Unable to mkdir
+      44: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      47: aload_2
+      48: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      51: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: invokespecial #45                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      57: athrow
+      58: return
+
+  public void renameToPeerReplayWALDir(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+       5: aload_1
+       6: invokestatic  #35                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerRemoteWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       9: aload_0
+      10: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+      13: aload_1
+      14: invokestatic  #57                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerReplayWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      17: aload_1
+      18: invokespecial #58                 // Method rename:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      21: return
+
+  public void renameToPeerSnapshotWALDir(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+       5: aload_1
+       6: invokestatic  #57                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerReplayWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       9: aload_0
+      10: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+      13: aload_1
+      14: invokestatic  #59                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerSnapshotWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      17: aload_1
+      18: invokespecial #58                 // Method rename:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      21: return
+
+  public java.util.List<org.apache.hadoop.fs.Path> getReplayWALsAndCleanUpUnusedFiles(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+       4: aload_1
+       5: invokestatic  #57                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerReplayWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       8: astore_2
+       9: aload_0
+      10: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      13: aload_2
+      14: invokedynamic #60,  0             // InvokeDynamic #0:accept:()Lorg/apache/hadoop/fs/PathFilter;
+      19: invokevirtual #61                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/PathFilter;)[Lorg/apache/hadoop/fs/FileStatus;
+      22: astore_3
+      23: aload_3
+      24: arraylength
+      25: istore        4
+      27: iconst_0
+      28: istore        5
+      30: iload         5
+      32: iload         4
+      34: if_icmpge     105
+      37: aload_3
+      38: iload         5
+      40: aaload
+      41: astore        6
+      43: aload         6
+      45: invokevirtual #62                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+      48: astore        7
+      50: aload         7
+      52: invokevirtual #63                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+      55: astore        8
+      57: aload         8
+      59: iconst_0
+      60: aload         8
+      62: invokevirtual #64                 // Method java/lang/String.length:()I
+      65: ldc           #65                 // String .ren
+      67: invokevirtual #64                 // Method java/lang/String.length:()I
+      70: isub
+      71: invokevirtual #66                 // Method java/lang/String.substring:(II)Ljava/lang/String;
+      74: astore        9
+      76: aload_0
+      77: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      80: aload         7
+      82: new           #12                 // class org/apache/hadoop/fs/Path
+      85: dup
+      86: aload         7
+      88: invokevirtual #67                 // Method org/apache/hadoop/fs/Path.getParent:()Lorg/apache/hadoop/fs/Path;
+      91: aload         9
+      93: invokespecial #15                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      96: invokestatic  #68                 // Method org/apache/hadoop/hbase/util/FSUtils.renameFile:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)V
+      99: iinc          5, 1
+     102: goto          30
+     105: new           #69                 // class java/util/ArrayList
+     108: dup
+     109: invokespecial #70                 // Method java/util/ArrayList."<init>":()V
+     112: astore_3
+     113: aload_0
+     114: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+     117: aload_2
+     118: invokevirtual #71                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+     121: astore        4
+     123: aload         4
+     125: arraylength
+     126: istore        5
+     128: iconst_0
+     129: istore        6
+     131: iload         6
+     133: iload         5
+     135: if_icmpge     224
+     138: aload         4
+     140: iload         6
+     142: aaload
+     143: astore        7
+     145: aload         7
+     147: invokevirtual #62                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     150: astore        8
+     152: aload         8
+     154: invokevirtual #63                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     157: ldc           #72                 // String .syncrep
+     159: invokevirtual #73                 // Method java/lang/String.endsWith:(Ljava/lang/String;)Z
+     162: ifeq          177
+     165: aload_3
+     166: aload         8
+     168: invokeinterface #74,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     173: pop
+     174: goto          218
+     177: aload_0
+     178: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+     181: aload         8
+     183: iconst_1
+     184: invokevirtual #75                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+     187: ifne          218
+     190: getstatic     #51                 // Field LOG:Lorg/slf4j/Logger;
+     193: new           #39                 // class java/lang/StringBuilder
+     196: dup
+     197: invokespecial #40                 // Method java/lang/StringBuilder."<init>":()V
+     200: ldc           #76                 // String Can not delete unused file:
+     202: invokevirtual #42                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     205: aload         8
+     207: invokevirtual #43                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     210: invokevirtual #44                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     213: invokeinterface #77,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     218: iinc          6, 1
+     221: goto          131
+     224: aload_3
+     225: areturn
+
+  public void removePeerRemoteWALs(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+       5: aload_1
+       6: invokestatic  #35                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerRemoteWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+       9: aload_1
+      10: invokespecial #46                 // Method deleteDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      13: aload_0
+      14: aload_0
+      15: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+      18: aload_1
+      19: invokestatic  #57                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerReplayWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      22: aload_1
+      23: invokespecial #46                 // Method deleteDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      26: aload_0
+      27: aload_0
+      28: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+      31: aload_1
+      32: invokestatic  #59                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.getPeerSnapshotWALDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      35: aload_1
+      36: invokespecial #46                 // Method deleteDir:(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      39: return
+
+  public java.lang.String removeWALRootPath(org.apache.hadoop.fs.Path);
+    Code:
+       0: aload_1
+       1: invokevirtual #79                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+       4: astore_2
+       5: aload_2
+       6: aload_0
+       7: getfield      #11                 // Field walRootDir:Lorg/apache/hadoop/fs/Path;
+      10: invokevirtual #79                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+      13: invokevirtual #64                 // Method java/lang/String.length:()I
+      16: iconst_1
+      17: iadd
+      18: invokevirtual #80                 // Method java/lang/String.substring:(I)Ljava/lang/String;
+      21: areturn
+
+  public void finishReplayWAL(java.lang.String) throws java.io.IOException;
+    Code:
+       0: new           #12                 // class org/apache/hadoop/fs/Path
+       3: dup
+       4: aload_0
+       5: getfield      #11                 // Field walRootDir:Lorg/apache/hadoop/fs/Path;
+       8: aload_1
+       9: invokespecial #15                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      12: astore_2
+      13: aload_0
+      14: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      17: aload_2
+      18: lconst_0
+      19: invokevirtual #81                 // Method org/apache/hadoop/fs/FileSystem.truncate:(Lorg/apache/hadoop/fs/Path;J)Z
+      22: pop
+      23: return
+
+  public boolean isReplayWALFinished(java.lang.String) throws java.io.IOException;
+    Code:
+       0: new           #12                 // class org/apache/hadoop/fs/Path
+       3: dup
+       4: aload_0
+       5: getfield      #11                 // Field walRootDir:Lorg/apache/hadoop/fs/Path;
+       8: aload_1
+       9: invokespecial #15                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      12: astore_2
+      13: aload_0
+      14: getfield      #9                  // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      17: aload_2
+      18: invokevirtual #82                 // Method org/apache/hadoop/fs/FileSystem.getFileStatus:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/FileStatus;
+      21: invokevirtual #83                 // Method org/apache/hadoop/fs/FileStatus.getLen:()J
+      24: lconst_0
+      25: lcmp
+      26: ifne          33
+      29: iconst_1
+      30: goto          34
+      33: iconst_0
+      34: ireturn
+
+  public org.apache.hadoop.fs.Path getRemoteWALDir();
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field remoteWALDir:Lorg/apache/hadoop/fs/Path;
+       4: areturn
+
+  static java.util.concurrent.ConcurrentMap access$000(org.apache.hadoop.hbase.master.replication.SyncReplicationReplayWALManager);
+    Code:
+       0: aload_0
+       1: getfield      #1                  // Field usedWorkersByPeer:Ljava/util/concurrent/ConcurrentMap;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #84                 // class org/apache/hadoop/hbase/master/replication/SyncReplicationReplayWALManager
+       2: invokestatic  #85                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #51                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

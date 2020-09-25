@@ -1,0 +1,363 @@
+Compiled from "NamespaceStateManager.java"
+class org.apache.hadoop.hbase.namespace.NamespaceStateManager {
+  public org.apache.hadoop.hbase.namespace.NamespaceStateManager(org.apache.hadoop.hbase.master.MasterServices);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #2                  // Field initialized:Z
+       9: aload_0
+      10: new           #3                  // class java/util/concurrent/ConcurrentHashMap
+      13: dup
+      14: invokespecial #4                  // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      17: putfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+      20: aload_0
+      21: aload_1
+      22: putfield      #6                  // Field master:Lorg/apache/hadoop/hbase/master/MasterServices;
+      25: return
+
+  public void start() throws java.io.IOException;
+    Code:
+       0: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #8                  // String Namespace State Manager started.
+       5: invokeinterface #9,  2            // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      10: aload_0
+      11: invokespecial #10                 // Method initialize:()V
+      14: return
+
+  public org.apache.hadoop.hbase.namespace.NamespaceTableAndRegionInfo getState(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #11,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #12                 // class org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo
+      13: areturn
+
+  synchronized boolean checkAndUpdateNamespaceRegionCount(org.apache.hadoop.hbase.TableName, byte[], int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #13                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+       4: astore        4
+       6: aload_0
+       7: aload         4
+       9: invokespecial #14                 // Method getNamespaceDescriptor:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/NamespaceDescriptor;
+      12: astore        5
+      14: aload         5
+      16: ifnull        151
+      19: aload_0
+      20: aload         4
+      22: invokevirtual #15                 // Method getState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo;
+      25: astore        6
+      27: aload         6
+      29: invokevirtual #16                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.getRegionCount:()I
+      32: istore        7
+      34: aload         5
+      36: invokestatic  #17                 // Method org/apache/hadoop/hbase/master/TableNamespaceManager.getMaxRegions:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+      39: lstore        8
+      41: iload_3
+      42: ifle          91
+      45: iload         7
+      47: i2l
+      48: lload         8
+      50: lcmp
+      51: iflt          91
+      54: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+      57: new           #18                 // class java/lang/StringBuilder
+      60: dup
+      61: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      64: ldc           #20                 // String The region
+      66: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: aload_2
+      70: invokestatic  #22                 // Method org/apache/hadoop/hbase/util/Bytes.toStringBinary:([B)Ljava/lang/String;
+      73: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: ldc           #23                 // String  cannot be created. The region count  will exceed quota on the namespace. This may be transient, please retry later if there are any ongoing split operations in the namespace.
+      78: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      84: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      89: iconst_0
+      90: ireturn
+      91: aload_0
+      92: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+      95: aload         4
+      97: invokeinterface #11,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     102: checkcast     #12                 // class org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo
+     105: astore        10
+     107: aload         10
+     109: ifnull        123
+     112: aload         10
+     114: aload_1
+     115: iload_3
+     116: invokevirtual #26                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.incRegionCountForTable:(Lorg/apache/hadoop/hbase/TableName;I)I
+     119: pop
+     120: goto          151
+     123: getstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+     126: new           #18                 // class java/lang/StringBuilder
+     129: dup
+     130: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     133: ldc           #27                 // String Namespace state found null for namespace :
+     135: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     138: aload         4
+     140: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     143: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     146: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     151: iconst_1
+     152: ireturn
+
+  synchronized void checkAndUpdateNamespaceRegionCount(org.apache.hadoop.hbase.TableName, int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #13                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+       4: astore_3
+       5: aload_0
+       6: aload_3
+       7: invokespecial #14                 // Method getNamespaceDescriptor:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/NamespaceDescriptor;
+      10: astore        4
+      12: aload         4
+      14: ifnull        108
+      17: aload_0
+      18: aload_3
+      19: invokevirtual #15                 // Method getState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo;
+      22: astore        5
+      24: aload         5
+      26: aload_1
+      27: invokevirtual #28                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.getRegionCountOfTable:(Lorg/apache/hadoop/hbase/TableName;)I
+      30: istore        6
+      32: aload         5
+      34: invokevirtual #16                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.getRegionCount:()I
+      37: iload         6
+      39: isub
+      40: iload_2
+      41: iadd
+      42: i2l
+      43: aload         4
+      45: invokestatic  #17                 // Method org/apache/hadoop/hbase/master/TableNamespaceManager.getMaxRegions:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+      48: lcmp
+      49: ifle          95
+      52: new           #29                 // class org/apache/hadoop/hbase/quotas/QuotaExceededException
+      55: dup
+      56: new           #18                 // class java/lang/StringBuilder
+      59: dup
+      60: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      63: ldc           #30                 // String The table
+      65: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      68: aload_1
+      69: invokevirtual #31                 // Method org/apache/hadoop/hbase/TableName.getNameAsString:()Ljava/lang/String;
+      72: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: ldc           #32                 // String  region count cannot be updated as it would exceed maximum number of regions allowed in the namespace.  The total number of regions permitted is
+      77: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      80: aload         4
+      82: invokestatic  #17                 // Method org/apache/hadoop/hbase/master/TableNamespaceManager.getMaxRegions:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+      85: invokevirtual #33                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      88: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      91: invokespecial #34                 // Method org/apache/hadoop/hbase/quotas/QuotaExceededException."<init>":(Ljava/lang/String;)V
+      94: athrow
+      95: aload         5
+      97: aload_1
+      98: invokevirtual #35                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.removeTable:(Lorg/apache/hadoop/hbase/TableName;)V
+     101: aload         5
+     103: aload_1
+     104: iload_2
+     105: invokevirtual #36                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.addTable:(Lorg/apache/hadoop/hbase/TableName;I)V
+     108: return
+
+  synchronized void checkAndUpdateNamespaceTableCount(org.apache.hadoop.hbase.TableName, int) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #13                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+       4: astore_3
+       5: aload_0
+       6: aload_3
+       7: invokespecial #14                 // Method getNamespaceDescriptor:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/NamespaceDescriptor;
+      10: astore        4
+      12: aload         4
+      14: ifnull        181
+      17: aload_0
+      18: aload         4
+      20: invokevirtual #42                 // Method org/apache/hadoop/hbase/NamespaceDescriptor.getName:()Ljava/lang/String;
+      23: invokevirtual #15                 // Method getState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo;
+      26: astore        5
+      28: aload         5
+      30: invokevirtual #43                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.getTables:()Ljava/util/Set;
+      33: invokeinterface #44,  1           // InterfaceMethod java/util/Set.size:()I
+      38: i2l
+      39: aload         4
+      41: invokestatic  #45                 // Method org/apache/hadoop/hbase/master/TableNamespaceManager.getMaxTables:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+      44: lcmp
+      45: iflt          91
+      48: new           #29                 // class org/apache/hadoop/hbase/quotas/QuotaExceededException
+      51: dup
+      52: new           #18                 // class java/lang/StringBuilder
+      55: dup
+      56: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      59: ldc           #30                 // String The table
+      61: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: aload_1
+      65: invokevirtual #31                 // Method org/apache/hadoop/hbase/TableName.getNameAsString:()Ljava/lang/String;
+      68: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      71: ldc           #46                 // String  cannot be created as it would exceed maximum number of tables allowed  in the namespace.  The total number of tables permitted is
+      73: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: aload         4
+      78: invokestatic  #45                 // Method org/apache/hadoop/hbase/master/TableNamespaceManager.getMaxTables:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+      81: invokevirtual #33                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      84: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      87: invokespecial #34                 // Method org/apache/hadoop/hbase/quotas/QuotaExceededException."<init>":(Ljava/lang/String;)V
+      90: athrow
+      91: aload         5
+      93: invokevirtual #16                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.getRegionCount:()I
+      96: iload_2
+      97: iadd
+      98: i2l
+      99: aload         4
+     101: invokestatic  #17                 // Method org/apache/hadoop/hbase/master/TableNamespaceManager.getMaxRegions:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+     104: lcmp
+     105: ifle          178
+     108: new           #29                 // class org/apache/hadoop/hbase/quotas/QuotaExceededException
+     111: dup
+     112: new           #18                 // class java/lang/StringBuilder
+     115: dup
+     116: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     119: ldc           #30                 // String The table
+     121: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     124: aload_1
+     125: invokevirtual #31                 // Method org/apache/hadoop/hbase/TableName.getNameAsString:()Ljava/lang/String;
+     128: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     131: ldc           #47                 // String  is not allowed to have
+     133: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     136: iload_2
+     137: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     140: ldc           #49                 // String  regions. The total number of regions permitted is only
+     142: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     145: aload         4
+     147: invokestatic  #17                 // Method org/apache/hadoop/hbase/master/TableNamespaceManager.getMaxRegions:(Lorg/apache/hadoop/hbase/NamespaceDescriptor;)J
+     150: invokevirtual #33                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     153: ldc           #50                 // String , while current region count is
+     155: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     158: aload         5
+     160: invokevirtual #16                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.getRegionCount:()I
+     163: invokevirtual #48                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     166: ldc           #51                 // String . This may be transient, please retry later if there are any ongoing split operations in the namespace.
+     168: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     171: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     174: invokespecial #34                 // Method org/apache/hadoop/hbase/quotas/QuotaExceededException."<init>":(Ljava/lang/String;)V
+     177: athrow
+     178: goto          213
+     181: new           #39                 // class java/io/IOException
+     184: dup
+     185: new           #18                 // class java/lang/StringBuilder
+     188: dup
+     189: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     192: ldc           #52                 // String Namespace Descriptor found null for
+     194: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     197: aload_3
+     198: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     201: ldc           #53                 // String  This is unexpected.
+     203: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     206: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     209: invokespecial #54                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     212: athrow
+     213: aload_0
+     214: aload_1
+     215: iload_2
+     216: invokespecial #55                 // Method addTable:(Lorg/apache/hadoop/hbase/TableName;I)V
+     219: return
+
+  org.apache.hadoop.hbase.namespace.NamespaceTableAndRegionInfo addNamespace(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #56,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.containsKey:(Ljava/lang/Object;)Z
+      10: ifne          34
+      13: new           #12                 // class org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo
+      16: dup
+      17: aload_1
+      18: invokespecial #57                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo."<init>":(Ljava/lang/String;)V
+      21: astore_2
+      22: aload_0
+      23: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+      26: aload_1
+      27: aload_2
+      28: invokeinterface #58,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      33: pop
+      34: aload_0
+      35: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+      38: aload_1
+      39: invokeinterface #11,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      44: checkcast     #12                 // class org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo
+      47: areturn
+
+  void deleteNamespace(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokeinterface #59,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: pop
+      11: return
+
+  synchronized void removeTable(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+       4: aload_1
+       5: invokevirtual #13                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+       8: invokeinterface #11,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      13: checkcast     #12                 // class org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo
+      16: astore_2
+      17: aload_2
+      18: ifnull        26
+      21: aload_2
+      22: aload_1
+      23: invokevirtual #35                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.removeTable:(Lorg/apache/hadoop/hbase/TableName;)V
+      26: return
+
+  boolean isInitialized();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field initialized:Z
+       4: ireturn
+
+  public synchronized void removeRegionFromTable(org.apache.hadoop.hbase.client.RegionInfo) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+       6: invokevirtual #13                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+       9: astore_2
+      10: aload_0
+      11: getfield      #5                  // Field nsStateCache:Ljava/util/concurrent/ConcurrentMap;
+      14: aload_2
+      15: invokeinterface #11,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      20: checkcast     #12                 // class org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo
+      23: astore_3
+      24: aload_3
+      25: ifnull        43
+      28: aload_3
+      29: aload_1
+      30: invokeinterface #76,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      35: iconst_1
+      36: invokevirtual #77                 // Method org/apache/hadoop/hbase/namespace/NamespaceTableAndRegionInfo.decrementRegionCountForTable:(Lorg/apache/hadoop/hbase/TableName;I)I
+      39: pop
+      40: goto          70
+      43: new           #39                 // class java/io/IOException
+      46: dup
+      47: new           #18                 // class java/lang/StringBuilder
+      50: dup
+      51: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      54: ldc           #27                 // String Namespace state found null for namespace :
+      56: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      59: aload_2
+      60: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      63: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      66: invokespecial #54                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      69: athrow
+      70: return
+
+  static {};
+    Code:
+       0: ldc           #78                 // class org/apache/hadoop/hbase/namespace/NamespaceStateManager
+       2: invokestatic  #79                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #7                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

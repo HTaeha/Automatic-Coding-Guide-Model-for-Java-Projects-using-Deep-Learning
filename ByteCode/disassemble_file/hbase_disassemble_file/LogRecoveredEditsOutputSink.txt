@@ -1,0 +1,809 @@
+Compiled from "LogRecoveredEditsOutputSink.java"
+public class org.apache.hadoop.hbase.wal.LogRecoveredEditsOutputSink extends org.apache.hadoop.hbase.wal.OutputSink {
+  public org.apache.hadoop.hbase.wal.LogRecoveredEditsOutputSink(org.apache.hadoop.hbase.wal.WALSplitter, org.apache.hadoop.hbase.wal.WALSplitter$PipelineController, org.apache.hadoop.hbase.wal.EntryBuffers, int);
+    Code:
+       0: aload_0
+       1: aload_2
+       2: aload_3
+       3: iload         4
+       5: invokespecial #1                  // Method org/apache/hadoop/hbase/wal/OutputSink."<init>":(Lorg/apache/hadoop/hbase/wal/WALSplitter$PipelineController;Lorg/apache/hadoop/hbase/wal/EntryBuffers;I)V
+       8: aload_0
+       9: aload_1
+      10: putfield      #2                  // Field walSplitter:Lorg/apache/hadoop/hbase/wal/WALSplitter;
+      13: aload_0
+      14: aload_1
+      15: getfield      #3                  // Field org/apache/hadoop/hbase/wal/WALSplitter.walFS:Lorg/apache/hadoop/fs/FileSystem;
+      18: putfield      #4                  // Field walFS:Lorg/apache/hadoop/fs/FileSystem;
+      21: aload_0
+      22: aload_1
+      23: getfield      #5                  // Field org/apache/hadoop/hbase/wal/WALSplitter.conf:Lorg/apache/hadoop/conf/Configuration;
+      26: putfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      29: return
+
+  public java.util.List<org.apache.hadoop.fs.Path> finishWritingAndClose() throws java.io.IOException;
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: aconst_null
+       3: astore_2
+       4: aload_0
+       5: iconst_0
+       6: invokevirtual #7                  // Method finishWriting:(Z)Z
+       9: istore_1
+      10: aload_0
+      11: invokevirtual #8                  // Method close:()Ljava/util/List;
+      14: astore_2
+      15: aload_0
+      16: aconst_null
+      17: invokespecial #9                  // Method closeLogWriters:(Ljava/util/List;)Ljava/util/List;
+      20: astore_3
+      21: aload_3
+      22: invokestatic  #10                 // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/CollectionUtils.isNotEmpty:(Ljava/util/Collection;)Z
+      25: ifeq          33
+      28: aload_3
+      29: invokestatic  #11                 // Method org/apache/hadoop/io/MultipleIOException.createIOException:(Ljava/util/List;)Ljava/io/IOException;
+      32: athrow
+      33: goto          67
+      36: astore        4
+      38: aload_0
+      39: invokevirtual #8                  // Method close:()Ljava/util/List;
+      42: astore_2
+      43: aload_0
+      44: aconst_null
+      45: invokespecial #9                  // Method closeLogWriters:(Ljava/util/List;)Ljava/util/List;
+      48: astore        5
+      50: aload         5
+      52: invokestatic  #10                 // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/CollectionUtils.isNotEmpty:(Ljava/util/Collection;)Z
+      55: ifeq          64
+      58: aload         5
+      60: invokestatic  #11                 // Method org/apache/hadoop/io/MultipleIOException.createIOException:(Ljava/util/List;)Ljava/io/IOException;
+      63: athrow
+      64: aload         4
+      66: athrow
+      67: iload_1
+      68: ifeq          76
+      71: aload_0
+      72: aload_2
+      73: putfield      #12                 // Field splits:Ljava/util/List;
+      76: aload_0
+      77: getfield      #12                 // Field splits:Ljava/util/List;
+      80: areturn
+    Exception table:
+       from    to  target type
+           4    10    36   any
+          36    38    36   any
+
+  java.util.List<org.apache.hadoop.fs.Path> close() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #49                 // Field closeAndCleanCompleted:Z
+       4: ifne          11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: invokestatic  #50                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkState:(Z)V
+      15: new           #51                 // class java/util/ArrayList
+      18: dup
+      19: invokespecial #52                 // Method java/util/ArrayList."<init>":()V
+      22: astore_1
+      23: invokestatic  #53                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:()Ljava/util/ArrayList;
+      26: astore_2
+      27: aload_0
+      28: getfield      #54                 // Field numThreads:I
+      31: ldc2_w        #55                 // long 30l
+      34: getstatic     #57                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      37: new           #58                 // class org/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink$1
+      40: dup
+      41: aload_0
+      42: invokespecial #59                 // Method org/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink$1."<init>":(Lorg/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink;)V
+      45: invokestatic  #60                 // Method org/apache/hadoop/hbase/util/Threads.getBoundedCachedThreadPool:(IJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ThreadPoolExecutor;
+      48: astore_3
+      49: new           #61                 // class java/util/concurrent/ExecutorCompletionService
+      52: dup
+      53: aload_3
+      54: invokespecial #62                 // Method java/util/concurrent/ExecutorCompletionService."<init>":(Ljava/util/concurrent/Executor;)V
+      57: astore        4
+      59: aload_0
+      60: aload         4
+      62: aload_2
+      63: aload_1
+      64: invokevirtual #63                 // Method executeCloseTask:(Ljava/util/concurrent/CompletionService;Ljava/util/List;Ljava/util/List;)Z
+      67: istore        5
+      69: aload_3
+      70: invokevirtual #64                 // Method java/util/concurrent/ThreadPoolExecutor.shutdownNow:()Ljava/util/List;
+      73: pop
+      74: goto          124
+      77: astore        6
+      79: new           #66                 // class java/io/InterruptedIOException
+      82: dup
+      83: invokespecial #67                 // Method java/io/InterruptedIOException."<init>":()V
+      86: astore        7
+      88: aload         7
+      90: aload         6
+      92: invokevirtual #68                 // Method java/io/IOException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+      95: pop
+      96: aload         7
+      98: athrow
+      99: astore        6
+     101: new           #42                 // class java/io/IOException
+     104: dup
+     105: aload         6
+     107: invokevirtual #70                 // Method java/util/concurrent/ExecutionException.getCause:()Ljava/lang/Throwable;
+     110: invokespecial #71                 // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+     113: athrow
+     114: astore        8
+     116: aload_3
+     117: invokevirtual #64                 // Method java/util/concurrent/ThreadPoolExecutor.shutdownNow:()Ljava/util/List;
+     120: pop
+     121: aload         8
+     123: athrow
+     124: aload_2
+     125: invokeinterface #72,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+     130: ifne          138
+     133: aload_2
+     134: invokestatic  #11                 // Method org/apache/hadoop/io/MultipleIOException.createIOException:(Ljava/util/List;)Ljava/io/IOException;
+     137: athrow
+     138: aload_0
+     139: iconst_1
+     140: putfield      #73                 // Field writersClosed:Z
+     143: aload_0
+     144: iconst_1
+     145: putfield      #49                 // Field closeAndCleanCompleted:Z
+     148: iload         5
+     150: ifeq          155
+     153: aconst_null
+     154: areturn
+     155: aload_1
+     156: areturn
+    Exception table:
+       from    to  target type
+          59    69    77   Class java/lang/InterruptedException
+          59    69    99   Class java/util/concurrent/ExecutionException
+          59    69   114   any
+          77   116   114   any
+
+  boolean executeCloseTask(java.util.concurrent.CompletionService<java.lang.Void>, java.util.List<java.io.IOException>, java.util.List<org.apache.hadoop.fs.Path>) throws java.lang.InterruptedException, java.util.concurrent.ExecutionException;
+    Code:
+       0: aload_0
+       1: getfield      #74                 // Field writers:Ljava/util/concurrent/ConcurrentHashMap;
+       4: invokevirtual #75                 // Method java/util/concurrent/ConcurrentHashMap.entrySet:()Ljava/util/Set;
+       7: invokeinterface #76,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      12: astore        4
+      14: aload         4
+      16: invokeinterface #77,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      21: ifeq          108
+      24: aload         4
+      26: invokeinterface #78,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      31: checkcast     #79                 // class java/util/Map$Entry
+      34: astore        5
+      36: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      39: invokeinterface #80,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      44: ifeq          86
+      47: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      50: new           #28                 // class java/lang/StringBuilder
+      53: dup
+      54: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      57: ldc           #81                 // String Submitting close of
+      59: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      62: aload         5
+      64: invokeinterface #82,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      69: checkcast     #83                 // class org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath
+      72: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+      75: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      78: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      81: invokeinterface #84,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      86: aload_1
+      87: new           #85                 // class org/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink$2
+      90: dup
+      91: aload_0
+      92: aload         5
+      94: aload_2
+      95: aload_3
+      96: invokespecial #86                 // Method org/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink$2."<init>":(Lorg/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink;Ljava/util/Map$Entry;Ljava/util/List;Ljava/util/List;)V
+      99: invokeinterface #87,  2           // InterfaceMethod java/util/concurrent/CompletionService.submit:(Ljava/util/concurrent/Callable;)Ljava/util/concurrent/Future;
+     104: pop
+     105: goto          14
+     108: iconst_0
+     109: istore        4
+     111: iconst_0
+     112: istore        5
+     114: aload_0
+     115: getfield      #74                 // Field writers:Ljava/util/concurrent/ConcurrentHashMap;
+     118: invokevirtual #88                 // Method java/util/concurrent/ConcurrentHashMap.size:()I
+     121: istore        6
+     123: iload         5
+     125: iload         6
+     127: if_icmpge     179
+     130: aload_1
+     131: invokeinterface #89,  1           // InterfaceMethod java/util/concurrent/CompletionService.take:()Ljava/util/concurrent/Future;
+     136: astore        7
+     138: aload         7
+     140: invokeinterface #90,  1           // InterfaceMethod java/util/concurrent/Future.get:()Ljava/lang/Object;
+     145: pop
+     146: iload         4
+     148: ifne          173
+     151: aload_0
+     152: getfield      #91                 // Field reporter:Lorg/apache/hadoop/hbase/util/CancelableProgressable;
+     155: ifnull        173
+     158: aload_0
+     159: getfield      #91                 // Field reporter:Lorg/apache/hadoop/hbase/util/CancelableProgressable;
+     162: invokeinterface #92,  1           // InterfaceMethod org/apache/hadoop/hbase/util/CancelableProgressable.progress:()Z
+     167: ifne          173
+     170: iconst_1
+     171: istore        4
+     173: iinc          5, 1
+     176: goto          123
+     179: iload         4
+     181: ireturn
+
+  org.apache.hadoop.fs.Path closeWriter(java.lang.String, org.apache.hadoop.hbase.wal.WALSplitter$WriterAndPath, java.util.List<java.io.IOException>) throws java.io.IOException;
+    Code:
+       0: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #93                 // String Closing {}
+       5: aload_2
+       6: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+       9: invokeinterface #94,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      14: aload_2
+      15: getfield      #95                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.writer:Lorg/apache/hadoop/hbase/wal/WALProvider$Writer;
+      18: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider$Writer.close:()V
+      23: goto          55
+      26: astore        4
+      28: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      31: ldc           #97                 // String Could not close log at {}
+      33: aload_2
+      34: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+      37: aload         4
+      39: invokeinterface #98,  4           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      44: aload_3
+      45: aload         4
+      47: invokeinterface #99,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      52: pop
+      53: aconst_null
+      54: areturn
+      55: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      58: invokeinterface #100,  1          // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      63: ifeq          145
+      66: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      69: new           #28                 // class java/lang/StringBuilder
+      72: dup
+      73: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      76: ldc           #101                // String Closed wap
+      78: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: aload_2
+      82: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+      85: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      88: ldc           #102                // String  (wrote
+      90: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      93: aload_2
+      94: getfield      #103                // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.editsWritten:J
+      97: invokevirtual #36                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     100: ldc           #104                // String  edits, skipped
+     102: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     105: aload_2
+     106: getfield      #105                // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.editsSkipped:J
+     109: invokevirtual #36                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     112: ldc           #106                // String  edits in
+     114: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: aload_2
+     118: getfield      #107                // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.nanosSpent:J
+     121: ldc2_w        #108                // long 1000l
+     124: ldiv
+     125: ldc2_w        #108                // long 1000l
+     128: ldiv
+     129: invokevirtual #36                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     132: ldc           #110                // String ms
+     134: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     137: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     140: invokeinterface #111,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     145: aload_2
+     146: getfield      #103                // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.editsWritten:J
+     149: lconst_0
+     150: lcmp
+     151: ifne          229
+     154: aload_0
+     155: getfield      #4                  // Field walFS:Lorg/apache/hadoop/fs/FileSystem;
+     158: aload_2
+     159: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     162: invokevirtual #112                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     165: ifeq          227
+     168: aload_0
+     169: getfield      #4                  // Field walFS:Lorg/apache/hadoop/fs/FileSystem;
+     172: aload_2
+     173: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     176: iconst_0
+     177: invokevirtual #39                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+     180: ifne          227
+     183: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+     186: ldc           #113                // String Failed deleting empty {}
+     188: aload_2
+     189: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     192: invokeinterface #41,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+     197: new           #42                 // class java/io/IOException
+     200: dup
+     201: new           #28                 // class java/lang/StringBuilder
+     204: dup
+     205: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     208: ldc           #114                // String Failed deleting empty
+     210: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     213: aload_2
+     214: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     217: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     220: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     223: invokespecial #44                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     226: athrow
+     227: aconst_null
+     228: areturn
+     229: aload_2
+     230: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     233: aload_0
+     234: getfield      #115                // Field regionMaximumEditLogSeqNum:Ljava/util/concurrent/ConcurrentHashMap;
+     237: aload_1
+     238: invokevirtual #116                // Method java/util/concurrent/ConcurrentHashMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     241: checkcast     #117                // class java/lang/Long
+     244: invokevirtual #118                // Method java/lang/Long.longValue:()J
+     247: invokestatic  #119                // Method org/apache/hadoop/hbase/wal/WALSplitUtil.getCompletedRecoveredEditsFilePath:(Lorg/apache/hadoop/fs/Path;J)Lorg/apache/hadoop/fs/Path;
+     250: astore        4
+     252: aload         4
+     254: aload_2
+     255: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     258: invokevirtual #120                // Method org/apache/hadoop/fs/Path.equals:(Ljava/lang/Object;)Z
+     261: ifne          283
+     264: aload_0
+     265: getfield      #4                  // Field walFS:Lorg/apache/hadoop/fs/FileSystem;
+     268: aload         4
+     270: invokevirtual #112                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     273: ifeq          283
+     276: aload_0
+     277: aload_2
+     278: aload         4
+     280: invokespecial #121                // Method deleteOneWithFewerEntries:(Lorg/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath;Lorg/apache/hadoop/fs/Path;)V
+     283: aload_0
+     284: getfield      #4                  // Field walFS:Lorg/apache/hadoop/fs/FileSystem;
+     287: aload_2
+     288: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     291: invokevirtual #112                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     294: ifeq          369
+     297: aload_0
+     298: getfield      #4                  // Field walFS:Lorg/apache/hadoop/fs/FileSystem;
+     301: aload_2
+     302: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     305: aload         4
+     307: invokevirtual #122                // Method org/apache/hadoop/fs/FileSystem.rename:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;)Z
+     310: ifne          353
+     313: new           #42                 // class java/io/IOException
+     316: dup
+     317: new           #28                 // class java/lang/StringBuilder
+     320: dup
+     321: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     324: ldc           #123                // String Failed renaming
+     326: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     329: aload_2
+     330: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     333: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     336: ldc           #124                // String  to
+     338: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     341: aload         4
+     343: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     346: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     349: invokespecial #44                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     352: athrow
+     353: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+     356: ldc           #125                // String Rename {} to {}
+     358: aload_2
+     359: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     362: aload         4
+     364: invokeinterface #126,  4          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     369: goto          416
+     372: astore        5
+     374: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+     377: ldc           #127                // String Could not rename {} to {}
+     379: iconst_3
+     380: anewarray     #128                // class java/lang/Object
+     383: dup
+     384: iconst_0
+     385: aload_2
+     386: getfield      #46                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.path:Lorg/apache/hadoop/fs/Path;
+     389: aastore
+     390: dup
+     391: iconst_1
+     392: aload         4
+     394: aastore
+     395: dup
+     396: iconst_2
+     397: aload         5
+     399: aastore
+     400: invokeinterface #129,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;[Ljava/lang/Object;)V
+     405: aload_3
+     406: aload         5
+     408: invokeinterface #99,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     413: pop
+     414: aconst_null
+     415: areturn
+     416: aload         4
+     418: areturn
+    Exception table:
+       from    to  target type
+          14    23    26   Class java/io/IOException
+         252   369   372   Class java/io/IOException
+
+  org.apache.hadoop.hbase.wal.WALSplitter$WriterAndPath getWriterAndPath(org.apache.hadoop.hbase.wal.WAL$Entry, boolean) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #18                 // Method org/apache/hadoop/hbase/wal/WAL$Entry.getKey:()Lorg/apache/hadoop/hbase/wal/WALKeyImpl;
+       4: invokevirtual #146                // Method org/apache/hadoop/hbase/wal/WALKeyImpl.getEncodedRegionName:()[B
+       7: astore_3
+       8: aload_3
+       9: invokestatic  #147                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      12: astore        4
+      14: aload_0
+      15: getfield      #74                 // Field writers:Ljava/util/concurrent/ConcurrentHashMap;
+      18: aload         4
+      20: invokevirtual #116                // Method java/util/concurrent/ConcurrentHashMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      23: checkcast     #83                 // class org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath
+      26: astore        5
+      28: aload         5
+      30: ifnull        36
+      33: aload         5
+      35: areturn
+      36: aload_0
+      37: getfield      #148                // Field blacklistedRegions:Ljava/util/Set;
+      40: aload_3
+      41: invokeinterface #149,  2          // InterfaceMethod java/util/Set.contains:(Ljava/lang/Object;)Z
+      46: ifeq          51
+      49: aconst_null
+      50: areturn
+      51: aload_0
+      52: aload_3
+      53: aload_1
+      54: invokevirtual #150                // Method createWAP:([BLorg/apache/hadoop/hbase/wal/WAL$Entry;)Lorg/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath;
+      57: astore        5
+      59: aload         5
+      61: ifnonnull     77
+      64: aload_0
+      65: getfield      #148                // Field blacklistedRegions:Ljava/util/Set;
+      68: aload_3
+      69: invokeinterface #151,  2          // InterfaceMethod java/util/Set.add:(Ljava/lang/Object;)Z
+      74: pop
+      75: aconst_null
+      76: areturn
+      77: iload_2
+      78: ifeq          93
+      81: aload_0
+      82: getfield      #74                 // Field writers:Ljava/util/concurrent/ConcurrentHashMap;
+      85: aload         4
+      87: aload         5
+      89: invokevirtual #152                // Method java/util/concurrent/ConcurrentHashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      92: pop
+      93: aload         5
+      95: areturn
+
+  org.apache.hadoop.hbase.wal.WALSplitter$WriterAndPath createWAP(byte[], org.apache.hadoop.hbase.wal.WAL$Entry) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field walSplitter:Lorg/apache/hadoop/hbase/wal/WALSplitter;
+       4: getfield      #5                  // Field org/apache/hadoop/hbase/wal/WALSplitter.conf:Lorg/apache/hadoop/conf/Configuration;
+       7: ldc           #154                // String hbase.fs.tmp.dir
+       9: getstatic     #155                // Field org/apache/hadoop/hbase/HConstants.DEFAULT_TEMPORARY_HDFS_DIRECTORY:Ljava/lang/String;
+      12: invokevirtual #156                // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+      15: astore_3
+      16: aload_2
+      17: aload_0
+      18: getfield      #2                  // Field walSplitter:Lorg/apache/hadoop/hbase/wal/WALSplitter;
+      21: invokevirtual #157                // Method org/apache/hadoop/hbase/wal/WALSplitter.getFileBeingSplit:()Lorg/apache/hadoop/fs/FileStatus;
+      24: invokevirtual #158                // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+      27: invokevirtual #159                // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+      30: aload_3
+      31: aload_0
+      32: getfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      35: invokestatic  #160                // Method org/apache/hadoop/hbase/wal/WALSplitUtil.getRegionSplitEditsPath:(Lorg/apache/hadoop/hbase/wal/WAL$Entry;Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+      38: astore        4
+      40: aload         4
+      42: ifnonnull     47
+      45: aconst_null
+      46: areturn
+      47: aload_0
+      48: getfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      51: invokestatic  #161                // Method org/apache/hadoop/hbase/util/FSUtils.getWALFileSystem:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+      54: astore        5
+      56: aload         5
+      58: aload         4
+      60: invokevirtual #112                // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      63: ifeq          135
+      66: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      69: new           #28                 // class java/lang/StringBuilder
+      72: dup
+      73: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      76: ldc           #162                // String Found old edits file. It could be the result of a previous failed split attempt. Deleting
+      78: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: aload         4
+      83: invokevirtual #32                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      86: ldc           #33                 // String , length=
+      88: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      91: aload         5
+      93: aload         4
+      95: invokevirtual #34                 // Method org/apache/hadoop/fs/FileSystem.getFileStatus:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/fs/FileStatus;
+      98: invokevirtual #35                 // Method org/apache/hadoop/fs/FileStatus.getLen:()J
+     101: invokevirtual #36                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     104: invokevirtual #37                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     107: invokeinterface #38,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     112: aload         5
+     114: aload         4
+     116: iconst_0
+     117: invokevirtual #39                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+     120: ifne          135
+     123: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+     126: ldc           #163                // String Failed delete of old {}
+     128: aload         4
+     130: invokeinterface #41,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+     135: aload_0
+     136: getfield      #2                  // Field walSplitter:Lorg/apache/hadoop/hbase/wal/WALSplitter;
+     139: aload         4
+     141: invokevirtual #164                // Method org/apache/hadoop/hbase/wal/WALSplitter.createWriter:(Lorg/apache/hadoop/fs/Path;)Lorg/apache/hadoop/hbase/wal/WALProvider$Writer;
+     144: astore        6
+     146: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+     149: ldc           #165                // String Creating writer path={}
+     151: aload         4
+     153: invokeinterface #166,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     158: new           #83                 // class org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath
+     161: dup
+     162: aload         4
+     164: aload         6
+     166: aload_2
+     167: invokevirtual #18                 // Method org/apache/hadoop/hbase/wal/WAL$Entry.getKey:()Lorg/apache/hadoop/hbase/wal/WALKeyImpl;
+     170: invokevirtual #19                 // Method org/apache/hadoop/hbase/wal/WALKeyImpl.getSequenceId:()J
+     173: invokespecial #167                // Method org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath."<init>":(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/wal/WALProvider$Writer;J)V
+     176: areturn
+
+  void filterCellByStore(org.apache.hadoop.hbase.wal.WAL$Entry);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field walSplitter:Lorg/apache/hadoop/hbase/wal/WALSplitter;
+       4: invokevirtual #168                // Method org/apache/hadoop/hbase/wal/WALSplitter.getRegionMaxSeqIdInStores:()Ljava/util/Map;
+       7: aload_1
+       8: invokevirtual #18                 // Method org/apache/hadoop/hbase/wal/WAL$Entry.getKey:()Lorg/apache/hadoop/hbase/wal/WALKeyImpl;
+      11: invokevirtual #146                // Method org/apache/hadoop/hbase/wal/WALKeyImpl.getEncodedRegionName:()[B
+      14: invokestatic  #147                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+      17: invokeinterface #169,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      22: checkcast     #170                // class java/util/Map
+      25: astore_2
+      26: aload_2
+      27: invokestatic  #171                // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/MapUtils.isEmpty:(Ljava/util/Map;)Z
+      30: ifeq          34
+      33: return
+      34: new           #51                 // class java/util/ArrayList
+      37: dup
+      38: aload_1
+      39: invokevirtual #172                // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+      42: invokevirtual #173                // Method org/apache/hadoop/hbase/wal/WALEdit.getCells:()Ljava/util/ArrayList;
+      45: invokevirtual #174                // Method java/util/ArrayList.size:()I
+      48: invokespecial #175                // Method java/util/ArrayList."<init>":(I)V
+      51: astore_3
+      52: aload_1
+      53: invokevirtual #172                // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+      56: invokevirtual #173                // Method org/apache/hadoop/hbase/wal/WALEdit.getCells:()Ljava/util/ArrayList;
+      59: invokevirtual #176                // Method java/util/ArrayList.iterator:()Ljava/util/Iterator;
+      62: astore        4
+      64: aload         4
+      66: invokeinterface #77,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      71: ifeq          158
+      74: aload         4
+      76: invokeinterface #78,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      81: checkcast     #177                // class org/apache/hadoop/hbase/Cell
+      84: astore        5
+      86: aload         5
+      88: getstatic     #178                // Field org/apache/hadoop/hbase/wal/WALEdit.METAFAMILY:[B
+      91: invokestatic  #179                // Method org/apache/hadoop/hbase/CellUtil.matchingFamily:(Lorg/apache/hadoop/hbase/Cell;[B)Z
+      94: ifeq          107
+      97: aload_3
+      98: aload         5
+     100: invokevirtual #180                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+     103: pop
+     104: goto          155
+     107: aload         5
+     109: invokestatic  #181                // Method org/apache/hadoop/hbase/CellUtil.cloneFamily:(Lorg/apache/hadoop/hbase/Cell;)[B
+     112: astore        6
+     114: aload_2
+     115: aload         6
+     117: invokeinterface #169,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     122: checkcast     #117                // class java/lang/Long
+     125: astore        7
+     127: aload         7
+     129: ifnull        148
+     132: aload         7
+     134: invokevirtual #118                // Method java/lang/Long.longValue:()J
+     137: aload_1
+     138: invokevirtual #18                 // Method org/apache/hadoop/hbase/wal/WAL$Entry.getKey:()Lorg/apache/hadoop/hbase/wal/WALKeyImpl;
+     141: invokevirtual #19                 // Method org/apache/hadoop/hbase/wal/WALKeyImpl.getSequenceId:()J
+     144: lcmp
+     145: ifge          155
+     148: aload_3
+     149: aload         5
+     151: invokevirtual #180                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+     154: pop
+     155: goto          64
+     158: aload_1
+     159: invokevirtual #172                // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+     162: aload_3
+     163: invokevirtual #182                // Method org/apache/hadoop/hbase/wal/WALEdit.setCells:(Ljava/util/ArrayList;)V
+     166: return
+
+  public void append(org.apache.hadoop.hbase.wal.WALSplitter$RegionEntryBuffer) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: invokevirtual #183                // Method appendBuffer:(Lorg/apache/hadoop/hbase/wal/WALSplitter$RegionEntryBuffer;Z)Lorg/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath;
+       6: pop
+       7: return
+
+  org.apache.hadoop.hbase.wal.WALSplitter$WriterAndPath appendBuffer(org.apache.hadoop.hbase.wal.WALSplitter$RegionEntryBuffer, boolean) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: getfield      #184                // Field org/apache/hadoop/hbase/wal/WALSplitter$RegionEntryBuffer.entryBuffer:Ljava/util/List;
+       4: astore_3
+       5: aload_3
+       6: invokeinterface #72,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      11: ifeq          26
+      14: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      17: ldc           #185                // String got an empty buffer, skipping
+      19: invokeinterface #38,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      24: aconst_null
+      25: areturn
+      26: aconst_null
+      27: astore        4
+      29: invokestatic  #186                // Method java/lang/System.nanoTime:()J
+      32: lstore        5
+      34: iconst_0
+      35: istore        7
+      37: aload_3
+      38: invokeinterface #131,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      43: astore        8
+      45: aload         8
+      47: invokeinterface #77,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      52: ifeq          150
+      55: aload         8
+      57: invokeinterface #78,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      62: checkcast     #187                // class org/apache/hadoop/hbase/wal/WAL$Entry
+      65: astore        9
+      67: aload         4
+      69: ifnonnull     100
+      72: aload_0
+      73: aload         9
+      75: iload_2
+      76: invokevirtual #188                // Method getWriterAndPath:(Lorg/apache/hadoop/hbase/wal/WAL$Entry;Z)Lorg/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath;
+      79: astore        4
+      81: aload         4
+      83: ifnonnull     100
+      86: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+      89: ldc           #189                // String getWriterAndPath decided we don't need to write edits for {}
+      91: aload         9
+      93: invokeinterface #94,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      98: aconst_null
+      99: areturn
+     100: aload_0
+     101: aload         9
+     103: invokevirtual #190                // Method filterCellByStore:(Lorg/apache/hadoop/hbase/wal/WAL$Entry;)V
+     106: aload         9
+     108: invokevirtual #172                // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+     111: invokevirtual #191                // Method org/apache/hadoop/hbase/wal/WALEdit.isEmpty:()Z
+     114: ifne          141
+     117: aload         4
+     119: getfield      #95                 // Field org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.writer:Lorg/apache/hadoop/hbase/wal/WALProvider$Writer;
+     122: aload         9
+     124: invokeinterface #192,  2          // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider$Writer.append:(Lorg/apache/hadoop/hbase/wal/WAL$Entry;)V
+     129: aload_0
+     130: aload         9
+     132: invokevirtual #193                // Method updateRegionMaximumEditLogSeqNum:(Lorg/apache/hadoop/hbase/wal/WAL$Entry;)V
+     135: iinc          7, 1
+     138: goto          147
+     141: aload         4
+     143: iconst_1
+     144: invokevirtual #194                // Method org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.incrementSkippedEdits:(I)V
+     147: goto          45
+     150: aload         4
+     152: iload         7
+     154: invokevirtual #195                // Method org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.incrementEdits:(I)V
+     157: aload         4
+     159: invokestatic  #186                // Method java/lang/System.nanoTime:()J
+     162: lload         5
+     164: lsub
+     165: invokevirtual #196                // Method org/apache/hadoop/hbase/wal/WALSplitter$WriterAndPath.incrementNanoTime:(J)V
+     168: goto          214
+     171: astore        7
+     173: aload         7
+     175: instanceof    #197                // class org/apache/hadoop/ipc/RemoteException
+     178: ifeq          192
+     181: aload         7
+     183: checkcast     #197                // class org/apache/hadoop/ipc/RemoteException
+     186: invokevirtual #198                // Method org/apache/hadoop/ipc/RemoteException.unwrapRemoteException:()Ljava/io/IOException;
+     189: goto          194
+     192: aload         7
+     194: astore        7
+     196: getstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+     199: getstatic     #199                // Field org/apache/hadoop/hbase/log/HBaseMarkers.FATAL:Lorg/slf4j/Marker;
+     202: ldc           #200                // String Got while writing log entry to log
+     204: aload         7
+     206: invokeinterface #201,  4          // InterfaceMethod org/slf4j/Logger.error:(Lorg/slf4j/Marker;Ljava/lang/String;Ljava/lang/Throwable;)V
+     211: aload         7
+     213: athrow
+     214: aload         4
+     216: areturn
+    Exception table:
+       from    to  target type
+          34    99   171   Class java/io/IOException
+         100   168   171   Class java/io/IOException
+
+  public boolean keepRegionEvent(org.apache.hadoop.hbase.wal.WAL$Entry);
+    Code:
+       0: aload_1
+       1: invokevirtual #172                // Method org/apache/hadoop/hbase/wal/WAL$Entry.getEdit:()Lorg/apache/hadoop/hbase/wal/WALEdit;
+       4: invokevirtual #173                // Method org/apache/hadoop/hbase/wal/WALEdit.getCells:()Ljava/util/ArrayList;
+       7: astore_2
+       8: aload_2
+       9: invokevirtual #176                // Method java/util/ArrayList.iterator:()Ljava/util/Iterator;
+      12: astore_3
+      13: aload_3
+      14: invokeinterface #77,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      19: ifeq          46
+      22: aload_3
+      23: invokeinterface #78,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      28: checkcast     #177                // class org/apache/hadoop/hbase/Cell
+      31: astore        4
+      33: aload         4
+      35: invokestatic  #202                // Method org/apache/hadoop/hbase/wal/WALEdit.isCompactionMarker:(Lorg/apache/hadoop/hbase/Cell;)Z
+      38: ifeq          43
+      41: iconst_1
+      42: ireturn
+      43: goto          13
+      46: iconst_0
+      47: ireturn
+
+  public java.util.Map<byte[], java.lang.Long> getOutputCounts();
+    Code:
+       0: new           #203                // class java/util/TreeMap
+       3: dup
+       4: getstatic     #204                // Field org/apache/hadoop/hbase/util/Bytes.BYTES_COMPARATOR:Ljava/util/Comparator;
+       7: invokespecial #205                // Method java/util/TreeMap."<init>":(Ljava/util/Comparator;)V
+      10: astore_1
+      11: aload_0
+      12: getfield      #74                 // Field writers:Ljava/util/concurrent/ConcurrentHashMap;
+      15: invokevirtual #75                 // Method java/util/concurrent/ConcurrentHashMap.entrySet:()Ljava/util/Set;
+      18: invokeinterface #76,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      23: astore_2
+      24: aload_2
+      25: invokeinterface #77,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      30: ifeq          78
+      33: aload_2
+      34: invokeinterface #78,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      39: checkcast     #79                 // class java/util/Map$Entry
+      42: astore_3
+      43: aload_1
+      44: aload_3
+      45: invokeinterface #206,  1          // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      50: checkcast     #207                // class java/lang/String
+      53: invokestatic  #208                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      56: aload_3
+      57: invokeinterface #82,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      62: checkcast     #141                // class org/apache/hadoop/hbase/wal/WALSplitter$SinkWriter
+      65: getfield      #209                // Field org/apache/hadoop/hbase/wal/WALSplitter$SinkWriter.editsWritten:J
+      68: invokestatic  #210                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      71: invokevirtual #211                // Method java/util/TreeMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      74: pop
+      75: goto          24
+      78: aload_1
+      79: areturn
+
+  public int getNumberOfRecoveredRegions();
+    Code:
+       0: aload_0
+       1: getfield      #74                 // Field writers:Ljava/util/concurrent/ConcurrentHashMap;
+       4: invokevirtual #88                 // Method java/util/concurrent/ConcurrentHashMap.size:()I
+       7: ireturn
+
+  static {};
+    Code:
+       0: ldc           #212                // class org/apache/hadoop/hbase/wal/LogRecoveredEditsOutputSink
+       2: invokestatic  #213                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #24                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

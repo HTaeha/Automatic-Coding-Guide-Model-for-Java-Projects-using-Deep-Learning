@@ -1,0 +1,233 @@
+Compiled from "PrefixKeyDeltaEncoder.java"
+public class org.apache.hadoop.hbase.io.encoding.PrefixKeyDeltaEncoder extends org.apache.hadoop.hbase.io.encoding.BufferedDataBlockEncoder {
+  public org.apache.hadoop.hbase.io.encoding.PrefixKeyDeltaEncoder();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/io/encoding/BufferedDataBlockEncoder."<init>":()V
+       4: return
+
+  public int internalEncode(org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.io.encoding.HFileBlockDefaultEncodingContext, java.io.DataOutputStream) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokestatic  #2                  // Method org/apache/hadoop/hbase/KeyValueUtil.keyLength:(Lorg/apache/hadoop/hbase/Cell;)I
+       4: istore        4
+       6: aload_1
+       7: invokeinterface #3,  1            // InterfaceMethod org/apache/hadoop/hbase/Cell.getValueLength:()I
+      12: istore        5
+      14: aload_2
+      15: invokevirtual #4                  // Method org/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext.getEncodingState:()Lorg/apache/hadoop/hbase/io/encoding/EncodingState;
+      18: astore        6
+      20: aload         6
+      22: getfield      #5                  // Field org/apache/hadoop/hbase/io/encoding/EncodingState.prevCell:Lorg/apache/hadoop/hbase/Cell;
+      25: ifnonnull     56
+      28: aload_3
+      29: iload         4
+      31: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/ByteBufferUtils.putCompressedInt:(Ljava/io/OutputStream;I)I
+      34: pop
+      35: aload_3
+      36: iload         5
+      38: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/ByteBufferUtils.putCompressedInt:(Ljava/io/OutputStream;I)I
+      41: pop
+      42: aload_3
+      43: iconst_0
+      44: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/ByteBufferUtils.putCompressedInt:(Ljava/io/OutputStream;I)I
+      47: pop
+      48: aload_1
+      49: aload_3
+      50: invokestatic  #7                  // Method org/apache/hadoop/hbase/PrivateCellUtil.writeFlatKey:(Lorg/apache/hadoop/hbase/Cell;Ljava/io/DataOutput;)V
+      53: goto          101
+      56: aload_1
+      57: aload         6
+      59: getfield      #5                  // Field org/apache/hadoop/hbase/io/encoding/EncodingState.prevCell:Lorg/apache/hadoop/hbase/Cell;
+      62: iconst_1
+      63: iconst_1
+      64: invokestatic  #8                  // Method org/apache/hadoop/hbase/PrivateCellUtil.findCommonPrefixInFlatKey:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/Cell;ZZ)I
+      67: istore        7
+      69: aload_3
+      70: iload         4
+      72: iload         7
+      74: isub
+      75: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/ByteBufferUtils.putCompressedInt:(Ljava/io/OutputStream;I)I
+      78: pop
+      79: aload_3
+      80: iload         5
+      82: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/ByteBufferUtils.putCompressedInt:(Ljava/io/OutputStream;I)I
+      85: pop
+      86: aload_3
+      87: iload         7
+      89: invokestatic  #6                  // Method org/apache/hadoop/hbase/util/ByteBufferUtils.putCompressedInt:(Ljava/io/OutputStream;I)I
+      92: pop
+      93: aload_0
+      94: aload_1
+      95: iload         7
+      97: aload_3
+      98: invokespecial #9                  // Method writeKeyExcludingCommon:(Lorg/apache/hadoop/hbase/Cell;ILjava/io/DataOutputStream;)V
+     101: aload_3
+     102: aload_1
+     103: iload         5
+     105: invokestatic  #10                 // Method org/apache/hadoop/hbase/PrivateCellUtil.writeValue:(Ljava/io/OutputStream;Lorg/apache/hadoop/hbase/Cell;I)V
+     108: iload         4
+     110: iload         5
+     112: iadd
+     113: bipush        8
+     115: iadd
+     116: istore        7
+     118: iload         7
+     120: aload_0
+     121: aload_1
+     122: aload_3
+     123: aload_2
+     124: invokevirtual #12                 // Method afterEncodingKeyValue:(Lorg/apache/hadoop/hbase/Cell;Ljava/io/DataOutputStream;Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDefaultEncodingContext;)I
+     127: iadd
+     128: istore        7
+     130: aload         6
+     132: aload_1
+     133: putfield      #5                  // Field org/apache/hadoop/hbase/io/encoding/EncodingState.prevCell:Lorg/apache/hadoop/hbase/Cell;
+     136: iload         7
+     138: ireturn
+
+  protected java.nio.ByteBuffer internalDecodeKeyValues(java.io.DataInputStream, int, int, org.apache.hadoop.hbase.io.encoding.HFileBlockDefaultDecodingContext) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #27                 // Method java/io/DataInputStream.readInt:()I
+       4: istore        5
+       6: iload         5
+       8: iload_2
+       9: iadd
+      10: invokestatic  #28                 // Method java/nio/ByteBuffer.allocate:(I)Ljava/nio/ByteBuffer;
+      13: astore        6
+      15: aload         6
+      17: iload_2
+      18: invokevirtual #29                 // Method java/nio/ByteBuffer.position:(I)Ljava/nio/Buffer;
+      21: pop
+      22: iconst_0
+      23: istore        7
+      25: aload_1
+      26: invokevirtual #30                 // Method java/io/DataInputStream.available:()I
+      29: iload_3
+      30: if_icmple     56
+      33: aload_0
+      34: aload_1
+      35: aload         6
+      37: iload         7
+      39: invokespecial #31                 // Method decodeKeyValue:(Ljava/io/DataInputStream;Ljava/nio/ByteBuffer;I)I
+      42: istore        7
+      44: aload_0
+      45: aload_1
+      46: aload         6
+      48: aload         4
+      50: invokevirtual #32                 // Method afterDecodingKeyValue:(Ljava/io/DataInputStream;Ljava/nio/ByteBuffer;Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDefaultDecodingContext;)V
+      53: goto          25
+      56: aload_1
+      57: invokevirtual #30                 // Method java/io/DataInputStream.available:()I
+      60: iload_3
+      61: if_icmpeq     74
+      64: new           #33                 // class java/lang/IllegalStateException
+      67: dup
+      68: ldc           #34                 // String Read too many bytes.
+      70: invokespecial #35                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+      73: athrow
+      74: aload         6
+      76: aload         6
+      78: invokevirtual #36                 // Method java/nio/ByteBuffer.position:()I
+      81: invokevirtual #37                 // Method java/nio/ByteBuffer.limit:(I)Ljava/nio/Buffer;
+      84: pop
+      85: aload         6
+      87: areturn
+
+  public org.apache.hadoop.hbase.Cell getFirstKeyCellInBlock(org.apache.hadoop.hbase.nio.ByteBuff);
+    Code:
+       0: aload_1
+       1: invokevirtual #43                 // Method org/apache/hadoop/hbase/nio/ByteBuff.mark:()Lorg/apache/hadoop/hbase/nio/ByteBuff;
+       4: pop
+       5: aload_1
+       6: iconst_4
+       7: invokevirtual #45                 // Method org/apache/hadoop/hbase/nio/ByteBuff.position:(I)Lorg/apache/hadoop/hbase/nio/ByteBuff;
+      10: pop
+      11: aload_1
+      12: invokestatic  #46                 // Method org/apache/hadoop/hbase/nio/ByteBuff.readCompressedInt:(Lorg/apache/hadoop/hbase/nio/ByteBuff;)I
+      15: istore_2
+      16: aload_1
+      17: invokestatic  #46                 // Method org/apache/hadoop/hbase/nio/ByteBuff.readCompressedInt:(Lorg/apache/hadoop/hbase/nio/ByteBuff;)I
+      20: pop
+      21: aload_1
+      22: invokestatic  #46                 // Method org/apache/hadoop/hbase/nio/ByteBuff.readCompressedInt:(Lorg/apache/hadoop/hbase/nio/ByteBuff;)I
+      25: istore_3
+      26: iload_3
+      27: ifeq          57
+      30: new           #47                 // class java/lang/AssertionError
+      33: dup
+      34: new           #48                 // class java/lang/StringBuilder
+      37: dup
+      38: invokespecial #49                 // Method java/lang/StringBuilder."<init>":()V
+      41: ldc           #50                 // String Nonzero common length in the first key in block:
+      43: invokevirtual #51                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: iload_3
+      47: invokevirtual #52                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      50: invokevirtual #53                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      53: invokespecial #54                 // Method java/lang/AssertionError."<init>":(Ljava/lang/Object;)V
+      56: athrow
+      57: aload_1
+      58: iload_2
+      59: invokevirtual #55                 // Method org/apache/hadoop/hbase/nio/ByteBuff.asSubByteBuffer:(I)Ljava/nio/ByteBuffer;
+      62: invokevirtual #56                 // Method java/nio/ByteBuffer.duplicate:()Ljava/nio/ByteBuffer;
+      65: astore        4
+      67: aload_1
+      68: invokevirtual #57                 // Method org/apache/hadoop/hbase/nio/ByteBuff.reset:()Lorg/apache/hadoop/hbase/nio/ByteBuff;
+      71: pop
+      72: aload_0
+      73: aload         4
+      75: iload_2
+      76: invokevirtual #58                 // Method createFirstKeyCell:(Ljava/nio/ByteBuffer;I)Lorg/apache/hadoop/hbase/Cell;
+      79: areturn
+
+  public java.lang.String toString();
+    Code:
+       0: ldc           #59                 // class org/apache/hadoop/hbase/io/encoding/PrefixKeyDeltaEncoder
+       2: invokevirtual #60                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+       5: areturn
+
+  public org.apache.hadoop.hbase.io.encoding.DataBlockEncoder$EncodedSeeker createSeeker(org.apache.hadoop.hbase.CellComparator, org.apache.hadoop.hbase.io.encoding.HFileBlockDecodingContext);
+    Code:
+       0: new           #61                 // class org/apache/hadoop/hbase/io/encoding/PrefixKeyDeltaEncoder$1
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: invokespecial #62                 // Method org/apache/hadoop/hbase/io/encoding/PrefixKeyDeltaEncoder$1."<init>":(Lorg/apache/hadoop/hbase/io/encoding/PrefixKeyDeltaEncoder;Lorg/apache/hadoop/hbase/CellComparator;Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDecodingContext;)V
+      10: areturn
+
+  public void endBlockEncoding(org.apache.hadoop.hbase.io.encoding.HFileBlockEncodingContext, java.io.DataOutputStream, byte[]) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: invokespecial #63                 // Method org/apache/hadoop/hbase/io/encoding/BufferedDataBlockEncoder.endBlockEncoding:(Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;Ljava/io/DataOutputStream;[B)V
+       7: return
+
+  public int encode(org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.io.encoding.HFileBlockEncodingContext, java.io.DataOutputStream) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: invokespecial #64                 // Method org/apache/hadoop/hbase/io/encoding/BufferedDataBlockEncoder.encode:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;Ljava/io/DataOutputStream;)I
+       7: ireturn
+
+  public void startBlockEncoding(org.apache.hadoop.hbase.io.encoding.HFileBlockEncodingContext, java.io.DataOutputStream) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #65                 // Method org/apache/hadoop/hbase/io/encoding/BufferedDataBlockEncoder.startBlockEncoding:(Lorg/apache/hadoop/hbase/io/encoding/HFileBlockEncodingContext;Ljava/io/DataOutputStream;)V
+       6: return
+
+  public java.nio.ByteBuffer decodeKeyValues(java.io.DataInputStream, org.apache.hadoop.hbase.io.encoding.HFileBlockDecodingContext) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #66                 // Method org/apache/hadoop/hbase/io/encoding/BufferedDataBlockEncoder.decodeKeyValues:(Ljava/io/DataInputStream;Lorg/apache/hadoop/hbase/io/encoding/HFileBlockDecodingContext;)Ljava/nio/ByteBuffer;
+       6: areturn
+}

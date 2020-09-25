@@ -1,0 +1,1811 @@
+Compiled from "VisibilityController.java"
+public class org.apache.hadoop.hbase.security.visibility.VisibilityController implements org.apache.hadoop.hbase.coprocessor.MasterCoprocessor,org.apache.hadoop.hbase.coprocessor.RegionCoprocessor,org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$VisibilityLabelsService$Interface,org.apache.hadoop.hbase.coprocessor.MasterObserver,org.apache.hadoop.hbase.coprocessor.RegionObserver {
+  boolean authorizationEnabled;
+
+  public org.apache.hadoop.hbase.security.visibility.VisibilityController();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #2                  // Field labelsRegion:Z
+       9: aload_0
+      10: iconst_0
+      11: putfield      #3                  // Field accessControllerAvailable:Z
+      14: aload_0
+      15: iconst_0
+      16: putfield      #4                  // Field initialized:Z
+      19: aload_0
+      20: iconst_0
+      21: putfield      #5                  // Field checkAuths:Z
+      24: aload_0
+      25: new           #6                  // class org/apache/hbase/thirdparty/com/google/common/collect/MapMaker
+      28: dup
+      29: invokespecial #7                  // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker."<init>":()V
+      32: invokevirtual #8                  // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.weakKeys:()Lorg/apache/hbase/thirdparty/com/google/common/collect/MapMaker;
+      35: invokevirtual #9                  // Method org/apache/hbase/thirdparty/com/google/common/collect/MapMaker.makeMap:()Ljava/util/concurrent/ConcurrentMap;
+      38: putfield      #10                 // Field scannerOwners:Ljava/util/Map;
+      41: return
+
+  public static boolean isCellAuthorizationSupported(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokestatic  #11                 // Method org/apache/hadoop/hbase/security/access/AccessChecker.isAuthorizationSupported:(Lorg/apache/hadoop/conf/Configuration;)Z
+       4: ireturn
+
+  public void start(org.apache.hadoop.hbase.CoprocessorEnvironment) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokeinterface #12,  1           // InterfaceMethod org/apache/hadoop/hbase/CoprocessorEnvironment.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       7: putfield      #13                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      10: aload_0
+      11: aload_0
+      12: getfield      #13                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      15: invokestatic  #11                 // Method org/apache/hadoop/hbase/security/access/AccessChecker.isAuthorizationSupported:(Lorg/apache/hadoop/conf/Configuration;)Z
+      18: putfield      #14                 // Field authorizationEnabled:Z
+      21: aload_0
+      22: getfield      #14                 // Field authorizationEnabled:Z
+      25: ifne          38
+      28: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+      31: ldc           #16                 // String The VisibilityController has been loaded with authorization checks disabled.
+      33: invokeinterface #17,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      38: aload_0
+      39: getfield      #13                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      42: invokestatic  #18                 // Method org/apache/hadoop/hbase/io/hfile/HFile.getFormatVersion:(Lorg/apache/hadoop/conf/Configuration;)I
+      45: iconst_3
+      46: if_icmpge     59
+      49: new           #20                 // class java/lang/RuntimeException
+      52: dup
+      53: ldc           #21                 // String A minimum HFile version of 3 is required to persist visibility labels. Consider setting hfile.format.version accordingly.
+      55: invokespecial #22                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      58: athrow
+      59: aload_1
+      60: instanceof    #23                 // class org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment
+      63: ifne          80
+      66: aload_0
+      67: invokestatic  #24                 // Method org/apache/hadoop/hbase/security/visibility/VisibilityLabelServiceManager.getInstance:()Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelServiceManager;
+      70: aload_0
+      71: getfield      #13                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      74: invokevirtual #25                 // Method org/apache/hadoop/hbase/security/visibility/VisibilityLabelServiceManager.getVisibilityLabelService:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+      77: putfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+      80: return
+
+  public void stop(org.apache.hadoop.hbase.CoprocessorEnvironment) throws java.io.IOException;
+    Code:
+       0: return
+
+  public java.util.Optional<org.apache.hadoop.hbase.coprocessor.RegionObserver> getRegionObserver();
+    Code:
+       0: aload_0
+       1: invokestatic  #27                 // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+       4: areturn
+
+  public java.util.Optional<org.apache.hadoop.hbase.coprocessor.MasterObserver> getMasterObserver();
+    Code:
+       0: aload_0
+       1: invokestatic  #27                 // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+       4: areturn
+
+  public java.lang.Iterable<com.google.protobuf.Service> getServices();
+    Code:
+       0: aload_0
+       1: invokestatic  #28                 // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsService.newReflectiveService:(Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsService$Interface;)Lcom/google/protobuf/Service;
+       4: invokestatic  #29                 // Method java/util/Collections.singleton:(Ljava/lang/Object;)Ljava/util/Set;
+       7: areturn
+
+  public void postStartMaster(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+       6: checkcast     #23                 // class org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment
+       9: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      14: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      17: invokestatic  #33                 // Method org/apache/hadoop/hbase/MetaTableAccessor.tableExists:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/hbase/TableName;)Z
+      20: ifne          204
+      23: new           #34                 // class org/apache/hadoop/hbase/HTableDescriptor
+      26: dup
+      27: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      30: invokespecial #35                 // Method org/apache/hadoop/hbase/HTableDescriptor."<init>":(Lorg/apache/hadoop/hbase/TableName;)V
+      33: astore_2
+      34: new           #36                 // class org/apache/hadoop/hbase/HColumnDescriptor
+      37: dup
+      38: getstatic     #37                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_FAMILY:[B
+      41: invokespecial #38                 // Method org/apache/hadoop/hbase/HColumnDescriptor."<init>":([B)V
+      44: astore_3
+      45: aload_3
+      46: getstatic     #39                 // Field org/apache/hadoop/hbase/regionserver/BloomType.NONE:Lorg/apache/hadoop/hbase/regionserver/BloomType;
+      49: invokevirtual #40                 // Method org/apache/hadoop/hbase/HColumnDescriptor.setBloomFilterType:(Lorg/apache/hadoop/hbase/regionserver/BloomType;)Lorg/apache/hadoop/hbase/HColumnDescriptor;
+      52: pop
+      53: aload_3
+      54: iconst_0
+      55: invokevirtual #41                 // Method org/apache/hadoop/hbase/HColumnDescriptor.setBlockCacheEnabled:(Z)Lorg/apache/hadoop/hbase/HColumnDescriptor;
+      58: pop
+      59: aload_2
+      60: aload_3
+      61: invokevirtual #42                 // Method org/apache/hadoop/hbase/HTableDescriptor.addFamily:(Lorg/apache/hadoop/hbase/HColumnDescriptor;)Lorg/apache/hadoop/hbase/HTableDescriptor;
+      64: pop
+      65: aload_2
+      66: ldc           #43                 // String SPLIT_POLICY
+      68: ldc           #44                 // class org/apache/hadoop/hbase/regionserver/DisabledRegionSplitPolicy
+      70: invokevirtual #45                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      73: invokevirtual #46                 // Method org/apache/hadoop/hbase/HTableDescriptor.setValue:(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/hadoop/hbase/HTableDescriptor;
+      76: pop
+      77: aload_1
+      78: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      83: checkcast     #23                 // class org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment
+      86: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/MasterCoprocessorEnvironment.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      91: invokeinterface #47,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      96: astore        4
+      98: aconst_null
+      99: astore        5
+     101: aload         4
+     103: aload_2
+     104: invokeinterface #48,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.createTable:(Lorg/apache/hadoop/hbase/client/TableDescriptor;)V
+     109: aload         4
+     111: ifnull        204
+     114: aload         5
+     116: ifnull        141
+     119: aload         4
+     121: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     126: goto          204
+     129: astore        6
+     131: aload         5
+     133: aload         6
+     135: invokevirtual #51                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     138: goto          204
+     141: aload         4
+     143: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     148: goto          204
+     151: astore        6
+     153: aload         6
+     155: astore        5
+     157: aload         6
+     159: athrow
+     160: astore        7
+     162: aload         4
+     164: ifnull        201
+     167: aload         5
+     169: ifnull        194
+     172: aload         4
+     174: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     179: goto          201
+     182: astore        8
+     184: aload         5
+     186: aload         8
+     188: invokevirtual #51                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     191: goto          201
+     194: aload         4
+     196: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     201: aload         7
+     203: athrow
+     204: return
+    Exception table:
+       from    to  target type
+         119   126   129   Class java/lang/Throwable
+         101   109   151   Class java/lang/Throwable
+         101   109   160   any
+         172   179   182   Class java/lang/Throwable
+         151   162   160   any
+
+  public org.apache.hadoop.hbase.client.TableDescriptor preModifyTable(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment>, org.apache.hadoop.hbase.TableName, org.apache.hadoop.hbase.client.TableDescriptor, org.apache.hadoop.hbase.client.TableDescriptor) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field authorizationEnabled:Z
+       4: ifeq          46
+       7: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      10: aload_2
+      11: invokevirtual #52                 // Method org/apache/hadoop/hbase/TableName.equals:(Ljava/lang/Object;)Z
+      14: ifeq          46
+      17: new           #53                 // class org/apache/hadoop/hbase/constraint/ConstraintException
+      20: dup
+      21: new           #54                 // class java/lang/StringBuilder
+      24: dup
+      25: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+      28: ldc           #56                 // String Cannot alter
+      30: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      33: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      36: invokevirtual #58                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      39: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      42: invokespecial #60                 // Method org/apache/hadoop/hbase/constraint/ConstraintException."<init>":(Ljava/lang/String;)V
+      45: athrow
+      46: aload         4
+      48: areturn
+
+  public void preDisableTable(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment>, org.apache.hadoop.hbase.TableName) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field authorizationEnabled:Z
+       4: ifne          8
+       7: return
+       8: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      11: aload_2
+      12: invokevirtual #52                 // Method org/apache/hadoop/hbase/TableName.equals:(Ljava/lang/Object;)Z
+      15: ifeq          47
+      18: new           #53                 // class org/apache/hadoop/hbase/constraint/ConstraintException
+      21: dup
+      22: new           #54                 // class java/lang/StringBuilder
+      25: dup
+      26: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+      29: ldc           #61                 // String Cannot disable
+      31: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      37: invokevirtual #58                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      40: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      43: invokespecial #60                 // Method org/apache/hadoop/hbase/constraint/ConstraintException."<init>":(Ljava/lang/String;)V
+      46: athrow
+      47: return
+
+  public void postOpen(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>);
+    Code:
+       0: aload_1
+       1: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+       6: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+       9: invokeinterface #63,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+      14: invokeinterface #64,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      19: invokeinterface #65,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      24: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      27: invokevirtual #52                 // Method org/apache/hadoop/hbase/TableName.equals:(Ljava/lang/Object;)Z
+      30: ifeq          85
+      33: aload_0
+      34: iconst_1
+      35: putfield      #2                  // Field labelsRegion:Z
+      38: aload_0
+      39: dup
+      40: astore_2
+      41: monitorenter
+      42: aload_0
+      43: invokestatic  #66                 // Method org/apache/hadoop/hbase/coprocessor/CoprocessorHost.getLoadedCoprocessors:()Ljava/util/Set;
+      46: ldc           #67                 // class org/apache/hadoop/hbase/security/access/AccessController
+      48: invokevirtual #45                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      51: invokeinterface #68,  2           // InterfaceMethod java/util/Set.contains:(Ljava/lang/Object;)Z
+      56: putfield      #3                  // Field accessControllerAvailable:Z
+      59: aload_2
+      60: monitorexit
+      61: goto          69
+      64: astore_3
+      65: aload_2
+      66: monitorexit
+      67: aload_3
+      68: athrow
+      69: aload_0
+      70: aload_1
+      71: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      76: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      79: invokespecial #69                 // Method initVisibilityLabelService:(Lorg/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment;)V
+      82: goto          122
+      85: aload_0
+      86: aload_1
+      87: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      92: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      95: invokeinterface #70,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     100: ldc           #72                 // String hbase.security.visibility.mutations.checkauths
+     102: iconst_0
+     103: invokevirtual #73                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+     106: putfield      #5                  // Field checkAuths:Z
+     109: aload_0
+     110: aload_1
+     111: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+     116: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+     119: invokespecial #69                 // Method initVisibilityLabelService:(Lorg/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment;)V
+     122: return
+    Exception table:
+       from    to  target type
+          42    61    64   any
+          64    67    64   any
+
+  public void postSetSplitOrMergeEnabled(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.MasterCoprocessorEnvironment>, boolean, org.apache.hadoop.hbase.client.MasterSwitchType) throws java.io.IOException;
+    Code:
+       0: return
+
+  public void preBatchMutate(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.MiniBatchOperationInProgress<org.apache.hadoop.hbase.client.Mutation>) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+       6: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+       9: invokeinterface #63,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+      14: invokeinterface #64,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      19: invokeinterface #65,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      24: invokevirtual #79                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+      27: ifeq          31
+      30: return
+      31: new           #80                 // class java/util/HashMap
+      34: dup
+      35: invokespecial #81                 // Method java/util/HashMap."<init>":()V
+      38: astore_3
+      39: iconst_0
+      40: istore        4
+      42: iload         4
+      44: aload_2
+      45: invokevirtual #82                 // Method org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.size:()I
+      48: if_icmpge     548
+      51: aload_2
+      52: iload         4
+      54: invokevirtual #83                 // Method org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.getOperation:(I)Ljava/lang/Object;
+      57: checkcast     #84                 // class org/apache/hadoop/hbase/client/Mutation
+      60: astore        5
+      62: aconst_null
+      63: astore        6
+      65: aload         5
+      67: invokevirtual #85                 // Method org/apache/hadoop/hbase/client/Mutation.getCellVisibility:()Lorg/apache/hadoop/hbase/security/visibility/CellVisibility;
+      70: astore        6
+      72: goto          101
+      75: astore        7
+      77: aload_2
+      78: iload         4
+      80: new           #87                 // class org/apache/hadoop/hbase/regionserver/OperationStatus
+      83: dup
+      84: getstatic     #88                 // Field org/apache/hadoop/hbase/HConstants$OperationStatusCode.SANITY_CHECK_FAILURE:Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+      87: aload         7
+      89: invokevirtual #89                 // Method org/apache/hadoop/hbase/exceptions/DeserializationException.getMessage:()Ljava/lang/String;
+      92: invokespecial #90                 // Method org/apache/hadoop/hbase/regionserver/OperationStatus."<init>":(Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;Ljava/lang/String;)V
+      95: invokevirtual #91                 // Method org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.setOperationStatus:(ILorg/apache/hadoop/hbase/regionserver/OperationStatus;)V
+      98: goto          542
+     101: iconst_0
+     102: istore        7
+     104: iconst_0
+     105: istore        8
+     107: new           #92                 // class org/apache/hadoop/hbase/util/Pair
+     110: dup
+     111: iconst_0
+     112: invokestatic  #93                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+     115: aconst_null
+     116: invokespecial #94                 // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+     119: astore        9
+     121: aload         5
+     123: invokevirtual #95                 // Method org/apache/hadoop/hbase/client/Mutation.cellScanner:()Lorg/apache/hadoop/hbase/CellScanner;
+     126: astore        10
+     128: aload         10
+     130: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.advance:()Z
+     135: ifeq          238
+     138: aload_0
+     139: aload         10
+     141: invokeinterface #97,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.current:()Lorg/apache/hadoop/hbase/Cell;
+     146: aload         9
+     148: invokespecial #98                 // Method checkForReservedVisibilityTagPresence:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/util/Pair;)Lorg/apache/hadoop/hbase/util/Pair;
+     151: astore        9
+     153: aload         9
+     155: invokevirtual #99                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+     158: checkcast     #100                // class java/lang/Boolean
+     161: invokevirtual #101                // Method java/lang/Boolean.booleanValue:()Z
+     164: ifne          198
+     167: aload_0
+     168: getfield      #14                 // Field authorizationEnabled:Z
+     171: ifeq          238
+     174: aload_2
+     175: iload         4
+     177: new           #87                 // class org/apache/hadoop/hbase/regionserver/OperationStatus
+     180: dup
+     181: getstatic     #88                 // Field org/apache/hadoop/hbase/HConstants$OperationStatusCode.SANITY_CHECK_FAILURE:Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     184: ldc           #102                // String Mutation contains cell with reserved type tag
+     186: invokespecial #90                 // Method org/apache/hadoop/hbase/regionserver/OperationStatus."<init>":(Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;Ljava/lang/String;)V
+     189: invokevirtual #91                 // Method org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.setOperationStatus:(ILorg/apache/hadoop/hbase/regionserver/OperationStatus;)V
+     192: iconst_1
+     193: istore        7
+     195: goto          238
+     198: aload         9
+     200: invokevirtual #103                // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+     203: checkcast     #104                // class org/apache/hadoop/hbase/Tag
+     206: astore        11
+     208: aload         6
+     210: ifnonnull     235
+     213: aload         11
+     215: ifnull        235
+     218: new           #105                // class org/apache/hadoop/hbase/security/visibility/CellVisibility
+     221: dup
+     222: aload         11
+     224: invokestatic  #106                // InterfaceMethod org/apache/hadoop/hbase/Tag.getValueAsString:(Lorg/apache/hadoop/hbase/Tag;)Ljava/lang/String;
+     227: invokespecial #107                // Method org/apache/hadoop/hbase/security/visibility/CellVisibility."<init>":(Ljava/lang/String;)V
+     230: astore        6
+     232: iconst_1
+     233: istore        8
+     235: goto          128
+     238: iload         7
+     240: ifne          542
+     243: aload         6
+     245: ifnull        542
+     248: aload         6
+     250: invokevirtual #108                // Method org/apache/hadoop/hbase/security/visibility/CellVisibility.getExpression:()Ljava/lang/String;
+     253: astore        10
+     255: aload_3
+     256: aload         10
+     258: invokeinterface #109,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     263: checkcast     #110                // class java/util/List
+     266: astore        11
+     268: aload         11
+     270: ifnonnull     359
+     273: aload_0
+     274: getfield      #14                 // Field authorizationEnabled:Z
+     277: ifeq          298
+     280: aload_0
+     281: getfield      #5                  // Field checkAuths:Z
+     284: ifeq          298
+     287: aload_0
+     288: invokespecial #111                // Method isSystemOrSuperUser:()Z
+     291: ifne          298
+     294: iconst_1
+     295: goto          299
+     298: iconst_0
+     299: istore        12
+     301: aload_0
+     302: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+     305: aload         10
+     307: iconst_1
+     308: iload         12
+     310: invokeinterface #112,  4          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.createVisibilityExpTags:(Ljava/lang/String;ZZ)Ljava/util/List;
+     315: astore        11
+     317: goto          343
+     320: astore        13
+     322: aload_2
+     323: iload         4
+     325: new           #87                 // class org/apache/hadoop/hbase/regionserver/OperationStatus
+     328: dup
+     329: getstatic     #88                 // Field org/apache/hadoop/hbase/HConstants$OperationStatusCode.SANITY_CHECK_FAILURE:Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     332: aload         13
+     334: invokevirtual #114                // Method org/apache/hadoop/hbase/security/visibility/InvalidLabelException.getMessage:()Ljava/lang/String;
+     337: invokespecial #90                 // Method org/apache/hadoop/hbase/regionserver/OperationStatus."<init>":(Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;Ljava/lang/String;)V
+     340: invokevirtual #91                 // Method org/apache/hadoop/hbase/regionserver/MiniBatchOperationInProgress.setOperationStatus:(ILorg/apache/hadoop/hbase/regionserver/OperationStatus;)V
+     343: aload         11
+     345: ifnull        359
+     348: aload_3
+     349: aload         10
+     351: aload         11
+     353: invokeinterface #115,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     358: pop
+     359: aload         11
+     361: ifnull        542
+     364: new           #116                // class java/util/ArrayList
+     367: dup
+     368: invokespecial #117                // Method java/util/ArrayList."<init>":()V
+     371: astore        12
+     373: aload         5
+     375: invokevirtual #95                 // Method org/apache/hadoop/hbase/client/Mutation.cellScanner:()Lorg/apache/hadoop/hbase/CellScanner;
+     378: astore        13
+     380: aload         13
+     382: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.advance:()Z
+     387: ifeq          449
+     390: aload         13
+     392: invokeinterface #97,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.current:()Lorg/apache/hadoop/hbase/Cell;
+     397: astore        14
+     399: aload         14
+     401: invokestatic  #118                // Method org/apache/hadoop/hbase/PrivateCellUtil.getTags:(Lorg/apache/hadoop/hbase/Cell;)Ljava/util/List;
+     404: astore        15
+     406: iload         8
+     408: ifeq          417
+     411: aload_0
+     412: aload         15
+     414: invokespecial #119                // Method removeReplicationVisibilityTag:(Ljava/util/List;)V
+     417: aload         15
+     419: aload         11
+     421: invokeinterface #120,  2          // InterfaceMethod java/util/List.addAll:(Ljava/util/Collection;)Z
+     426: pop
+     427: aload         14
+     429: aload         15
+     431: invokestatic  #121                // Method org/apache/hadoop/hbase/PrivateCellUtil.createCell:(Lorg/apache/hadoop/hbase/Cell;Ljava/util/List;)Lorg/apache/hadoop/hbase/Cell;
+     434: astore        16
+     436: aload         12
+     438: aload         16
+     440: invokeinterface #122,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     445: pop
+     446: goto          380
+     449: aload         5
+     451: invokevirtual #123                // Method org/apache/hadoop/hbase/client/Mutation.getFamilyCellMap:()Ljava/util/NavigableMap;
+     454: invokeinterface #124,  1          // InterfaceMethod java/util/NavigableMap.clear:()V
+     459: aload         12
+     461: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     466: astore        13
+     468: aload         13
+     470: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     475: ifeq          542
+     478: aload         13
+     480: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     485: checkcast     #128                // class org/apache/hadoop/hbase/Cell
+     488: astore        14
+     490: aload         5
+     492: instanceof    #129                // class org/apache/hadoop/hbase/client/Put
+     495: ifeq          516
+     498: aload         5
+     500: checkcast     #129                // class org/apache/hadoop/hbase/client/Put
+     503: astore        15
+     505: aload         15
+     507: aload         14
+     509: invokevirtual #130                // Method org/apache/hadoop/hbase/client/Put.add:(Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/client/Put;
+     512: pop
+     513: goto          539
+     516: aload         5
+     518: instanceof    #131                // class org/apache/hadoop/hbase/client/Delete
+     521: ifeq          539
+     524: aload         5
+     526: checkcast     #131                // class org/apache/hadoop/hbase/client/Delete
+     529: astore        15
+     531: aload         15
+     533: aload         14
+     535: invokevirtual #132                // Method org/apache/hadoop/hbase/client/Delete.add:(Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/client/Delete;
+     538: pop
+     539: goto          468
+     542: iinc          4, 1
+     545: goto          42
+     548: return
+    Exception table:
+       from    to  target type
+          65    72    75   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+         301   317   320   Class org/apache/hadoop/hbase/security/visibility/InvalidLabelException
+
+  public void prePrepareTimeStampForDeleteVersion(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Mutation, org.apache.hadoop.hbase.Cell, byte[], org.apache.hadoop.hbase.client.Get) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field authorizationEnabled:Z
+       4: ifne          8
+       7: return
+       8: aconst_null
+       9: astore        6
+      11: aload_2
+      12: invokevirtual #85                 // Method org/apache/hadoop/hbase/client/Mutation.getCellVisibility:()Lorg/apache/hadoop/hbase/security/visibility/CellVisibility;
+      15: astore        6
+      17: goto          51
+      20: astore        7
+      22: new           #75                 // class java/io/IOException
+      25: dup
+      26: new           #54                 // class java/lang/StringBuilder
+      29: dup
+      30: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+      33: ldc           #133                // String Invalid cell visibility specified
+      35: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: aload_2
+      39: invokevirtual #58                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      42: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      45: aload         7
+      47: invokespecial #134                // Method java/io/IOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+      50: athrow
+      51: new           #116                // class java/util/ArrayList
+      54: dup
+      55: invokespecial #117                // Method java/util/ArrayList."<init>":()V
+      58: astore        7
+      60: aload         6
+      62: ifnull        122
+      65: aload         6
+      67: invokevirtual #108                // Method org/apache/hadoop/hbase/security/visibility/CellVisibility.getExpression:()Ljava/lang/String;
+      70: astore        8
+      72: aload_0
+      73: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+      76: aload         8
+      78: iconst_0
+      79: iconst_0
+      80: invokeinterface #112,  4          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.createVisibilityExpTags:(Ljava/lang/String;ZZ)Ljava/util/List;
+      85: astore        7
+      87: goto          122
+      90: astore        9
+      92: new           #75                 // class java/io/IOException
+      95: dup
+      96: new           #54                 // class java/lang/StringBuilder
+      99: dup
+     100: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+     103: ldc           #133                // String Invalid cell visibility specified
+     105: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     108: aload         8
+     110: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     113: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     116: aload         9
+     118: invokespecial #134                // Method java/io/IOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     121: athrow
+     122: aload         5
+     124: new           #135                // class org/apache/hadoop/hbase/security/visibility/VisibilityController$DeleteVersionVisibilityExpressionFilter
+     127: dup
+     128: aload         7
+     130: iconst_1
+     131: invokestatic  #136                // Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;
+     134: invokespecial #137                // Method org/apache/hadoop/hbase/security/visibility/VisibilityController$DeleteVersionVisibilityExpressionFilter."<init>":(Ljava/util/List;Ljava/lang/Byte;)V
+     137: invokevirtual #138                // Method org/apache/hadoop/hbase/client/Get.setFilter:(Lorg/apache/hadoop/hbase/filter/Filter;)Lorg/apache/hadoop/hbase/client/Get;
+     140: pop
+     141: aload_1
+     142: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+     147: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+     150: invokeinterface #63,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+     155: aload         5
+     157: iconst_0
+     158: invokeinterface #139,  3          // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.get:(Lorg/apache/hadoop/hbase/client/Get;Z)Ljava/util/List;
+     163: astore        8
+     165: aload         8
+     167: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     172: aload         5
+     174: invokevirtual #141                // Method org/apache/hadoop/hbase/client/Get.getMaxVersions:()I
+     177: if_icmpge     188
+     180: aload_3
+     181: aload         4
+     183: invokestatic  #142                // Method org/apache/hadoop/hbase/PrivateCellUtil.updateLatestStamp:(Lorg/apache/hadoop/hbase/Cell;[B)Z
+     186: pop
+     187: return
+     188: aload         8
+     190: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     195: aload         5
+     197: invokevirtual #141                // Method org/apache/hadoop/hbase/client/Get.getMaxVersions:()I
+     200: if_icmple     241
+     203: new           #20                 // class java/lang/RuntimeException
+     206: dup
+     207: new           #54                 // class java/lang/StringBuilder
+     210: dup
+     211: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+     214: ldc           #143                // String Unexpected size:
+     216: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     219: aload         8
+     221: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     226: invokevirtual #144                // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     229: ldc           #145                // String . Results more than the max versions obtained.
+     231: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     234: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     237: invokespecial #22                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+     240: athrow
+     241: aload         8
+     243: aload         5
+     245: invokevirtual #141                // Method org/apache/hadoop/hbase/client/Get.getMaxVersions:()I
+     248: iconst_1
+     249: isub
+     250: invokeinterface #146,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     255: checkcast     #128                // class org/apache/hadoop/hbase/Cell
+     258: astore        9
+     260: aload_3
+     261: aload         9
+     263: invokeinterface #147,  1          // InterfaceMethod org/apache/hadoop/hbase/Cell.getTimestamp:()J
+     268: invokestatic  #148                // Method org/apache/hadoop/hbase/PrivateCellUtil.setTimestamp:(Lorg/apache/hadoop/hbase/Cell;J)V
+     271: aload_1
+     272: invokeinterface #149,  1          // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.bypass:()V
+     277: return
+    Exception table:
+       from    to  target type
+          11    17    20   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+          72    87    90   Class org/apache/hadoop/hbase/security/visibility/InvalidLabelException
+
+  public void preScannerOpen(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Scan) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field initialized:Z
+       4: ifne          17
+       7: new           #158                // class org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException
+      10: dup
+      11: ldc           #159                // String VisibilityController not yet initialized!
+      13: invokespecial #160                // Method org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_0
+      18: getfield      #14                 // Field authorizationEnabled:Z
+      21: ifne          25
+      24: return
+      25: aload_1
+      26: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      31: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      34: invokeinterface #63,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+      39: astore_3
+      40: aconst_null
+      41: astore        4
+      43: aload_2
+      44: invokevirtual #161                // Method org/apache/hadoop/hbase/client/Scan.getAuthorizations:()Lorg/apache/hadoop/hbase/security/visibility/Authorizations;
+      47: astore        4
+      49: goto          64
+      52: astore        5
+      54: new           #75                 // class java/io/IOException
+      57: dup
+      58: aload         5
+      60: invokespecial #162                // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+      63: athrow
+      64: aload         4
+      66: ifnonnull     102
+      69: aload_3
+      70: invokeinterface #64,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      75: invokeinterface #65,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      80: astore        5
+      82: aload         5
+      84: invokevirtual #79                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+      87: ifeq          102
+      90: aload         5
+      92: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      95: invokevirtual #52                 // Method org/apache/hadoop/hbase/TableName.equals:(Ljava/lang/Object;)Z
+      98: ifne          102
+     101: return
+     102: aload_3
+     103: aload         4
+     105: invokestatic  #163                // Method org/apache/hadoop/hbase/security/visibility/VisibilityUtils.createVisibilityLabelFilter:(Lorg/apache/hadoop/hbase/regionserver/Region;Lorg/apache/hadoop/hbase/security/visibility/Authorizations;)Lorg/apache/hadoop/hbase/filter/Filter;
+     108: astore        5
+     110: aload         5
+     112: ifnull        162
+     115: aload_2
+     116: invokevirtual #164                // Method org/apache/hadoop/hbase/client/Scan.getFilter:()Lorg/apache/hadoop/hbase/filter/Filter;
+     119: astore        6
+     121: aload         6
+     123: ifnull        155
+     126: aload_2
+     127: new           #165                // class org/apache/hadoop/hbase/filter/FilterList
+     130: dup
+     131: iconst_2
+     132: anewarray     #166                // class org/apache/hadoop/hbase/filter/Filter
+     135: dup
+     136: iconst_0
+     137: aload         6
+     139: aastore
+     140: dup
+     141: iconst_1
+     142: aload         5
+     144: aastore
+     145: invokespecial #167                // Method org/apache/hadoop/hbase/filter/FilterList."<init>":([Lorg/apache/hadoop/hbase/filter/Filter;)V
+     148: invokevirtual #168                // Method org/apache/hadoop/hbase/client/Scan.setFilter:(Lorg/apache/hadoop/hbase/filter/Filter;)Lorg/apache/hadoop/hbase/client/Scan;
+     151: pop
+     152: goto          162
+     155: aload_2
+     156: aload         5
+     158: invokevirtual #168                // Method org/apache/hadoop/hbase/client/Scan.setFilter:(Lorg/apache/hadoop/hbase/filter/Filter;)Lorg/apache/hadoop/hbase/client/Scan;
+     161: pop
+     162: return
+    Exception table:
+       from    to  target type
+          43    49    52   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+
+  public org.apache.hadoop.hbase.regionserver.querymatcher.DeleteTracker postInstantiateDeleteTracker(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.querymatcher.DeleteTracker) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field authorizationEnabled:Z
+       4: ifne          9
+       7: aload_2
+       8: areturn
+       9: aload_1
+      10: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      15: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      18: invokeinterface #63,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+      23: astore_3
+      24: aload_3
+      25: invokeinterface #64,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      30: invokeinterface #65,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      35: astore        4
+      37: aload         4
+      39: invokevirtual #79                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+      42: ifeq          47
+      45: aload_2
+      46: areturn
+      47: new           #169                // class org/apache/hadoop/hbase/security/visibility/VisibilityScanDeleteTracker
+      50: dup
+      51: aload_2
+      52: invokeinterface #170,  1          // InterfaceMethod org/apache/hadoop/hbase/regionserver/querymatcher/DeleteTracker.getCellComparator:()Lorg/apache/hadoop/hbase/CellComparator;
+      57: invokespecial #171                // Method org/apache/hadoop/hbase/security/visibility/VisibilityScanDeleteTracker."<init>":(Lorg/apache/hadoop/hbase/CellComparator;)V
+      60: areturn
+
+  public org.apache.hadoop.hbase.regionserver.RegionScanner postScannerOpen(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Scan, org.apache.hadoop.hbase.regionserver.RegionScanner) throws java.io.IOException;
+    Code:
+       0: invokestatic  #172                // Method org/apache/hadoop/hbase/security/visibility/VisibilityUtils.getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+       3: astore        4
+       5: aload         4
+       7: ifnull        34
+      10: aload         4
+      12: invokevirtual #173                // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      15: ifnull        34
+      18: aload_0
+      19: getfield      #10                 // Field scannerOwners:Ljava/util/Map;
+      22: aload_3
+      23: aload         4
+      25: invokevirtual #173                // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      28: invokeinterface #115,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      33: pop
+      34: aload_3
+      35: areturn
+
+  public boolean preScannerNext(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.InternalScanner, java.util.List<org.apache.hadoop.hbase.client.Result>, int, boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_2
+       2: invokespecial #174                // Method requireScannerOwner:(Lorg/apache/hadoop/hbase/regionserver/InternalScanner;)V
+       5: iload         5
+       7: ireturn
+
+  public void preScannerClose(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.InternalScanner) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_2
+       2: invokespecial #174                // Method requireScannerOwner:(Lorg/apache/hadoop/hbase/regionserver/InternalScanner;)V
+       5: return
+
+  public void postScannerClose(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.InternalScanner) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field scannerOwners:Ljava/util/Map;
+       4: aload_2
+       5: invokeinterface #175,  2          // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: pop
+      11: return
+
+  public void preGetOp(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Get, java.util.List<org.apache.hadoop.hbase.Cell>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field initialized:Z
+       4: ifne          17
+       7: new           #158                // class org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException
+      10: dup
+      11: ldc           #185                // String VisibilityController not yet initialized
+      13: invokespecial #160                // Method org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_0
+      18: getfield      #14                 // Field authorizationEnabled:Z
+      21: ifne          25
+      24: return
+      25: aload_1
+      26: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+      31: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      34: invokeinterface #63,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+      39: astore        4
+      41: aconst_null
+      42: astore        5
+      44: aload_2
+      45: invokevirtual #186                // Method org/apache/hadoop/hbase/client/Get.getAuthorizations:()Lorg/apache/hadoop/hbase/security/visibility/Authorizations;
+      48: astore        5
+      50: goto          65
+      53: astore        6
+      55: new           #75                 // class java/io/IOException
+      58: dup
+      59: aload         6
+      61: invokespecial #162                // Method java/io/IOException."<init>":(Ljava/lang/Throwable;)V
+      64: athrow
+      65: aload         5
+      67: ifnonnull     104
+      70: aload         4
+      72: invokeinterface #64,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      77: invokeinterface #65,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      82: astore        6
+      84: aload         6
+      86: invokevirtual #79                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+      89: ifeq          104
+      92: aload         6
+      94: getstatic     #32                 // Field org/apache/hadoop/hbase/security/visibility/VisibilityConstants.LABELS_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      97: invokevirtual #52                 // Method org/apache/hadoop/hbase/TableName.equals:(Ljava/lang/Object;)Z
+     100: ifne          104
+     103: return
+     104: aload_1
+     105: invokeinterface #30,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/ObserverContext.getEnvironment:()Lorg/apache/hadoop/hbase/CoprocessorEnvironment;
+     110: checkcast     #62                 // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+     113: invokeinterface #63,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+     118: aload         5
+     120: invokestatic  #163                // Method org/apache/hadoop/hbase/security/visibility/VisibilityUtils.createVisibilityLabelFilter:(Lorg/apache/hadoop/hbase/regionserver/Region;Lorg/apache/hadoop/hbase/security/visibility/Authorizations;)Lorg/apache/hadoop/hbase/filter/Filter;
+     123: astore        6
+     125: aload         6
+     127: ifnull        177
+     130: aload_2
+     131: invokevirtual #187                // Method org/apache/hadoop/hbase/client/Get.getFilter:()Lorg/apache/hadoop/hbase/filter/Filter;
+     134: astore        7
+     136: aload         7
+     138: ifnull        170
+     141: aload_2
+     142: new           #165                // class org/apache/hadoop/hbase/filter/FilterList
+     145: dup
+     146: iconst_2
+     147: anewarray     #166                // class org/apache/hadoop/hbase/filter/Filter
+     150: dup
+     151: iconst_0
+     152: aload         7
+     154: aastore
+     155: dup
+     156: iconst_1
+     157: aload         6
+     159: aastore
+     160: invokespecial #167                // Method org/apache/hadoop/hbase/filter/FilterList."<init>":([Lorg/apache/hadoop/hbase/filter/Filter;)V
+     163: invokevirtual #138                // Method org/apache/hadoop/hbase/client/Get.setFilter:(Lorg/apache/hadoop/hbase/filter/Filter;)Lorg/apache/hadoop/hbase/client/Get;
+     166: pop
+     167: goto          177
+     170: aload_2
+     171: aload         6
+     173: invokevirtual #138                // Method org/apache/hadoop/hbase/client/Get.setFilter:(Lorg/apache/hadoop/hbase/filter/Filter;)Lorg/apache/hadoop/hbase/client/Get;
+     176: pop
+     177: return
+    Exception table:
+       from    to  target type
+          44    50    53   Class org/apache/hadoop/hbase/exceptions/DeserializationException
+
+  public org.apache.hadoop.hbase.client.Result preAppend(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Append) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field authorizationEnabled:Z
+       4: ifne          9
+       7: aconst_null
+       8: areturn
+       9: aload_2
+      10: invokevirtual #189                // Method org/apache/hadoop/hbase/client/Append.cellScanner:()Lorg/apache/hadoop/hbase/CellScanner;
+      13: astore_3
+      14: aload_3
+      15: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.advance:()Z
+      20: ifeq          46
+      23: aload_0
+      24: aload_3
+      25: invokeinterface #97,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.current:()Lorg/apache/hadoop/hbase/Cell;
+      30: invokespecial #190                // Method checkForReservedVisibilityTagPresence:(Lorg/apache/hadoop/hbase/Cell;)Z
+      33: ifne          14
+      36: new           #191                // class org/apache/hadoop/hbase/exceptions/FailedSanityCheckException
+      39: dup
+      40: ldc           #192                // String Append contains cell with reserved type tag
+      42: invokespecial #193                // Method org/apache/hadoop/hbase/exceptions/FailedSanityCheckException."<init>":(Ljava/lang/String;)V
+      45: athrow
+      46: aconst_null
+      47: areturn
+
+  public org.apache.hadoop.hbase.client.Result preIncrement(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Increment) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field authorizationEnabled:Z
+       4: ifne          9
+       7: aconst_null
+       8: areturn
+       9: aload_2
+      10: invokevirtual #194                // Method org/apache/hadoop/hbase/client/Increment.cellScanner:()Lorg/apache/hadoop/hbase/CellScanner;
+      13: astore_3
+      14: aload_3
+      15: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.advance:()Z
+      20: ifeq          46
+      23: aload_0
+      24: aload_3
+      25: invokeinterface #97,  1           // InterfaceMethod org/apache/hadoop/hbase/CellScanner.current:()Lorg/apache/hadoop/hbase/Cell;
+      30: invokespecial #190                // Method checkForReservedVisibilityTagPresence:(Lorg/apache/hadoop/hbase/Cell;)Z
+      33: ifne          14
+      36: new           #191                // class org/apache/hadoop/hbase/exceptions/FailedSanityCheckException
+      39: dup
+      40: ldc           #195                // String Increment contains cell with reserved type tag
+      42: invokespecial #193                // Method org/apache/hadoop/hbase/exceptions/FailedSanityCheckException."<init>":(Ljava/lang/String;)V
+      45: athrow
+      46: aconst_null
+      47: areturn
+
+  public java.util.List<org.apache.hadoop.hbase.util.Pair<org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.Cell>> postIncrementBeforeWAL(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Mutation, java.util.List<org.apache.hadoop.hbase.util.Pair<org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.Cell>>) throws java.io.IOException;
+    Code:
+       0: new           #116                // class java/util/ArrayList
+       3: dup
+       4: aload_3
+       5: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      10: invokespecial #196                // Method java/util/ArrayList."<init>":(I)V
+      13: astore        4
+      15: aload_3
+      16: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      21: astore        5
+      23: aload         5
+      25: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      30: ifeq          81
+      33: aload         5
+      35: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      40: checkcast     #92                 // class org/apache/hadoop/hbase/util/Pair
+      43: astore        6
+      45: aload         4
+      47: new           #92                 // class org/apache/hadoop/hbase/util/Pair
+      50: dup
+      51: aload         6
+      53: invokevirtual #99                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+      56: aload_0
+      57: aload_2
+      58: aload         6
+      60: invokevirtual #103                // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+      63: checkcast     #128                // class org/apache/hadoop/hbase/Cell
+      66: invokespecial #197                // Method createNewCellWithTags:(Lorg/apache/hadoop/hbase/client/Mutation;Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/Cell;
+      69: invokespecial #94                 // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+      72: invokeinterface #122,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      77: pop
+      78: goto          23
+      81: aload         4
+      83: areturn
+
+  public java.util.List<org.apache.hadoop.hbase.util.Pair<org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.Cell>> postAppendBeforeWAL(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Mutation, java.util.List<org.apache.hadoop.hbase.util.Pair<org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.Cell>>) throws java.io.IOException;
+    Code:
+       0: new           #116                // class java/util/ArrayList
+       3: dup
+       4: aload_3
+       5: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      10: invokespecial #196                // Method java/util/ArrayList."<init>":(I)V
+      13: astore        4
+      15: aload_3
+      16: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      21: astore        5
+      23: aload         5
+      25: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      30: ifeq          81
+      33: aload         5
+      35: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      40: checkcast     #92                 // class org/apache/hadoop/hbase/util/Pair
+      43: astore        6
+      45: aload         4
+      47: new           #92                 // class org/apache/hadoop/hbase/util/Pair
+      50: dup
+      51: aload         6
+      53: invokevirtual #99                 // Method org/apache/hadoop/hbase/util/Pair.getFirst:()Ljava/lang/Object;
+      56: aload_0
+      57: aload_2
+      58: aload         6
+      60: invokevirtual #103                // Method org/apache/hadoop/hbase/util/Pair.getSecond:()Ljava/lang/Object;
+      63: checkcast     #128                // class org/apache/hadoop/hbase/Cell
+      66: invokespecial #197                // Method createNewCellWithTags:(Lorg/apache/hadoop/hbase/client/Mutation;Lorg/apache/hadoop/hbase/Cell;)Lorg/apache/hadoop/hbase/Cell;
+      69: invokespecial #94                 // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+      72: invokeinterface #122,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      77: pop
+      78: goto          23
+      81: aload         4
+      83: areturn
+
+  public boolean postScannerFilterRow(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.InternalScanner, org.apache.hadoop.hbase.Cell, boolean) throws java.io.IOException;
+    Code:
+       0: iload         4
+       2: ireturn
+
+  public synchronized void addLabels(com.google.protobuf.RpcController, org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$VisibilityLabelsRequest, com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$VisibilityLabelsResponse>);
+    Code:
+       0: invokestatic  #199                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+       3: astore        4
+       5: aload_2
+       6: invokevirtual #200                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsRequest.getVisLabelList:()Ljava/util/List;
+       9: astore        5
+      11: aload_0
+      12: getfield      #4                  // Field initialized:Z
+      15: ifne          43
+      18: aload_0
+      19: aload         5
+      21: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      26: new           #158                // class org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException
+      29: dup
+      30: ldc           #159                // String VisibilityController not yet initialized!
+      32: invokespecial #160                // Method org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException."<init>":(Ljava/lang/String;)V
+      35: aload         4
+      37: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+      40: goto          368
+      43: new           #116                // class java/util/ArrayList
+      46: dup
+      47: aload         5
+      49: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      54: invokespecial #196                // Method java/util/ArrayList."<init>":(I)V
+      57: astore        6
+      59: aload_0
+      60: getfield      #14                 // Field authorizationEnabled:Z
+      63: ifeq          70
+      66: aload_0
+      67: invokespecial #202                // Method checkCallingUserAuth:()V
+      70: invokestatic  #203                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+      73: invokevirtual #204                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;
+      76: astore        7
+      78: aload         5
+      80: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      85: astore        8
+      87: aload         8
+      89: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      94: ifeq          140
+      97: aload         8
+      99: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     104: checkcast     #205                // class org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabel
+     107: astore        9
+     109: aload         9
+     111: invokevirtual #206                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabel.getLabel:()Lcom/google/protobuf/ByteString;
+     114: invokevirtual #207                // Method com/google/protobuf/ByteString.toByteArray:()[B
+     117: astore        10
+     119: aload         6
+     121: aload         10
+     123: invokeinterface #122,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     128: pop
+     129: aload         4
+     131: aload         7
+     133: invokevirtual #208                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.addResult:(Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+     136: pop
+     137: goto          87
+     140: aload         6
+     142: invokeinterface #209,  1          // InterfaceMethod java/util/List.isEmpty:()Z
+     147: ifne          285
+     150: aload_0
+     151: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+     154: aload         6
+     156: invokeinterface #210,  2          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.addLabels:(Ljava/util/List;)[Lorg/apache/hadoop/hbase/regionserver/OperationStatus;
+     161: astore        8
+     163: aload_0
+     164: iconst_1
+     165: ldc           #211                // String addLabels
+     167: ldc           #212                // String Adding labels allowed
+     169: aconst_null
+     170: aload         6
+     172: aconst_null
+     173: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     176: iconst_0
+     177: istore        9
+     179: aload         8
+     181: astore        10
+     183: aload         10
+     185: arraylength
+     186: istore        11
+     188: iconst_0
+     189: istore        12
+     191: iload         12
+     193: iload         11
+     195: if_icmpge     285
+     198: aload         10
+     200: iload         12
+     202: aaload
+     203: astore        13
+     205: aload         4
+     207: iload         9
+     209: invokevirtual #214                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.getResult:(I)Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;
+     212: aload         7
+     214: invokestatic  #215                // Method java/util/Objects.equals:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     217: ifne          226
+     220: iinc          9, 1
+     223: goto          205
+     226: aload         13
+     228: invokevirtual #216                // Method org/apache/hadoop/hbase/regionserver/OperationStatus.getOperationStatusCode:()Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     231: getstatic     #217                // Field org/apache/hadoop/hbase/HConstants$OperationStatusCode.SUCCESS:Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     234: if_acmpeq     276
+     237: invokestatic  #203                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     240: astore        14
+     242: aload         14
+     244: new           #218                // class org/apache/hadoop/hbase/DoNotRetryIOException
+     247: dup
+     248: aload         13
+     250: invokevirtual #219                // Method org/apache/hadoop/hbase/regionserver/OperationStatus.getExceptionMsg:()Ljava/lang/String;
+     253: invokespecial #220                // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+     256: invokestatic  #221                // Method buildException:(Ljava/lang/Throwable;)Lorg/apache/hadoop/hbase/protobuf/generated/HBaseProtos$NameBytesPair;
+     259: invokevirtual #222                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.setException:(Lorg/apache/hadoop/hbase/protobuf/generated/HBaseProtos$NameBytesPair;)Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     262: pop
+     263: aload         4
+     265: iload         9
+     267: aload         14
+     269: invokevirtual #204                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;
+     272: invokevirtual #223                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.setResult:(ILorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+     275: pop
+     276: iinc          9, 1
+     279: iinc          12, 1
+     282: goto          191
+     285: goto          368
+     288: astore        7
+     290: aload_0
+     291: iconst_0
+     292: ldc           #211                // String addLabels
+     294: aload         7
+     296: invokevirtual #224                // Method org/apache/hadoop/hbase/security/AccessDeniedException.getMessage:()Ljava/lang/String;
+     299: aconst_null
+     300: aload         6
+     302: aconst_null
+     303: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     306: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+     309: ldc           #225                // String User is not having required permissions to add labels
+     311: aload         7
+     313: invokeinterface #77,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     318: aload_0
+     319: aload         5
+     321: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     326: aload         7
+     328: aload         4
+     330: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+     333: goto          368
+     336: astore        7
+     338: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+     341: aload         7
+     343: invokevirtual #226                // Method java/io/IOException.toString:()Ljava/lang/String;
+     346: aload         7
+     348: invokeinterface #77,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     353: aload_0
+     354: aload         5
+     356: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     361: aload         7
+     363: aload         4
+     365: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+     368: aload_3
+     369: aload         4
+     371: invokevirtual #227                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse;
+     374: invokeinterface #228,  2          // InterfaceMethod com/google/protobuf/RpcCallback.run:(Ljava/lang/Object;)V
+     379: return
+    Exception table:
+       from    to  target type
+          59   285   288   Class org/apache/hadoop/hbase/security/AccessDeniedException
+          59   285   336   Class java/io/IOException
+
+  public synchronized void setAuths(com.google.protobuf.RpcController, org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$SetAuthsRequest, com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$VisibilityLabelsResponse>);
+    Code:
+       0: invokestatic  #199                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+       3: astore        4
+       5: aload_2
+       6: invokevirtual #230                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$SetAuthsRequest.getAuthList:()Ljava/util/List;
+       9: astore        5
+      11: aload_0
+      12: getfield      #4                  // Field initialized:Z
+      15: ifne          43
+      18: aload_0
+      19: aload         5
+      21: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      26: new           #158                // class org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException
+      29: dup
+      30: ldc           #159                // String VisibilityController not yet initialized!
+      32: invokespecial #160                // Method org/apache/hadoop/hbase/security/visibility/VisibilityControllerNotReadyException."<init>":(Ljava/lang/String;)V
+      35: aload         4
+      37: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+      40: goto          338
+      43: aload_2
+      44: invokevirtual #231                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$SetAuthsRequest.getUser:()Lcom/google/protobuf/ByteString;
+      47: invokevirtual #207                // Method com/google/protobuf/ByteString.toByteArray:()[B
+      50: astore        6
+      52: new           #116                // class java/util/ArrayList
+      55: dup
+      56: aload         5
+      58: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      63: invokespecial #196                // Method java/util/ArrayList."<init>":(I)V
+      66: astore        7
+      68: aload_0
+      69: getfield      #14                 // Field authorizationEnabled:Z
+      72: ifeq          79
+      75: aload_0
+      76: invokespecial #202                // Method checkCallingUserAuth:()V
+      79: aload         5
+      81: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      86: astore        8
+      88: aload         8
+      90: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      95: ifeq          126
+      98: aload         8
+     100: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     105: checkcast     #232                // class com/google/protobuf/ByteString
+     108: astore        9
+     110: aload         7
+     112: aload         9
+     114: invokevirtual #207                // Method com/google/protobuf/ByteString.toByteArray:()[B
+     117: invokeinterface #122,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     122: pop
+     123: goto          88
+     126: aload_0
+     127: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+     130: aload         6
+     132: aload         7
+     134: invokeinterface #233,  3          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.setAuths:([BLjava/util/List;)[Lorg/apache/hadoop/hbase/regionserver/OperationStatus;
+     139: astore        8
+     141: aload_0
+     142: iconst_1
+     143: ldc           #234                // String setAuths
+     145: ldc           #235                // String Setting authorization for labels allowed
+     147: aload         6
+     149: aload         7
+     151: aconst_null
+     152: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     155: invokestatic  #203                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     158: invokevirtual #204                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;
+     161: astore        9
+     163: aload         8
+     165: astore        10
+     167: aload         10
+     169: arraylength
+     170: istore        11
+     172: iconst_0
+     173: istore        12
+     175: iload         12
+     177: iload         11
+     179: if_icmpge     254
+     182: aload         10
+     184: iload         12
+     186: aaload
+     187: astore        13
+     189: aload         13
+     191: invokevirtual #216                // Method org/apache/hadoop/hbase/regionserver/OperationStatus.getOperationStatusCode:()Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     194: getstatic     #217                // Field org/apache/hadoop/hbase/HConstants$OperationStatusCode.SUCCESS:Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     197: if_acmpne     211
+     200: aload         4
+     202: aload         9
+     204: invokevirtual #208                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.addResult:(Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+     207: pop
+     208: goto          248
+     211: invokestatic  #203                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     214: astore        14
+     216: aload         14
+     218: new           #218                // class org/apache/hadoop/hbase/DoNotRetryIOException
+     221: dup
+     222: aload         13
+     224: invokevirtual #219                // Method org/apache/hadoop/hbase/regionserver/OperationStatus.getExceptionMsg:()Ljava/lang/String;
+     227: invokespecial #220                // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+     230: invokestatic  #221                // Method buildException:(Ljava/lang/Throwable;)Lorg/apache/hadoop/hbase/protobuf/generated/HBaseProtos$NameBytesPair;
+     233: invokevirtual #222                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.setException:(Lorg/apache/hadoop/hbase/protobuf/generated/HBaseProtos$NameBytesPair;)Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     236: pop
+     237: aload         4
+     239: aload         14
+     241: invokevirtual #204                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;
+     244: invokevirtual #208                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.addResult:(Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+     247: pop
+     248: iinc          12, 1
+     251: goto          175
+     254: goto          338
+     257: astore        8
+     259: aload_0
+     260: iconst_0
+     261: ldc           #234                // String setAuths
+     263: aload         8
+     265: invokevirtual #224                // Method org/apache/hadoop/hbase/security/AccessDeniedException.getMessage:()Ljava/lang/String;
+     268: aload         6
+     270: aload         7
+     272: aconst_null
+     273: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     276: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+     279: ldc           #236                // String User is not having required permissions to set authorization
+     281: aload         8
+     283: invokeinterface #77,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     288: aload_0
+     289: aload         5
+     291: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     296: aload         8
+     298: aload         4
+     300: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+     303: goto          338
+     306: astore        8
+     308: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+     311: aload         8
+     313: invokevirtual #226                // Method java/io/IOException.toString:()Ljava/lang/String;
+     316: aload         8
+     318: invokeinterface #77,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     323: aload_0
+     324: aload         5
+     326: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     331: aload         8
+     333: aload         4
+     335: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+     338: aload_3
+     339: aload         4
+     341: invokevirtual #227                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse;
+     344: invokeinterface #228,  2          // InterfaceMethod com/google/protobuf/RpcCallback.run:(Ljava/lang/Object;)V
+     349: return
+    Exception table:
+       from    to  target type
+          68   254   257   Class org/apache/hadoop/hbase/security/AccessDeniedException
+          68   254   306   Class java/io/IOException
+
+  public synchronized void getAuths(com.google.protobuf.RpcController, org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$GetAuthsRequest, com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$GetAuthsResponse>);
+    Code:
+       0: invokestatic  #263                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse$Builder;
+       3: astore        4
+       5: aload_0
+       6: getfield      #4                  // Field initialized:Z
+       9: ifne          23
+      12: aload_1
+      13: ldc           #185                // String VisibilityController not yet initialized
+      15: invokeinterface #264,  2          // InterfaceMethod com/google/protobuf/RpcController.setFailed:(Ljava/lang/String;)V
+      20: goto          285
+      23: aload_2
+      24: invokevirtual #265                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsRequest.getUser:()Lcom/google/protobuf/ByteString;
+      27: invokevirtual #207                // Method com/google/protobuf/ByteString.toByteArray:()[B
+      30: astore        5
+      32: aconst_null
+      33: astore        6
+      35: aload_0
+      36: getfield      #14                 // Field authorizationEnabled:Z
+      39: ifeq          109
+      42: aload_0
+      43: getfield      #3                  // Field accessControllerAvailable:Z
+      46: ifeq          109
+      49: aload_0
+      50: invokespecial #111                // Method isSystemOrSuperUser:()Z
+      53: ifne          109
+      56: invokestatic  #172                // Method org/apache/hadoop/hbase/security/visibility/VisibilityUtils.getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+      59: astore        7
+      61: new           #181                // class org/apache/hadoop/hbase/security/AccessDeniedException
+      64: dup
+      65: new           #54                 // class java/lang/StringBuilder
+      68: dup
+      69: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+      72: ldc           #182                // String User '
+      74: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      77: aload         7
+      79: ifnull        90
+      82: aload         7
+      84: invokevirtual #173                // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      87: goto          93
+      90: ldc_w         #259                // String null
+      93: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: ldc_w         #266                // String ' is not authorized to perform this action.
+      99: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     102: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     105: invokespecial #184                // Method org/apache/hadoop/hbase/security/AccessDeniedException."<init>":(Ljava/lang/String;)V
+     108: athrow
+     109: aload         5
+     111: invokestatic  #240                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     114: invokestatic  #267                // Method org/apache/hadoop/hbase/AuthUtil.isGroupPrincipal:(Ljava/lang/String;)Z
+     117: ifeq          154
+     120: aload         5
+     122: invokestatic  #240                // Method org/apache/hadoop/hbase/util/Bytes.toString:([B)Ljava/lang/String;
+     125: invokestatic  #268                // Method org/apache/hadoop/hbase/AuthUtil.getGroupName:(Ljava/lang/String;)Ljava/lang/String;
+     128: astore        7
+     130: aload_0
+     131: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+     134: iconst_1
+     135: anewarray     #179                // class java/lang/String
+     138: dup
+     139: iconst_0
+     140: aload         7
+     142: aastore
+     143: iconst_0
+     144: invokeinterface #269,  3          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.getGroupAuths:([Ljava/lang/String;Z)Ljava/util/List;
+     149: astore        6
+     151: goto          168
+     154: aload_0
+     155: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+     158: aload         5
+     160: iconst_0
+     161: invokeinterface #270,  3          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.getUserAuths:([BZ)Ljava/util/List;
+     166: astore        6
+     168: aload_0
+     169: iconst_1
+     170: ldc_w         #271                // String getAuths
+     173: ldc_w         #272                // String Get authorizations for user allowed
+     176: aload         5
+     178: aconst_null
+     179: aconst_null
+     180: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     183: goto          222
+     186: astore        7
+     188: aload_0
+     189: iconst_0
+     190: ldc_w         #271                // String getAuths
+     193: aload         7
+     195: invokevirtual #224                // Method org/apache/hadoop/hbase/security/AccessDeniedException.getMessage:()Ljava/lang/String;
+     198: aload         5
+     200: aconst_null
+     201: aconst_null
+     202: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     205: aload_1
+     206: aload         7
+     208: invokestatic  #273                // Method org/apache/hadoop/hbase/ipc/CoprocessorRpcUtils.setControllerException:(Lcom/google/protobuf/RpcController;Ljava/io/IOException;)V
+     211: goto          222
+     214: astore        7
+     216: aload_1
+     217: aload         7
+     219: invokestatic  #273                // Method org/apache/hadoop/hbase/ipc/CoprocessorRpcUtils.setControllerException:(Lcom/google/protobuf/RpcController;Ljava/io/IOException;)V
+     222: aload         4
+     224: aload_2
+     225: invokevirtual #265                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsRequest.getUser:()Lcom/google/protobuf/ByteString;
+     228: invokevirtual #274                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse$Builder.setUser:(Lcom/google/protobuf/ByteString;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse$Builder;
+     231: pop
+     232: aload         6
+     234: ifnull        285
+     237: aload         6
+     239: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     244: astore        7
+     246: aload         7
+     248: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     253: ifeq          285
+     256: aload         7
+     258: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     263: checkcast     #179                // class java/lang/String
+     266: astore        8
+     268: aload         4
+     270: aload         8
+     272: invokestatic  #275                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     275: invokestatic  #276                // Method com/google/protobuf/ByteString.copyFrom:([B)Lcom/google/protobuf/ByteString;
+     278: invokevirtual #277                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse$Builder.addAuth:(Lcom/google/protobuf/ByteString;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse$Builder;
+     281: pop
+     282: goto          246
+     285: aload_3
+     286: aload         4
+     288: invokevirtual #278                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$GetAuthsResponse;
+     291: invokeinterface #228,  2          // InterfaceMethod com/google/protobuf/RpcCallback.run:(Ljava/lang/Object;)V
+     296: return
+    Exception table:
+       from    to  target type
+          35   183   186   Class org/apache/hadoop/hbase/security/AccessDeniedException
+          35   183   214   Class java/io/IOException
+
+  public synchronized void clearAuths(com.google.protobuf.RpcController, org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$SetAuthsRequest, com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$VisibilityLabelsResponse>);
+    Code:
+       0: invokestatic  #199                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+       3: astore        4
+       5: aload_2
+       6: invokevirtual #230                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$SetAuthsRequest.getAuthList:()Ljava/util/List;
+       9: astore        5
+      11: aload_0
+      12: getfield      #4                  // Field initialized:Z
+      15: ifne          43
+      18: aload_0
+      19: aload         5
+      21: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      26: new           #279                // class org/apache/hadoop/hbase/coprocessor/CoprocessorException
+      29: dup
+      30: ldc           #185                // String VisibilityController not yet initialized
+      32: invokespecial #280                // Method org/apache/hadoop/hbase/coprocessor/CoprocessorException."<init>":(Ljava/lang/String;)V
+      35: aload         4
+      37: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+      40: goto          416
+      43: aload_2
+      44: invokevirtual #231                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$SetAuthsRequest.getUser:()Lcom/google/protobuf/ByteString;
+      47: invokevirtual #207                // Method com/google/protobuf/ByteString.toByteArray:()[B
+      50: astore        6
+      52: new           #116                // class java/util/ArrayList
+      55: dup
+      56: aload         5
+      58: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+      63: invokespecial #196                // Method java/util/ArrayList."<init>":(I)V
+      66: astore        7
+      68: aload_0
+      69: getfield      #14                 // Field authorizationEnabled:Z
+      72: ifeq          142
+      75: aload_0
+      76: getfield      #3                  // Field accessControllerAvailable:Z
+      79: ifeq          142
+      82: aload_0
+      83: invokespecial #111                // Method isSystemOrSuperUser:()Z
+      86: ifne          142
+      89: invokestatic  #172                // Method org/apache/hadoop/hbase/security/visibility/VisibilityUtils.getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+      92: astore        8
+      94: new           #181                // class org/apache/hadoop/hbase/security/AccessDeniedException
+      97: dup
+      98: new           #54                 // class java/lang/StringBuilder
+     101: dup
+     102: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+     105: ldc           #182                // String User '
+     107: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     110: aload         8
+     112: ifnull        123
+     115: aload         8
+     117: invokevirtual #173                // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+     120: goto          126
+     123: ldc_w         #259                // String null
+     126: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     129: ldc_w         #281                // String  is not authorized to perform this action.
+     132: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     135: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     138: invokespecial #184                // Method org/apache/hadoop/hbase/security/AccessDeniedException."<init>":(Ljava/lang/String;)V
+     141: athrow
+     142: aload_0
+     143: getfield      #14                 // Field authorizationEnabled:Z
+     146: ifeq          153
+     149: aload_0
+     150: invokespecial #202                // Method checkCallingUserAuth:()V
+     153: aload         5
+     155: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     160: astore        8
+     162: aload         8
+     164: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     169: ifeq          200
+     172: aload         8
+     174: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     179: checkcast     #232                // class com/google/protobuf/ByteString
+     182: astore        9
+     184: aload         7
+     186: aload         9
+     188: invokevirtual #207                // Method com/google/protobuf/ByteString.toByteArray:()[B
+     191: invokeinterface #122,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     196: pop
+     197: goto          162
+     200: aload_0
+     201: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+     204: aload         6
+     206: aload         7
+     208: invokeinterface #282,  3          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.clearAuths:([BLjava/util/List;)[Lorg/apache/hadoop/hbase/regionserver/OperationStatus;
+     213: astore        8
+     215: aload_0
+     216: iconst_1
+     217: ldc_w         #283                // String clearAuths
+     220: ldc_w         #284                // String Removing authorization for labels allowed
+     223: aload         6
+     225: aload         7
+     227: aconst_null
+     228: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     231: invokestatic  #203                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     234: invokevirtual #204                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;
+     237: astore        9
+     239: aload         8
+     241: astore        10
+     243: aload         10
+     245: arraylength
+     246: istore        11
+     248: iconst_0
+     249: istore        12
+     251: iload         12
+     253: iload         11
+     255: if_icmpge     330
+     258: aload         10
+     260: iload         12
+     262: aaload
+     263: astore        13
+     265: aload         13
+     267: invokevirtual #216                // Method org/apache/hadoop/hbase/regionserver/OperationStatus.getOperationStatusCode:()Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     270: getstatic     #217                // Field org/apache/hadoop/hbase/HConstants$OperationStatusCode.SUCCESS:Lorg/apache/hadoop/hbase/HConstants$OperationStatusCode;
+     273: if_acmpne     287
+     276: aload         4
+     278: aload         9
+     280: invokevirtual #208                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.addResult:(Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+     283: pop
+     284: goto          324
+     287: invokestatic  #203                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     290: astore        14
+     292: aload         14
+     294: new           #218                // class org/apache/hadoop/hbase/DoNotRetryIOException
+     297: dup
+     298: aload         13
+     300: invokevirtual #219                // Method org/apache/hadoop/hbase/regionserver/OperationStatus.getExceptionMsg:()Ljava/lang/String;
+     303: invokespecial #220                // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+     306: invokestatic  #221                // Method buildException:(Ljava/lang/Throwable;)Lorg/apache/hadoop/hbase/protobuf/generated/HBaseProtos$NameBytesPair;
+     309: invokevirtual #222                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.setException:(Lorg/apache/hadoop/hbase/protobuf/generated/HBaseProtos$NameBytesPair;)Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder;
+     312: pop
+     313: aload         4
+     315: aload         14
+     317: invokevirtual #204                // Method org/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;
+     320: invokevirtual #208                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.addResult:(Lorg/apache/hadoop/hbase/protobuf/generated/ClientProtos$RegionActionResult;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;
+     323: pop
+     324: iinc          12, 1
+     327: goto          251
+     330: goto          416
+     333: astore        8
+     335: aload_0
+     336: iconst_0
+     337: ldc_w         #283                // String clearAuths
+     340: aload         8
+     342: invokevirtual #224                // Method org/apache/hadoop/hbase/security/AccessDeniedException.getMessage:()Ljava/lang/String;
+     345: aload         6
+     347: aload         7
+     349: aconst_null
+     350: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     353: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+     356: ldc_w         #285                // String User is not having required permissions to clear authorization
+     359: aload         8
+     361: invokeinterface #77,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     366: aload_0
+     367: aload         5
+     369: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     374: aload         8
+     376: aload         4
+     378: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+     381: goto          416
+     384: astore        8
+     386: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+     389: aload         8
+     391: invokevirtual #226                // Method java/io/IOException.toString:()Ljava/lang/String;
+     394: aload         8
+     396: invokeinterface #77,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     401: aload_0
+     402: aload         5
+     404: invokeinterface #140,  1          // InterfaceMethod java/util/List.size:()I
+     409: aload         8
+     411: aload         4
+     413: invokespecial #201                // Method setExceptionResults:(ILjava/io/IOException;Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder;)V
+     416: aload_3
+     417: aload         4
+     419: invokevirtual #227                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$VisibilityLabelsResponse;
+     422: invokeinterface #228,  2          // InterfaceMethod com/google/protobuf/RpcCallback.run:(Ljava/lang/Object;)V
+     427: return
+    Exception table:
+       from    to  target type
+          68   330   333   Class org/apache/hadoop/hbase/security/AccessDeniedException
+          68   330   384   Class java/io/IOException
+
+  public synchronized void listLabels(com.google.protobuf.RpcController, org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$ListLabelsRequest, com.google.protobuf.RpcCallback<org.apache.hadoop.hbase.protobuf.generated.VisibilityLabelsProtos$ListLabelsResponse>);
+    Code:
+       0: invokestatic  #286                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsResponse.newBuilder:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsResponse$Builder;
+       3: astore        4
+       5: aload_0
+       6: getfield      #4                  // Field initialized:Z
+       9: ifne          23
+      12: aload_1
+      13: ldc           #185                // String VisibilityController not yet initialized
+      15: invokeinterface #264,  2          // InterfaceMethod com/google/protobuf/RpcController.setFailed:(Ljava/lang/String;)V
+      20: goto          247
+      23: aconst_null
+      24: astore        5
+      26: aload_2
+      27: invokevirtual #287                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsRequest.hasRegex:()Z
+      30: ifeq          40
+      33: aload_2
+      34: invokevirtual #288                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsRequest.getRegex:()Ljava/lang/String;
+      37: goto          41
+      40: aconst_null
+      41: astore        6
+      43: aload_0
+      44: getfield      #14                 // Field authorizationEnabled:Z
+      47: ifeq          117
+      50: aload_0
+      51: getfield      #3                  // Field accessControllerAvailable:Z
+      54: ifeq          117
+      57: aload_0
+      58: invokespecial #111                // Method isSystemOrSuperUser:()Z
+      61: ifne          117
+      64: invokestatic  #172                // Method org/apache/hadoop/hbase/security/visibility/VisibilityUtils.getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+      67: astore        7
+      69: new           #181                // class org/apache/hadoop/hbase/security/AccessDeniedException
+      72: dup
+      73: new           #54                 // class java/lang/StringBuilder
+      76: dup
+      77: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+      80: ldc           #182                // String User '
+      82: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      85: aload         7
+      87: ifnull        98
+      90: aload         7
+      92: invokevirtual #173                // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      95: goto          101
+      98: ldc_w         #259                // String null
+     101: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     104: ldc_w         #266                // String ' is not authorized to perform this action.
+     107: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     110: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     113: invokespecial #184                // Method org/apache/hadoop/hbase/security/AccessDeniedException."<init>":(Ljava/lang/String;)V
+     116: athrow
+     117: aload_0
+     118: getfield      #26                 // Field visibilityLabelService:Lorg/apache/hadoop/hbase/security/visibility/VisibilityLabelService;
+     121: aload         6
+     123: invokeinterface #289,  2          // InterfaceMethod org/apache/hadoop/hbase/security/visibility/VisibilityLabelService.listLabels:(Ljava/lang/String;)Ljava/util/List;
+     128: astore        5
+     130: aload_0
+     131: iconst_0
+     132: ldc_w         #290                // String listLabels
+     135: ldc_w         #291                // String Listing labels allowed
+     138: aconst_null
+     139: aconst_null
+     140: aload         6
+     142: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     145: goto          184
+     148: astore        7
+     150: aload_0
+     151: iconst_0
+     152: ldc_w         #290                // String listLabels
+     155: aload         7
+     157: invokevirtual #224                // Method org/apache/hadoop/hbase/security/AccessDeniedException.getMessage:()Ljava/lang/String;
+     160: aconst_null
+     161: aconst_null
+     162: aload         6
+     164: invokespecial #213                // Method logResult:(ZLjava/lang/String;Ljava/lang/String;[BLjava/util/List;Ljava/lang/String;)V
+     167: aload_1
+     168: aload         7
+     170: invokestatic  #273                // Method org/apache/hadoop/hbase/ipc/CoprocessorRpcUtils.setControllerException:(Lcom/google/protobuf/RpcController;Ljava/io/IOException;)V
+     173: goto          184
+     176: astore        7
+     178: aload_1
+     179: aload         7
+     181: invokestatic  #273                // Method org/apache/hadoop/hbase/ipc/CoprocessorRpcUtils.setControllerException:(Lcom/google/protobuf/RpcController;Ljava/io/IOException;)V
+     184: aload         5
+     186: ifnull        247
+     189: aload         5
+     191: invokeinterface #209,  1          // InterfaceMethod java/util/List.isEmpty:()Z
+     196: ifne          247
+     199: aload         5
+     201: invokeinterface #125,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     206: astore        7
+     208: aload         7
+     210: invokeinterface #126,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     215: ifeq          247
+     218: aload         7
+     220: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     225: checkcast     #179                // class java/lang/String
+     228: astore        8
+     230: aload         4
+     232: aload         8
+     234: invokestatic  #275                // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+     237: invokestatic  #276                // Method com/google/protobuf/ByteString.copyFrom:([B)Lcom/google/protobuf/ByteString;
+     240: invokevirtual #292                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsResponse$Builder.addLabel:(Lcom/google/protobuf/ByteString;)Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsResponse$Builder;
+     243: pop
+     244: goto          208
+     247: aload_3
+     248: aload         4
+     250: invokevirtual #293                // Method org/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsResponse$Builder.build:()Lorg/apache/hadoop/hbase/protobuf/generated/VisibilityLabelsProtos$ListLabelsResponse;
+     253: invokeinterface #228,  2          // InterfaceMethod com/google/protobuf/RpcCallback.run:(Ljava/lang/Object;)V
+     258: return
+    Exception table:
+       from    to  target type
+          43   145   148   Class org/apache/hadoop/hbase/security/AccessDeniedException
+          43   145   176   Class java/io/IOException
+
+  static {};
+    Code:
+       0: ldc_w         #304                // class org/apache/hadoop/hbase/security/visibility/VisibilityController
+       3: invokestatic  #305                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       6: putstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       9: new           #54                 // class java/lang/StringBuilder
+      12: dup
+      13: invokespecial #55                 // Method java/lang/StringBuilder."<init>":()V
+      16: ldc_w         #306                // String SecurityLogger.
+      19: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      22: ldc_w         #304                // class org/apache/hadoop/hbase/security/visibility/VisibilityController
+      25: invokevirtual #45                 // Method java/lang/Class.getName:()Ljava/lang/String;
+      28: invokevirtual #57                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: invokevirtual #59                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      34: invokestatic  #307                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/String;)Lorg/slf4j/Logger;
+      37: putstatic     #237                // Field AUDITLOG:Lorg/slf4j/Logger;
+      40: new           #116                // class java/util/ArrayList
+      43: dup
+      44: invokespecial #117                // Method java/util/ArrayList."<init>":()V
+      47: putstatic     #155                // Field RESERVED_VIS_TAG_TYPES:Ljava/util/ArrayList;
+      50: getstatic     #155                // Field RESERVED_VIS_TAG_TYPES:Ljava/util/ArrayList;
+      53: iconst_2
+      54: invokestatic  #136                // Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;
+      57: invokevirtual #308                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+      60: pop
+      61: getstatic     #155                // Field RESERVED_VIS_TAG_TYPES:Ljava/util/ArrayList;
+      64: iconst_4
+      65: invokestatic  #136                // Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;
+      68: invokevirtual #308                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+      71: pop
+      72: getstatic     #155                // Field RESERVED_VIS_TAG_TYPES:Ljava/util/ArrayList;
+      75: bipush        7
+      77: invokestatic  #136                // Method java/lang/Byte.valueOf:(B)Ljava/lang/Byte;
+      80: invokevirtual #308                // Method java/util/ArrayList.add:(Ljava/lang/Object;)Z
+      83: pop
+      84: return
+}

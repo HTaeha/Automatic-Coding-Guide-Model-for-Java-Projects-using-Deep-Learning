@@ -1,0 +1,322 @@
+Compiled from "ReadOnlyZKClient.java"
+public final class org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient implements java.io.Closeable {
+  public static final java.lang.String RECOVERY_RETRY;
+
+  public static final java.lang.String RECOVERY_RETRY_INTERVAL_MILLIS;
+
+  public static final java.lang.String KEEPALIVE_MILLIS;
+
+  org.apache.zookeeper.ZooKeeper zookeeper;
+
+  public org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokespecial #15                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #16                 // class java/util/concurrent/DelayQueue
+       8: dup
+       9: invokespecial #17                 // Method java/util/concurrent/DelayQueue."<init>":()V
+      12: putfield      #2                  // Field tasks:Ljava/util/concurrent/DelayQueue;
+      15: aload_0
+      16: new           #18                 // class java/util/concurrent/atomic/AtomicBoolean
+      19: dup
+      20: iconst_0
+      21: invokespecial #19                 // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      24: putfield      #20                 // Field closed:Ljava/util/concurrent/atomic/AtomicBoolean;
+      27: aload_0
+      28: iconst_0
+      29: putfield      #9                  // Field pendingRequests:I
+      32: aload_1
+      33: invokestatic  #21                 // Method org/apache/hadoop/hbase/zookeeper/ZKConfig.getClientZKQuorumServersString:(Lorg/apache/hadoop/conf/Configuration;)Ljava/lang/String;
+      36: astore_2
+      37: aload_2
+      38: ifnull        49
+      41: aload_0
+      42: aload_2
+      43: putfield      #6                  // Field connectString:Ljava/lang/String;
+      46: goto          57
+      49: aload_0
+      50: aload_1
+      51: invokestatic  #22                 // Method org/apache/hadoop/hbase/zookeeper/ZKConfig.getZKQuorumServersString:(Lorg/apache/hadoop/conf/Configuration;)Ljava/lang/String;
+      54: putfield      #6                  // Field connectString:Ljava/lang/String;
+      57: aload_0
+      58: aload_1
+      59: ldc           #23                 // String zookeeper.session.timeout
+      61: ldc           #24                 // int 90000
+      63: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      66: putfield      #26                 // Field sessionTimeoutMs:I
+      69: aload_0
+      70: aload_1
+      71: ldc           #28                 // String zookeeper.recovery.retry
+      73: bipush        30
+      75: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      78: putfield      #3                  // Field maxRetries:I
+      81: aload_0
+      82: aload_1
+      83: ldc           #29                 // String zookeeper.recovery.retry.intervalmill
+      85: sipush        1000
+      88: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      91: putfield      #4                  // Field retryIntervalMs:I
+      94: aload_0
+      95: aload_1
+      96: ldc           #30                 // String zookeeper.keep-alive.time
+      98: ldc           #31                 // int 60000
+     100: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     103: putfield      #32                 // Field keepAliveTimeMs:I
+     106: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+     109: ldc           #33                 // String Connect {} to {} with session timeout={}ms, retries {}, retry interval {}ms, keepAlive={}ms
+     111: bipush        6
+     113: anewarray     #11                 // class java/lang/Object
+     116: dup
+     117: iconst_0
+     118: aload_0
+     119: invokespecial #7                  // Method getId:()Ljava/lang/String;
+     122: aastore
+     123: dup
+     124: iconst_1
+     125: aload_0
+     126: getfield      #6                  // Field connectString:Ljava/lang/String;
+     129: aastore
+     130: dup
+     131: iconst_2
+     132: aload_0
+     133: getfield      #26                 // Field sessionTimeoutMs:I
+     136: invokestatic  #13                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     139: aastore
+     140: dup
+     141: iconst_3
+     142: aload_0
+     143: getfield      #3                  // Field maxRetries:I
+     146: invokestatic  #13                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     149: aastore
+     150: dup
+     151: iconst_4
+     152: aload_0
+     153: getfield      #4                  // Field retryIntervalMs:I
+     156: invokestatic  #13                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     159: aastore
+     160: dup
+     161: iconst_5
+     162: aload_0
+     163: getfield      #32                 // Field keepAliveTimeMs:I
+     166: invokestatic  #13                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     169: aastore
+     170: invokeinterface #34,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;[Ljava/lang/Object;)V
+     175: new           #35                 // class java/lang/Thread
+     178: dup
+     179: aload_0
+     180: invokedynamic #36,  0             // InvokeDynamic #0:run:(Lorg/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient;)Ljava/lang/Runnable;
+     185: invokespecial #37                 // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;)V
+     188: new           #38                 // class java/lang/StringBuilder
+     191: dup
+     192: invokespecial #39                 // Method java/lang/StringBuilder."<init>":()V
+     195: ldc           #40                 // String ReadOnlyZKClient-
+     197: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     200: aload_0
+     201: getfield      #6                  // Field connectString:Ljava/lang/String;
+     204: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     207: ldc           #42                 // String @
+     209: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     212: aload_0
+     213: invokespecial #7                  // Method getId:()Ljava/lang/String;
+     216: invokevirtual #41                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     219: invokevirtual #43                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     222: invokestatic  #44                 // Method org/apache/hadoop/hbase/util/Threads.setDaemonThreadRunning:(Ljava/lang/Thread;Ljava/lang/String;)Ljava/lang/Thread;
+     225: pop
+     226: return
+
+  public java.util.concurrent.CompletableFuture<byte[]> get(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field closed:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: invokevirtual #45                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+       7: ifeq          23
+      10: new           #46                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      13: dup
+      14: ldc           #47                 // String Client already closed
+      16: invokespecial #48                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      19: invokestatic  #49                 // Method org/apache/hadoop/hbase/util/FutureUtils.failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+      23: new           #50                 // class java/util/concurrent/CompletableFuture
+      26: dup
+      27: invokespecial #51                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      30: astore_2
+      31: aload_0
+      32: getfield      #2                  // Field tasks:Ljava/util/concurrent/DelayQueue;
+      35: new           #52                 // class org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$2
+      38: dup
+      39: aload_0
+      40: aload_1
+      41: aload_2
+      42: ldc           #53                 // String get
+      44: invokespecial #54                 // Method org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$2."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient;Ljava/lang/String;Ljava/util/concurrent/CompletableFuture;Ljava/lang/String;)V
+      47: invokevirtual #55                 // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      50: pop
+      51: aload_2
+      52: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.zookeeper.data.Stat> exists(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field closed:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: invokevirtual #45                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+       7: ifeq          23
+      10: new           #46                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      13: dup
+      14: ldc           #47                 // String Client already closed
+      16: invokespecial #48                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      19: invokestatic  #49                 // Method org/apache/hadoop/hbase/util/FutureUtils.failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+      23: new           #50                 // class java/util/concurrent/CompletableFuture
+      26: dup
+      27: invokespecial #51                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      30: astore_2
+      31: aload_0
+      32: getfield      #2                  // Field tasks:Ljava/util/concurrent/DelayQueue;
+      35: new           #56                 // class org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$3
+      38: dup
+      39: aload_0
+      40: aload_1
+      41: aload_2
+      42: ldc           #57                 // String exists
+      44: invokespecial #58                 // Method org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$3."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient;Ljava/lang/String;Ljava/util/concurrent/CompletableFuture;Ljava/lang/String;)V
+      47: invokevirtual #55                 // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      50: pop
+      51: aload_2
+      52: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<java.lang.String>> list(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field closed:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: invokevirtual #45                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+       7: ifeq          23
+      10: new           #46                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      13: dup
+      14: ldc           #47                 // String Client already closed
+      16: invokespecial #48                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+      19: invokestatic  #49                 // Method org/apache/hadoop/hbase/util/FutureUtils.failedFuture:(Ljava/lang/Throwable;)Ljava/util/concurrent/CompletableFuture;
+      22: areturn
+      23: new           #50                 // class java/util/concurrent/CompletableFuture
+      26: dup
+      27: invokespecial #51                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+      30: astore_2
+      31: aload_0
+      32: getfield      #2                  // Field tasks:Ljava/util/concurrent/DelayQueue;
+      35: new           #59                 // class org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$4
+      38: dup
+      39: aload_0
+      40: aload_1
+      41: aload_2
+      42: ldc           #60                 // String list
+      44: invokespecial #61                 // Method org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$4."<init>":(Lorg/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient;Ljava/lang/String;Ljava/util/concurrent/CompletableFuture;Ljava/lang/String;)V
+      47: invokevirtual #55                 // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      50: pop
+      51: aload_2
+      52: areturn
+
+  public void close();
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field closed:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: iconst_0
+       5: iconst_1
+       6: invokevirtual #87                 // Method java/util/concurrent/atomic/AtomicBoolean.compareAndSet:(ZZ)Z
+       9: ifeq          41
+      12: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+      15: ldc           #88                 // String Close zookeeper connection {} to {}
+      17: aload_0
+      18: invokespecial #7                  // Method getId:()Ljava/lang/String;
+      21: aload_0
+      22: getfield      #6                  // Field connectString:Ljava/lang/String;
+      25: invokeinterface #89,  4           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      30: aload_0
+      31: getfield      #2                  // Field tasks:Ljava/util/concurrent/DelayQueue;
+      34: getstatic     #73                 // Field CLOSE:Lorg/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$Task;
+      37: invokevirtual #55                 // Method java/util/concurrent/DelayQueue.add:(Ljava/util/concurrent/Delayed;)Z
+      40: pop
+      41: return
+
+  public java.lang.String getConnectString();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field connectString:Ljava/lang/String;
+       4: areturn
+
+  static int access$110(org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #9                  // Field pendingRequests:I
+       5: dup_x1
+       6: iconst_1
+       7: isub
+       8: putfield      #9                  // Field pendingRequests:I
+      11: ireturn
+
+  static java.util.EnumSet access$300();
+    Code:
+       0: getstatic     #8                  // Field FAIL_FAST_CODES:Ljava/util/EnumSet;
+       3: areturn
+
+  static java.lang.String access$400(org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient);
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method getId:()Ljava/lang/String;
+       4: areturn
+
+  static java.lang.String access$500(org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field connectString:Ljava/lang/String;
+       4: areturn
+
+  static org.slf4j.Logger access$600();
+    Code:
+       0: getstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static int access$700(org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field retryIntervalMs:I
+       4: ireturn
+
+  static int access$800(org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field maxRetries:I
+       4: ireturn
+
+  static java.util.concurrent.DelayQueue access$1100(org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field tasks:Ljava/util/concurrent/DelayQueue;
+       4: areturn
+
+  static int access$108(org.apache.hadoop.hbase.zookeeper.ReadOnlyZKClient);
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #9                  // Field pendingRequests:I
+       5: dup_x1
+       6: iconst_1
+       7: iadd
+       8: putfield      #9                  // Field pendingRequests:I
+      11: ireturn
+
+  static {};
+    Code:
+       0: ldc           #27                 // class org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient
+       2: invokestatic  #91                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #5                  // Field LOG:Lorg/slf4j/Logger;
+       8: getstatic     #92                 // Field org/apache/zookeeper/KeeperException$Code.NOAUTH:Lorg/apache/zookeeper/KeeperException$Code;
+      11: getstatic     #93                 // Field org/apache/zookeeper/KeeperException$Code.AUTHFAILED:Lorg/apache/zookeeper/KeeperException$Code;
+      14: invokestatic  #94                 // Method java/util/EnumSet.of:(Ljava/lang/Enum;Ljava/lang/Enum;)Ljava/util/EnumSet;
+      17: putstatic     #8                  // Field FAIL_FAST_CODES:Ljava/util/EnumSet;
+      20: new           #95                 // class org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$1
+      23: dup
+      24: invokespecial #96                 // Method org/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$1."<init>":()V
+      27: putstatic     #73                 // Field CLOSE:Lorg/apache/hadoop/hbase/zookeeper/ReadOnlyZKClient$Task;
+      30: return
+}

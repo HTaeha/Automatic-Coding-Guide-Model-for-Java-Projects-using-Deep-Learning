@@ -1,0 +1,300 @@
+Compiled from "HeapMemoryManager.java"
+public class org.apache.hadoop.hbase.regionserver.HeapMemoryManager {
+  public static final java.lang.String BLOCK_CACHE_SIZE_MAX_RANGE_KEY;
+
+  public static final java.lang.String BLOCK_CACHE_SIZE_MIN_RANGE_KEY;
+
+  public static final java.lang.String MEMSTORE_SIZE_MAX_RANGE_KEY;
+
+  public static final java.lang.String MEMSTORE_SIZE_MIN_RANGE_KEY;
+
+  public static final java.lang.String HBASE_RS_HEAP_MEMORY_TUNER_PERIOD;
+
+  public static final int HBASE_RS_HEAP_MEMORY_TUNER_DEFAULT_PERIOD;
+
+  public static final java.lang.String HBASE_RS_HEAP_MEMORY_TUNER_CLASS;
+
+  public static final float HEAP_OCCUPANCY_ERROR_VALUE;
+
+  org.apache.hadoop.hbase.regionserver.HeapMemoryManager(org.apache.hadoop.hbase.io.hfile.BlockCache, org.apache.hadoop.hbase.regionserver.FlushRequester, org.apache.hadoop.hbase.Server, org.apache.hadoop.hbase.regionserver.RegionServerAccounting);
+    Code:
+       0: aload_0
+       1: invokespecial #21                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aconst_null
+       6: putfield      #22                 // Field heapMemTunerChore:Lorg/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore;
+       9: ldc2_w        #23                 // long -1l
+      12: lstore        5
+      14: invokestatic  #25                 // Method org/apache/hadoop/hbase/io/util/MemorySizeUtil.safeGetHeapMemoryUsage:()Ljava/lang/management/MemoryUsage;
+      17: astore        7
+      19: aload         7
+      21: ifnull        31
+      24: aload         7
+      26: invokevirtual #26                 // Method java/lang/management/MemoryUsage.getMax:()J
+      29: lstore        5
+      31: aload_0
+      32: lload         5
+      34: putfield      #11                 // Field maxHeapSize:J
+      37: goto          51
+      40: astore        8
+      42: aload_0
+      43: lload         5
+      45: putfield      #11                 // Field maxHeapSize:J
+      48: aload         8
+      50: athrow
+      51: aload_0
+      52: new           #27                 // class java/util/ArrayList
+      55: dup
+      56: invokespecial #28                 // Method java/util/ArrayList."<init>":()V
+      59: putfield      #3                  // Field tuneObservers:Ljava/util/List;
+      62: aload_3
+      63: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      68: astore        5
+      70: aload_0
+      71: aload_0
+      72: aload_1
+      73: invokespecial #30                 // Method toResizableBlockCache:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;)Lorg/apache/hadoop/hbase/io/hfile/ResizableBlockCache;
+      76: putfield      #12                 // Field blockCache:Lorg/apache/hadoop/hbase/io/hfile/ResizableBlockCache;
+      79: aload_0
+      80: aload_2
+      81: putfield      #4                  // Field memStoreFlusher:Lorg/apache/hadoop/hbase/regionserver/FlushRequester;
+      84: aload_0
+      85: aload_3
+      86: putfield      #20                 // Field server:Lorg/apache/hadoop/hbase/Server;
+      89: aload_0
+      90: aload         4
+      92: putfield      #18                 // Field regionServerAccounting:Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+      95: aload_0
+      96: aload_0
+      97: aload         5
+      99: invokespecial #31                 // Method doInit:(Lorg/apache/hadoop/conf/Configuration;)Z
+     102: putfield      #13                 // Field tunerOn:Z
+     105: aload_0
+     106: aload         5
+     108: ldc           #32                 // String hbase.regionserver.heapmemory.tuner.period
+     110: ldc           #33                 // int 60000
+     112: invokevirtual #34                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     115: putfield      #19                 // Field defaultChorePeriod:I
+     118: aload_0
+     119: aload         5
+     121: ldc           #35                 // String hbase.heap.occupancy.low_water_mark
+     123: ldc           #36                 // float 0.95f
+     125: invokevirtual #37                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+     128: putfield      #16                 // Field heapOccupancyLowWatermark:F
+     131: aload_0
+     132: new           #38                 // class org/apache/hadoop/hbase/regionserver/MetricsHeapMemoryManager
+     135: dup
+     136: invokespecial #39                 // Method org/apache/hadoop/hbase/regionserver/MetricsHeapMemoryManager."<init>":()V
+     139: putfield      #14                 // Field metricsHeapMemoryManager:Lorg/apache/hadoop/hbase/regionserver/MetricsHeapMemoryManager;
+     142: return
+    Exception table:
+       from    to  target type
+          14    31    40   any
+          40    42    40   any
+
+  public void start(org.apache.hadoop.hbase.ChoreService);
+    Code:
+       0: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #76                 // String Starting, tuneOn={}
+       5: aload_0
+       6: getfield      #13                 // Field tunerOn:Z
+       9: invokestatic  #77                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      12: invokeinterface #78,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+      17: aload_0
+      18: new           #79                 // class org/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore
+      21: dup
+      22: aload_0
+      23: invokespecial #80                 // Method org/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore."<init>":(Lorg/apache/hadoop/hbase/regionserver/HeapMemoryManager;)V
+      26: putfield      #22                 // Field heapMemTunerChore:Lorg/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore;
+      29: aload_1
+      30: aload_0
+      31: getfield      #22                 // Field heapMemTunerChore:Lorg/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore;
+      34: invokevirtual #81                 // Method org/apache/hadoop/hbase/ChoreService.scheduleChore:(Lorg/apache/hadoop/hbase/ScheduledChore;)Z
+      37: pop
+      38: aload_0
+      39: getfield      #13                 // Field tunerOn:Z
+      42: ifeq          58
+      45: aload_0
+      46: getfield      #4                  // Field memStoreFlusher:Lorg/apache/hadoop/hbase/regionserver/FlushRequester;
+      49: aload_0
+      50: getfield      #22                 // Field heapMemTunerChore:Lorg/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore;
+      53: invokeinterface #82,  2           // InterfaceMethod org/apache/hadoop/hbase/regionserver/FlushRequester.registerFlushRequestListener:(Lorg/apache/hadoop/hbase/regionserver/FlushRequestListener;)V
+      58: return
+
+  public void stop();
+    Code:
+       0: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #83                 // String Stopping
+       5: invokeinterface #84,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      10: aload_0
+      11: getfield      #22                 // Field heapMemTunerChore:Lorg/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore;
+      14: iconst_1
+      15: invokevirtual #85                 // Method org/apache/hadoop/hbase/regionserver/HeapMemoryManager$HeapMemoryTunerChore.cancel:(Z)V
+      18: return
+
+  public void registerTuneObserver(org.apache.hadoop.hbase.regionserver.HeapMemoryManager$HeapMemoryTuneObserver);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field tuneObservers:Ljava/util/List;
+       4: aload_1
+       5: invokeinterface #86,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      10: pop
+      11: return
+
+  boolean isTunerOn();
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field tunerOn:Z
+       4: ireturn
+
+  public float getHeapOccupancyPercent();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field heapOccupancyPercent:F
+       4: ldc           #88                 // float 3.4028235E38f
+       6: fcmpl
+       7: ifne          15
+      10: ldc           #89                 // float -0.0f
+      12: goto          19
+      15: aload_0
+      16: getfield      #17                 // Field heapOccupancyPercent:F
+      19: freturn
+
+  static org.apache.hadoop.hbase.Server access$000(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #20                 // Field server:Lorg/apache/hadoop/hbase/Server;
+       4: areturn
+
+  static int access$100(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #19                 // Field defaultChorePeriod:I
+       4: ireturn
+
+  static org.apache.hadoop.hbase.regionserver.RegionServerAccounting access$200(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field regionServerAccounting:Lorg/apache/hadoop/hbase/regionserver/RegionServerAccounting;
+       4: areturn
+
+  static float access$302(org.apache.hadoop.hbase.regionserver.HeapMemoryManager, float);
+    Code:
+       0: aload_0
+       1: fload_1
+       2: dup_x1
+       3: putfield      #17                 // Field heapOccupancyPercent:F
+       6: freturn
+
+  static float access$300(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field heapOccupancyPercent:F
+       4: freturn
+
+  static float access$400(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #16                 // Field heapOccupancyLowWatermark:F
+       4: freturn
+
+  static org.slf4j.Logger access$500();
+    Code:
+       0: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static org.apache.hadoop.hbase.regionserver.MetricsHeapMemoryManager access$600(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #14                 // Field metricsHeapMemoryManager:Lorg/apache/hadoop/hbase/regionserver/MetricsHeapMemoryManager;
+       4: areturn
+
+  static boolean access$700(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field tunerOn:Z
+       4: ireturn
+
+  static org.apache.hadoop.hbase.io.hfile.ResizableBlockCache access$800(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field blockCache:Lorg/apache/hadoop/hbase/io/hfile/ResizableBlockCache;
+       4: areturn
+
+  static long access$900(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field maxHeapSize:J
+       4: lreturn
+
+  static float access$1000(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field blockCachePercent:F
+       4: freturn
+
+  static float access$1100(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field globalMemStorePercent:F
+       4: freturn
+
+  static float access$1200(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field globalMemStorePercentMinRange:F
+       4: freturn
+
+  static float access$1300(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field globalMemStorePercentMaxRange:F
+       4: freturn
+
+  static float access$1400(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field blockCachePercentMinRange:F
+       4: freturn
+
+  static float access$1500(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field blockCachePercentMaxRange:F
+       4: freturn
+
+  static float access$1002(org.apache.hadoop.hbase.regionserver.HeapMemoryManager, float);
+    Code:
+       0: aload_0
+       1: fload_1
+       2: dup_x1
+       3: putfield      #10                 // Field blockCachePercent:F
+       6: freturn
+
+  static float access$1102(org.apache.hadoop.hbase.regionserver.HeapMemoryManager, float);
+    Code:
+       0: aload_0
+       1: fload_1
+       2: dup_x1
+       3: putfield      #9                  // Field globalMemStorePercent:F
+       6: freturn
+
+  static org.apache.hadoop.hbase.regionserver.FlushRequester access$1600(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field memStoreFlusher:Lorg/apache/hadoop/hbase/regionserver/FlushRequester;
+       4: areturn
+
+  static java.util.List access$1700(org.apache.hadoop.hbase.regionserver.HeapMemoryManager);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field tuneObservers:Ljava/util/List;
+       4: areturn
+
+  static {};
+    Code:
+       0: ldc           #1                  // class org/apache/hadoop/hbase/regionserver/HeapMemoryManager
+       2: invokestatic  #90                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

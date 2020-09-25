@@ -1,0 +1,659 @@
+Compiled from "CompactHashSet.java"
+class com.google.common.collect.CompactHashSet<E> extends java.util.AbstractSet<E> implements java.io.Serializable {
+  static final int DEFAULT_SIZE;
+
+  static final int UNSET;
+
+  transient java.lang.Object[] elements;
+
+  transient int modCount;
+
+  public static <E> com.google.common.collect.CompactHashSet<E> create();
+    Code:
+       0: new           #1                  // class com/google/common/collect/CompactHashSet
+       3: dup
+       4: invokespecial #5                  // Method "<init>":()V
+       7: areturn
+
+  public static <E> com.google.common.collect.CompactHashSet<E> create(java.util.Collection<? extends E>);
+    Code:
+       0: aload_0
+       1: invokeinterface #6,  1            // InterfaceMethod java/util/Collection.size:()I
+       6: invokestatic  #7                  // Method createWithExpectedSize:(I)Lcom/google/common/collect/CompactHashSet;
+       9: astore_1
+      10: aload_1
+      11: aload_0
+      12: invokevirtual #8                  // Method addAll:(Ljava/util/Collection;)Z
+      15: pop
+      16: aload_1
+      17: areturn
+
+  public static <E> com.google.common.collect.CompactHashSet<E> create(E...);
+    Code:
+       0: aload_0
+       1: arraylength
+       2: invokestatic  #7                  // Method createWithExpectedSize:(I)Lcom/google/common/collect/CompactHashSet;
+       5: astore_1
+       6: aload_1
+       7: aload_0
+       8: invokestatic  #9                  // Method java/util/Collections.addAll:(Ljava/util/Collection;[Ljava/lang/Object;)Z
+      11: pop
+      12: aload_1
+      13: areturn
+
+  public static <E> com.google.common.collect.CompactHashSet<E> createWithExpectedSize(int);
+    Code:
+       0: new           #1                  // class com/google/common/collect/CompactHashSet
+       3: dup
+       4: iload_0
+       5: invokespecial #10                 // Method "<init>":(I)V
+       8: areturn
+
+  com.google.common.collect.CompactHashSet();
+    Code:
+       0: aload_0
+       1: invokespecial #11                 // Method java/util/AbstractSet."<init>":()V
+       4: aload_0
+       5: iconst_3
+       6: invokevirtual #12                 // Method init:(I)V
+       9: return
+
+  com.google.common.collect.CompactHashSet(int);
+    Code:
+       0: aload_0
+       1: invokespecial #11                 // Method java/util/AbstractSet."<init>":()V
+       4: aload_0
+       5: iload_1
+       6: invokevirtual #12                 // Method init:(I)V
+       9: return
+
+  void init(int);
+    Code:
+       0: iload_1
+       1: iflt          8
+       4: iconst_1
+       5: goto          9
+       8: iconst_0
+       9: ldc           #13                 // String Initial capacity must be non-negative
+      11: invokestatic  #14                 // Method com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/Object;)V
+      14: aload_0
+      15: iconst_1
+      16: iload_1
+      17: invokestatic  #15                 // Method java/lang/Math.max:(II)I
+      20: putfield      #16                 // Field modCount:I
+      23: return
+
+  boolean needsAllocArrays();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field table:[I
+       4: ifnonnull     11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+
+  void allocArrays();
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ldc           #19                 // String Arrays already allocated
+       6: invokestatic  #20                 // Method com/google/common/base/Preconditions.checkState:(ZLjava/lang/Object;)V
+       9: aload_0
+      10: getfield      #16                 // Field modCount:I
+      13: istore_1
+      14: iload_1
+      15: dconst_1
+      16: invokestatic  #21                 // Method com/google/common/collect/Hashing.closedTableSize:(ID)I
+      19: istore_2
+      20: aload_0
+      21: iload_2
+      22: invokestatic  #22                 // Method newTable:(I)[I
+      25: putfield      #17                 // Field table:[I
+      28: aload_0
+      29: iload_1
+      30: invokestatic  #23                 // Method newEntries:(I)[J
+      33: putfield      #4                  // Field entries:[J
+      36: aload_0
+      37: iload_1
+      38: anewarray     #24                 // class java/lang/Object
+      41: putfield      #25                 // Field elements:[Ljava/lang/Object;
+      44: return
+
+  public boolean add(E);
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          11
+       7: aload_0
+       8: invokevirtual #34                 // Method allocArrays:()V
+      11: aload_0
+      12: getfield      #4                  // Field entries:[J
+      15: astore_2
+      16: aload_0
+      17: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      20: astore_3
+      21: aload_1
+      22: invokestatic  #35                 // Method com/google/common/collect/Hashing.smearedHash:(Ljava/lang/Object;)I
+      25: istore        4
+      27: iload         4
+      29: aload_0
+      30: invokespecial #36                 // Method hashTableMask:()I
+      33: iand
+      34: istore        5
+      36: aload_0
+      37: getfield      #37                 // Field size:I
+      40: istore        6
+      42: aload_0
+      43: getfield      #17                 // Field table:[I
+      46: iload         5
+      48: iaload
+      49: istore        7
+      51: iload         7
+      53: iconst_m1
+      54: if_icmpne     69
+      57: aload_0
+      58: getfield      #17                 // Field table:[I
+      61: iload         5
+      63: iload         6
+      65: iastore
+      66: goto          126
+      69: iload         7
+      71: istore        8
+      73: aload_2
+      74: iload         7
+      76: laload
+      77: lstore        9
+      79: lload         9
+      81: invokestatic  #3                  // Method getHash:(J)I
+      84: iload         4
+      86: if_icmpne     102
+      89: aload_1
+      90: aload_3
+      91: iload         7
+      93: aaload
+      94: invokestatic  #38                 // Method com/google/common/base/Objects.equal:(Ljava/lang/Object;Ljava/lang/Object;)Z
+      97: ifeq          102
+     100: iconst_0
+     101: ireturn
+     102: lload         9
+     104: invokestatic  #39                 // Method getNext:(J)I
+     107: istore        7
+     109: iload         7
+     111: iconst_m1
+     112: if_icmpne     69
+     115: aload_2
+     116: iload         8
+     118: lload         9
+     120: iload         6
+     122: invokestatic  #40                 // Method swapNext:(JI)J
+     125: lastore
+     126: iload         6
+     128: ldc           #42                 // int 2147483647
+     130: if_icmpne     143
+     133: new           #43                 // class java/lang/IllegalStateException
+     136: dup
+     137: ldc           #44                 // String Cannot contain more than Integer.MAX_VALUE elements!
+     139: invokespecial #45                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+     142: athrow
+     143: iload         6
+     145: iconst_1
+     146: iadd
+     147: istore        8
+     149: aload_0
+     150: iload         8
+     152: invokespecial #46                 // Method resizeMeMaybe:(I)V
+     155: aload_0
+     156: iload         6
+     158: aload_1
+     159: iload         4
+     161: invokevirtual #47                 // Method insertEntry:(ILjava/lang/Object;I)V
+     164: aload_0
+     165: iload         8
+     167: putfield      #37                 // Field size:I
+     170: aload_0
+     171: getfield      #17                 // Field table:[I
+     174: arraylength
+     175: istore        9
+     177: iload         6
+     179: iload         9
+     181: dconst_1
+     182: invokestatic  #48                 // Method com/google/common/collect/Hashing.needsResizing:(IID)Z
+     185: ifeq          196
+     188: aload_0
+     189: iconst_2
+     190: iload         9
+     192: imul
+     193: invokespecial #49                 // Method resizeTable:(I)V
+     196: aload_0
+     197: dup
+     198: getfield      #16                 // Field modCount:I
+     201: iconst_1
+     202: iadd
+     203: putfield      #16                 // Field modCount:I
+     206: iconst_1
+     207: ireturn
+
+  void insertEntry(int, E, int);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field entries:[J
+       4: iload_1
+       5: iload_3
+       6: i2l
+       7: bipush        32
+       9: lshl
+      10: ldc2_w        #32                 // long 4294967295l
+      13: lor
+      14: lastore
+      15: aload_0
+      16: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      19: iload_1
+      20: aload_2
+      21: aastore
+      22: return
+
+  void resizeEntries(int);
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #25                 // Field elements:[Ljava/lang/Object;
+       5: iload_1
+       6: invokestatic  #51                 // Method java/util/Arrays.copyOf:([Ljava/lang/Object;I)[Ljava/lang/Object;
+       9: putfield      #25                 // Field elements:[Ljava/lang/Object;
+      12: aload_0
+      13: getfield      #4                  // Field entries:[J
+      16: astore_2
+      17: aload_2
+      18: arraylength
+      19: istore_3
+      20: aload_2
+      21: iload_1
+      22: invokestatic  #52                 // Method java/util/Arrays.copyOf:([JI)[J
+      25: astore_2
+      26: iload_1
+      27: iload_3
+      28: if_icmple     40
+      31: aload_2
+      32: iload_3
+      33: iload_1
+      34: ldc2_w        #27                 // long -1l
+      37: invokestatic  #53                 // Method java/util/Arrays.fill:([JIIJ)V
+      40: aload_0
+      41: aload_2
+      42: putfield      #4                  // Field entries:[J
+      45: return
+
+  public boolean contains(java.lang.Object);
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          9
+       7: iconst_0
+       8: ireturn
+       9: aload_1
+      10: invokestatic  #35                 // Method com/google/common/collect/Hashing.smearedHash:(Ljava/lang/Object;)I
+      13: istore_2
+      14: aload_0
+      15: getfield      #17                 // Field table:[I
+      18: iload_2
+      19: aload_0
+      20: invokespecial #36                 // Method hashTableMask:()I
+      23: iand
+      24: iaload
+      25: istore_3
+      26: iload_3
+      27: iconst_m1
+      28: if_icmpeq     72
+      31: aload_0
+      32: getfield      #4                  // Field entries:[J
+      35: iload_3
+      36: laload
+      37: lstore        4
+      39: lload         4
+      41: invokestatic  #3                  // Method getHash:(J)I
+      44: iload_2
+      45: if_icmpne     63
+      48: aload_1
+      49: aload_0
+      50: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      53: iload_3
+      54: aaload
+      55: invokestatic  #38                 // Method com/google/common/base/Objects.equal:(Ljava/lang/Object;Ljava/lang/Object;)Z
+      58: ifeq          63
+      61: iconst_1
+      62: ireturn
+      63: lload         4
+      65: invokestatic  #39                 // Method getNext:(J)I
+      68: istore_3
+      69: goto          26
+      72: iconst_0
+      73: ireturn
+
+  public boolean remove(java.lang.Object);
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          9
+       7: iconst_0
+       8: ireturn
+       9: aload_0
+      10: aload_1
+      11: aload_1
+      12: invokestatic  #35                 // Method com/google/common/collect/Hashing.smearedHash:(Ljava/lang/Object;)I
+      15: invokespecial #2                  // Method remove:(Ljava/lang/Object;I)Z
+      18: ireturn
+
+  void moveLastEntry(int);
+    Code:
+       0: aload_0
+       1: invokevirtual #55                 // Method size:()I
+       4: iconst_1
+       5: isub
+       6: istore_2
+       7: iload_1
+       8: iload_2
+       9: if_icmpge     132
+      12: aload_0
+      13: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      16: iload_1
+      17: aload_0
+      18: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      21: iload_2
+      22: aaload
+      23: aastore
+      24: aload_0
+      25: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      28: iload_2
+      29: aconst_null
+      30: aastore
+      31: aload_0
+      32: getfield      #4                  // Field entries:[J
+      35: iload_2
+      36: laload
+      37: lstore_3
+      38: aload_0
+      39: getfield      #4                  // Field entries:[J
+      42: iload_1
+      43: lload_3
+      44: lastore
+      45: aload_0
+      46: getfield      #4                  // Field entries:[J
+      49: iload_2
+      50: ldc2_w        #27                 // long -1l
+      53: lastore
+      54: lload_3
+      55: invokestatic  #3                  // Method getHash:(J)I
+      58: aload_0
+      59: invokespecial #36                 // Method hashTableMask:()I
+      62: iand
+      63: istore        5
+      65: aload_0
+      66: getfield      #17                 // Field table:[I
+      69: iload         5
+      71: iaload
+      72: istore        6
+      74: iload         6
+      76: iload_2
+      77: if_icmpne     91
+      80: aload_0
+      81: getfield      #17                 // Field table:[I
+      84: iload         5
+      86: iload_1
+      87: iastore
+      88: goto          129
+      91: iload         6
+      93: istore        7
+      95: aload_0
+      96: getfield      #4                  // Field entries:[J
+      99: iload         6
+     101: laload
+     102: dup2
+     103: lstore        8
+     105: invokestatic  #39                 // Method getNext:(J)I
+     108: istore        6
+     110: iload         6
+     112: iload_2
+     113: if_icmpne     91
+     116: aload_0
+     117: getfield      #4                  // Field entries:[J
+     120: iload         7
+     122: lload         8
+     124: iload_1
+     125: invokestatic  #40                 // Method swapNext:(JI)J
+     128: lastore
+     129: goto          148
+     132: aload_0
+     133: getfield      #25                 // Field elements:[Ljava/lang/Object;
+     136: iload_1
+     137: aconst_null
+     138: aastore
+     139: aload_0
+     140: getfield      #4                  // Field entries:[J
+     143: iload_1
+     144: ldc2_w        #27                 // long -1l
+     147: lastore
+     148: return
+
+  int firstEntryIndex();
+    Code:
+       0: aload_0
+       1: invokevirtual #56                 // Method isEmpty:()Z
+       4: ifeq          11
+       7: iconst_m1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+
+  int getSuccessor(int);
+    Code:
+       0: iload_1
+       1: iconst_1
+       2: iadd
+       3: aload_0
+       4: getfield      #37                 // Field size:I
+       7: if_icmpge     16
+      10: iload_1
+      11: iconst_1
+      12: iadd
+      13: goto          17
+      16: iconst_m1
+      17: ireturn
+
+  int adjustAfterRemove(int, int);
+    Code:
+       0: iload_1
+       1: iconst_1
+       2: isub
+       3: ireturn
+
+  public java.util.Iterator<E> iterator();
+    Code:
+       0: new           #57                 // class com/google/common/collect/CompactHashSet$1
+       3: dup
+       4: aload_0
+       5: invokespecial #58                 // Method com/google/common/collect/CompactHashSet$1."<init>":(Lcom/google/common/collect/CompactHashSet;)V
+       8: areturn
+
+  public java.util.Spliterator<E> spliterator();
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          17
+       7: iconst_0
+       8: anewarray     #24                 // class java/lang/Object
+      11: bipush        17
+      13: invokestatic  #60                 // Method java/util/Spliterators.spliterator:([Ljava/lang/Object;I)Ljava/util/Spliterator;
+      16: areturn
+      17: aload_0
+      18: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      21: iconst_0
+      22: aload_0
+      23: getfield      #37                 // Field size:I
+      26: bipush        17
+      28: invokestatic  #61                 // Method java/util/Spliterators.spliterator:([Ljava/lang/Object;III)Ljava/util/Spliterator;
+      31: areturn
+
+  public void forEach(java.util.function.Consumer<? super E>);
+    Code:
+       0: aload_1
+       1: invokestatic  #62                 // Method com/google/common/base/Preconditions.checkNotNull:(Ljava/lang/Object;)Ljava/lang/Object;
+       4: pop
+       5: aload_0
+       6: invokevirtual #63                 // Method firstEntryIndex:()I
+       9: istore_2
+      10: iload_2
+      11: iflt          35
+      14: aload_1
+      15: aload_0
+      16: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      19: iload_2
+      20: aaload
+      21: invokeinterface #64,  2           // InterfaceMethod java/util/function/Consumer.accept:(Ljava/lang/Object;)V
+      26: aload_0
+      27: iload_2
+      28: invokevirtual #65                 // Method getSuccessor:(I)I
+      31: istore_2
+      32: goto          10
+      35: return
+
+  public int size();
+    Code:
+       0: aload_0
+       1: getfield      #37                 // Field size:I
+       4: ireturn
+
+  public boolean isEmpty();
+    Code:
+       0: aload_0
+       1: getfield      #37                 // Field size:I
+       4: ifne          11
+       7: iconst_1
+       8: goto          12
+      11: iconst_0
+      12: ireturn
+
+  public java.lang.Object[] toArray();
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          12
+       7: iconst_0
+       8: anewarray     #24                 // class java/lang/Object
+      11: areturn
+      12: aload_0
+      13: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      16: aload_0
+      17: getfield      #37                 // Field size:I
+      20: invokestatic  #51                 // Method java/util/Arrays.copyOf:([Ljava/lang/Object;I)[Ljava/lang/Object;
+      23: areturn
+
+  public <T> T[] toArray(T[]);
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          18
+       7: aload_1
+       8: arraylength
+       9: ifle          16
+      12: aload_1
+      13: iconst_0
+      14: aconst_null
+      15: aastore
+      16: aload_1
+      17: areturn
+      18: aload_0
+      19: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      22: iconst_0
+      23: aload_0
+      24: getfield      #37                 // Field size:I
+      27: aload_1
+      28: invokestatic  #66                 // Method com/google/common/collect/ObjectArrays.toArrayImpl:([Ljava/lang/Object;II[Ljava/lang/Object;)[Ljava/lang/Object;
+      31: areturn
+
+  public void trimToSize();
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          8
+       7: return
+       8: aload_0
+       9: getfield      #37                 // Field size:I
+      12: istore_1
+      13: iload_1
+      14: aload_0
+      15: getfield      #4                  // Field entries:[J
+      18: arraylength
+      19: if_icmpge     27
+      22: aload_0
+      23: iload_1
+      24: invokevirtual #50                 // Method resizeEntries:(I)V
+      27: iload_1
+      28: dconst_1
+      29: invokestatic  #21                 // Method com/google/common/collect/Hashing.closedTableSize:(ID)I
+      32: istore_2
+      33: iload_2
+      34: aload_0
+      35: getfield      #17                 // Field table:[I
+      38: arraylength
+      39: if_icmpge     47
+      42: aload_0
+      43: iload_2
+      44: invokespecial #49                 // Method resizeTable:(I)V
+      47: return
+
+  public void clear();
+    Code:
+       0: aload_0
+       1: invokevirtual #18                 // Method needsAllocArrays:()Z
+       4: ifeq          8
+       7: return
+       8: aload_0
+       9: dup
+      10: getfield      #16                 // Field modCount:I
+      13: iconst_1
+      14: iadd
+      15: putfield      #16                 // Field modCount:I
+      18: aload_0
+      19: getfield      #25                 // Field elements:[Ljava/lang/Object;
+      22: iconst_0
+      23: aload_0
+      24: getfield      #37                 // Field size:I
+      27: aconst_null
+      28: invokestatic  #67                 // Method java/util/Arrays.fill:([Ljava/lang/Object;IILjava/lang/Object;)V
+      31: aload_0
+      32: getfield      #17                 // Field table:[I
+      35: iconst_m1
+      36: invokestatic  #26                 // Method java/util/Arrays.fill:([II)V
+      39: aload_0
+      40: getfield      #4                  // Field entries:[J
+      43: iconst_0
+      44: aload_0
+      45: getfield      #37                 // Field size:I
+      48: ldc2_w        #27                 // long -1l
+      51: invokestatic  #53                 // Method java/util/Arrays.fill:([JIIJ)V
+      54: aload_0
+      55: iconst_0
+      56: putfield      #37                 // Field size:I
+      59: return
+
+  static long[] access$000(com.google.common.collect.CompactHashSet);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field entries:[J
+       4: areturn
+
+  static int access$100(long);
+    Code:
+       0: lload_0
+       1: invokestatic  #3                  // Method getHash:(J)I
+       4: ireturn
+
+  static boolean access$200(com.google.common.collect.CompactHashSet, java.lang.Object, int);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: invokespecial #2                  // Method remove:(Ljava/lang/Object;I)Z
+       6: ireturn
+}

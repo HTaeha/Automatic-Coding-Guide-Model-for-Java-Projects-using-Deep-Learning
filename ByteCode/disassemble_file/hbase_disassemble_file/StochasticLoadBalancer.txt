@@ -1,0 +1,1179 @@
+Compiled from "StochasticLoadBalancer.java"
+public class org.apache.hadoop.hbase.master.balancer.StochasticLoadBalancer extends org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer {
+  protected static final java.lang.String STEPS_PER_REGION_KEY;
+
+  protected static final java.lang.String MAX_STEPS_KEY;
+
+  protected static final java.lang.String RUN_MAX_STEPS_KEY;
+
+  protected static final java.lang.String MAX_RUNNING_TIME_KEY;
+
+  protected static final java.lang.String KEEP_REGION_LOADS;
+
+  protected static final java.lang.String MIN_COST_NEED_BALANCE_KEY;
+
+  protected static final java.util.Random RANDOM;
+
+  java.util.Map<java.lang.String, java.util.Deque<org.apache.hadoop.hbase.master.balancer.BalancerRegionLoad>> loads;
+
+  public org.apache.hadoop.hbase.master.balancer.StochasticLoadBalancer();
+    Code:
+       0: aload_0
+       1: new           #1                  // class org/apache/hadoop/hbase/master/balancer/MetricsStochasticBalancer
+       4: dup
+       5: invokespecial #2                  // Method org/apache/hadoop/hbase/master/balancer/MetricsStochasticBalancer."<init>":()V
+       8: invokespecial #3                  // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer."<init>":(Lorg/apache/hadoop/hbase/master/balancer/MetricsBalancer;)V
+      11: aload_0
+      12: new           #4                  // class java/util/HashMap
+      15: dup
+      16: invokespecial #5                  // Method java/util/HashMap."<init>":()V
+      19: putfield      #6                  // Field loads:Ljava/util/Map;
+      22: aload_0
+      23: ldc           #7                  // int 1000000
+      25: putfield      #8                  // Field maxSteps:I
+      28: aload_0
+      29: iconst_0
+      30: putfield      #9                  // Field runMaxSteps:Z
+      33: aload_0
+      34: sipush        800
+      37: putfield      #10                 // Field stepsPerRegion:I
+      40: aload_0
+      41: ldc2_w        #11                 // long 30000l
+      44: putfield      #13                 // Field maxRunningTime:J
+      47: aload_0
+      48: bipush        15
+      50: putfield      #14                 // Field numRegionLoadsToRemember:I
+      53: aload_0
+      54: ldc           #15                 // float 0.05f
+      56: putfield      #16                 // Field minCostNeedBalance:F
+      59: aload_0
+      60: dconst_0
+      61: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+      64: putfield      #18                 // Field curOverallCost:Ljava/lang/Double;
+      67: aload_0
+      68: iconst_0
+      69: putfield      #19                 // Field isByTable:Z
+      72: aload_0
+      73: aconst_null
+      74: putfield      #20                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      77: return
+
+  public void onConfigurationChange(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #21                 // Method setConf:(Lorg/apache/hadoop/conf/Configuration;)V
+       5: return
+
+  public synchronized void setConf(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #22                 // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.setConf:(Lorg/apache/hadoop/conf/Configuration;)V
+       5: aload_0
+       6: aload_1
+       7: ldc           #24                 // String hbase.master.balancer.stochastic.maxSteps
+       9: aload_0
+      10: getfield      #8                  // Field maxSteps:I
+      13: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      16: putfield      #8                  // Field maxSteps:I
+      19: aload_0
+      20: aload_1
+      21: ldc           #26                 // String hbase.master.balancer.stochastic.stepsPerRegion
+      23: aload_0
+      24: getfield      #10                 // Field stepsPerRegion:I
+      27: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      30: putfield      #10                 // Field stepsPerRegion:I
+      33: aload_0
+      34: aload_1
+      35: ldc           #27                 // String hbase.master.balancer.stochastic.maxRunningTime
+      37: aload_0
+      38: getfield      #13                 // Field maxRunningTime:J
+      41: invokevirtual #28                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      44: putfield      #13                 // Field maxRunningTime:J
+      47: aload_0
+      48: aload_1
+      49: ldc           #29                 // String hbase.master.balancer.stochastic.runMaxSteps
+      51: aload_0
+      52: getfield      #9                  // Field runMaxSteps:Z
+      55: invokevirtual #30                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      58: putfield      #9                  // Field runMaxSteps:Z
+      61: aload_0
+      62: aload_1
+      63: ldc           #31                 // String hbase.master.balancer.stochastic.numRegionLoadsToRemember
+      65: aload_0
+      66: getfield      #14                 // Field numRegionLoadsToRemember:I
+      69: invokevirtual #25                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      72: putfield      #14                 // Field numRegionLoadsToRemember:I
+      75: aload_0
+      76: aload_1
+      77: ldc           #33                 // String hbase.master.loadbalance.bytable
+      79: aload_0
+      80: getfield      #19                 // Field isByTable:Z
+      83: invokevirtual #30                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      86: putfield      #19                 // Field isByTable:Z
+      89: aload_0
+      90: aload_1
+      91: ldc           #34                 // String hbase.master.balancer.stochastic.minCostNeedBalance
+      93: aload_0
+      94: getfield      #16                 // Field minCostNeedBalance:F
+      97: invokevirtual #35                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+     100: putfield      #16                 // Field minCostNeedBalance:F
+     103: aload_0
+     104: getfield      #36                 // Field localityCandidateGenerator:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LocalityBasedCandidateGenerator;
+     107: ifnonnull     125
+     110: aload_0
+     111: new           #37                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LocalityBasedCandidateGenerator
+     114: dup
+     115: aload_0
+     116: getfield      #38                 // Field services:Lorg/apache/hadoop/hbase/master/MasterServices;
+     119: invokespecial #39                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LocalityBasedCandidateGenerator."<init>":(Lorg/apache/hadoop/hbase/master/MasterServices;)V
+     122: putfield      #36                 // Field localityCandidateGenerator:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LocalityBasedCandidateGenerator;
+     125: aload_0
+     126: new           #40                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction
+     129: dup
+     130: aload_1
+     131: aload_0
+     132: getfield      #38                 // Field services:Lorg/apache/hadoop/hbase/master/MasterServices;
+     135: invokespecial #41                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/master/MasterServices;)V
+     138: putfield      #42                 // Field localityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction;
+     141: aload_0
+     142: new           #43                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction
+     145: dup
+     146: aload_1
+     147: aload_0
+     148: getfield      #38                 // Field services:Lorg/apache/hadoop/hbase/master/MasterServices;
+     151: invokespecial #44                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/master/MasterServices;)V
+     154: putfield      #45                 // Field rackLocalityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction;
+     157: aload_0
+     158: getfield      #46                 // Field candidateGenerators:Ljava/util/List;
+     161: ifnonnull     236
+     164: aload_0
+     165: invokestatic  #47                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:()Ljava/util/ArrayList;
+     168: putfield      #46                 // Field candidateGenerators:Ljava/util/List;
+     171: aload_0
+     172: getfield      #46                 // Field candidateGenerators:Ljava/util/List;
+     175: new           #48                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RandomCandidateGenerator
+     178: dup
+     179: invokespecial #49                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RandomCandidateGenerator."<init>":()V
+     182: invokeinterface #50,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     187: pop
+     188: aload_0
+     189: getfield      #46                 // Field candidateGenerators:Ljava/util/List;
+     192: new           #51                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LoadCandidateGenerator
+     195: dup
+     196: invokespecial #52                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LoadCandidateGenerator."<init>":()V
+     199: invokeinterface #50,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     204: pop
+     205: aload_0
+     206: getfield      #46                 // Field candidateGenerators:Ljava/util/List;
+     209: aload_0
+     210: getfield      #36                 // Field localityCandidateGenerator:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LocalityBasedCandidateGenerator;
+     213: invokeinterface #50,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     218: pop
+     219: aload_0
+     220: getfield      #46                 // Field candidateGenerators:Ljava/util/List;
+     223: new           #53                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCandidateGenerator
+     226: dup
+     227: invokespecial #54                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCandidateGenerator."<init>":()V
+     230: invokeinterface #50,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     235: pop
+     236: aload_0
+     237: iconst_5
+     238: anewarray     #55                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction
+     241: dup
+     242: iconst_0
+     243: new           #56                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ReadRequestCostFunction
+     246: dup
+     247: aload_1
+     248: invokespecial #57                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ReadRequestCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     251: aastore
+     252: dup
+     253: iconst_1
+     254: new           #58                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CPRequestCostFunction
+     257: dup
+     258: aload_1
+     259: invokespecial #59                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CPRequestCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     262: aastore
+     263: dup
+     264: iconst_2
+     265: new           #60                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$WriteRequestCostFunction
+     268: dup
+     269: aload_1
+     270: invokespecial #61                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$WriteRequestCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     273: aastore
+     274: dup
+     275: iconst_3
+     276: new           #62                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$MemStoreSizeCostFunction
+     279: dup
+     280: aload_1
+     281: invokespecial #63                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$MemStoreSizeCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     284: aastore
+     285: dup
+     286: iconst_4
+     287: new           #64                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$StoreFileCostFunction
+     290: dup
+     291: aload_1
+     292: invokespecial #65                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$StoreFileCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     295: aastore
+     296: putfield      #66                 // Field regionLoadFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction;
+     299: aload_0
+     300: new           #67                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction
+     303: dup
+     304: aload_1
+     305: invokespecial #68                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     308: putfield      #69                 // Field regionReplicaHostCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction;
+     311: aload_0
+     312: new           #70                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction
+     315: dup
+     316: aload_1
+     317: invokespecial #71                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     320: putfield      #72                 // Field regionReplicaRackCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction;
+     323: aload_0
+     324: bipush        13
+     326: anewarray     #73                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction
+     329: dup
+     330: iconst_0
+     331: new           #74                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionCountSkewCostFunction
+     334: dup
+     335: aload_1
+     336: invokespecial #75                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionCountSkewCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     339: aastore
+     340: dup
+     341: iconst_1
+     342: new           #76                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$PrimaryRegionCountSkewCostFunction
+     345: dup
+     346: aload_1
+     347: invokespecial #77                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$PrimaryRegionCountSkewCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     350: aastore
+     351: dup
+     352: iconst_2
+     353: new           #78                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$MoveCostFunction
+     356: dup
+     357: aload_1
+     358: invokespecial #79                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$MoveCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     361: aastore
+     362: dup
+     363: iconst_3
+     364: aload_0
+     365: getfield      #42                 // Field localityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction;
+     368: aastore
+     369: dup
+     370: iconst_4
+     371: aload_0
+     372: getfield      #45                 // Field rackLocalityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction;
+     375: aastore
+     376: dup
+     377: iconst_5
+     378: new           #80                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$TableSkewCostFunction
+     381: dup
+     382: aload_1
+     383: invokespecial #81                 // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$TableSkewCostFunction."<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+     386: aastore
+     387: dup
+     388: bipush        6
+     390: aload_0
+     391: getfield      #69                 // Field regionReplicaHostCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction;
+     394: aastore
+     395: dup
+     396: bipush        7
+     398: aload_0
+     399: getfield      #72                 // Field regionReplicaRackCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction;
+     402: aastore
+     403: dup
+     404: bipush        8
+     406: aload_0
+     407: getfield      #66                 // Field regionLoadFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction;
+     410: iconst_0
+     411: aaload
+     412: aastore
+     413: dup
+     414: bipush        9
+     416: aload_0
+     417: getfield      #66                 // Field regionLoadFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction;
+     420: iconst_1
+     421: aaload
+     422: aastore
+     423: dup
+     424: bipush        10
+     426: aload_0
+     427: getfield      #66                 // Field regionLoadFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction;
+     430: iconst_2
+     431: aaload
+     432: aastore
+     433: dup
+     434: bipush        11
+     436: aload_0
+     437: getfield      #66                 // Field regionLoadFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction;
+     440: iconst_3
+     441: aaload
+     442: aastore
+     443: dup
+     444: bipush        12
+     446: aload_0
+     447: getfield      #66                 // Field regionLoadFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction;
+     450: iconst_4
+     451: aaload
+     452: aastore
+     453: putfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+     456: aload_0
+     457: aload_0
+     458: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+     461: arraylength
+     462: anewarray     #83                 // class java/lang/Double
+     465: putfield      #84                 // Field curFunctionCosts:[Ljava/lang/Double;
+     468: aload_0
+     469: aload_0
+     470: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+     473: arraylength
+     474: anewarray     #83                 // class java/lang/Double
+     477: putfield      #85                 // Field tempFunctionCosts:[Ljava/lang/Double;
+     480: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     483: new           #87                 // class java/lang/StringBuilder
+     486: dup
+     487: invokespecial #88                 // Method java/lang/StringBuilder."<init>":()V
+     490: ldc           #89                 // String Loaded config; maxSteps=
+     492: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     495: aload_0
+     496: getfield      #8                  // Field maxSteps:I
+     499: invokevirtual #91                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     502: ldc           #92                 // String , stepsPerRegion=
+     504: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     507: aload_0
+     508: getfield      #10                 // Field stepsPerRegion:I
+     511: invokevirtual #91                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     514: ldc           #93                 // String , maxRunningTime=
+     516: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     519: aload_0
+     520: getfield      #13                 // Field maxRunningTime:J
+     523: invokevirtual #94                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     526: ldc           #95                 // String , isByTable=
+     528: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     531: aload_0
+     532: getfield      #19                 // Field isByTable:Z
+     535: invokevirtual #96                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     538: ldc           #97                 // String , etc.
+     540: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     543: invokevirtual #98                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     546: invokeinterface #99,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     551: return
+
+  protected void setCandidateGenerators(java.util.List<org.apache.hadoop.hbase.master.balancer.StochasticLoadBalancer$CandidateGenerator>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #46                 // Field candidateGenerators:Ljava/util/List;
+       5: return
+
+  protected void setSlop(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: ldc           #100                // String hbase.regions.slop
+       4: ldc           #101                // float 0.001f
+       6: invokevirtual #35                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+       9: putfield      #102                // Field slop:F
+      12: return
+
+  public synchronized void setClusterMetrics(org.apache.hadoop.hbase.ClusterMetrics);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #103                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.setClusterMetrics:(Lorg/apache/hadoop/hbase/ClusterMetrics;)V
+       5: aload_0
+       6: invokespecial #104                // Method updateRegionLoad:()V
+       9: aload_0
+      10: getfield      #66                 // Field regionLoadFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction;
+      13: astore_2
+      14: aload_2
+      15: arraylength
+      16: istore_3
+      17: iconst_0
+      18: istore        4
+      20: iload         4
+      22: iload_3
+      23: if_icmpge     44
+      26: aload_2
+      27: iload         4
+      29: aaload
+      30: astore        5
+      32: aload         5
+      34: aload_1
+      35: invokevirtual #105                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFromRegionLoadFunction.setClusterMetrics:(Lorg/apache/hadoop/hbase/ClusterMetrics;)V
+      38: iinc          4, 1
+      41: goto          20
+      44: aload_0
+      45: getfield      #19                 // Field isByTable:Z
+      48: ifeq          73
+      51: aload_0
+      52: getfield      #38                 // Field services:Lorg/apache/hadoop/hbase/master/MasterServices;
+      55: invokeinterface #106,  1          // InterfaceMethod org/apache/hadoop/hbase/master/MasterServices.getTableDescriptors:()Lorg/apache/hadoop/hbase/TableDescriptors;
+      60: invokeinterface #107,  1          // InterfaceMethod org/apache/hadoop/hbase/TableDescriptors.getAll:()Ljava/util/Map;
+      65: invokeinterface #108,  1          // InterfaceMethod java/util/Map.size:()I
+      70: goto          74
+      73: iconst_1
+      74: istore_2
+      75: aload_0
+      76: invokevirtual #109                // Method getCostFunctionNames:()[Ljava/lang/String;
+      79: arraylength
+      80: istore_3
+      81: aload_0
+      82: iload_2
+      83: iload_3
+      84: iconst_1
+      85: iadd
+      86: imul
+      87: invokevirtual #110                // Method updateMetricsSize:(I)V
+      90: goto          105
+      93: astore_2
+      94: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+      97: ldc           #112                // String failed to get the size of all tables
+      99: aload_2
+     100: invokeinterface #113,  3          // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     105: return
+    Exception table:
+       from    to  target type
+          44    90    93   Class java/lang/Exception
+
+  public void updateMetricsSize(int);
+    Code:
+       0: aload_0
+       1: getfield      #114                // Field metricsBalancer:Lorg/apache/hadoop/hbase/master/balancer/MetricsBalancer;
+       4: instanceof    #1                  // class org/apache/hadoop/hbase/master/balancer/MetricsStochasticBalancer
+       7: ifeq          21
+      10: aload_0
+      11: getfield      #114                // Field metricsBalancer:Lorg/apache/hadoop/hbase/master/balancer/MetricsBalancer;
+      14: checkcast     #1                  // class org/apache/hadoop/hbase/master/balancer/MetricsStochasticBalancer
+      17: iload_1
+      18: invokevirtual #115                // Method org/apache/hadoop/hbase/master/balancer/MetricsStochasticBalancer.updateMetricsSize:(I)V
+      21: return
+
+  public synchronized void setMasterServices(org.apache.hadoop.hbase.master.MasterServices);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #116                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer.setMasterServices:(Lorg/apache/hadoop/hbase/master/MasterServices;)V
+       5: aload_0
+       6: getfield      #42                 // Field localityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction;
+       9: aload_1
+      10: invokevirtual #117                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction.setServices:(Lorg/apache/hadoop/hbase/master/MasterServices;)V
+      13: aload_0
+      14: getfield      #45                 // Field rackLocalityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction;
+      17: aload_1
+      18: invokevirtual #118                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction.setServices:(Lorg/apache/hadoop/hbase/master/MasterServices;)V
+      21: aload_0
+      22: getfield      #36                 // Field localityCandidateGenerator:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LocalityBasedCandidateGenerator;
+      25: aload_1
+      26: invokevirtual #119                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$LocalityBasedCandidateGenerator.setServices:(Lorg/apache/hadoop/hbase/master/MasterServices;)V
+      29: return
+
+  protected synchronized boolean areSomeRegionReplicasColocated(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster);
+    Code:
+       0: aload_0
+       1: getfield      #69                 // Field regionReplicaHostCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction;
+       4: aload_1
+       5: invokevirtual #120                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction.init:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)V
+       8: aload_0
+       9: getfield      #69                 // Field regionReplicaHostCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction;
+      12: invokevirtual #121                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaHostCostFunction.cost:()D
+      15: dconst_0
+      16: dcmpl
+      17: ifle          22
+      20: iconst_1
+      21: ireturn
+      22: aload_0
+      23: getfield      #72                 // Field regionReplicaRackCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction;
+      26: aload_1
+      27: invokevirtual #122                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction.init:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)V
+      30: aload_0
+      31: getfield      #72                 // Field regionReplicaRackCostFunction:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction;
+      34: invokevirtual #123                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RegionReplicaRackCostFunction.cost:()D
+      37: dconst_0
+      38: dcmpl
+      39: ifle          44
+      42: iconst_1
+      43: ireturn
+      44: iconst_0
+      45: ireturn
+
+  protected boolean needsBalance(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster);
+    Code:
+       0: new           #124                // class org/apache/hadoop/hbase/master/balancer/ClusterLoadState
+       3: dup
+       4: aload_1
+       5: getfield      #125                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.clusterState:Ljava/util/Map;
+       8: invokespecial #126                // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState."<init>":(Ljava/util/Map;)V
+      11: astore_2
+      12: aload_2
+      13: invokevirtual #127                // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState.getNumServers:()I
+      16: iconst_2
+      17: if_icmpge     68
+      20: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+      23: invokeinterface #129,  1          // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      28: ifeq          66
+      31: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+      34: new           #87                 // class java/lang/StringBuilder
+      37: dup
+      38: invokespecial #88                 // Method java/lang/StringBuilder."<init>":()V
+      41: ldc           #130                // String Not running balancer because only
+      43: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_2
+      47: invokevirtual #127                // Method org/apache/hadoop/hbase/master/balancer/ClusterLoadState.getNumServers:()I
+      50: invokevirtual #91                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      53: ldc           #131                // String  active regionserver(s)
+      55: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      58: invokevirtual #98                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      61: invokeinterface #132,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      66: iconst_0
+      67: ireturn
+      68: aload_0
+      69: aload_1
+      70: invokevirtual #133                // Method areSomeRegionReplicasColocated:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)Z
+      73: ifeq          78
+      76: iconst_1
+      77: ireturn
+      78: dconst_0
+      79: dstore_3
+      80: fconst_0
+      81: fstore        5
+      83: aload_0
+      84: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+      87: astore        6
+      89: aload         6
+      91: arraylength
+      92: istore        7
+      94: iconst_0
+      95: istore        8
+      97: iload         8
+      99: iload         7
+     101: if_icmpge     182
+     104: aload         6
+     106: iload         8
+     108: aaload
+     109: astore        9
+     111: aload         9
+     113: invokevirtual #134                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.getMultiplier:()F
+     116: fstore        10
+     118: fload         10
+     120: fconst_0
+     121: fcmpg
+     122: ifgt          128
+     125: goto          176
+     128: aload         9
+     130: invokevirtual #135                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.isNeeded:()Z
+     133: ifne          157
+     136: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     139: ldc           #136                // String {} not needed
+     141: aload         9
+     143: invokevirtual #137                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     146: invokevirtual #138                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+     149: invokeinterface #139,  3          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     154: goto          176
+     157: fload         5
+     159: fload         10
+     161: fadd
+     162: fstore        5
+     164: dload_3
+     165: aload         9
+     167: invokevirtual #140                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.cost:()D
+     170: fload         10
+     172: f2d
+     173: dmul
+     174: dadd
+     175: dstore_3
+     176: iinc          8, 1
+     179: goto          97
+     182: dload_3
+     183: dconst_0
+     184: dcmpg
+     185: ifle          216
+     188: fload         5
+     190: fconst_0
+     191: fcmpg
+     192: ifle          216
+     195: fload         5
+     197: fconst_0
+     198: fcmpl
+     199: ifle          278
+     202: dload_3
+     203: fload         5
+     205: f2d
+     206: ddiv
+     207: aload_0
+     208: getfield      #16                 // Field minCostNeedBalance:F
+     211: f2d
+     212: dcmpg
+     213: ifge          278
+     216: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     219: invokeinterface #141,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     224: ifeq          276
+     227: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     230: new           #87                 // class java/lang/StringBuilder
+     233: dup
+     234: invokespecial #88                 // Method java/lang/StringBuilder."<init>":()V
+     237: ldc           #142                // String Skipping load balancing because balanced cluster; total cost is
+     239: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     242: dload_3
+     243: invokevirtual #143                // Method java/lang/StringBuilder.append:(D)Ljava/lang/StringBuilder;
+     246: ldc           #144                // String , sum multiplier is
+     248: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     251: fload         5
+     253: invokevirtual #145                // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+     256: ldc           #146                // String  min cost which need balance is
+     258: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     261: aload_0
+     262: getfield      #16                 // Field minCostNeedBalance:F
+     265: invokevirtual #145                // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+     268: invokevirtual #98                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     271: invokeinterface #147,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     276: iconst_0
+     277: ireturn
+     278: iconst_1
+     279: ireturn
+
+  public synchronized java.util.List<org.apache.hadoop.hbase.master.RegionPlan> balanceCluster(org.apache.hadoop.hbase.TableName, java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #20                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       5: aload_0
+       6: aload_2
+       7: invokevirtual #148                // Method balanceCluster:(Ljava/util/Map;)Ljava/util/List;
+      10: areturn
+
+  org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster$Action nextAction(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster);
+    Code:
+       0: aload_0
+       1: getfield      #46                 // Field candidateGenerators:Ljava/util/List;
+       4: getstatic     #149                // Field RANDOM:Ljava/util/Random;
+       7: aload_0
+       8: getfield      #46                 // Field candidateGenerators:Ljava/util/List;
+      11: invokeinterface #150,  1          // InterfaceMethod java/util/List.size:()I
+      16: invokevirtual #151                // Method java/util/Random.nextInt:(I)I
+      19: invokeinterface #152,  2          // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+      24: checkcast     #153                // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CandidateGenerator
+      27: aload_1
+      28: invokevirtual #154                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CandidateGenerator.generate:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;
+      31: areturn
+
+  public synchronized java.util.List<org.apache.hadoop.hbase.master.RegionPlan> balanceCluster(java.util.Map<org.apache.hadoop.hbase.ServerName, java.util.List<org.apache.hadoop.hbase.client.RegionInfo>>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #155                // Method balanceMasterRegions:(Ljava/util/Map;)Ljava/util/List;
+       5: astore_2
+       6: aload_2
+       7: ifnonnull     24
+      10: aload_1
+      11: ifnull        24
+      14: aload_1
+      15: invokeinterface #108,  1          // InterfaceMethod java/util/Map.size:()I
+      20: iconst_1
+      21: if_icmpgt     26
+      24: aload_2
+      25: areturn
+      26: aload_0
+      27: getfield      #156                // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+      30: ifnull        78
+      33: aload_1
+      34: aload_0
+      35: getfield      #156                // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+      38: invokeinterface #157,  2          // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      43: ifeq          78
+      46: aload_1
+      47: invokeinterface #108,  1          // InterfaceMethod java/util/Map.size:()I
+      52: iconst_2
+      53: if_icmpgt     58
+      56: aconst_null
+      57: areturn
+      58: new           #4                  // class java/util/HashMap
+      61: dup
+      62: aload_1
+      63: invokespecial #158                // Method java/util/HashMap."<init>":(Ljava/util/Map;)V
+      66: astore_1
+      67: aload_1
+      68: aload_0
+      69: getfield      #156                // Field masterServerName:Lorg/apache/hadoop/hbase/ServerName;
+      72: invokeinterface #159,  2          // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      77: pop
+      78: aconst_null
+      79: astore_3
+      80: aload_0
+      81: getfield      #42                 // Field localityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction;
+      84: ifnull        99
+      87: aload_0
+      88: getfield      #42                 // Field localityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction;
+      91: invokevirtual #160                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$ServerLocalityCostFunction.getMultiplier:()F
+      94: fconst_0
+      95: fcmpl
+      96: ifgt          118
+      99: aload_0
+     100: getfield      #45                 // Field rackLocalityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction;
+     103: ifnull        123
+     106: aload_0
+     107: getfield      #45                 // Field rackLocalityCost:Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction;
+     110: invokevirtual #161                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$RackLocalityCostFunction.getMultiplier:()F
+     113: fconst_0
+     114: fcmpl
+     115: ifle          123
+     118: aload_0
+     119: getfield      #162                // Field regionFinder:Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;
+     122: astore_3
+     123: new           #163                // class org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster
+     126: dup
+     127: aload_1
+     128: aload_0
+     129: getfield      #6                  // Field loads:Ljava/util/Map;
+     132: aload_3
+     133: aload_0
+     134: getfield      #164                // Field rackManager:Lorg/apache/hadoop/hbase/master/RackManager;
+     137: invokespecial #165                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster."<init>":(Ljava/util/Map;Ljava/util/Map;Lorg/apache/hadoop/hbase/master/balancer/RegionLocationFinder;Lorg/apache/hadoop/hbase/master/RackManager;)V
+     140: astore        4
+     142: invokestatic  #166                // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     145: lstore        5
+     147: aload_0
+     148: aload         4
+     150: invokevirtual #167                // Method initCosts:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)V
+     153: aload_0
+     154: aload         4
+     156: invokevirtual #168                // Method needsBalance:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)Z
+     159: ifne          164
+     162: aconst_null
+     163: areturn
+     164: aload_0
+     165: aload         4
+     167: ldc2_w        #169                // double 1.7976931348623157E308d
+     170: invokevirtual #171                // Method computeCost:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;D)D
+     173: dstore        7
+     175: aload_0
+     176: dload         7
+     178: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+     181: putfield      #18                 // Field curOverallCost:Ljava/lang/Double;
+     184: iconst_0
+     185: istore        9
+     187: iload         9
+     189: aload_0
+     190: getfield      #84                 // Field curFunctionCosts:[Ljava/lang/Double;
+     193: arraylength
+     194: if_icmpge     217
+     197: aload_0
+     198: getfield      #84                 // Field curFunctionCosts:[Ljava/lang/Double;
+     201: iload         9
+     203: aload_0
+     204: getfield      #85                 // Field tempFunctionCosts:[Ljava/lang/Double;
+     207: iload         9
+     209: aaload
+     210: aastore
+     211: iinc          9, 1
+     214: goto          187
+     217: dload         7
+     219: dstore        9
+     221: dload         7
+     223: dstore        11
+     225: aload_0
+     226: getfield      #9                  // Field runMaxSteps:Z
+     229: ifeq          264
+     232: aload_0
+     233: getfield      #8                  // Field maxSteps:I
+     236: i2l
+     237: aload         4
+     239: getfield      #172                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.numRegions:I
+     242: i2l
+     243: aload_0
+     244: getfield      #10                 // Field stepsPerRegion:I
+     247: i2l
+     248: lmul
+     249: aload         4
+     251: getfield      #173                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.numServers:I
+     254: i2l
+     255: lmul
+     256: invokestatic  #174                // Method java/lang/Math.max:(JJ)J
+     259: lstore        13
+     261: goto          330
+     264: aload         4
+     266: getfield      #172                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.numRegions:I
+     269: i2l
+     270: aload_0
+     271: getfield      #10                 // Field stepsPerRegion:I
+     274: i2l
+     275: lmul
+     276: aload         4
+     278: getfield      #173                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.numServers:I
+     281: i2l
+     282: lmul
+     283: lstore        15
+     285: aload_0
+     286: getfield      #8                  // Field maxSteps:I
+     289: i2l
+     290: lload         15
+     292: invokestatic  #175                // Method java/lang/Math.min:(JJ)J
+     295: lstore        13
+     297: lload         15
+     299: aload_0
+     300: getfield      #8                  // Field maxSteps:I
+     303: i2l
+     304: lcmp
+     305: ifle          330
+     308: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     311: ldc           #176                // String calculatedMaxSteps:{} for loadbalancer's stochastic walk is larger than maxSteps:{}. Hence load balancing may not work well. Setting parameter \"hbase.master.balancer.stochastic.runMaxSteps\" to true can overcome this issue.(This config change does not require service restart)
+     313: lload         15
+     315: invokestatic  #177                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     318: aload_0
+     319: getfield      #8                  // Field maxSteps:I
+     322: invokestatic  #178                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     325: invokeinterface #179,  4          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     330: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     333: new           #87                 // class java/lang/StringBuilder
+     336: dup
+     337: invokespecial #88                 // Method java/lang/StringBuilder."<init>":()V
+     340: ldc           #180                // String start StochasticLoadBalancer.balancer, initCost=
+     342: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     345: dload         7
+     347: invokevirtual #143                // Method java/lang/StringBuilder.append:(D)Ljava/lang/StringBuilder;
+     350: ldc           #181                // String , functionCost=
+     352: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     355: aload_0
+     356: invokespecial #182                // Method functionCost:()Ljava/lang/String;
+     359: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     362: ldc           #183                // String  computedMaxSteps:
+     364: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     367: lload         13
+     369: invokevirtual #94                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     372: invokevirtual #98                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     375: invokeinterface #99,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     380: lconst_0
+     381: lstore        15
+     383: lload         15
+     385: lload         13
+     387: lcmp
+     388: ifge          543
+     391: aload_0
+     392: aload         4
+     394: invokevirtual #184                // Method nextAction:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;
+     397: astore        17
+     399: aload         17
+     401: getfield      #185                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action.type:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type;
+     404: getstatic     #186                // Field org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type.NULL:Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action$Type;
+     407: if_acmpne     413
+     410: goto          534
+     413: aload         4
+     415: aload         17
+     417: invokevirtual #187                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.doAction:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;)V
+     420: aload_0
+     421: aload         4
+     423: aload         17
+     425: invokevirtual #188                // Method updateCostsWithAction:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;)V
+     428: aload_0
+     429: aload         4
+     431: dload         7
+     433: invokevirtual #171                // Method computeCost:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;D)D
+     436: dstore        11
+     438: dload         11
+     440: dload         7
+     442: dcmpg
+     443: ifge          495
+     446: dload         11
+     448: dstore        7
+     450: aload_0
+     451: dload         7
+     453: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+     456: putfield      #18                 // Field curOverallCost:Ljava/lang/Double;
+     459: iconst_0
+     460: istore        18
+     462: iload         18
+     464: aload_0
+     465: getfield      #84                 // Field curFunctionCosts:[Ljava/lang/Double;
+     468: arraylength
+     469: if_icmpge     492
+     472: aload_0
+     473: getfield      #84                 // Field curFunctionCosts:[Ljava/lang/Double;
+     476: iload         18
+     478: aload_0
+     479: getfield      #85                 // Field tempFunctionCosts:[Ljava/lang/Double;
+     482: iload         18
+     484: aaload
+     485: aastore
+     486: iinc          18, 1
+     489: goto          462
+     492: goto          517
+     495: aload         17
+     497: invokevirtual #189                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action.undoAction:()Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;
+     500: astore        18
+     502: aload         4
+     504: aload         18
+     506: invokevirtual #187                // Method org/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster.doAction:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;)V
+     509: aload_0
+     510: aload         4
+     512: aload         18
+     514: invokevirtual #188                // Method updateCostsWithAction:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;)V
+     517: invokestatic  #166                // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     520: lload         5
+     522: lsub
+     523: aload_0
+     524: getfield      #13                 // Field maxRunningTime:J
+     527: lcmp
+     528: ifle          534
+     531: goto          543
+     534: lload         15
+     536: lconst_1
+     537: ladd
+     538: lstore        15
+     540: goto          383
+     543: invokestatic  #166                // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     546: lstore        17
+     548: aload_0
+     549: getfield      #114                // Field metricsBalancer:Lorg/apache/hadoop/hbase/master/balancer/MetricsBalancer;
+     552: lload         17
+     554: lload         5
+     556: lsub
+     557: invokevirtual #190                // Method org/apache/hadoop/hbase/master/balancer/MetricsBalancer.balanceCluster:(J)V
+     560: aload_0
+     561: aload_0
+     562: getfield      #20                 // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+     565: aload_0
+     566: getfield      #18                 // Field curOverallCost:Ljava/lang/Double;
+     569: aload_0
+     570: getfield      #84                 // Field curFunctionCosts:[Ljava/lang/Double;
+     573: invokespecial #191                // Method updateStochasticCosts:(Lorg/apache/hadoop/hbase/TableName;Ljava/lang/Double;[Ljava/lang/Double;)V
+     576: dload         9
+     578: dload         7
+     580: dcmpl
+     581: ifle          654
+     584: aload_0
+     585: aload         4
+     587: invokespecial #192                // Method createRegionPlans:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)Ljava/util/List;
+     590: astore_2
+     591: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     594: ldc           #193                // String Finished computing new load balance plan. Computation took {} to try {} different iterations.  Found a solution that moves {} regions; Going from a computed cost of {} to a new cost of {}
+     596: iconst_5
+     597: anewarray     #194                // class java/lang/Object
+     600: dup
+     601: iconst_0
+     602: lload         17
+     604: lload         5
+     606: lsub
+     607: invokestatic  #195                // Method java/time/Duration.ofMillis:(J)Ljava/time/Duration;
+     610: aastore
+     611: dup
+     612: iconst_1
+     613: lload         15
+     615: invokestatic  #177                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     618: aastore
+     619: dup
+     620: iconst_2
+     621: aload_2
+     622: invokeinterface #150,  1          // InterfaceMethod java/util/List.size:()I
+     627: invokestatic  #178                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     630: aastore
+     631: dup
+     632: iconst_3
+     633: dload         9
+     635: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+     638: aastore
+     639: dup
+     640: iconst_4
+     641: dload         7
+     643: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+     646: aastore
+     647: invokeinterface #196,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     652: aload_2
+     653: areturn
+     654: getstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+     657: ldc           #197                // String Could not find a better load balance plan.  Tried {} different configurations in {}, and did not find anything with a computed cost less than {}
+     659: iconst_3
+     660: anewarray     #194                // class java/lang/Object
+     663: dup
+     664: iconst_0
+     665: lload         15
+     667: invokestatic  #177                // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     670: aastore
+     671: dup
+     672: iconst_1
+     673: lload         17
+     675: lload         5
+     677: lsub
+     678: invokestatic  #195                // Method java/time/Duration.ofMillis:(J)Ljava/time/Duration;
+     681: aastore
+     682: dup
+     683: iconst_2
+     684: dload         9
+     686: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+     689: aastore
+     690: invokeinterface #196,  3          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+     695: aconst_null
+     696: areturn
+
+  protected void initCosts(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster);
+    Code:
+       0: aload_0
+       1: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+       4: astore_2
+       5: aload_2
+       6: arraylength
+       7: istore_3
+       8: iconst_0
+       9: istore        4
+      11: iload         4
+      13: iload_3
+      14: if_icmpge     35
+      17: aload_2
+      18: iload         4
+      20: aaload
+      21: astore        5
+      23: aload         5
+      25: aload_1
+      26: invokevirtual #225                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.init:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster;)V
+      29: iinc          4, 1
+      32: goto          11
+      35: return
+
+  protected void updateCostsWithAction(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster, org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster$Action);
+    Code:
+       0: aload_0
+       1: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+       4: astore_3
+       5: aload_3
+       6: arraylength
+       7: istore        4
+       9: iconst_0
+      10: istore        5
+      12: iload         5
+      14: iload         4
+      16: if_icmpge     37
+      19: aload_3
+      20: iload         5
+      22: aaload
+      23: astore        6
+      25: aload         6
+      27: aload_2
+      28: invokevirtual #226                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.postAction:(Lorg/apache/hadoop/hbase/master/balancer/BaseLoadBalancer$Cluster$Action;)V
+      31: iinc          5, 1
+      34: goto          12
+      37: return
+
+  public java.lang.String[] getCostFunctionNames();
+    Code:
+       0: aload_0
+       1: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+       4: ifnonnull     9
+       7: aconst_null
+       8: areturn
+       9: aload_0
+      10: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+      13: arraylength
+      14: anewarray     #227                // class java/lang/String
+      17: astore_1
+      18: iconst_0
+      19: istore_2
+      20: iload_2
+      21: aload_0
+      22: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+      25: arraylength
+      26: if_icmpge     52
+      29: aload_0
+      30: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+      33: iload_2
+      34: aaload
+      35: astore_3
+      36: aload_1
+      37: iload_2
+      38: aload_3
+      39: invokevirtual #137                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      42: invokevirtual #138                // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      45: aastore
+      46: iinc          2, 1
+      49: goto          20
+      52: aload_1
+      53: areturn
+
+  protected double computeCost(org.apache.hadoop.hbase.master.balancer.BaseLoadBalancer$Cluster, double);
+    Code:
+       0: dconst_0
+       1: dstore        4
+       3: iconst_0
+       4: istore        6
+       6: iload         6
+       8: aload_0
+       9: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+      12: arraylength
+      13: if_icmpge     122
+      16: aload_0
+      17: getfield      #82                 // Field costFunctions:[Lorg/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction;
+      20: iload         6
+      22: aaload
+      23: astore        7
+      25: aload_0
+      26: getfield      #85                 // Field tempFunctionCosts:[Ljava/lang/Double;
+      29: iload         6
+      31: dconst_0
+      32: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+      35: aastore
+      36: aload         7
+      38: invokevirtual #134                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.getMultiplier:()F
+      41: fconst_0
+      42: fcmpg
+      43: ifgt          49
+      46: goto          116
+      49: aload         7
+      51: invokevirtual #134                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.getMultiplier:()F
+      54: invokestatic  #228                // Method java/lang/Float.valueOf:(F)Ljava/lang/Float;
+      57: astore        8
+      59: aload         7
+      61: invokevirtual #140                // Method org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer$CostFunction.cost:()D
+      64: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+      67: astore        9
+      69: aload_0
+      70: getfield      #85                 // Field tempFunctionCosts:[Ljava/lang/Double;
+      73: iload         6
+      75: aload         8
+      77: invokevirtual #229                // Method java/lang/Float.floatValue:()F
+      80: f2d
+      81: aload         9
+      83: invokevirtual #202                // Method java/lang/Double.doubleValue:()D
+      86: dmul
+      87: invokestatic  #17                 // Method java/lang/Double.valueOf:(D)Ljava/lang/Double;
+      90: aastore
+      91: dload         4
+      93: aload_0
+      94: getfield      #85                 // Field tempFunctionCosts:[Ljava/lang/Double;
+      97: iload         6
+      99: aaload
+     100: invokevirtual #202                // Method java/lang/Double.doubleValue:()D
+     103: dadd
+     104: dstore        4
+     106: dload         4
+     108: dload_2
+     109: dcmpl
+     110: ifle          116
+     113: goto          122
+     116: iinc          6, 1
+     119: goto          6
+     122: dload         4
+     124: dreturn
+
+  public static java.lang.String composeAttributeName(java.lang.String, java.lang.String);
+    Code:
+       0: new           #87                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #88                 // Method java/lang/StringBuilder."<init>":()V
+       7: aload_0
+       8: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      11: ldc           #230                // String _
+      13: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      16: aload_1
+      17: invokevirtual #90                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      20: invokevirtual #98                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      23: areturn
+
+  static {};
+    Code:
+       0: new           #244                // class java/util/Random
+       3: dup
+       4: invokestatic  #245                // Method java/lang/System.currentTimeMillis:()J
+       7: invokespecial #246                // Method java/util/Random."<init>":(J)V
+      10: putstatic     #149                // Field RANDOM:Ljava/util/Random;
+      13: ldc           #23                 // class org/apache/hadoop/hbase/master/balancer/StochasticLoadBalancer
+      15: invokestatic  #247                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      18: putstatic     #86                 // Field LOG:Lorg/slf4j/Logger;
+      21: return
+}

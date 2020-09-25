@@ -1,0 +1,510 @@
+Compiled from "RpcRetryingCallerImpl.java"
+public class org.apache.hadoop.hbase.client.RpcRetryingCallerImpl<T> implements org.apache.hadoop.hbase.client.RpcRetryingCaller<T> {
+  public static final org.slf4j.Logger LOG;
+
+  public org.apache.hadoop.hbase.client.RpcRetryingCallerImpl(long, long, int, int);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: lload_3
+       3: iload         5
+       5: getstatic     #1                  // Field org/apache/hadoop/hbase/client/RetryingCallerInterceptorFactory.NO_OP_INTERCEPTOR:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;
+       8: iload         6
+      10: iconst_0
+      11: invokespecial #2                  // Method "<init>":(JJILorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;II)V
+      14: return
+
+  public org.apache.hadoop.hbase.client.RpcRetryingCallerImpl(long, long, int, org.apache.hadoop.hbase.client.RetryingCallerInterceptor, int, int);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #4                  // class java/util/concurrent/atomic/AtomicBoolean
+       8: dup
+       9: iconst_0
+      10: invokespecial #5                  // Method java/util/concurrent/atomic/AtomicBoolean."<init>":(Z)V
+      13: putfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+      16: aload_0
+      17: lload_1
+      18: putfield      #7                  // Field pause:J
+      21: aload_0
+      22: lload_3
+      23: putfield      #8                  // Field pauseForCQTBE:J
+      26: aload_0
+      27: iload         5
+      29: invokestatic  #9                  // Method org/apache/hadoop/hbase/client/ConnectionUtils.retries2Attempts:(I)I
+      32: putfield      #10                 // Field maxAttempts:I
+      35: aload_0
+      36: aload         6
+      38: putfield      #11                 // Field interceptor:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;
+      41: aload_0
+      42: aload         6
+      44: invokevirtual #12                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptor.createEmptyContext:()Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+      47: putfield      #13                 // Field context:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+      50: aload_0
+      51: iload         7
+      53: putfield      #14                 // Field startLogErrorsCnt:I
+      56: aload_0
+      57: new           #15                 // class org/apache/hadoop/hbase/client/RetryingTimeTracker
+      60: dup
+      61: invokespecial #16                 // Method org/apache/hadoop/hbase/client/RetryingTimeTracker."<init>":()V
+      64: putfield      #17                 // Field tracker:Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      67: aload_0
+      68: iload         8
+      70: putfield      #18                 // Field rpcTimeout:I
+      73: return
+
+  public void cancel();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+       4: iconst_1
+       5: invokevirtual #19                 // Method java/util/concurrent/atomic/AtomicBoolean.set:(Z)V
+       8: aload_0
+       9: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+      12: dup
+      13: astore_1
+      14: monitorenter
+      15: aload_0
+      16: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+      19: invokevirtual #20                 // Method java/lang/Object.notifyAll:()V
+      22: aload_1
+      23: monitorexit
+      24: goto          32
+      27: astore_2
+      28: aload_1
+      29: monitorexit
+      30: aload_2
+      31: athrow
+      32: return
+    Exception table:
+       from    to  target type
+          15    24    27   any
+          27    30    27   any
+
+  public T callWithRetries(org.apache.hadoop.hbase.client.RetryingCallable<T>, int) throws java.io.IOException, java.lang.RuntimeException;
+    Code:
+       0: new           #21                 // class java/util/ArrayList
+       3: dup
+       4: invokespecial #22                 // Method java/util/ArrayList."<init>":()V
+       7: astore_3
+       8: aload_0
+       9: getfield      #17                 // Field tracker:Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      12: invokevirtual #23                 // Method org/apache/hadoop/hbase/client/RetryingTimeTracker.start:()Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      15: pop
+      16: aload_0
+      17: getfield      #13                 // Field context:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+      20: invokevirtual #24                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptorContext.clear:()V
+      23: iconst_0
+      24: istore        4
+      26: aload_1
+      27: iload         4
+      29: ifeq          36
+      32: iconst_1
+      33: goto          37
+      36: iconst_0
+      37: invokeinterface #25,  2           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.prepare:(Z)V
+      42: aload_0
+      43: getfield      #11                 // Field interceptor:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;
+      46: aload_0
+      47: getfield      #13                 // Field context:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+      50: aload_1
+      51: iload         4
+      53: invokevirtual #26                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptorContext.prepare:(Lorg/apache/hadoop/hbase/client/RetryingCallable;I)Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+      56: invokevirtual #27                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptor.intercept:(Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;)V
+      59: aload_1
+      60: aload_0
+      61: iload_2
+      62: invokespecial #28                 // Method getTimeout:(I)I
+      65: invokeinterface #29,  2           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.call:(I)Ljava/lang/Object;
+      70: astore        7
+      72: aload_0
+      73: getfield      #11                 // Field interceptor:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;
+      76: aload_0
+      77: getfield      #13                 // Field context:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+      80: invokevirtual #30                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptor.updateFailureInfo:(Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;)V
+      83: aload         7
+      85: areturn
+      86: astore        7
+      88: aload         7
+      90: athrow
+      91: astore        7
+      93: aload         7
+      95: invokestatic  #33                 // Method org/apache/hadoop/hbase/util/ExceptionUtil.rethrowIfInterrupt:(Ljava/lang/Throwable;)V
+      98: aload         7
+     100: invokevirtual #34                 // Method java/lang/Throwable.getCause:()Ljava/lang/Throwable;
+     103: astore        8
+     105: aload         8
+     107: instanceof    #35                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+     110: ifeq          119
+     113: aload         8
+     115: checkcast     #35                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+     118: athrow
+     119: aload_0
+     120: getfield      #11                 // Field interceptor:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;
+     123: aload_0
+     124: getfield      #13                 // Field context:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+     127: aload         7
+     129: invokevirtual #36                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptor.handleFailure:(Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;Ljava/lang/Throwable;)V
+     132: aload         7
+     134: invokestatic  #37                 // Method translateException:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+     137: astore        7
+     139: iload         4
+     141: aload_0
+     142: getfield      #14                 // Field startLogErrorsCnt:I
+     145: if_icmple     314
+     148: getstatic     #38                 // Field LOG:Lorg/slf4j/Logger;
+     151: invokeinterface #39,  1           // InterfaceMethod org/slf4j/Logger.isInfoEnabled:()Z
+     156: ifeq          314
+     159: new           #40                 // class java/lang/StringBuilder
+     162: dup
+     163: ldc           #41                 // String Call exception, tries=
+     165: invokespecial #42                 // Method java/lang/StringBuilder."<init>":(Ljava/lang/String;)V
+     168: iload         4
+     170: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     173: ldc           #44                 // String , retries=
+     175: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     178: aload_0
+     179: getfield      #10                 // Field maxAttempts:I
+     182: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     185: ldc           #46                 // String , started=
+     187: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     190: invokestatic  #47                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     193: aload_0
+     194: getfield      #17                 // Field tracker:Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+     197: invokevirtual #48                 // Method org/apache/hadoop/hbase/client/RetryingTimeTracker.getStartTime:()J
+     200: lsub
+     201: invokevirtual #49                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     204: ldc           #50                 // String  ms ago,
+     206: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     209: ldc           #51                 // String cancelled=
+     211: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     214: aload_0
+     215: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+     218: invokevirtual #52                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+     221: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     224: ldc           #54                 // String , msg=
+     226: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     229: aload         7
+     231: invokevirtual #55                 // Method java/lang/Throwable.getMessage:()Ljava/lang/String;
+     234: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     237: ldc           #56                 // String , details=
+     239: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     242: aload_1
+     243: invokeinterface #57,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.getExceptionMessageAdditionalDetail:()Ljava/lang/String;
+     248: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     251: ldc           #58                 // String , see https://s.apache.org/timeout
+     253: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     256: astore        9
+     258: getstatic     #38                 // Field LOG:Lorg/slf4j/Logger;
+     261: invokeinterface #59,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     266: ifeq          301
+     269: aload         9
+     271: ldc           #60                 // String , exception=
+     273: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     276: aload         7
+     278: invokestatic  #61                 // Method org/apache/hadoop/util/StringUtils.stringifyException:(Ljava/lang/Throwable;)Ljava/lang/String;
+     281: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     284: pop
+     285: getstatic     #38                 // Field LOG:Lorg/slf4j/Logger;
+     288: aload         9
+     290: invokevirtual #62                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     293: invokeinterface #63,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     298: goto          314
+     301: getstatic     #38                 // Field LOG:Lorg/slf4j/Logger;
+     304: aload         9
+     306: invokevirtual #62                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     309: invokeinterface #64,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     314: aload_1
+     315: aload         7
+     317: aload_0
+     318: getfield      #10                 // Field maxAttempts:I
+     321: iconst_1
+     322: if_icmpeq     329
+     325: iconst_1
+     326: goto          330
+     329: iconst_0
+     330: invokeinterface #65,  3           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.throwable:(Ljava/lang/Throwable;Z)V
+     335: new           #66                 // class org/apache/hadoop/hbase/client/RetriesExhaustedException$ThrowableWithExtraContext
+     338: dup
+     339: aload         7
+     341: invokestatic  #47                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+     344: aload_0
+     345: invokevirtual #67                 // Method toString:()Ljava/lang/String;
+     348: invokespecial #68                 // Method org/apache/hadoop/hbase/client/RetriesExhaustedException$ThrowableWithExtraContext."<init>":(Ljava/lang/Throwable;JLjava/lang/String;)V
+     351: astore        9
+     353: aload_3
+     354: aload         9
+     356: invokeinterface #69,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     361: pop
+     362: iload         4
+     364: aload_0
+     365: getfield      #10                 // Field maxAttempts:I
+     368: iconst_1
+     369: isub
+     370: if_icmplt     384
+     373: new           #70                 // class org/apache/hadoop/hbase/client/RetriesExhaustedException
+     376: dup
+     377: iload         4
+     379: aload_3
+     380: invokespecial #71                 // Method org/apache/hadoop/hbase/client/RetriesExhaustedException."<init>":(ILjava/util/List;)V
+     383: athrow
+     384: aload         7
+     386: instanceof    #72                 // class org/apache/hadoop/hbase/CallQueueTooBigException
+     389: ifeq          399
+     392: aload_0
+     393: getfield      #8                  // Field pauseForCQTBE:J
+     396: goto          403
+     399: aload_0
+     400: getfield      #7                  // Field pause:J
+     403: lstore        10
+     405: aload_1
+     406: lload         10
+     408: iload         4
+     410: invokeinterface #73,  4           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.sleep:(JI)J
+     415: lstore        5
+     417: aload_0
+     418: lload         5
+     420: invokespecial #74                 // Method singleCallDuration:(J)J
+     423: lstore        12
+     425: lload         12
+     427: iload_2
+     428: i2l
+     429: lcmp
+     430: ifle          512
+     433: new           #40                 // class java/lang/StringBuilder
+     436: dup
+     437: invokespecial #75                 // Method java/lang/StringBuilder."<init>":()V
+     440: ldc           #76                 // String callTimeout=
+     442: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     445: iload_2
+     446: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     449: ldc           #77                 // String , callDuration=
+     451: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     454: lload         12
+     456: invokevirtual #49                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     459: ldc           #78                 // String :
+     461: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     464: aload         7
+     466: invokevirtual #55                 // Method java/lang/Throwable.getMessage:()Ljava/lang/String;
+     469: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     472: ldc           #79                 // String
+     474: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     477: aload_1
+     478: invokeinterface #57,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.getExceptionMessageAdditionalDetail:()Ljava/lang/String;
+     483: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     486: invokevirtual #62                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     489: astore        14
+     491: new           #80                 // class java/net/SocketTimeoutException
+     494: dup
+     495: aload         14
+     497: invokespecial #81                 // Method java/net/SocketTimeoutException."<init>":(Ljava/lang/String;)V
+     500: aload         7
+     502: invokevirtual #82                 // Method java/net/SocketTimeoutException.initCause:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+     505: checkcast     #80                 // class java/net/SocketTimeoutException
+     508: checkcast     #80                 // class java/net/SocketTimeoutException
+     511: athrow
+     512: aload_0
+     513: getfield      #11                 // Field interceptor:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;
+     516: aload_0
+     517: getfield      #13                 // Field context:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+     520: invokevirtual #30                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptor.updateFailureInfo:(Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;)V
+     523: goto          542
+     526: astore        15
+     528: aload_0
+     529: getfield      #11                 // Field interceptor:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptor;
+     532: aload_0
+     533: getfield      #13                 // Field context:Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;
+     536: invokevirtual #30                 // Method org/apache/hadoop/hbase/client/RetryingCallerInterceptor.updateFailureInfo:(Lorg/apache/hadoop/hbase/client/RetryingCallerInterceptorContext;)V
+     539: aload         15
+     541: athrow
+     542: lload         5
+     544: lconst_0
+     545: lcmp
+     546: ifle          595
+     549: aload_0
+     550: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+     553: dup
+     554: astore        7
+     556: monitorenter
+     557: aload_0
+     558: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+     561: invokevirtual #52                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+     564: ifeq          572
+     567: aconst_null
+     568: aload         7
+     570: monitorexit
+     571: areturn
+     572: aload_0
+     573: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+     576: lload         5
+     578: invokevirtual #83                 // Method java/lang/Object.wait:(J)V
+     581: aload         7
+     583: monitorexit
+     584: goto          595
+     587: astore        16
+     589: aload         7
+     591: monitorexit
+     592: aload         16
+     594: athrow
+     595: aload_0
+     596: getfield      #6                  // Field cancelled:Ljava/util/concurrent/atomic/AtomicBoolean;
+     599: invokevirtual #52                 // Method java/util/concurrent/atomic/AtomicBoolean.get:()Z
+     602: ifeq          607
+     605: aconst_null
+     606: areturn
+     607: goto          652
+     610: astore        7
+     612: new           #85                 // class java/io/InterruptedIOException
+     615: dup
+     616: new           #40                 // class java/lang/StringBuilder
+     619: dup
+     620: invokespecial #75                 // Method java/lang/StringBuilder."<init>":()V
+     623: ldc           #86                 // String Interrupted after
+     625: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     628: iload         4
+     630: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     633: ldc           #87                 // String  tries while maxAttempts=
+     635: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     638: aload_0
+     639: getfield      #10                 // Field maxAttempts:I
+     642: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     645: invokevirtual #62                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     648: invokespecial #88                 // Method java/io/InterruptedIOException."<init>":(Ljava/lang/String;)V
+     651: athrow
+     652: iinc          4, 1
+     655: goto          26
+    Exception table:
+       from    to  target type
+          26    72    86   Class org/apache/hadoop/hbase/exceptions/PreemptiveFastFailException
+          26    72    91   Class java/lang/Throwable
+          26    72   526   any
+          86   512   526   any
+         526   528   526   any
+         557   571   587   any
+         572   584   587   any
+         587   592   587   any
+         542   571   610   Class java/lang/InterruptedException
+         572   606   610   Class java/lang/InterruptedException
+
+  public T callWithoutRetries(org.apache.hadoop.hbase.client.RetryingCallable<T>, int) throws java.io.IOException, java.lang.RuntimeException;
+    Code:
+       0: aload_1
+       1: iconst_0
+       2: invokeinterface #25,  2           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.prepare:(Z)V
+       7: aload_1
+       8: iload_2
+       9: invokeinterface #29,  2           // InterfaceMethod org/apache/hadoop/hbase/client/RetryingCallable.call:(I)Ljava/lang/Object;
+      14: areturn
+      15: astore_3
+      16: aload_3
+      17: invokestatic  #37                 // Method translateException:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+      20: astore        4
+      22: aload         4
+      24: invokestatic  #33                 // Method org/apache/hadoop/hbase/util/ExceptionUtil.rethrowIfInterrupt:(Ljava/lang/Throwable;)V
+      27: aload         4
+      29: instanceof    #89                 // class java/io/IOException
+      32: ifeq          41
+      35: aload         4
+      37: checkcast     #89                 // class java/io/IOException
+      40: athrow
+      41: new           #90                 // class java/lang/RuntimeException
+      44: dup
+      45: aload         4
+      47: invokespecial #91                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/Throwable;)V
+      50: athrow
+    Exception table:
+       from    to  target type
+           0    14    15   Class java/lang/Throwable
+
+  static java.lang.Throwable translateException(java.lang.Throwable) throws org.apache.hadoop.hbase.DoNotRetryIOException;
+    Code:
+       0: aload_0
+       1: instanceof    #92                 // class java/lang/reflect/UndeclaredThrowableException
+       4: ifeq          19
+       7: aload_0
+       8: invokevirtual #34                 // Method java/lang/Throwable.getCause:()Ljava/lang/Throwable;
+      11: ifnull        19
+      14: aload_0
+      15: invokevirtual #34                 // Method java/lang/Throwable.getCause:()Ljava/lang/Throwable;
+      18: astore_0
+      19: aload_0
+      20: instanceof    #93                 // class org/apache/hadoop/ipc/RemoteException
+      23: ifeq          34
+      26: aload_0
+      27: checkcast     #93                 // class org/apache/hadoop/ipc/RemoteException
+      30: invokevirtual #94                 // Method org/apache/hadoop/ipc/RemoteException.unwrapRemoteException:()Ljava/io/IOException;
+      33: astore_0
+      34: aload_0
+      35: instanceof    #95                 // class java/lang/LinkageError
+      38: ifeq          50
+      41: new           #35                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      44: dup
+      45: aload_0
+      46: invokespecial #96                 // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/Throwable;)V
+      49: athrow
+      50: aload_0
+      51: instanceof    #97                 // class org/apache/hbase/thirdparty/com/google/protobuf/ServiceException
+      54: ifeq          93
+      57: aload_0
+      58: checkcast     #97                 // class org/apache/hbase/thirdparty/com/google/protobuf/ServiceException
+      61: astore_1
+      62: aload_1
+      63: invokevirtual #98                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ServiceException.getCause:()Ljava/lang/Throwable;
+      66: astore_2
+      67: aload_2
+      68: ifnull        83
+      71: aload_2
+      72: instanceof    #35                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      75: ifeq          83
+      78: aload_2
+      79: checkcast     #35                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      82: athrow
+      83: aload_2
+      84: astore_0
+      85: aload_0
+      86: invokestatic  #37                 // Method translateException:(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+      89: pop
+      90: goto          105
+      93: aload_0
+      94: instanceof    #35                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+      97: ifeq          105
+     100: aload_0
+     101: checkcast     #35                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+     104: athrow
+     105: aload_0
+     106: areturn
+
+  public java.lang.String toString();
+    Code:
+       0: new           #40                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #75                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #100                // String RpcRetryingCaller{globalStartTime=
+       9: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: getfield      #17                 // Field tracker:Lorg/apache/hadoop/hbase/client/RetryingTimeTracker;
+      16: invokevirtual #48                 // Method org/apache/hadoop/hbase/client/RetryingTimeTracker.getStartTime:()J
+      19: invokevirtual #49                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      22: ldc           #101                // String , pause=
+      24: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: aload_0
+      28: getfield      #7                  // Field pause:J
+      31: invokevirtual #49                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      34: ldc           #102                // String , maxAttempts=
+      36: invokevirtual #45                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: aload_0
+      40: getfield      #10                 // Field maxAttempts:I
+      43: invokevirtual #43                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      46: bipush        125
+      48: invokevirtual #103                // Method java/lang/StringBuilder.append:(C)Ljava/lang/StringBuilder;
+      51: invokevirtual #62                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      54: areturn
+
+  static {};
+    Code:
+       0: ldc           #104                // class org/apache/hadoop/hbase/client/RpcRetryingCallerImpl
+       2: invokestatic  #105                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #38                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

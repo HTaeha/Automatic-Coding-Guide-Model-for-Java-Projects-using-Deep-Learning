@@ -1,0 +1,627 @@
+Compiled from "SnapshotQuotaObserverChore.java"
+public class org.apache.hadoop.hbase.quotas.SnapshotQuotaObserverChore extends org.apache.hadoop.hbase.ScheduledChore {
+  static final java.lang.String SNAPSHOT_QUOTA_CHORE_PERIOD_KEY;
+
+  static final int SNAPSHOT_QUOTA_CHORE_PERIOD_DEFAULT;
+
+  static final java.lang.String SNAPSHOT_QUOTA_CHORE_DELAY_KEY;
+
+  static final long SNAPSHOT_QUOTA_CHORE_DELAY_DEFAULT;
+
+  static final java.lang.String SNAPSHOT_QUOTA_CHORE_TIMEUNIT_KEY;
+
+  static final java.lang.String SNAPSHOT_QUOTA_CHORE_TIMEUNIT_DEFAULT;
+
+  public org.apache.hadoop.hbase.quotas.SnapshotQuotaObserverChore(org.apache.hadoop.hbase.master.HMaster, org.apache.hadoop.hbase.master.MetricsMaster);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #1                  // Method org/apache/hadoop/hbase/master/HMaster.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+       5: aload_1
+       6: invokevirtual #2                  // Method org/apache/hadoop/hbase/master/HMaster.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       9: aload_1
+      10: invokevirtual #3                  // Method org/apache/hadoop/hbase/master/HMaster.getFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      13: aload_1
+      14: aload_2
+      15: invokespecial #4                  // Method "<init>":(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/hbase/Stoppable;Lorg/apache/hadoop/hbase/master/MetricsMaster;)V
+      18: return
+
+  org.apache.hadoop.hbase.quotas.SnapshotQuotaObserverChore(org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.conf.Configuration, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.hbase.Stoppable, org.apache.hadoop.hbase.master.MetricsMaster);
+    Code:
+       0: aload_0
+       1: ldc           #5                  // class org/apache/hadoop/hbase/quotas/QuotaObserverChore
+       3: invokevirtual #6                  // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+       6: aload         4
+       8: aload_2
+       9: invokestatic  #7                  // Method getPeriod:(Lorg/apache/hadoop/conf/Configuration;)I
+      12: aload_2
+      13: invokestatic  #8                  // Method getInitialDelay:(Lorg/apache/hadoop/conf/Configuration;)J
+      16: aload_2
+      17: invokestatic  #9                  // Method getTimeUnit:(Lorg/apache/hadoop/conf/Configuration;)Ljava/util/concurrent/TimeUnit;
+      20: invokespecial #10                 // Method org/apache/hadoop/hbase/ScheduledChore."<init>":(Ljava/lang/String;Lorg/apache/hadoop/hbase/Stoppable;IJLjava/util/concurrent/TimeUnit;)V
+      23: aload_0
+      24: aload_1
+      25: putfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      28: aload_0
+      29: aload_2
+      30: putfield      #12                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      33: aload_0
+      34: aload         5
+      36: putfield      #13                 // Field metrics:Lorg/apache/hadoop/hbase/master/MetricsMaster;
+      39: aload_0
+      40: aload_3
+      41: putfield      #14                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      44: return
+
+  protected void chore();
+    Code:
+       0: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       3: invokeinterface #16,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+       8: ifeq          21
+      11: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+      14: ldc           #17                 // String Computing sizes of snapshots for quota management.
+      16: invokeinterface #18,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      21: invokestatic  #19                 // Method java/lang/System.nanoTime:()J
+      24: lstore_1
+      25: aload_0
+      26: invokevirtual #20                 // Method _chore:()V
+      29: aconst_null
+      30: aload_0
+      31: getfield      #13                 // Field metrics:Lorg/apache/hadoop/hbase/master/MetricsMaster;
+      34: if_acmpeq     53
+      37: aload_0
+      38: getfield      #13                 // Field metrics:Lorg/apache/hadoop/hbase/master/MetricsMaster;
+      41: invokestatic  #19                 // Method java/lang/System.nanoTime:()J
+      44: lload_1
+      45: lsub
+      46: ldc2_w        #21                 // long 1000000l
+      49: ldiv
+      50: invokevirtual #23                 // Method org/apache/hadoop/hbase/master/MetricsMaster.incrementSnapshotObserverTime:(J)V
+      53: goto          68
+      56: astore_1
+      57: getstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+      60: ldc           #25                 // String Failed to compute the size of snapshots, will retry
+      62: aload_1
+      63: invokeinterface #26,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      68: return
+    Exception table:
+       from    to  target type
+           0    53    56   Class java/io/IOException
+
+  void _chore() throws java.io.IOException;
+    Code:
+       0: invokestatic  #19                 // Method java/lang/System.nanoTime:()J
+       3: lstore_1
+       4: aload_0
+       5: invokevirtual #27                 // Method getSnapshotsToComputeSize:()Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;
+       8: astore_3
+       9: aconst_null
+      10: aload_0
+      11: getfield      #13                 // Field metrics:Lorg/apache/hadoop/hbase/master/MetricsMaster;
+      14: if_acmpeq     33
+      17: aload_0
+      18: getfield      #13                 // Field metrics:Lorg/apache/hadoop/hbase/master/MetricsMaster;
+      21: invokestatic  #19                 // Method java/lang/System.nanoTime:()J
+      24: lload_1
+      25: lsub
+      26: ldc2_w        #21                 // long 1000000l
+      29: ldiv
+      30: invokevirtual #28                 // Method org/apache/hadoop/hbase/master/MetricsMaster.incrementSnapshotFetchTime:(J)V
+      33: aload_0
+      34: aload_3
+      35: invokevirtual #29                 // Method pruneTableSnapshots:(Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;)V
+      38: aload_0
+      39: aload_3
+      40: invokevirtual #30                 // Method pruneNamespaceSnapshots:(Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;)V
+      43: aload_0
+      44: aload_3
+      45: invokevirtual #31                 // Method computeSnapshotSizes:(Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;)Ljava/util/Map;
+      48: astore        4
+      50: aload_0
+      51: aload         4
+      53: invokevirtual #32                 // Method persistSnapshotSizesForNamespaces:(Ljava/util/Map;)V
+      56: return
+
+  void pruneTableSnapshots(org.apache.hbase.thirdparty.com.google.common.collect.Multimap<org.apache.hadoop.hbase.TableName, java.lang.String>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+       4: invokestatic  #33                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.getTableSnapshots:(Lorg/apache/hadoop/hbase/client/Connection;)Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;
+       7: astore_2
+       8: invokestatic  #34                 // Method org/apache/hbase/thirdparty/com/google/common/collect/HashMultimap.create:()Lorg/apache/hbase/thirdparty/com/google/common/collect/HashMultimap;
+      11: astore_3
+      12: aload_2
+      13: invokeinterface #35,  1           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.asMap:()Ljava/util/Map;
+      18: invokeinterface #36,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      23: invokeinterface #37,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      28: astore        4
+      30: aload         4
+      32: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      37: ifeq          181
+      40: aload         4
+      42: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      47: checkcast     #40                 // class java/util/Map$Entry
+      50: astore        5
+      52: aload         5
+      54: invokeinterface #41,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      59: checkcast     #42                 // class org/apache/hadoop/hbase/TableName
+      62: astore        6
+      64: new           #43                 // class java/util/HashSet
+      67: dup
+      68: aload         5
+      70: invokeinterface #44,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      75: checkcast     #45                 // class java/util/Collection
+      78: invokespecial #46                 // Method java/util/HashSet."<init>":(Ljava/util/Collection;)V
+      81: astore        7
+      83: aload_1
+      84: aload         6
+      86: invokeinterface #47,  2           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.get:(Ljava/lang/Object;)Ljava/util/Collection;
+      91: invokeinterface #48,  1           // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      96: astore        8
+      98: aload         8
+     100: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     105: ifeq          133
+     108: aload         8
+     110: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     115: checkcast     #49                 // class java/lang/String
+     118: astore        9
+     120: aload         7
+     122: aload         9
+     124: invokeinterface #50,  2           // InterfaceMethod java/util/Set.remove:(Ljava/lang/Object;)Z
+     129: pop
+     130: goto          98
+     133: aload         7
+     135: invokeinterface #37,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+     140: astore        8
+     142: aload         8
+     144: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     149: ifeq          178
+     152: aload         8
+     154: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     159: checkcast     #49                 // class java/lang/String
+     162: astore        9
+     164: aload_3
+     165: aload         6
+     167: aload         9
+     169: invokeinterface #51,  3           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.put:(Ljava/lang/Object;Ljava/lang/Object;)Z
+     174: pop
+     175: goto          142
+     178: goto          30
+     181: aload_0
+     182: aload_3
+     183: invokevirtual #52                 // Method removeExistingTableSnapshotSizes:(Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;)V
+     186: return
+
+  void pruneNamespaceSnapshots(org.apache.hbase.thirdparty.com.google.common.collect.Multimap<org.apache.hadoop.hbase.TableName, java.lang.String>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+       4: invokestatic  #53                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.getNamespaceSnapshots:(Lorg/apache/hadoop/hbase/client/Connection;)Ljava/util/Set;
+       7: astore_2
+       8: aload_1
+       9: invokeinterface #54,  1           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.keySet:()Ljava/util/Set;
+      14: invokeinterface #37,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      19: astore_3
+      20: aload_3
+      21: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          55
+      29: aload_3
+      30: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      35: checkcast     #42                 // class org/apache/hadoop/hbase/TableName
+      38: astore        4
+      40: aload_2
+      41: aload         4
+      43: invokevirtual #55                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+      46: invokeinterface #50,  2           // InterfaceMethod java/util/Set.remove:(Ljava/lang/Object;)Z
+      51: pop
+      52: goto          20
+      55: aload_0
+      56: aload_2
+      57: invokevirtual #56                 // Method removeExistingNamespaceSnapshotSizes:(Ljava/util/Set;)V
+      60: return
+
+  org.apache.hbase.thirdparty.com.google.common.collect.Multimap<org.apache.hadoop.hbase.TableName, java.lang.String> getSnapshotsToComputeSize() throws java.io.IOException;
+    Code:
+       0: new           #43                 // class java/util/HashSet
+       3: dup
+       4: invokespecial #57                 // Method java/util/HashSet."<init>":()V
+       7: astore_1
+       8: new           #58                 // class org/apache/hadoop/hbase/quotas/QuotaFilter
+      11: dup
+      12: invokespecial #59                 // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+      15: astore_2
+      16: aload_2
+      17: getstatic     #60                 // Field org/apache/hadoop/hbase/quotas/QuotaType.SPACE:Lorg/apache/hadoop/hbase/quotas/QuotaType;
+      20: invokevirtual #61                 // Method org/apache/hadoop/hbase/quotas/QuotaFilter.addTypeFilter:(Lorg/apache/hadoop/hbase/quotas/QuotaType;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+      23: pop
+      24: aload_0
+      25: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      28: invokeinterface #62,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      33: astore_3
+      34: aconst_null
+      35: astore        4
+      37: aload_0
+      38: getfield      #12                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      41: aload_2
+      42: invokestatic  #63                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/quotas/QuotaFilter;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+      45: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.iterator:()Ljava/util/Iterator;
+      48: astore        5
+      50: aload         5
+      52: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      57: ifeq          170
+      60: aload         5
+      62: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      67: checkcast     #65                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+      70: astore        6
+      72: aload         6
+      74: invokevirtual #66                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getQuotaType:()Lorg/apache/hadoop/hbase/quotas/QuotaType;
+      77: getstatic     #60                 // Field org/apache/hadoop/hbase/quotas/QuotaType.SPACE:Lorg/apache/hadoop/hbase/quotas/QuotaType;
+      80: if_acmpne     167
+      83: aload         6
+      85: invokevirtual #67                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getNamespace:()Ljava/lang/String;
+      88: astore        7
+      90: aload         6
+      92: invokevirtual #68                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      95: astore        8
+      97: aconst_null
+      98: aload         7
+     100: if_acmpne     109
+     103: aconst_null
+     104: aload         8
+     106: if_acmpeq     121
+     109: aconst_null
+     110: aload         7
+     112: if_acmpeq     131
+     115: aconst_null
+     116: aload         8
+     118: if_acmpeq     131
+     121: new           #69                 // class java/lang/IllegalStateException
+     124: dup
+     125: ldc           #70                 // String Expected either one of namespace and tablename to be null but not both
+     127: invokespecial #71                 // Method java/lang/IllegalStateException."<init>":(Ljava/lang/String;)V
+     130: athrow
+     131: aconst_null
+     132: aload         7
+     134: if_acmpeq     158
+     137: aload_1
+     138: aload_3
+     139: aload         7
+     141: invokeinterface #72,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.listTableNamesByNamespace:(Ljava/lang/String;)[Lorg/apache/hadoop/hbase/TableName;
+     146: invokestatic  #73                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+     149: invokeinterface #74,  2           // InterfaceMethod java/util/Set.addAll:(Ljava/util/Collection;)Z
+     154: pop
+     155: goto          167
+     158: aload_1
+     159: aload         8
+     161: invokeinterface #75,  2           // InterfaceMethod java/util/Set.add:(Ljava/lang/Object;)Z
+     166: pop
+     167: goto          50
+     170: aload_0
+     171: aload_3
+     172: aload_1
+     173: invokevirtual #76                 // Method getSnapshotsFromTables:(Lorg/apache/hadoop/hbase/client/Admin;Ljava/util/Set;)Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;
+     176: astore        5
+     178: aload_3
+     179: ifnull        214
+     182: aload         4
+     184: ifnull        208
+     187: aload_3
+     188: invokeinterface #77,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     193: goto          214
+     196: astore        6
+     198: aload         4
+     200: aload         6
+     202: invokevirtual #79                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     205: goto          214
+     208: aload_3
+     209: invokeinterface #77,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     214: aload         5
+     216: areturn
+     217: astore        5
+     219: aload         5
+     221: astore        4
+     223: aload         5
+     225: athrow
+     226: astore        9
+     228: aload_3
+     229: ifnull        264
+     232: aload         4
+     234: ifnull        258
+     237: aload_3
+     238: invokeinterface #77,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     243: goto          264
+     246: astore        10
+     248: aload         4
+     250: aload         10
+     252: invokevirtual #79                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     255: goto          264
+     258: aload_3
+     259: invokeinterface #77,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+     264: aload         9
+     266: athrow
+    Exception table:
+       from    to  target type
+         187   193   196   Class java/lang/Throwable
+          37   178   217   Class java/lang/Throwable
+          37   178   226   any
+         237   243   246   Class java/lang/Throwable
+         217   228   226   any
+
+  org.apache.hbase.thirdparty.com.google.common.collect.Multimap<org.apache.hadoop.hbase.TableName, java.lang.String> getSnapshotsFromTables(org.apache.hadoop.hbase.client.Admin, java.util.Set<org.apache.hadoop.hbase.TableName>) throws java.io.IOException;
+    Code:
+       0: invokestatic  #34                 // Method org/apache/hbase/thirdparty/com/google/common/collect/HashMultimap.create:()Lorg/apache/hbase/thirdparty/com/google/common/collect/HashMultimap;
+       3: astore_3
+       4: aload_1
+       5: invokeinterface #80,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.listSnapshots:()Ljava/util/List;
+      10: invokeinterface #81,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      15: astore        4
+      17: aload         4
+      19: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      24: ifeq          74
+      27: aload         4
+      29: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      34: checkcast     #82                 // class org/apache/hadoop/hbase/client/SnapshotDescription
+      37: astore        5
+      39: aload         5
+      41: invokevirtual #83                 // Method org/apache/hadoop/hbase/client/SnapshotDescription.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      44: astore        6
+      46: aload_2
+      47: aload         6
+      49: invokeinterface #84,  2           // InterfaceMethod java/util/Set.contains:(Ljava/lang/Object;)Z
+      54: ifeq          71
+      57: aload_3
+      58: aload         6
+      60: aload         5
+      62: invokevirtual #85                 // Method org/apache/hadoop/hbase/client/SnapshotDescription.getName:()Ljava/lang/String;
+      65: invokeinterface #51,  3           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.put:(Ljava/lang/Object;Ljava/lang/Object;)Z
+      70: pop
+      71: goto          17
+      74: aload_3
+      75: areturn
+
+  java.util.Map<java.lang.String, java.lang.Long> computeSnapshotSizes(org.apache.hbase.thirdparty.com.google.common.collect.Multimap<org.apache.hadoop.hbase.TableName, java.lang.String>) throws java.io.IOException;
+    Code:
+       0: new           #86                 // class java/util/HashMap
+       3: dup
+       4: invokespecial #87                 // Method java/util/HashMap."<init>":()V
+       7: astore_2
+       8: invokestatic  #19                 // Method java/lang/System.nanoTime:()J
+      11: lstore_3
+      12: aload_1
+      13: invokeinterface #35,  1           // InterfaceMethod org/apache/hbase/thirdparty/com/google/common/collect/Multimap.asMap:()Ljava/util/Map;
+      18: invokeinterface #36,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      23: invokeinterface #37,  1           // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      28: astore        5
+      30: aload         5
+      32: invokeinterface #38,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      37: ifeq          120
+      40: aload         5
+      42: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      47: checkcast     #40                 // class java/util/Map$Entry
+      50: astore        6
+      52: aload         6
+      54: invokeinterface #41,  1           // InterfaceMethod java/util/Map$Entry.getKey:()Ljava/lang/Object;
+      59: checkcast     #42                 // class org/apache/hadoop/hbase/TableName
+      62: astore        7
+      64: aload         6
+      66: invokeinterface #44,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      71: checkcast     #45                 // class java/util/Collection
+      74: astore        8
+      76: aload_0
+      77: aload         7
+      79: invokevirtual #88                 // Method getNotifierForTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/FileArchiverNotifier;
+      82: astore        9
+      84: aload         9
+      86: aload         8
+      88: invokeinterface #89,  2           // InterfaceMethod org/apache/hadoop/hbase/quotas/FileArchiverNotifier.computeAndStoreSnapshotSizes:(Ljava/util/Collection;)J
+      93: lstore        10
+      95: aload_2
+      96: aload         7
+      98: invokevirtual #55                 // Method org/apache/hadoop/hbase/TableName.getNamespaceAsString:()Ljava/lang/String;
+     101: lload         10
+     103: invokestatic  #90                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     106: invokedynamic #91,  0             // InvokeDynamic #0:apply:()Ljava/util/function/BiFunction;
+     111: invokeinterface #92,  4           // InterfaceMethod java/util/Map.merge:(Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;
+     116: pop
+     117: goto          30
+     120: aload_0
+     121: getfield      #13                 // Field metrics:Lorg/apache/hadoop/hbase/master/MetricsMaster;
+     124: ifnull        143
+     127: aload_0
+     128: getfield      #13                 // Field metrics:Lorg/apache/hadoop/hbase/master/MetricsMaster;
+     131: invokestatic  #19                 // Method java/lang/System.nanoTime:()J
+     134: lload_3
+     135: lsub
+     136: ldc2_w        #21                 // long 1000000l
+     139: ldiv
+     140: invokevirtual #93                 // Method org/apache/hadoop/hbase/master/MetricsMaster.incrementSnapshotSizeComputationTime:(J)V
+     143: aload_2
+     144: areturn
+
+  org.apache.hadoop.hbase.quotas.FileArchiverNotifier getNotifierForTable(org.apache.hadoop.hbase.TableName);
+    Code:
+       0: invokestatic  #94                 // Method org/apache/hadoop/hbase/quotas/FileArchiverNotifierFactoryImpl.getInstance:()Lorg/apache/hadoop/hbase/quotas/FileArchiverNotifierFactory;
+       3: aload_0
+       4: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+       7: aload_0
+       8: getfield      #12                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      11: aload_0
+      12: getfield      #14                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      15: aload_1
+      16: invokeinterface #95,  5           // InterfaceMethod org/apache/hadoop/hbase/quotas/FileArchiverNotifierFactory.get:(Lorg/apache/hadoop/hbase/client/Connection;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/FileArchiverNotifier;
+      21: areturn
+
+  void persistSnapshotSizesForNamespaces(java.util.Map<java.lang.String, java.lang.Long>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+       4: getstatic     #96                 // Field org/apache/hadoop/hbase/quotas/QuotaUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokeinterface #97,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      12: astore_2
+      13: aconst_null
+      14: astore_3
+      15: aload_2
+      16: aload_1
+      17: invokeinterface #36,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      22: invokeinterface #98,  1           // InterfaceMethod java/util/Set.stream:()Ljava/util/stream/Stream;
+      27: invokedynamic #99,  0             // InvokeDynamic #1:apply:()Ljava/util/function/Function;
+      32: invokeinterface #100,  2          // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+      37: invokestatic  #101                // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      40: invokeinterface #102,  2          // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      45: checkcast     #103                // class java/util/List
+      48: invokeinterface #104,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.put:(Ljava/util/List;)V
+      53: aload_2
+      54: ifnull        137
+      57: aload_3
+      58: ifnull        81
+      61: aload_2
+      62: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      67: goto          137
+      70: astore        4
+      72: aload_3
+      73: aload         4
+      75: invokevirtual #79                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      78: goto          137
+      81: aload_2
+      82: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      87: goto          137
+      90: astore        4
+      92: aload         4
+      94: astore_3
+      95: aload         4
+      97: athrow
+      98: astore        5
+     100: aload_2
+     101: ifnull        134
+     104: aload_3
+     105: ifnull        128
+     108: aload_2
+     109: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     114: goto          134
+     117: astore        6
+     119: aload_3
+     120: aload         6
+     122: invokevirtual #79                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     125: goto          134
+     128: aload_2
+     129: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     134: aload         5
+     136: athrow
+     137: return
+    Exception table:
+       from    to  target type
+          61    67    70   Class java/lang/Throwable
+          15    53    90   Class java/lang/Throwable
+          15    53    98   any
+         108   114   117   Class java/lang/Throwable
+          90   100    98   any
+
+  void removeExistingTableSnapshotSizes(org.apache.hbase.thirdparty.com.google.common.collect.Multimap<org.apache.hadoop.hbase.TableName, java.lang.String>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #106                // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.createDeletesForExistingTableSnapshotSizes:(Lorg/apache/hbase/thirdparty/com/google/common/collect/Multimap;)Ljava/util/List;
+       5: invokevirtual #107                // Method removeExistingSnapshotSizes:(Ljava/util/List;)V
+       8: return
+
+  void removeExistingNamespaceSnapshotSizes(java.util.Set<java.lang.String>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokestatic  #108                // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.createDeletesForExistingNamespaceSnapshotSizes:(Ljava/util/Set;)Ljava/util/List;
+       5: invokevirtual #107                // Method removeExistingSnapshotSizes:(Ljava/util/List;)V
+       8: return
+
+  void removeExistingSnapshotSizes(java.util.List<org.apache.hadoop.hbase.client.Delete>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+       4: getstatic     #96                 // Field org/apache/hadoop/hbase/quotas/QuotaUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       7: invokeinterface #97,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      12: astore_2
+      13: aconst_null
+      14: astore_3
+      15: aload_2
+      16: aload_1
+      17: invokeinterface #109,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.delete:(Ljava/util/List;)V
+      22: aload_2
+      23: ifnull        106
+      26: aload_3
+      27: ifnull        50
+      30: aload_2
+      31: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      36: goto          106
+      39: astore        4
+      41: aload_3
+      42: aload         4
+      44: invokevirtual #79                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      47: goto          106
+      50: aload_2
+      51: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      56: goto          106
+      59: astore        4
+      61: aload         4
+      63: astore_3
+      64: aload         4
+      66: athrow
+      67: astore        5
+      69: aload_2
+      70: ifnull        103
+      73: aload_3
+      74: ifnull        97
+      77: aload_2
+      78: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+      83: goto          103
+      86: astore        6
+      88: aload_3
+      89: aload         6
+      91: invokevirtual #79                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+      94: goto          103
+      97: aload_2
+      98: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     103: aload         5
+     105: athrow
+     106: return
+    Exception table:
+       from    to  target type
+          30    36    39   Class java/lang/Throwable
+          15    22    59   Class java/lang/Throwable
+          15    22    67   any
+          77    83    86   Class java/lang/Throwable
+          59    69    67   any
+
+  static int getPeriod(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #111                // String hbase.master.quotas.snapshot.chore.period
+       3: ldc           #112                // int 300000
+       5: invokevirtual #113                // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+       8: ireturn
+
+  static long getInitialDelay(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #114                // String hbase.master.quotas.snapshot.chore.delay
+       3: ldc2_w        #115                // long 60000l
+       6: invokevirtual #117                // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+       9: lreturn
+
+  static java.util.concurrent.TimeUnit getTimeUnit(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: ldc           #118                // String hbase.master.quotas.snapshot.chore.timeunit
+       3: getstatic     #119                // Field SNAPSHOT_QUOTA_CHORE_TIMEUNIT_DEFAULT:Ljava/lang/String;
+       6: invokevirtual #120                // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+       9: invokestatic  #121                // Method java/util/concurrent/TimeUnit.valueOf:(Ljava/lang/String;)Ljava/util/concurrent/TimeUnit;
+      12: areturn
+
+  static {};
+    Code:
+       0: ldc           #110                // class org/apache/hadoop/hbase/quotas/SnapshotQuotaObserverChore
+       2: invokestatic  #125                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #15                 // Field LOG:Lorg/slf4j/Logger;
+       8: getstatic     #126                // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+      11: invokevirtual #127                // Method java/util/concurrent/TimeUnit.name:()Ljava/lang/String;
+      14: putstatic     #119                // Field SNAPSHOT_QUOTA_CHORE_TIMEUNIT_DEFAULT:Ljava/lang/String;
+      17: return
+}

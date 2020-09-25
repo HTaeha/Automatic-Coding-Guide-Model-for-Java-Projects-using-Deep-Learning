@@ -1,0 +1,567 @@
+Compiled from "FileIOEngine.java"
+public class org.apache.hadoop.hbase.io.hfile.bucket.FileIOEngine implements org.apache.hadoop.hbase.io.hfile.bucket.IOEngine {
+  public static final java.lang.String FILE_DELIMITER;
+
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.io.hfile.bucket.FileIOEngine(long, boolean, java.lang.String...) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class org/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileReadAccessor
+       8: dup
+       9: aconst_null
+      10: invokespecial #3                  // Method org/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileReadAccessor."<init>":(Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$1;)V
+      13: putfield      #4                  // Field readAccessor:Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileReadAccessor;
+      16: aload_0
+      17: new           #5                  // class org/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileWriteAccessor
+      20: dup
+      21: aconst_null
+      22: invokespecial #6                  // Method org/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileWriteAccessor."<init>":(Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$1;)V
+      25: putfield      #7                  // Field writeAccessor:Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileWriteAccessor;
+      28: aload_0
+      29: lload_1
+      30: aload         4
+      32: arraylength
+      33: i2l
+      34: ldiv
+      35: putfield      #8                  // Field sizePerFile:J
+      38: aload_0
+      39: aload_0
+      40: getfield      #8                  // Field sizePerFile:J
+      43: aload         4
+      45: arraylength
+      46: i2l
+      47: lmul
+      48: putfield      #9                  // Field capacity:J
+      51: aload_0
+      52: aload         4
+      54: putfield      #10                 // Field filePaths:[Ljava/lang/String;
+      57: aload_0
+      58: aload         4
+      60: arraylength
+      61: anewarray     #11                 // class java/nio/channels/FileChannel
+      64: putfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+      67: iload_3
+      68: ifne          172
+      71: aload         4
+      73: astore        5
+      75: aload         5
+      77: arraylength
+      78: istore        6
+      80: iconst_0
+      81: istore        7
+      83: iload         7
+      85: iload         6
+      87: if_icmpge     172
+      90: aload         5
+      92: iload         7
+      94: aaload
+      95: astore        8
+      97: new           #13                 // class java/io/File
+     100: dup
+     101: aload         8
+     103: invokespecial #14                 // Method java/io/File."<init>":(Ljava/lang/String;)V
+     106: astore        9
+     108: aload         9
+     110: invokevirtual #15                 // Method java/io/File.exists:()Z
+     113: ifeq          166
+     116: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+     119: invokeinterface #17,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     124: ifeq          160
+     127: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+     130: new           #18                 // class java/lang/StringBuilder
+     133: dup
+     134: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     137: ldc           #20                 // String File
+     139: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     142: aload         8
+     144: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     147: ldc           #22                 // String  already exists. Deleting!!
+     149: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     152: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     155: invokeinterface #24,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     160: aload         9
+     162: invokevirtual #25                 // Method java/io/File.delete:()Z
+     165: pop
+     166: iinc          7, 1
+     169: goto          83
+     172: aload_0
+     173: aload         4
+     175: arraylength
+     176: anewarray     #26                 // class java/io/RandomAccessFile
+     179: putfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+     182: aload_0
+     183: aload         4
+     185: arraylength
+     186: anewarray     #28                 // class java/util/concurrent/locks/ReentrantLock
+     189: putfield      #29                 // Field channelLocks:[Ljava/util/concurrent/locks/ReentrantLock;
+     192: iconst_0
+     193: istore        5
+     195: iload         5
+     197: aload         4
+     199: arraylength
+     200: if_icmpge     448
+     203: aload         4
+     205: iload         5
+     207: aaload
+     208: astore        6
+     210: aload_0
+     211: getfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+     214: iload         5
+     216: new           #26                 // class java/io/RandomAccessFile
+     219: dup
+     220: aload         6
+     222: ldc           #30                 // String rw
+     224: invokespecial #31                 // Method java/io/RandomAccessFile."<init>":(Ljava/lang/String;Ljava/lang/String;)V
+     227: aastore
+     228: new           #13                 // class java/io/File
+     231: dup
+     232: aload         6
+     234: invokespecial #14                 // Method java/io/File."<init>":(Ljava/lang/String;)V
+     237: invokevirtual #32                 // Method java/io/File.getTotalSpace:()J
+     240: lstore        7
+     242: lload         7
+     244: aload_0
+     245: getfield      #8                  // Field sizePerFile:J
+     248: lcmp
+     249: ifge          312
+     252: new           #18                 // class java/lang/StringBuilder
+     255: dup
+     256: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     259: ldc           #33                 // String Only
+     261: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     264: lload         7
+     266: invokestatic  #34                 // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     269: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     272: ldc           #35                 // String  total space under
+     274: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     277: aload         6
+     279: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     282: ldc           #36                 // String , not enough for requested
+     284: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     287: aload_0
+     288: getfield      #8                  // Field sizePerFile:J
+     291: invokestatic  #34                 // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     294: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     297: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     300: astore        9
+     302: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+     305: aload         9
+     307: invokeinterface #37,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     312: aload_0
+     313: getfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+     316: iload         5
+     318: aaload
+     319: aload_0
+     320: getfield      #8                  // Field sizePerFile:J
+     323: invokevirtual #38                 // Method java/io/RandomAccessFile.setLength:(J)V
+     326: aload_0
+     327: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+     330: iload         5
+     332: aload_0
+     333: getfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+     336: iload         5
+     338: aaload
+     339: invokevirtual #39                 // Method java/io/RandomAccessFile.getChannel:()Ljava/nio/channels/FileChannel;
+     342: aastore
+     343: aload_0
+     344: getfield      #29                 // Field channelLocks:[Ljava/util/concurrent/locks/ReentrantLock;
+     347: iload         5
+     349: new           #28                 // class java/util/concurrent/locks/ReentrantLock
+     352: dup
+     353: invokespecial #40                 // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+     356: aastore
+     357: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+     360: new           #18                 // class java/lang/StringBuilder
+     363: dup
+     364: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     367: ldc           #41                 // String Allocating cache
+     369: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     372: aload_0
+     373: getfield      #8                  // Field sizePerFile:J
+     376: invokestatic  #34                 // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     379: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     382: ldc           #42                 // String , on the path:
+     384: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     387: aload         6
+     389: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     392: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     395: invokeinterface #43,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     400: goto          442
+     403: astore        7
+     405: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+     408: new           #18                 // class java/lang/StringBuilder
+     411: dup
+     412: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+     415: ldc           #45                 // String Failed allocating cache on
+     417: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     420: aload         6
+     422: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     425: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     428: aload         7
+     430: invokeinterface #46,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     435: aload_0
+     436: invokevirtual #47                 // Method shutdown:()V
+     439: aload         7
+     441: athrow
+     442: iinc          5, 1
+     445: goto          195
+     448: return
+    Exception table:
+       from    to  target type
+         210   400   403   Class java/io/IOException
+
+  public java.lang.String toString();
+    Code:
+       0: new           #18                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+       7: ldc           #48                 // String ioengine=
+       9: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      12: aload_0
+      13: invokevirtual #49                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      16: invokevirtual #50                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      19: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      22: ldc           #51                 // String , paths=
+      24: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: aload_0
+      28: getfield      #10                 // Field filePaths:[Ljava/lang/String;
+      31: invokestatic  #52                 // Method java/util/Arrays.asList:([Ljava/lang/Object;)Ljava/util/List;
+      34: invokevirtual #53                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      37: ldc           #54                 // String , capacity=
+      39: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      42: ldc           #55                 // String %,d
+      44: iconst_1
+      45: anewarray     #56                 // class java/lang/Object
+      48: dup
+      49: iconst_0
+      50: aload_0
+      51: getfield      #9                  // Field capacity:J
+      54: invokestatic  #57                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      57: aastore
+      58: invokestatic  #58                 // Method java/lang/String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      61: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      67: areturn
+
+  public boolean isPersistent();
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  public org.apache.hadoop.hbase.io.hfile.Cacheable read(long, int, org.apache.hadoop.hbase.io.hfile.CacheableDeserializer<org.apache.hadoop.hbase.io.hfile.Cacheable>) throws java.io.IOException;
+    Code:
+       0: iload_3
+       1: iflt          8
+       4: iconst_1
+       5: goto          9
+       8: iconst_0
+       9: ldc           #59                 // String Length of read can not be less than 0.
+      11: invokestatic  #60                 // Method org/apache/hbase/thirdparty/com/google/common/base/Preconditions.checkArgument:(ZLjava/lang/Object;)V
+      14: iload_3
+      15: invokestatic  #61                 // Method java/nio/ByteBuffer.allocate:(I)Ljava/nio/ByteBuffer;
+      18: astore        5
+      20: iload_3
+      21: ifeq          89
+      24: aload_0
+      25: aload_0
+      26: getfield      #4                  // Field readAccessor:Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileReadAccessor;
+      29: aload         5
+      31: lload_1
+      32: invokespecial #62                 // Method accessFile:(Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileAccessor;Ljava/nio/ByteBuffer;J)V
+      35: aload         5
+      37: invokevirtual #63                 // Method java/nio/ByteBuffer.limit:()I
+      40: iload_3
+      41: if_icmpeq     89
+      44: new           #64                 // class java/lang/RuntimeException
+      47: dup
+      48: new           #18                 // class java/lang/StringBuilder
+      51: dup
+      52: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      55: ldc           #33                 // String Only
+      57: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: aload         5
+      62: invokevirtual #63                 // Method java/nio/ByteBuffer.limit:()I
+      65: invokevirtual #65                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      68: ldc           #66                 // String  bytes read,
+      70: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      73: iload_3
+      74: invokevirtual #65                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      77: ldc           #67                 // String  expected
+      79: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      82: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      85: invokespecial #68                 // Method java/lang/RuntimeException."<init>":(Ljava/lang/String;)V
+      88: athrow
+      89: aload         4
+      91: new           #69                 // class org/apache/hadoop/hbase/nio/SingleByteBuff
+      94: dup
+      95: aload         5
+      97: invokespecial #70                 // Method org/apache/hadoop/hbase/nio/SingleByteBuff."<init>":(Ljava/nio/ByteBuffer;)V
+     100: iconst_1
+     101: getstatic     #71                 // Field org/apache/hadoop/hbase/io/hfile/Cacheable$MemoryType.EXCLUSIVE:Lorg/apache/hadoop/hbase/io/hfile/Cacheable$MemoryType;
+     104: invokeinterface #72,  4           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/CacheableDeserializer.deserialize:(Lorg/apache/hadoop/hbase/nio/ByteBuff;ZLorg/apache/hadoop/hbase/io/hfile/Cacheable$MemoryType;)Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+     109: areturn
+
+  void closeFileChannels();
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+       4: astore_1
+       5: aload_1
+       6: arraylength
+       7: istore_2
+       8: iconst_0
+       9: istore_3
+      10: iload_3
+      11: iload_2
+      12: if_icmpge     48
+      15: aload_1
+      16: iload_3
+      17: aaload
+      18: astore        4
+      20: aload         4
+      22: invokevirtual #73                 // Method java/nio/channels/FileChannel.close:()V
+      25: goto          42
+      28: astore        5
+      30: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+      33: ldc           #74                 // String Failed to close FileChannel
+      35: aload         5
+      37: invokeinterface #75,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      42: iinc          3, 1
+      45: goto          10
+      48: return
+    Exception table:
+       from    to  target type
+          20    25    28   Class java/io/IOException
+
+  public void write(java.nio.ByteBuffer, long) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #76                 // Method java/nio/ByteBuffer.hasRemaining:()Z
+       4: ifne          8
+       7: return
+       8: aload_0
+       9: aload_0
+      10: getfield      #7                  // Field writeAccessor:Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileWriteAccessor;
+      13: aload_1
+      14: lload_2
+      15: invokespecial #62                 // Method accessFile:(Lorg/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine$FileAccessor;Ljava/nio/ByteBuffer;J)V
+      18: return
+
+  public void sync() throws java.io.IOException;
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iload_1
+       3: aload_0
+       4: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+       7: arraylength
+       8: if_icmpge     74
+      11: aload_0
+      12: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+      15: iload_1
+      16: aaload
+      17: ifnull        30
+      20: aload_0
+      21: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+      24: iload_1
+      25: aaload
+      26: iconst_1
+      27: invokevirtual #77                 // Method java/nio/channels/FileChannel.force:(Z)V
+      30: goto          68
+      33: astore_2
+      34: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+      37: new           #18                 // class java/lang/StringBuilder
+      40: dup
+      41: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      44: ldc           #78                 // String Failed syncing data to
+      46: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      49: aload_0
+      50: getfield      #10                 // Field filePaths:[Ljava/lang/String;
+      53: iload_1
+      54: aaload
+      55: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      58: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      61: invokeinterface #37,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      66: aload_2
+      67: athrow
+      68: iinc          1, 1
+      71: goto          2
+      74: return
+    Exception table:
+       from    to  target type
+          11    30    33   Class java/io/IOException
+
+  public void shutdown();
+    Code:
+       0: iconst_0
+       1: istore_1
+       2: iload_1
+       3: aload_0
+       4: getfield      #10                 // Field filePaths:[Ljava/lang/String;
+       7: arraylength
+       8: if_icmpge     95
+      11: aload_0
+      12: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+      15: iload_1
+      16: aaload
+      17: ifnull        29
+      20: aload_0
+      21: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+      24: iload_1
+      25: aaload
+      26: invokevirtual #73                 // Method java/nio/channels/FileChannel.close:()V
+      29: aload_0
+      30: getfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+      33: iload_1
+      34: aaload
+      35: ifnull        47
+      38: aload_0
+      39: getfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+      42: iload_1
+      43: aaload
+      44: invokevirtual #79                 // Method java/io/RandomAccessFile.close:()V
+      47: goto          89
+      50: astore_2
+      51: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+      54: new           #18                 // class java/lang/StringBuilder
+      57: dup
+      58: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      61: ldc           #80                 // String Failed closing
+      63: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: aload_0
+      67: getfield      #10                 // Field filePaths:[Ljava/lang/String;
+      70: iload_1
+      71: aaload
+      72: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: ldc           #81                 // String  when shudown the IOEngine
+      77: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      80: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      83: aload_2
+      84: invokeinterface #46,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      89: iinc          1, 1
+      92: goto          2
+      95: return
+    Exception table:
+       from    to  target type
+          11    47    50   Class java/io/IOException
+
+  public void write(org.apache.hadoop.hbase.nio.ByteBuff, long) throws java.io.IOException;
+    Code:
+       0: getstatic     #82                 // Field $assertionsDisabled:Z
+       3: ifne          21
+       6: aload_1
+       7: invokevirtual #83                 // Method org/apache/hadoop/hbase/nio/ByteBuff.hasArray:()Z
+      10: ifne          21
+      13: new           #84                 // class java/lang/AssertionError
+      16: dup
+      17: invokespecial #85                 // Method java/lang/AssertionError."<init>":()V
+      20: athrow
+      21: aload_0
+      22: aload_1
+      23: invokevirtual #86                 // Method org/apache/hadoop/hbase/nio/ByteBuff.array:()[B
+      26: aload_1
+      27: invokevirtual #87                 // Method org/apache/hadoop/hbase/nio/ByteBuff.arrayOffset:()I
+      30: aload_1
+      31: invokevirtual #88                 // Method org/apache/hadoop/hbase/nio/ByteBuff.remaining:()I
+      34: invokestatic  #89                 // Method java/nio/ByteBuffer.wrap:([BII)Ljava/nio/ByteBuffer;
+      37: lload_2
+      38: invokevirtual #90                 // Method write:(Ljava/nio/ByteBuffer;J)V
+      41: return
+
+  java.nio.channels.FileChannel[] getFileChannels();
+    Code:
+       0: aload_0
+       1: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+       4: areturn
+
+  void refreshFileConnection(int, java.io.IOException) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #29                 // Field channelLocks:[Ljava/util/concurrent/locks/ReentrantLock;
+       4: iload_1
+       5: aaload
+       6: astore_3
+       7: aload_3
+       8: invokevirtual #109                // Method java/util/concurrent/locks/ReentrantLock.lock:()V
+      11: aload_0
+      12: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+      15: iload_1
+      16: aaload
+      17: astore        4
+      19: aload         4
+      21: ifnull        42
+      24: aload         4
+      26: invokevirtual #110                // Method java/nio/channels/FileChannel.isOpen:()Z
+      29: ifeq          37
+      32: aload_3
+      33: invokevirtual #111                // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+      36: return
+      37: aload         4
+      39: invokevirtual #73                 // Method java/nio/channels/FileChannel.close:()V
+      42: getstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+      45: new           #18                 // class java/lang/StringBuilder
+      48: dup
+      49: invokespecial #19                 // Method java/lang/StringBuilder."<init>":()V
+      52: ldc           #112                // String Caught ClosedChannelException accessing BucketCache, reopening file:
+      54: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: aload_0
+      58: getfield      #10                 // Field filePaths:[Ljava/lang/String;
+      61: iload_1
+      62: aaload
+      63: invokevirtual #21                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: invokevirtual #23                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      69: aload_2
+      70: invokeinterface #75,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      75: aload_0
+      76: getfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+      79: iload_1
+      80: new           #26                 // class java/io/RandomAccessFile
+      83: dup
+      84: aload_0
+      85: getfield      #10                 // Field filePaths:[Ljava/lang/String;
+      88: iload_1
+      89: aaload
+      90: ldc           #30                 // String rw
+      92: invokespecial #31                 // Method java/io/RandomAccessFile."<init>":(Ljava/lang/String;Ljava/lang/String;)V
+      95: aastore
+      96: aload_0
+      97: getfield      #12                 // Field fileChannels:[Ljava/nio/channels/FileChannel;
+     100: iload_1
+     101: aload_0
+     102: getfield      #27                 // Field rafs:[Ljava/io/RandomAccessFile;
+     105: iload_1
+     106: aaload
+     107: invokevirtual #39                 // Method java/io/RandomAccessFile.getChannel:()Ljava/nio/channels/FileChannel;
+     110: aastore
+     111: aload_3
+     112: invokevirtual #111                // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     115: goto          127
+     118: astore        5
+     120: aload_3
+     121: invokevirtual #111                // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     124: aload         5
+     126: athrow
+     127: return
+    Exception table:
+       from    to  target type
+          11    32   118   any
+          37   111   118   any
+         118   120   118   any
+
+  static {};
+    Code:
+       0: ldc           #113                // class org/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine
+       2: invokevirtual #114                // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #82                 // Field $assertionsDisabled:Z
+      16: ldc           #113                // class org/apache/hadoop/hbase/io/hfile/bucket/FileIOEngine
+      18: invokestatic  #115                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      21: putstatic     #16                 // Field LOG:Lorg/slf4j/Logger;
+      24: return
+}

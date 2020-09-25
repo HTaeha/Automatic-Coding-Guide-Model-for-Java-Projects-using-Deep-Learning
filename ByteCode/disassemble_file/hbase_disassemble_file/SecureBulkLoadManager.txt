@@ -1,0 +1,474 @@
+Compiled from "SecureBulkLoadManager.java"
+public class org.apache.hadoop.hbase.regionserver.SecureBulkLoadManager {
+  public static final long VERSION;
+
+  org.apache.hadoop.hbase.regionserver.SecureBulkLoadManager(org.apache.hadoop.conf.Configuration, org.apache.hadoop.hbase.client.Connection);
+    Code:
+       0: aload_0
+       1: invokespecial #5                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       9: aload_0
+      10: aload_2
+      11: putfield      #6                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      14: return
+
+  public void start() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: new           #7                  // class java/security/SecureRandom
+       4: dup
+       5: invokespecial #8                  // Method java/security/SecureRandom."<init>":()V
+       8: putfield      #9                  // Field random:Ljava/security/SecureRandom;
+      11: aload_0
+      12: aload_0
+      13: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      16: invokestatic  #10                 // Method org/apache/hadoop/hbase/security/UserProvider.instantiate:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/security/UserProvider;
+      19: putfield      #11                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+      22: aload_0
+      23: new           #12                 // class java/util/concurrent/ConcurrentHashMap
+      26: dup
+      27: invokespecial #13                 // Method java/util/concurrent/ConcurrentHashMap."<init>":()V
+      30: putfield      #14                 // Field ugiReferenceCounter:Ljava/util/concurrent/ConcurrentHashMap;
+      33: aload_0
+      34: aload_0
+      35: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      38: invokestatic  #15                 // Method org/apache/hadoop/fs/FileSystem.get:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/FileSystem;
+      41: putfield      #16                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      44: aload_0
+      45: new           #17                 // class org/apache/hadoop/fs/Path
+      48: dup
+      49: aload_0
+      50: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      53: invokestatic  #18                 // Method org/apache/hadoop/hbase/util/FSUtils.getRootDir:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/fs/Path;
+      56: ldc           #20                 // String staging
+      58: invokespecial #21                 // Method org/apache/hadoop/fs/Path."<init>":(Lorg/apache/hadoop/fs/Path;Ljava/lang/String;)V
+      61: putfield      #22                 // Field baseStagingDir:Lorg/apache/hadoop/fs/Path;
+      64: aload_0
+      65: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      68: ldc           #23                 // String hbase.bulkload.staging.dir
+      70: invokevirtual #24                 // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;)Ljava/lang/String;
+      73: ifnull        106
+      76: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      79: new           #25                 // class java/lang/StringBuilder
+      82: dup
+      83: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      86: ldc           #27                 // String hbase.bulkload.staging.dir  is deprecated. Bulkload staging directory is
+      88: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      91: aload_0
+      92: getfield      #22                 // Field baseStagingDir:Lorg/apache/hadoop/fs/Path;
+      95: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      98: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     101: invokeinterface #31,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     106: aload_0
+     107: getfield      #16                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+     110: aload_0
+     111: getfield      #22                 // Field baseStagingDir:Lorg/apache/hadoop/fs/Path;
+     114: invokevirtual #32                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+     117: ifne          135
+     120: aload_0
+     121: getfield      #16                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+     124: aload_0
+     125: getfield      #22                 // Field baseStagingDir:Lorg/apache/hadoop/fs/Path;
+     128: getstatic     #33                 // Field PERM_HIDDEN:Lorg/apache/hadoop/fs/permission/FsPermission;
+     131: invokevirtual #34                 // Method org/apache/hadoop/fs/FileSystem.mkdirs:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/permission/FsPermission;)Z
+     134: pop
+     135: return
+
+  public void stop() throws java.io.IOException;
+    Code:
+       0: return
+
+  public java.lang.String prepareBulkLoad(org.apache.hadoop.hbase.regionserver.HRegion, org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$PrepareBulkLoadRequest) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #35                 // Method getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+       4: astore_3
+       5: aload_1
+       6: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+       9: aload_3
+      10: invokevirtual #37                 // Method org/apache/hadoop/hbase/regionserver/RegionCoprocessorHost.prePrepareBulkLoad:(Lorg/apache/hadoop/hbase/security/User;)V
+      13: aload_0
+      14: aload_0
+      15: getfield      #22                 // Field baseStagingDir:Lorg/apache/hadoop/fs/Path;
+      18: aload_3
+      19: aload_1
+      20: invokevirtual #38                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getTableDescriptor:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      23: invokeinterface #39,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+      28: invokespecial #40                 // Method createStagingDir:(Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/hbase/security/User;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/fs/Path;
+      31: invokevirtual #41                 // Method org/apache/hadoop/fs/Path.toString:()Ljava/lang/String;
+      34: astore        4
+      36: aload         4
+      38: areturn
+
+  public void cleanupBulkLoad(org.apache.hadoop.hbase.regionserver.HRegion, org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$CleanupBulkLoadRequest) throws java.io.IOException;
+    Code:
+       0: aload_1
+       1: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+       4: aload_0
+       5: invokespecial #35                 // Method getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+       8: invokevirtual #42                 // Method org/apache/hadoop/hbase/regionserver/RegionCoprocessorHost.preCleanupBulkLoad:(Lorg/apache/hadoop/hbase/security/User;)V
+      11: new           #17                 // class org/apache/hadoop/fs/Path
+      14: dup
+      15: aload_2
+      16: invokevirtual #43                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$CleanupBulkLoadRequest.getBulkToken:()Ljava/lang/String;
+      19: invokespecial #44                 // Method org/apache/hadoop/fs/Path."<init>":(Ljava/lang/String;)V
+      22: astore_3
+      23: aload_0
+      24: getfield      #16                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      27: aload_3
+      28: iconst_1
+      29: invokevirtual #45                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+      32: ifne          73
+      35: aload_0
+      36: getfield      #16                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+      39: aload_3
+      40: invokevirtual #32                 // Method org/apache/hadoop/fs/FileSystem.exists:(Lorg/apache/hadoop/fs/Path;)Z
+      43: ifeq          73
+      46: new           #46                 // class java/io/IOException
+      49: dup
+      50: new           #25                 // class java/lang/StringBuilder
+      53: dup
+      54: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      57: ldc           #47                 // String Failed to clean up
+      59: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      62: aload_3
+      63: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      66: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      69: invokespecial #48                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      72: athrow
+      73: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      76: new           #25                 // class java/lang/StringBuilder
+      79: dup
+      80: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+      83: ldc           #49                 // String Cleaned up
+      85: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      88: aload_3
+      89: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      92: ldc           #50                 // String  successfully.
+      94: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      97: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     100: invokeinterface #51,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     105: aload_0
+     106: invokespecial #35                 // Method getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+     109: invokevirtual #52                 // Method org/apache/hadoop/hbase/security/User.getUGI:()Lorg/apache/hadoop/security/UserGroupInformation;
+     112: astore_3
+     113: invokestatic  #53                 // Method org/apache/hadoop/security/UserGroupInformation.getLoginUser:()Lorg/apache/hadoop/security/UserGroupInformation;
+     116: aload_3
+     117: invokevirtual #54                 // Method org/apache/hadoop/security/UserGroupInformation.equals:(Ljava/lang/Object;)Z
+     120: ifne          135
+     123: aload_0
+     124: aload_3
+     125: invokespecial #55                 // Method isUserReferenced:(Lorg/apache/hadoop/security/UserGroupInformation;)Z
+     128: ifne          135
+     131: aload_3
+     132: invokestatic  #56                 // Method org/apache/hadoop/fs/FileSystem.closeAllForUGI:(Lorg/apache/hadoop/security/UserGroupInformation;)V
+     135: goto          169
+     138: astore        4
+     140: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     143: new           #25                 // class java/lang/StringBuilder
+     146: dup
+     147: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     150: ldc           #57                 // String Failed to close FileSystem for:
+     152: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     155: aload_3
+     156: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     159: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     162: aload         4
+     164: invokeinterface #58,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     169: goto          246
+     172: astore        5
+     174: aload_0
+     175: invokespecial #35                 // Method getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+     178: invokevirtual #52                 // Method org/apache/hadoop/hbase/security/User.getUGI:()Lorg/apache/hadoop/security/UserGroupInformation;
+     181: astore        6
+     183: invokestatic  #53                 // Method org/apache/hadoop/security/UserGroupInformation.getLoginUser:()Lorg/apache/hadoop/security/UserGroupInformation;
+     186: aload         6
+     188: invokevirtual #54                 // Method org/apache/hadoop/security/UserGroupInformation.equals:(Ljava/lang/Object;)Z
+     191: ifne          208
+     194: aload_0
+     195: aload         6
+     197: invokespecial #55                 // Method isUserReferenced:(Lorg/apache/hadoop/security/UserGroupInformation;)Z
+     200: ifne          208
+     203: aload         6
+     205: invokestatic  #56                 // Method org/apache/hadoop/fs/FileSystem.closeAllForUGI:(Lorg/apache/hadoop/security/UserGroupInformation;)V
+     208: goto          243
+     211: astore        7
+     213: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     216: new           #25                 // class java/lang/StringBuilder
+     219: dup
+     220: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     223: ldc           #57                 // String Failed to close FileSystem for:
+     225: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     228: aload         6
+     230: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     233: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     236: aload         7
+     238: invokeinterface #58,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     243: aload         5
+     245: athrow
+     246: return
+    Exception table:
+       from    to  target type
+         113   135   138   Class java/io/IOException
+           0   105   172   any
+         183   208   211   Class java/io/IOException
+         172   174   172   any
+
+  void setFsCreatedListener(java.util.function.Consumer<org.apache.hadoop.hbase.regionserver.HRegion>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #2                  // Field fsCreatedListener:Ljava/util/function/Consumer;
+       5: return
+
+  public java.util.Map<byte[], java.util.List<org.apache.hadoop.fs.Path>> secureBulkLoadHFiles(org.apache.hadoop.hbase.regionserver.HRegion, org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$BulkLoadHFileRequest) throws java.io.IOException;
+    Code:
+       0: new           #64                 // class java/util/ArrayList
+       3: dup
+       4: aload_2
+       5: invokevirtual #65                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest.getFamilyPathCount:()I
+       8: invokespecial #66                 // Method java/util/ArrayList."<init>":(I)V
+      11: astore_3
+      12: aload_2
+      13: invokevirtual #67                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest.getFamilyPathList:()Ljava/util/List;
+      16: invokeinterface #68,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      21: astore        4
+      23: aload         4
+      25: invokeinterface #69,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      30: ifeq          75
+      33: aload         4
+      35: invokeinterface #70,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      40: checkcast     #71                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest$FamilyPath
+      43: astore        5
+      45: aload_3
+      46: new           #72                 // class org/apache/hadoop/hbase/util/Pair
+      49: dup
+      50: aload         5
+      52: invokevirtual #73                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest$FamilyPath.getFamily:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      55: invokevirtual #74                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+      58: aload         5
+      60: invokevirtual #75                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest$FamilyPath.getPath:()Ljava/lang/String;
+      63: invokespecial #76                 // Method org/apache/hadoop/hbase/util/Pair."<init>":(Ljava/lang/Object;Ljava/lang/Object;)V
+      66: invokeinterface #77,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      71: pop
+      72: goto          23
+      75: aconst_null
+      76: astore        4
+      78: aload_0
+      79: getfield      #11                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+      82: invokevirtual #78                 // Method org/apache/hadoop/hbase/security/UserProvider.isHadoopSecurityEnabled:()Z
+      85: ifeq          145
+      88: new           #79                 // class org/apache/hadoop/security/token/Token
+      91: dup
+      92: aload_2
+      93: invokevirtual #80                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest.getFsToken:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken;
+      96: invokevirtual #81                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken.getIdentifier:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+      99: invokevirtual #74                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+     102: aload_2
+     103: invokevirtual #80                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest.getFsToken:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken;
+     106: invokevirtual #82                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken.getPassword:()Lorg/apache/hbase/thirdparty/com/google/protobuf/ByteString;
+     109: invokevirtual #74                 // Method org/apache/hbase/thirdparty/com/google/protobuf/ByteString.toByteArray:()[B
+     112: new           #83                 // class org/apache/hadoop/io/Text
+     115: dup
+     116: aload_2
+     117: invokevirtual #80                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest.getFsToken:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken;
+     120: invokevirtual #84                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken.getKind:()Ljava/lang/String;
+     123: invokespecial #85                 // Method org/apache/hadoop/io/Text."<init>":(Ljava/lang/String;)V
+     126: new           #83                 // class org/apache/hadoop/io/Text
+     129: dup
+     130: aload_2
+     131: invokevirtual #80                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest.getFsToken:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken;
+     134: invokevirtual #86                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$DelegationToken.getService:()Ljava/lang/String;
+     137: invokespecial #85                 // Method org/apache/hadoop/io/Text."<init>":(Ljava/lang/String;)V
+     140: invokespecial #87                 // Method org/apache/hadoop/security/token/Token."<init>":([B[BLorg/apache/hadoop/io/Text;Lorg/apache/hadoop/io/Text;)V
+     143: astore        4
+     145: aload_2
+     146: invokevirtual #88                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest.getBulkToken:()Ljava/lang/String;
+     149: astore        5
+     151: aload_0
+     152: invokespecial #35                 // Method getActiveUser:()Lorg/apache/hadoop/hbase/security/User;
+     155: astore        6
+     157: aload         6
+     159: invokevirtual #52                 // Method org/apache/hadoop/hbase/security/User.getUGI:()Lorg/apache/hadoop/security/UserGroupInformation;
+     162: astore        7
+     164: aload_0
+     165: getfield      #11                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+     168: invokevirtual #78                 // Method org/apache/hadoop/hbase/security/UserProvider.isHadoopSecurityEnabled:()Z
+     171: ifeq          262
+     174: aload_0
+     175: getfield      #6                  // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+     178: invokestatic  #89                 // Method org/apache/hadoop/hbase/security/token/TokenUtil.obtainToken:(Lorg/apache/hadoop/hbase/client/Connection;)Lorg/apache/hadoop/security/token/Token;
+     181: astore        8
+     183: aload         8
+     185: ifnull        245
+     188: aload         7
+     190: aload         8
+     192: invokevirtual #90                 // Method org/apache/hadoop/security/UserGroupInformation.addToken:(Lorg/apache/hadoop/security/token/Token;)Z
+     195: istore        9
+     197: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     200: new           #25                 // class java/lang/StringBuilder
+     203: dup
+     204: invokespecial #26                 // Method java/lang/StringBuilder."<init>":()V
+     207: ldc           #91                 // String token added
+     209: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     212: aload         8
+     214: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     217: ldc           #92                 // String  for user
+     219: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     222: aload         7
+     224: invokevirtual #29                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     227: ldc           #93                 // String  return=
+     229: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     232: iload         9
+     234: invokevirtual #94                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+     237: invokevirtual #30                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     240: invokeinterface #95,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     245: goto          262
+     248: astore        8
+     250: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     253: ldc           #96                 // String unable to add token
+     255: aload         8
+     257: invokeinterface #97,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     262: aload         4
+     264: ifnull        278
+     267: aload         7
+     269: aload         4
+     271: invokevirtual #90                 // Method org/apache/hadoop/security/UserGroupInformation.addToken:(Lorg/apache/hadoop/security/token/Token;)Z
+     274: pop
+     275: goto          298
+     278: aload_0
+     279: getfield      #11                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+     282: invokevirtual #78                 // Method org/apache/hadoop/hbase/security/UserProvider.isHadoopSecurityEnabled:()Z
+     285: ifeq          298
+     288: new           #98                 // class org/apache/hadoop/hbase/DoNotRetryIOException
+     291: dup
+     292: ldc           #99                 // String User token cannot be null
+     294: invokespecial #100                // Method org/apache/hadoop/hbase/DoNotRetryIOException."<init>":(Ljava/lang/String;)V
+     297: athrow
+     298: aload_1
+     299: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     302: ifnull        313
+     305: aload_1
+     306: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     309: aload_3
+     310: invokevirtual #101                // Method org/apache/hadoop/hbase/regionserver/RegionCoprocessorHost.preBulkLoadHFile:(Ljava/util/List;)V
+     313: aconst_null
+     314: astore        8
+     316: aload_0
+     317: aload         7
+     319: invokespecial #102                // Method incrementUgiReference:(Lorg/apache/hadoop/security/UserGroupInformation;)V
+     322: aload_0
+     323: getfield      #11                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+     326: invokevirtual #78                 // Method org/apache/hadoop/hbase/security/UserProvider.isHadoopSecurityEnabled:()Z
+     329: ifeq          397
+     332: new           #103                // class org/apache/hadoop/hbase/security/token/FsDelegationToken
+     335: dup
+     336: aload_0
+     337: getfield      #11                 // Field userProvider:Lorg/apache/hadoop/hbase/security/UserProvider;
+     340: ldc           #104                // String renewer
+     342: invokespecial #105                // Method org/apache/hadoop/hbase/security/token/FsDelegationToken."<init>":(Lorg/apache/hadoop/hbase/security/UserProvider;Ljava/lang/String;)V
+     345: astore        9
+     347: aload         9
+     349: aload_0
+     350: getfield      #16                 // Field fs:Lorg/apache/hadoop/fs/FileSystem;
+     353: invokevirtual #106                // Method org/apache/hadoop/hbase/security/token/FsDelegationToken.acquireDelegationToken:(Lorg/apache/hadoop/fs/FileSystem;)V
+     356: aload         9
+     358: invokevirtual #107                // Method org/apache/hadoop/hbase/security/token/FsDelegationToken.getUserToken:()Lorg/apache/hadoop/security/token/Token;
+     361: astore        10
+     363: aload         10
+     365: ifnull        397
+     368: aload         4
+     370: ifnull        389
+     373: aload         10
+     375: invokevirtual #108                // Method org/apache/hadoop/security/token/Token.getService:()Lorg/apache/hadoop/io/Text;
+     378: aload         4
+     380: invokevirtual #108                // Method org/apache/hadoop/security/token/Token.getService:()Lorg/apache/hadoop/io/Text;
+     383: invokevirtual #109                // Method org/apache/hadoop/io/Text.equals:(Ljava/lang/Object;)Z
+     386: ifne          397
+     389: aload         7
+     391: aload         10
+     393: invokevirtual #90                 // Method org/apache/hadoop/security/UserGroupInformation.addToken:(Lorg/apache/hadoop/security/token/Token;)Z
+     396: pop
+     397: aload         7
+     399: new           #110                // class org/apache/hadoop/hbase/regionserver/SecureBulkLoadManager$1
+     402: dup
+     403: aload_0
+     404: aload_3
+     405: aload         5
+     407: aload_1
+     408: aload_2
+     409: invokespecial #111                // Method org/apache/hadoop/hbase/regionserver/SecureBulkLoadManager$1."<init>":(Lorg/apache/hadoop/hbase/regionserver/SecureBulkLoadManager;Ljava/util/List;Ljava/lang/String;Lorg/apache/hadoop/hbase/regionserver/HRegion;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$BulkLoadHFileRequest;)V
+     412: invokevirtual #112                // Method org/apache/hadoop/security/UserGroupInformation.doAs:(Ljava/security/PrivilegedAction;)Ljava/lang/Object;
+     415: checkcast     #113                // class java/util/Map
+     418: astore        8
+     420: aload_0
+     421: aload         7
+     423: invokespecial #114                // Method decrementUgiReference:(Lorg/apache/hadoop/security/UserGroupInformation;)V
+     426: aload_1
+     427: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     430: ifnull        474
+     433: aload_1
+     434: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     437: aload_3
+     438: aload         8
+     440: invokevirtual #115                // Method org/apache/hadoop/hbase/regionserver/RegionCoprocessorHost.postBulkLoadHFile:(Ljava/util/List;Ljava/util/Map;)V
+     443: goto          474
+     446: astore        11
+     448: aload_0
+     449: aload         7
+     451: invokespecial #114                // Method decrementUgiReference:(Lorg/apache/hadoop/security/UserGroupInformation;)V
+     454: aload_1
+     455: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     458: ifnull        471
+     461: aload_1
+     462: invokevirtual #36                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getCoprocessorHost:()Lorg/apache/hadoop/hbase/regionserver/RegionCoprocessorHost;
+     465: aload_3
+     466: aload         8
+     468: invokevirtual #115                // Method org/apache/hadoop/hbase/regionserver/RegionCoprocessorHost.postBulkLoadHFile:(Ljava/util/List;Ljava/util/Map;)V
+     471: aload         11
+     473: athrow
+     474: aload         8
+     476: areturn
+    Exception table:
+       from    to  target type
+         174   245   248   Class java/io/IOException
+         316   420   446   any
+         446   448   446   any
+
+  static org.apache.hadoop.conf.Configuration access$000(org.apache.hadoop.hbase.regionserver.SecureBulkLoadManager);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+       4: areturn
+
+  static org.apache.hadoop.fs.permission.FsPermission access$100();
+    Code:
+       0: getstatic     #3                  // Field PERM_ALL_ACCESS:Lorg/apache/hadoop/fs/permission/FsPermission;
+       3: areturn
+
+  static java.util.function.Consumer access$200(org.apache.hadoop.hbase.regionserver.SecureBulkLoadManager);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field fsCreatedListener:Ljava/util/function/Consumer;
+       4: areturn
+
+  static org.slf4j.Logger access$300();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #123                // class org/apache/hadoop/hbase/regionserver/SecureBulkLoadManager
+       2: invokestatic  #142                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: ldc           #143                // String -rwxrwxrwx
+      10: invokestatic  #144                // Method org/apache/hadoop/fs/permission/FsPermission.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/fs/permission/FsPermission;
+      13: putstatic     #3                  // Field PERM_ALL_ACCESS:Lorg/apache/hadoop/fs/permission/FsPermission;
+      16: ldc           #145                // String -rwx--x--x
+      18: invokestatic  #144                // Method org/apache/hadoop/fs/permission/FsPermission.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/fs/permission/FsPermission;
+      21: putstatic     #33                 // Field PERM_HIDDEN:Lorg/apache/hadoop/fs/permission/FsPermission;
+      24: return
+}

@@ -1,0 +1,251 @@
+Compiled from "NamespaceQuotaSnapshotStore.java"
+public class org.apache.hadoop.hbase.quotas.NamespaceQuotaSnapshotStore implements org.apache.hadoop.hbase.quotas.QuotaSnapshotStore<java.lang.String> {
+  public org.apache.hadoop.hbase.quotas.NamespaceQuotaSnapshotStore(org.apache.hadoop.hbase.client.Connection, org.apache.hadoop.hbase.quotas.QuotaObserverChore, java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, java.lang.Long>);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/locks/ReentrantReadWriteLock
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/locks/ReentrantReadWriteLock."<init>":()V
+      12: putfield      #4                  // Field lock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      15: aload_0
+      16: aload_0
+      17: getfield      #4                  // Field lock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      20: invokevirtual #5                  // Method java/util/concurrent/locks/ReentrantReadWriteLock.readLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      23: putfield      #6                  // Field rlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      26: aload_0
+      27: aload_0
+      28: getfield      #4                  // Field lock:Ljava/util/concurrent/locks/ReentrantReadWriteLock;
+      31: invokevirtual #7                  // Method java/util/concurrent/locks/ReentrantReadWriteLock.writeLock:()Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      34: putfield      #8                  // Field wlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      37: aload_0
+      38: aload_1
+      39: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      42: checkcast     #10                 // class org/apache/hadoop/hbase/client/Connection
+      45: putfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      48: aload_0
+      49: aload_2
+      50: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      53: checkcast     #12                 // class org/apache/hadoop/hbase/quotas/QuotaObserverChore
+      56: putfield      #13                 // Field chore:Lorg/apache/hadoop/hbase/quotas/QuotaObserverChore;
+      59: aload_0
+      60: aload_3
+      61: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      64: checkcast     #14                 // class java/util/Map
+      67: putfield      #15                 // Field regionUsage:Ljava/util/Map;
+      70: return
+
+  public org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos$SpaceQuota getSpaceQuota(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #16                 // Method getQuotaForNamespace:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas;
+       5: astore_2
+       6: aload_2
+       7: ifnull        22
+      10: aload_2
+      11: invokevirtual #17                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas.hasSpace:()Z
+      14: ifeq          22
+      17: aload_2
+      18: invokevirtual #18                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas.getSpace:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$SpaceQuota;
+      21: areturn
+      22: aconst_null
+      23: areturn
+
+  org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos$Quotas getQuotaForNamespace(java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+       4: aload_1
+       5: invokestatic  #19                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.getNamespaceQuota:(Lorg/apache/hadoop/hbase/client/Connection;Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$Quotas;
+       8: areturn
+
+  public org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot getCurrentState(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field chore:Lorg/apache/hadoop/hbase/quotas/QuotaObserverChore;
+       4: aload_1
+       5: invokevirtual #20                 // Method org/apache/hadoop/hbase/quotas/QuotaObserverChore.getNamespaceQuotaSnapshot:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot;
+       8: areturn
+
+  public org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot getTargetState(java.lang.String, org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos$SpaceQuota) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field rlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+       4: invokevirtual #21                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.lock:()V
+       7: aload_2
+       8: invokevirtual #22                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$SpaceQuota.getSoftLimit:()J
+      11: lstore_3
+      12: lconst_0
+      13: lstore        5
+      15: aload_0
+      16: aload_1
+      17: invokevirtual #23                 // Method filterBySubject:(Ljava/lang/String;)Ljava/lang/Iterable;
+      20: invokeinterface #24,  1           // InterfaceMethod java/lang/Iterable.iterator:()Ljava/util/Iterator;
+      25: astore        7
+      27: aload         7
+      29: invokeinterface #25,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      34: ifeq          70
+      37: aload         7
+      39: invokeinterface #26,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      44: checkcast     #27                 // class java/util/Map$Entry
+      47: astore        8
+      49: lload         5
+      51: aload         8
+      53: invokeinterface #28,  1           // InterfaceMethod java/util/Map$Entry.getValue:()Ljava/lang/Object;
+      58: checkcast     #29                 // class java/lang/Long
+      61: invokevirtual #30                 // Method java/lang/Long.longValue:()J
+      64: ladd
+      65: lstore        5
+      67: goto          27
+      70: lload         5
+      72: aload_0
+      73: getfield      #11                 // Field conn:Lorg/apache/hadoop/hbase/client/Connection;
+      76: aload_1
+      77: invokestatic  #31                 // Method org/apache/hadoop/hbase/quotas/QuotaTableUtil.getNamespaceSnapshotSize:(Lorg/apache/hadoop/hbase/client/Connection;Ljava/lang/String;)J
+      80: ladd
+      81: lstore        5
+      83: lload         5
+      85: lload_3
+      86: lcmp
+      87: ifgt          96
+      90: invokestatic  #32                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus.notInViolation:()Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus;
+      93: goto          110
+      96: new           #33                 // class org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus
+      99: dup
+     100: aload_2
+     101: invokevirtual #34                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$SpaceQuota.getViolationPolicy:()Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$SpaceViolationPolicy;
+     104: invokestatic  #35                 // Method org/apache/hadoop/hbase/shaded/protobuf/ProtobufUtil.toViolationPolicy:(Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$SpaceViolationPolicy;)Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;
+     107: invokespecial #36                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus."<init>":(Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;)V
+     110: astore        7
+     112: new           #37                 // class org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot
+     115: dup
+     116: aload         7
+     118: lload         5
+     120: lload_3
+     121: invokespecial #38                 // Method org/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot."<init>":(Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot$SpaceQuotaStatus;JJ)V
+     124: astore        8
+     126: aload_0
+     127: getfield      #6                  // Field rlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+     130: invokevirtual #39                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+     133: aload         8
+     135: areturn
+     136: astore        9
+     138: aload_0
+     139: getfield      #6                  // Field rlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+     142: invokevirtual #39                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+     145: aload         9
+     147: athrow
+    Exception table:
+       from    to  target type
+           7   126   136   any
+         136   138   136   any
+
+  public java.lang.Iterable<java.util.Map$Entry<org.apache.hadoop.hbase.client.RegionInfo, java.lang.Long>> filterBySubject(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field rlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+       4: invokevirtual #21                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.lock:()V
+       7: aload_0
+       8: getfield      #15                 // Field regionUsage:Ljava/util/Map;
+      11: invokeinterface #40,  1           // InterfaceMethod java/util/Map.entrySet:()Ljava/util/Set;
+      16: invokeinterface #41,  1           // InterfaceMethod java/util/Set.stream:()Ljava/util/stream/Stream;
+      21: aload_1
+      22: invokedynamic #42,  0             // InvokeDynamic #0:test:(Ljava/lang/String;)Ljava/util/function/Predicate;
+      27: invokeinterface #43,  2           // InterfaceMethod java/util/stream/Stream.filter:(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;
+      32: invokestatic  #44                 // Method java/util/stream/Collectors.toList:()Ljava/util/stream/Collector;
+      35: invokeinterface #45,  2           // InterfaceMethod java/util/stream/Stream.collect:(Ljava/util/stream/Collector;)Ljava/lang/Object;
+      40: checkcast     #46                 // class java/lang/Iterable
+      43: astore_2
+      44: aload_0
+      45: getfield      #6                  // Field rlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      48: invokevirtual #39                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+      51: aload_2
+      52: areturn
+      53: astore_3
+      54: aload_0
+      55: getfield      #6                  // Field rlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$ReadLock;
+      58: invokevirtual #39                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.unlock:()V
+      61: aload_3
+      62: athrow
+    Exception table:
+       from    to  target type
+           7    44    53   any
+
+  public void setCurrentState(java.lang.String, org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot);
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field chore:Lorg/apache/hadoop/hbase/quotas/QuotaObserverChore;
+       4: aload_1
+       5: aload_2
+       6: invokevirtual #47                 // Method org/apache/hadoop/hbase/quotas/QuotaObserverChore.setNamespaceQuotaSnapshot:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot;)V
+       9: return
+
+  public void setRegionUsage(java.util.Map<org.apache.hadoop.hbase.client.RegionInfo, java.lang.Long>);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field wlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+       4: invokevirtual #48                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.lock:()V
+       7: aload_0
+       8: aload_1
+       9: invokestatic  #9                  // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      12: checkcast     #14                 // class java/util/Map
+      15: putfield      #15                 // Field regionUsage:Ljava/util/Map;
+      18: aload_0
+      19: getfield      #8                  // Field wlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      22: invokevirtual #49                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.unlock:()V
+      25: goto          38
+      28: astore_2
+      29: aload_0
+      30: getfield      #8                  // Field wlock:Ljava/util/concurrent/locks/ReentrantReadWriteLock$WriteLock;
+      33: invokevirtual #49                 // Method java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.unlock:()V
+      36: aload_2
+      37: athrow
+      38: return
+    Exception table:
+       from    to  target type
+           7    18    28   any
+
+  public void setCurrentState(java.lang.Object, org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #50                 // class java/lang/String
+       5: aload_2
+       6: invokevirtual #51                 // Method setCurrentState:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot;)V
+       9: return
+
+  public java.lang.Iterable filterBySubject(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #50                 // class java/lang/String
+       5: invokevirtual #23                 // Method filterBySubject:(Ljava/lang/String;)Ljava/lang/Iterable;
+       8: areturn
+
+  public org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot getTargetState(java.lang.Object, org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos$SpaceQuota) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #50                 // class java/lang/String
+       5: aload_2
+       6: invokevirtual #52                 // Method getTargetState:(Ljava/lang/String;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$SpaceQuota;)Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot;
+       9: areturn
+
+  public org.apache.hadoop.hbase.quotas.SpaceQuotaSnapshot getCurrentState(java.lang.Object);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #50                 // class java/lang/String
+       5: invokevirtual #53                 // Method getCurrentState:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/SpaceQuotaSnapshot;
+       8: areturn
+
+  public org.apache.hadoop.hbase.shaded.protobuf.generated.QuotaProtos$SpaceQuota getSpaceQuota(java.lang.Object) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: checkcast     #50                 // class java/lang/String
+       5: invokevirtual #54                 // Method getSpaceQuota:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/shaded/protobuf/generated/QuotaProtos$SpaceQuota;
+       8: areturn
+}

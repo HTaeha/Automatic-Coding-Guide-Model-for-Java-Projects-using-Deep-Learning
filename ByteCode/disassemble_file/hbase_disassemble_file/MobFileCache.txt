@@ -1,0 +1,699 @@
+Compiled from "MobFileCache.java"
+public class org.apache.hadoop.hbase.mob.MobFileCache {
+  public org.apache.hadoop.hbase.mob.MobFileCache(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aconst_null
+       6: putfield      #2                  // Field map:Ljava/util/Map;
+       9: aload_0
+      10: new           #3                  // class java/util/concurrent/atomic/AtomicLong
+      13: dup
+      14: lconst_0
+      15: invokespecial #4                  // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+      18: putfield      #5                  // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+      21: aload_0
+      22: lconst_0
+      23: putfield      #6                  // Field lastAccess:J
+      26: aload_0
+      27: new           #7                  // class java/util/concurrent/atomic/LongAdder
+      30: dup
+      31: invokespecial #8                  // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+      34: putfield      #9                  // Field miss:Ljava/util/concurrent/atomic/LongAdder;
+      37: aload_0
+      38: lconst_0
+      39: putfield      #10                 // Field lastMiss:J
+      42: aload_0
+      43: new           #7                  // class java/util/concurrent/atomic/LongAdder
+      46: dup
+      47: invokespecial #8                  // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+      50: putfield      #11                 // Field evictedFileCount:Ljava/util/concurrent/atomic/LongAdder;
+      53: aload_0
+      54: lconst_0
+      55: putfield      #12                 // Field lastEvictedFileCount:J
+      58: aload_0
+      59: new           #13                 // class java/util/concurrent/locks/ReentrantLock
+      62: dup
+      63: iconst_1
+      64: invokespecial #14                 // Method java/util/concurrent/locks/ReentrantLock."<init>":(Z)V
+      67: putfield      #15                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+      70: aload_0
+      71: new           #16                 // class org/apache/hadoop/hbase/util/IdLock
+      74: dup
+      75: invokespecial #17                 // Method org/apache/hadoop/hbase/util/IdLock."<init>":()V
+      78: putfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      81: aload_0
+      82: iconst_1
+      83: new           #19                 // class org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder
+      86: dup
+      87: invokespecial #20                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder."<init>":()V
+      90: ldc           #21                 // String MobFileCache #%d
+      92: invokevirtual #22                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setNameFormat:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      95: iconst_1
+      96: invokevirtual #23                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setDaemon:(Z)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      99: invokevirtual #24                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.build:()Ljava/util/concurrent/ThreadFactory;
+     102: invokestatic  #25                 // Method java/util/concurrent/Executors.newScheduledThreadPool:(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;
+     105: putfield      #26                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+     108: aload_0
+     109: aload_1
+     110: putfield      #27                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     113: aload_0
+     114: aload_1
+     115: ldc           #29                 // String hbase.mob.file.cache.size
+     117: sipush        1000
+     120: invokevirtual #30                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     123: putfield      #31                 // Field mobFileMaxCacheSize:I
+     126: aload_0
+     127: aload_0
+     128: getfield      #31                 // Field mobFileMaxCacheSize:I
+     131: ifle          138
+     134: iconst_1
+     135: goto          139
+     138: iconst_0
+     139: putfield      #32                 // Field isCacheEnabled:Z
+     142: aload_0
+     143: new           #33                 // class java/util/concurrent/ConcurrentHashMap
+     146: dup
+     147: aload_0
+     148: getfield      #31                 // Field mobFileMaxCacheSize:I
+     151: invokespecial #34                 // Method java/util/concurrent/ConcurrentHashMap."<init>":(I)V
+     154: putfield      #2                  // Field map:Ljava/util/Map;
+     157: aload_0
+     158: getfield      #32                 // Field isCacheEnabled:Z
+     161: ifeq          327
+     164: aload_1
+     165: ldc           #35                 // String hbase.mob.cache.evict.period
+     167: ldc2_w        #36                 // long 3600l
+     170: invokevirtual #38                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+     173: lstore_2
+     174: aload_0
+     175: aload_1
+     176: ldc           #39                 // String hbase.mob.cache.evict.remain.ratio
+     178: ldc           #40                 // float 0.5f
+     180: invokevirtual #41                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+     183: putfield      #42                 // Field evictRemainRatio:F
+     186: aload_0
+     187: getfield      #42                 // Field evictRemainRatio:F
+     190: f2d
+     191: dconst_0
+     192: dcmpg
+     193: ifge          214
+     196: aload_0
+     197: fconst_0
+     198: putfield      #42                 // Field evictRemainRatio:F
+     201: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+     204: ldc           #44                 // String hbase.mob.cache.evict.remain.ratio is less than 0.0, 0.0 is used.
+     206: invokeinterface #45,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     211: goto          239
+     214: aload_0
+     215: getfield      #42                 // Field evictRemainRatio:F
+     218: f2d
+     219: dconst_1
+     220: dcmpl
+     221: ifle          239
+     224: aload_0
+     225: fconst_1
+     226: putfield      #42                 // Field evictRemainRatio:F
+     229: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+     232: ldc           #46                 // String hbase.mob.cache.evict.remain.ratio is larger than 1.0, 1.0 is used.
+     234: invokeinterface #45,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     239: aload_0
+     240: getfield      #26                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+     243: new           #47                 // class org/apache/hadoop/hbase/mob/MobFileCache$EvictionThread
+     246: dup
+     247: aload_0
+     248: invokespecial #48                 // Method org/apache/hadoop/hbase/mob/MobFileCache$EvictionThread."<init>":(Lorg/apache/hadoop/hbase/mob/MobFileCache;)V
+     251: lload_2
+     252: lload_2
+     253: getstatic     #49                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     256: invokeinterface #50,  7           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+     261: pop
+     262: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+     265: invokeinterface #51,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     270: ifeq          324
+     273: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+     276: new           #52                 // class java/lang/StringBuilder
+     279: dup
+     280: invokespecial #53                 // Method java/lang/StringBuilder."<init>":()V
+     283: ldc           #54                 // String MobFileCache enabled with cacheSize=
+     285: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     288: aload_0
+     289: getfield      #31                 // Field mobFileMaxCacheSize:I
+     292: invokevirtual #56                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     295: ldc           #57                 // String , evictPeriods=
+     297: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     300: lload_2
+     301: invokevirtual #58                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     304: ldc           #59                 // String sec, evictRemainRatio=
+     306: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     309: aload_0
+     310: getfield      #42                 // Field evictRemainRatio:F
+     313: invokevirtual #60                 // Method java/lang/StringBuilder.append:(F)Ljava/lang/StringBuilder;
+     316: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     319: invokeinterface #62,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     324: goto          337
+     327: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+     330: ldc           #63                 // String MobFileCache disabled
+     332: invokeinterface #64,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     337: return
+
+  public void evict();
+    Code:
+       0: aload_0
+       1: getfield      #32                 // Field isCacheEnabled:Z
+       4: ifeq          227
+       7: aload_0
+       8: getfield      #15                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+      11: invokevirtual #65                 // Method java/util/concurrent/locks/ReentrantLock.tryLock:()Z
+      14: ifne          18
+      17: return
+      18: aload_0
+      19: invokevirtual #66                 // Method printStatistics:()V
+      22: new           #67                 // class java/util/ArrayList
+      25: dup
+      26: invokespecial #68                 // Method java/util/ArrayList."<init>":()V
+      29: astore_1
+      30: aload_0
+      31: getfield      #2                  // Field map:Ljava/util/Map;
+      34: invokeinterface #69,  1           // InterfaceMethod java/util/Map.size:()I
+      39: aload_0
+      40: getfield      #31                 // Field mobFileMaxCacheSize:I
+      43: if_icmpgt     54
+      46: aload_0
+      47: getfield      #15                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+      50: invokevirtual #70                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+      53: return
+      54: new           #67                 // class java/util/ArrayList
+      57: dup
+      58: aload_0
+      59: getfield      #2                  // Field map:Ljava/util/Map;
+      62: invokeinterface #71,  1           // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+      67: invokespecial #72                 // Method java/util/ArrayList."<init>":(Ljava/util/Collection;)V
+      70: astore_2
+      71: aload_2
+      72: invokestatic  #73                 // Method java/util/Collections.sort:(Ljava/util/List;)V
+      75: aload_0
+      76: getfield      #31                 // Field mobFileMaxCacheSize:I
+      79: i2f
+      80: aload_0
+      81: getfield      #42                 // Field evictRemainRatio:F
+      84: fmul
+      85: f2i
+      86: istore_3
+      87: iload_3
+      88: iflt          157
+      91: iload_3
+      92: istore        4
+      94: iload         4
+      96: aload_2
+      97: invokeinterface #74,  1           // InterfaceMethod java/util/List.size:()I
+     102: if_icmpge     157
+     105: aload_2
+     106: iload         4
+     108: invokeinterface #75,  2           // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+     113: checkcast     #76                 // class org/apache/hadoop/hbase/mob/CachedMobFile
+     116: invokevirtual #77                 // Method org/apache/hadoop/hbase/mob/CachedMobFile.getFileName:()Ljava/lang/String;
+     119: astore        5
+     121: aload_0
+     122: getfield      #2                  // Field map:Ljava/util/Map;
+     125: aload         5
+     127: invokeinterface #78,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     132: checkcast     #76                 // class org/apache/hadoop/hbase/mob/CachedMobFile
+     135: astore        6
+     137: aload         6
+     139: ifnull        151
+     142: aload_1
+     143: aload         6
+     145: invokeinterface #79,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     150: pop
+     151: iinc          4, 1
+     154: goto          94
+     157: aload_0
+     158: getfield      #15                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+     161: invokevirtual #70                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     164: goto          179
+     167: astore        7
+     169: aload_0
+     170: getfield      #15                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+     173: invokevirtual #70                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     176: aload         7
+     178: athrow
+     179: aload_1
+     180: invokeinterface #80,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+     185: astore_2
+     186: aload_2
+     187: invokeinterface #81,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     192: ifeq          213
+     195: aload_2
+     196: invokeinterface #82,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     201: checkcast     #76                 // class org/apache/hadoop/hbase/mob/CachedMobFile
+     204: astore_3
+     205: aload_0
+     206: aload_3
+     207: invokevirtual #83                 // Method closeFile:(Lorg/apache/hadoop/hbase/mob/MobFile;)V
+     210: goto          186
+     213: aload_0
+     214: getfield      #11                 // Field evictedFileCount:Ljava/util/concurrent/atomic/LongAdder;
+     217: aload_1
+     218: invokeinterface #74,  1           // InterfaceMethod java/util/List.size:()I
+     223: i2l
+     224: invokevirtual #84                 // Method java/util/concurrent/atomic/LongAdder.add:(J)V
+     227: return
+    Exception table:
+       from    to  target type
+          30    46   167   any
+          54   157   167   any
+         167   169   167   any
+
+  public void evictFile(java.lang.String);
+    Code:
+       0: aload_0
+       1: getfield      #32                 // Field isCacheEnabled:Z
+       4: ifeq          127
+       7: aconst_null
+       8: astore_2
+       9: aload_0
+      10: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      13: aload_1
+      14: invokevirtual #85                 // Method java/lang/String.hashCode:()I
+      17: i2l
+      18: invokevirtual #86                 // Method org/apache/hadoop/hbase/util/IdLock.getLockEntry:(J)Lorg/apache/hadoop/hbase/util/IdLock$Entry;
+      21: astore_2
+      22: aload_0
+      23: getfield      #2                  // Field map:Ljava/util/Map;
+      26: aload_1
+      27: invokeinterface #78,  2           // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      32: checkcast     #76                 // class org/apache/hadoop/hbase/mob/CachedMobFile
+      35: astore_3
+      36: aload_3
+      37: ifnull        51
+      40: aload_3
+      41: invokevirtual #87                 // Method org/apache/hadoop/hbase/mob/CachedMobFile.close:()V
+      44: aload_0
+      45: getfield      #11                 // Field evictedFileCount:Ljava/util/concurrent/atomic/LongAdder;
+      48: invokevirtual #88                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+      51: aload_2
+      52: ifnull        127
+      55: aload_0
+      56: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      59: aload_2
+      60: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+      63: goto          127
+      66: astore_3
+      67: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+      70: new           #52                 // class java/lang/StringBuilder
+      73: dup
+      74: invokespecial #53                 // Method java/lang/StringBuilder."<init>":()V
+      77: ldc           #91                 // String Failed to evict the file
+      79: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      82: aload_1
+      83: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      86: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      89: aload_3
+      90: invokeinterface #92,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      95: aload_2
+      96: ifnull        127
+      99: aload_0
+     100: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     103: aload_2
+     104: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+     107: goto          127
+     110: astore        4
+     112: aload_2
+     113: ifnull        124
+     116: aload_0
+     117: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     120: aload_2
+     121: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+     124: aload         4
+     126: athrow
+     127: return
+    Exception table:
+       from    to  target type
+           9    51    66   Class java/io/IOException
+           9    51   110   any
+          66    95   110   any
+         110   112   110   any
+
+  public org.apache.hadoop.hbase.mob.MobFile openFile(org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.io.hfile.CacheConfig) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #32                 // Field isCacheEnabled:Z
+       4: ifne          27
+       7: aload_1
+       8: aload_2
+       9: aload_0
+      10: getfield      #27                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      13: aload_3
+      14: invokestatic  #93                 // Method org/apache/hadoop/hbase/mob/MobFile.create:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;)Lorg/apache/hadoop/hbase/mob/MobFile;
+      17: astore        4
+      19: aload         4
+      21: invokevirtual #94                 // Method org/apache/hadoop/hbase/mob/MobFile.open:()V
+      24: aload         4
+      26: areturn
+      27: aload_2
+      28: invokevirtual #95                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+      31: astore        4
+      33: aload_0
+      34: getfield      #2                  // Field map:Ljava/util/Map;
+      37: aload         4
+      39: invokeinterface #96,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      44: checkcast     #76                 // class org/apache/hadoop/hbase/mob/CachedMobFile
+      47: astore        5
+      49: aload_0
+      50: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      53: aload         4
+      55: invokevirtual #85                 // Method java/lang/String.hashCode:()I
+      58: i2l
+      59: invokevirtual #86                 // Method org/apache/hadoop/hbase/util/IdLock.getLockEntry:(J)Lorg/apache/hadoop/hbase/util/IdLock$Entry;
+      62: astore        6
+      64: aload         5
+      66: ifnonnull     148
+      69: aload_0
+      70: getfield      #2                  // Field map:Ljava/util/Map;
+      73: aload         4
+      75: invokeinterface #96,  2           // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      80: checkcast     #76                 // class org/apache/hadoop/hbase/mob/CachedMobFile
+      83: astore        5
+      85: aload         5
+      87: ifnonnull     148
+      90: aload_0
+      91: getfield      #2                  // Field map:Ljava/util/Map;
+      94: invokeinterface #69,  1           // InterfaceMethod java/util/Map.size:()I
+      99: aload_0
+     100: getfield      #31                 // Field mobFileMaxCacheSize:I
+     103: if_icmple     110
+     106: aload_0
+     107: invokevirtual #97                 // Method evict:()V
+     110: aload_1
+     111: aload_2
+     112: aload_0
+     113: getfield      #27                 // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     116: aload_3
+     117: invokestatic  #98                 // Method org/apache/hadoop/hbase/mob/CachedMobFile.create:(Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/io/hfile/CacheConfig;)Lorg/apache/hadoop/hbase/mob/CachedMobFile;
+     120: astore        5
+     122: aload         5
+     124: invokevirtual #99                 // Method org/apache/hadoop/hbase/mob/CachedMobFile.open:()V
+     127: aload_0
+     128: getfield      #2                  // Field map:Ljava/util/Map;
+     131: aload         4
+     133: aload         5
+     135: invokeinterface #100,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     140: pop
+     141: aload_0
+     142: getfield      #9                  // Field miss:Ljava/util/concurrent/atomic/LongAdder;
+     145: invokevirtual #88                 // Method java/util/concurrent/atomic/LongAdder.increment:()V
+     148: aload         5
+     150: invokevirtual #99                 // Method org/apache/hadoop/hbase/mob/CachedMobFile.open:()V
+     153: aload         5
+     155: aload_0
+     156: getfield      #5                  // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+     159: invokevirtual #101                // Method java/util/concurrent/atomic/AtomicLong.incrementAndGet:()J
+     162: invokevirtual #102                // Method org/apache/hadoop/hbase/mob/CachedMobFile.access:(J)V
+     165: aload_0
+     166: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     169: aload         6
+     171: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+     174: goto          191
+     177: astore        7
+     179: aload_0
+     180: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     183: aload         6
+     185: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+     188: aload         7
+     190: athrow
+     191: aload         5
+     193: areturn
+    Exception table:
+       from    to  target type
+          64   165   177   any
+         177   179   177   any
+
+  public void closeFile(org.apache.hadoop.hbase.mob.MobFile);
+    Code:
+       0: aconst_null
+       1: astore_2
+       2: aload_0
+       3: getfield      #32                 // Field isCacheEnabled:Z
+       6: ifne          16
+       9: aload_1
+      10: invokevirtual #103                // Method org/apache/hadoop/hbase/mob/MobFile.close:()V
+      13: goto          36
+      16: aload_0
+      17: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      20: aload_1
+      21: invokevirtual #104                // Method org/apache/hadoop/hbase/mob/MobFile.getFileName:()Ljava/lang/String;
+      24: invokevirtual #85                 // Method java/lang/String.hashCode:()I
+      27: i2l
+      28: invokevirtual #86                 // Method org/apache/hadoop/hbase/util/IdLock.getLockEntry:(J)Lorg/apache/hadoop/hbase/util/IdLock$Entry;
+      31: astore_2
+      32: aload_1
+      33: invokevirtual #103                // Method org/apache/hadoop/hbase/mob/MobFile.close:()V
+      36: aload_2
+      37: ifnull        115
+      40: aload_0
+      41: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      44: aload_2
+      45: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+      48: goto          115
+      51: astore_3
+      52: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+      55: new           #52                 // class java/lang/StringBuilder
+      58: dup
+      59: invokespecial #53                 // Method java/lang/StringBuilder."<init>":()V
+      62: ldc           #105                // String MobFileCache, Exception happen during close
+      64: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      67: aload_1
+      68: invokevirtual #104                // Method org/apache/hadoop/hbase/mob/MobFile.getFileName:()Ljava/lang/String;
+      71: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      74: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      77: aload_3
+      78: invokeinterface #92,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      83: aload_2
+      84: ifnull        115
+      87: aload_0
+      88: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+      91: aload_2
+      92: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+      95: goto          115
+      98: astore        4
+     100: aload_2
+     101: ifnull        112
+     104: aload_0
+     105: getfield      #18                 // Field keyLock:Lorg/apache/hadoop/hbase/util/IdLock;
+     108: aload_2
+     109: invokevirtual #89                 // Method org/apache/hadoop/hbase/util/IdLock.releaseLockEntry:(Lorg/apache/hadoop/hbase/util/IdLock$Entry;)V
+     112: aload         4
+     114: athrow
+     115: return
+    Exception table:
+       from    to  target type
+           2    36    51   Class java/io/IOException
+           2    36    98   any
+          51    83    98   any
+          98   100    98   any
+
+  public void shutdown();
+    Code:
+       0: aload_0
+       1: getfield      #26                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+       4: invokeinterface #106,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.shutdown:()V
+       9: iconst_0
+      10: istore_1
+      11: iload_1
+      12: bipush        100
+      14: if_icmpge     64
+      17: aload_0
+      18: getfield      #26                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      21: invokeinterface #107,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.isShutdown:()Z
+      26: ifne          58
+      29: ldc2_w        #108                // long 10l
+      32: invokestatic  #110                // Method java/lang/Thread.sleep:(J)V
+      35: goto          58
+      38: astore_2
+      39: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+      42: ldc           #112                // String Interrupted while sleeping
+      44: invokeinterface #45,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      49: invokestatic  #113                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      52: invokevirtual #114                // Method java/lang/Thread.interrupt:()V
+      55: goto          64
+      58: iinc          1, 1
+      61: goto          11
+      64: aload_0
+      65: getfield      #26                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      68: invokeinterface #107,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.isShutdown:()Z
+      73: ifne          113
+      76: aload_0
+      77: getfield      #26                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      80: invokeinterface #115,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.shutdownNow:()Ljava/util/List;
+      85: astore_1
+      86: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+      89: new           #52                 // class java/lang/StringBuilder
+      92: dup
+      93: invokespecial #53                 // Method java/lang/StringBuilder."<init>":()V
+      96: ldc           #116                // String Still running
+      98: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     101: aload_1
+     102: invokevirtual #117                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     105: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     108: invokeinterface #62,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     113: return
+    Exception table:
+       from    to  target type
+          29    35    38   Class java/lang/InterruptedException
+
+  public int getCacheSize();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field map:Ljava/util/Map;
+       4: ifnonnull     11
+       7: iconst_0
+       8: goto          20
+      11: aload_0
+      12: getfield      #2                  // Field map:Ljava/util/Map;
+      15: invokeinterface #69,  1           // InterfaceMethod java/util/Map.size:()I
+      20: ireturn
+
+  public long getAccessCount();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #118                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public long getMissCount();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field miss:Ljava/util/concurrent/atomic/LongAdder;
+       4: invokevirtual #119                // Method java/util/concurrent/atomic/LongAdder.sum:()J
+       7: lreturn
+
+  public long getEvictedFileCount();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field evictedFileCount:Ljava/util/concurrent/atomic/LongAdder;
+       4: invokevirtual #119                // Method java/util/concurrent/atomic/LongAdder.sum:()J
+       7: lreturn
+
+  public double getHitRatio();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #118                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lconst_0
+       8: lcmp
+       9: ifne          16
+      12: dconst_0
+      13: goto          42
+      16: aload_0
+      17: getfield      #5                  // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+      20: invokevirtual #118                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      23: aload_0
+      24: getfield      #9                  // Field miss:Ljava/util/concurrent/atomic/LongAdder;
+      27: invokevirtual #119                // Method java/util/concurrent/atomic/LongAdder.sum:()J
+      30: lsub
+      31: l2f
+      32: aload_0
+      33: getfield      #5                  // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+      36: invokevirtual #118                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      39: l2f
+      40: fdiv
+      41: f2d
+      42: dreturn
+
+  public void printStatistics();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #118                // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: aload_0
+       8: getfield      #6                  // Field lastAccess:J
+      11: lsub
+      12: lstore_1
+      13: aload_0
+      14: getfield      #9                  // Field miss:Ljava/util/concurrent/atomic/LongAdder;
+      17: invokevirtual #119                // Method java/util/concurrent/atomic/LongAdder.sum:()J
+      20: aload_0
+      21: getfield      #10                 // Field lastMiss:J
+      24: lsub
+      25: lstore_3
+      26: aload_0
+      27: getfield      #11                 // Field evictedFileCount:Ljava/util/concurrent/atomic/LongAdder;
+      30: invokevirtual #119                // Method java/util/concurrent/atomic/LongAdder.sum:()J
+      33: aload_0
+      34: getfield      #12                 // Field lastEvictedFileCount:J
+      37: lsub
+      38: lstore        5
+      40: lload_1
+      41: lconst_0
+      42: lcmp
+      43: ifne          50
+      46: iconst_0
+      47: goto          61
+      50: lload_1
+      51: lload_3
+      52: lsub
+      53: l2f
+      54: lload_1
+      55: l2f
+      56: fdiv
+      57: ldc           #120                // float 100.0f
+      59: fmul
+      60: f2i
+      61: istore        7
+      63: getstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+      66: new           #52                 // class java/lang/StringBuilder
+      69: dup
+      70: invokespecial #53                 // Method java/lang/StringBuilder."<init>":()V
+      73: ldc           #121                // String MobFileCache Statistics, access:
+      75: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      78: lload_1
+      79: invokevirtual #58                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      82: ldc           #122                // String , miss:
+      84: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: lload_3
+      88: invokevirtual #58                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      91: ldc           #123                // String , hit:
+      93: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      96: lload_1
+      97: lload_3
+      98: lsub
+      99: invokevirtual #58                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     102: ldc           #124                // String , hit ratio:
+     104: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     107: iload         7
+     109: invokevirtual #56                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     112: ldc           #125                // String %, evicted files:
+     114: invokevirtual #55                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     117: lload         5
+     119: invokevirtual #58                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     122: invokevirtual #61                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     125: invokeinterface #64,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     130: aload_0
+     131: dup
+     132: getfield      #6                  // Field lastAccess:J
+     135: lload_1
+     136: ladd
+     137: putfield      #6                  // Field lastAccess:J
+     140: aload_0
+     141: dup
+     142: getfield      #10                 // Field lastMiss:J
+     145: lload_3
+     146: ladd
+     147: putfield      #10                 // Field lastMiss:J
+     150: aload_0
+     151: dup
+     152: getfield      #12                 // Field lastEvictedFileCount:J
+     155: lload         5
+     157: ladd
+     158: putfield      #12                 // Field lastEvictedFileCount:J
+     161: return
+
+  static {};
+    Code:
+       0: ldc           #126                // class org/apache/hadoop/hbase/mob/MobFileCache
+       2: invokestatic  #127                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #43                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

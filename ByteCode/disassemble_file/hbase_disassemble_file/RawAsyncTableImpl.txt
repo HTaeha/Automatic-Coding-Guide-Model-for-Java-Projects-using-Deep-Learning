@@ -1,0 +1,539 @@
+Compiled from "RawAsyncTableImpl.java"
+class org.apache.hadoop.hbase.client.RawAsyncTableImpl implements org.apache.hadoop.hbase.client.AsyncTable<org.apache.hadoop.hbase.client.AdvancedScanResultConsumer> {
+  org.apache.hadoop.hbase.client.RawAsyncTableImpl(org.apache.hadoop.hbase.client.AsyncConnectionImpl, org.apache.hbase.thirdparty.io.netty.util.Timer, org.apache.hadoop.hbase.client.AsyncTableBuilderBase<?>);
+    Code:
+       0: aload_0
+       1: invokespecial #9                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       9: aload_0
+      10: aload_2
+      11: putfield      #10                 // Field retryTimer:Lorg/apache/hbase/thirdparty/io/netty/util/Timer;
+      14: aload_0
+      15: aload_3
+      16: getfield      #11                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.tableName:Lorg/apache/hadoop/hbase/TableName;
+      19: putfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      22: aload_0
+      23: aload_3
+      24: getfield      #12                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.rpcTimeoutNs:J
+      27: putfield      #7                  // Field rpcTimeoutNs:J
+      30: aload_0
+      31: aload_3
+      32: getfield      #13                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.readRpcTimeoutNs:J
+      35: putfield      #14                 // Field readRpcTimeoutNs:J
+      38: aload_0
+      39: aload_3
+      40: getfield      #15                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.writeRpcTimeoutNs:J
+      43: putfield      #16                 // Field writeRpcTimeoutNs:J
+      46: aload_0
+      47: aload_3
+      48: getfield      #17                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.operationTimeoutNs:J
+      51: putfield      #2                  // Field operationTimeoutNs:J
+      54: aload_0
+      55: aload_3
+      56: getfield      #18                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.scanTimeoutNs:J
+      59: putfield      #19                 // Field scanTimeoutNs:J
+      62: aload_0
+      63: aload_3
+      64: getfield      #20                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.pauseNs:J
+      67: putfield      #21                 // Field pauseNs:J
+      70: aload_3
+      71: getfield      #22                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.pauseForCQTBENs:J
+      74: aload_3
+      75: getfield      #20                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.pauseNs:J
+      78: lcmp
+      79: ifge          129
+      82: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      85: ldc           #24                 // String Configured value of pauseForCQTBENs is {} ms, which is less than the normal pause value {} ms, use the greater one instead
+      87: getstatic     #25                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+      90: aload_3
+      91: getfield      #22                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.pauseForCQTBENs:J
+      94: invokevirtual #26                 // Method java/util/concurrent/TimeUnit.toMillis:(J)J
+      97: invokestatic  #27                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     100: getstatic     #25                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+     103: aload_3
+     104: getfield      #20                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.pauseNs:J
+     107: invokevirtual #26                 // Method java/util/concurrent/TimeUnit.toMillis:(J)J
+     110: invokestatic  #27                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     113: invokeinterface #28,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     118: aload_0
+     119: aload_3
+     120: getfield      #20                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.pauseNs:J
+     123: putfield      #29                 // Field pauseForCQTBENs:J
+     126: goto          137
+     129: aload_0
+     130: aload_3
+     131: getfield      #22                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.pauseForCQTBENs:J
+     134: putfield      #29                 // Field pauseForCQTBENs:J
+     137: aload_0
+     138: aload_3
+     139: getfield      #30                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.maxAttempts:I
+     142: putfield      #31                 // Field maxAttempts:I
+     145: aload_0
+     146: aload_3
+     147: getfield      #32                 // Field org/apache/hadoop/hbase/client/AsyncTableBuilderBase.startLogErrorsCnt:I
+     150: putfield      #33                 // Field startLogErrorsCnt:I
+     153: aload_0
+     154: aload_0
+     155: getfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+     158: invokevirtual #34                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+     161: ifeq          174
+     164: aload_1
+     165: getfield      #35                 // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+     168: invokevirtual #36                 // Method org/apache/hadoop/hbase/client/AsyncConnectionConfiguration.getMetaScannerCaching:()I
+     171: goto          181
+     174: aload_1
+     175: getfield      #35                 // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+     178: invokevirtual #37                 // Method org/apache/hadoop/hbase/client/AsyncConnectionConfiguration.getScannerCaching:()I
+     181: putfield      #38                 // Field defaultScannerCaching:I
+     184: aload_0
+     185: aload_1
+     186: getfield      #35                 // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+     189: invokevirtual #39                 // Method org/apache/hadoop/hbase/client/AsyncConnectionConfiguration.getScannerMaxResultSize:()J
+     192: putfield      #40                 // Field defaultScannerMaxResultSize:J
+     195: return
+
+  public org.apache.hadoop.hbase.TableName getName();
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       4: areturn
+
+  public org.apache.hadoop.conf.Configuration getConfiguration();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       4: invokevirtual #41                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       7: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.TableDescriptor> getDescriptor();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       4: invokevirtual #42                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getAdmin:()Lorg/apache/hadoop/hbase/client/AsyncAdmin;
+       7: aload_0
+       8: getfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      11: invokeinterface #43,  2           // InterfaceMethod org/apache/hadoop/hbase/client/AsyncAdmin.getDescriptor:(Lorg/apache/hadoop/hbase/TableName;)Ljava/util/concurrent/CompletableFuture;
+      16: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncTableRegionLocator getRegionLocator();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       4: aload_0
+       5: getfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       8: invokevirtual #44                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getRegionLocator:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/AsyncTableRegionLocator;
+      11: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.Result> get(org.apache.hadoop.hbase.client.Get);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       4: invokevirtual #82                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getLocator:()Lorg/apache/hadoop/hbase/client/AsyncRegionLocator;
+       7: aload_0
+       8: getfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      11: aload_1
+      12: aload_1
+      13: invokevirtual #83                 // Method org/apache/hadoop/hbase/client/Get.getRow:()[B
+      16: getstatic     #84                 // Field org/apache/hadoop/hbase/client/RegionLocateType.CURRENT:Lorg/apache/hadoop/hbase/client/RegionLocateType;
+      19: aload_0
+      20: aload_1
+      21: invokedynamic #85,  0             // InvokeDynamic #4:apply:(Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl;Lorg/apache/hadoop/hbase/client/Get;)Ljava/util/function/Function;
+      26: aload_0
+      27: getfield      #14                 // Field readRpcTimeoutNs:J
+      30: aload_0
+      31: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      34: getfield      #35                 // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+      37: invokevirtual #86                 // Method org/apache/hadoop/hbase/client/AsyncConnectionConfiguration.getPrimaryCallTimeoutNs:()J
+      40: aload_0
+      41: getfield      #10                 // Field retryTimer:Lorg/apache/hbase/thirdparty/io/netty/util/Timer;
+      44: aload_0
+      45: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      48: invokevirtual #87                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getConnectionMetrics:()Ljava/util/Optional;
+      51: invokestatic  #88                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.timelineConsistentRead:(Lorg/apache/hadoop/hbase/client/AsyncRegionLocator;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/Query;[BLorg/apache/hadoop/hbase/client/RegionLocateType;Ljava/util/function/Function;JJLorg/apache/hbase/thirdparty/io/netty/util/Timer;Ljava/util/Optional;)Ljava/util/concurrent/CompletableFuture;
+      54: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> put(org.apache.hadoop.hbase.client.Put);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       5: getfield      #35                 // Field org/apache/hadoop/hbase/client/AsyncConnectionImpl.connConf:Lorg/apache/hadoop/hbase/client/AsyncConnectionConfiguration;
+       8: invokevirtual #89                 // Method org/apache/hadoop/hbase/client/AsyncConnectionConfiguration.getMaxKeyValueSize:()I
+      11: invokestatic  #90                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.validatePut:(Lorg/apache/hadoop/hbase/client/Put;I)V
+      14: aload_0
+      15: aload_1
+      16: aload_0
+      17: getfield      #16                 // Field writeRpcTimeoutNs:J
+      20: invokespecial #77                 // Method newCaller:(Lorg/apache/hadoop/hbase/client/OperationWithAttributes;J)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      23: aload_1
+      24: invokedynamic #91,  0             // InvokeDynamic #5:call:(Lorg/apache/hadoop/hbase/client/Put;)Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;
+      29: invokevirtual #79                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      32: invokevirtual #81                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      35: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> delete(org.apache.hadoop.hbase.client.Delete);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_0
+       3: getfield      #16                 // Field writeRpcTimeoutNs:J
+       6: invokespecial #77                 // Method newCaller:(Lorg/apache/hadoop/hbase/client/OperationWithAttributes;J)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+       9: aload_1
+      10: invokedynamic #92,  0             // InvokeDynamic #6:call:(Lorg/apache/hadoop/hbase/client/Delete;)Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;
+      15: invokevirtual #79                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      18: invokevirtual #81                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      21: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.Result> append(org.apache.hadoop.hbase.client.Append);
+    Code:
+       0: aload_1
+       1: invokestatic  #93                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.checkHasFamilies:(Lorg/apache/hadoop/hbase/client/Mutation;)V
+       4: aload_0
+       5: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       8: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getNonceGenerator:()Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      11: invokeinterface #95,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      16: lstore_2
+      17: aload_0
+      18: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      21: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getNonceGenerator:()Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      24: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      29: lstore        4
+      31: aload_0
+      32: aload_1
+      33: aload_0
+      34: getfield      #7                  // Field rpcTimeoutNs:J
+      37: invokespecial #77                 // Method newCaller:(Lorg/apache/hadoop/hbase/client/OperationWithAttributes;J)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      40: aload_0
+      41: lload_2
+      42: lload         4
+      44: aload_1
+      45: invokedynamic #97,  0             // InvokeDynamic #7:call:(Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl;JJLorg/apache/hadoop/hbase/client/Append;)Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;
+      50: invokevirtual #79                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      53: invokevirtual #81                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      56: areturn
+
+  public java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.Result> increment(org.apache.hadoop.hbase.client.Increment);
+    Code:
+       0: aload_1
+       1: invokestatic  #93                 // Method org/apache/hadoop/hbase/client/ConnectionUtils.checkHasFamilies:(Lorg/apache/hadoop/hbase/client/Mutation;)V
+       4: aload_0
+       5: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       8: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getNonceGenerator:()Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      11: invokeinterface #95,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.getNonceGroup:()J
+      16: lstore_2
+      17: aload_0
+      18: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      21: invokevirtual #94                 // Method org/apache/hadoop/hbase/client/AsyncConnectionImpl.getNonceGenerator:()Lorg/apache/hadoop/hbase/client/NonceGenerator;
+      24: invokeinterface #96,  1           // InterfaceMethod org/apache/hadoop/hbase/client/NonceGenerator.newNonce:()J
+      29: lstore        4
+      31: aload_0
+      32: aload_1
+      33: aload_0
+      34: getfield      #7                  // Field rpcTimeoutNs:J
+      37: invokespecial #77                 // Method newCaller:(Lorg/apache/hadoop/hbase/client/OperationWithAttributes;J)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      40: aload_0
+      41: lload_2
+      42: lload         4
+      44: aload_1
+      45: invokedynamic #98,  0             // InvokeDynamic #8:call:(Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl;JJLorg/apache/hadoop/hbase/client/Increment;)Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;
+      50: invokevirtual #79                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      53: invokevirtual #81                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      56: areturn
+
+  public org.apache.hadoop.hbase.client.AsyncTable$CheckAndMutateBuilder checkAndMutate(byte[], byte[]);
+    Code:
+       0: new           #99                 // class org/apache/hadoop/hbase/client/RawAsyncTableImpl$CheckAndMutateBuilderImpl
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: invokespecial #100                // Method org/apache/hadoop/hbase/client/RawAsyncTableImpl$CheckAndMutateBuilderImpl."<init>":(Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl;[B[B)V
+      10: areturn
+
+  public java.util.concurrent.CompletableFuture<java.lang.Void> mutateRow(org.apache.hadoop.hbase.client.RowMutations);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #105                // Method org/apache/hadoop/hbase/client/RowMutations.getRow:()[B
+       5: aload_1
+       6: invokevirtual #106                // Method org/apache/hadoop/hbase/client/RowMutations.getMaxPriority:()I
+       9: aload_0
+      10: getfield      #16                 // Field writeRpcTimeoutNs:J
+      13: invokespecial #6                  // Method newCaller:([BIJ)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      16: aload_0
+      17: aload_1
+      18: invokedynamic #107,  0            // InvokeDynamic #9:call:(Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl;Lorg/apache/hadoop/hbase/client/RowMutations;)Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;
+      23: invokevirtual #79                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.action:(Lorg/apache/hadoop/hbase/client/AsyncSingleRequestRpcRetryingCaller$Callable;)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+      26: invokevirtual #81                 // Method org/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder.call:()Ljava/util/concurrent/CompletableFuture;
+      29: areturn
+
+  public void scan(org.apache.hadoop.hbase.client.Scan, org.apache.hadoop.hbase.client.AdvancedScanResultConsumer);
+    Code:
+       0: new           #116                // class org/apache/hadoop/hbase/client/AsyncClientScanner
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: invokespecial #117                // Method setDefaultScanConfig:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/Scan;
+       9: aload_2
+      10: aload_0
+      11: getfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      14: aload_0
+      15: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+      18: aload_0
+      19: getfield      #10                 // Field retryTimer:Lorg/apache/hbase/thirdparty/io/netty/util/Timer;
+      22: aload_0
+      23: getfield      #21                 // Field pauseNs:J
+      26: aload_0
+      27: getfield      #29                 // Field pauseForCQTBENs:J
+      30: aload_0
+      31: getfield      #31                 // Field maxAttempts:I
+      34: aload_0
+      35: getfield      #19                 // Field scanTimeoutNs:J
+      38: aload_0
+      39: getfield      #14                 // Field readRpcTimeoutNs:J
+      42: aload_0
+      43: getfield      #33                 // Field startLogErrorsCnt:I
+      46: invokespecial #118                // Method org/apache/hadoop/hbase/client/AsyncClientScanner."<init>":(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/client/AdvancedScanResultConsumer;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;Lorg/apache/hbase/thirdparty/io/netty/util/Timer;JJIJJI)V
+      49: invokevirtual #119                // Method org/apache/hadoop/hbase/client/AsyncClientScanner.start:()V
+      52: return
+
+  public org.apache.hadoop.hbase.client.ResultScanner getScanner(org.apache.hadoop.hbase.client.Scan);
+    Code:
+       0: new           #125                // class org/apache/hadoop/hbase/client/AsyncTableResultScanner
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: invokevirtual #108                // Method java/lang/Object.getClass:()Ljava/lang/Class;
+       9: iconst_1
+      10: anewarray     #109                // class java/lang/Object
+      13: dup
+      14: iconst_0
+      15: aload_1
+      16: aastore
+      17: invokestatic  #110                // Method org/apache/hadoop/hbase/util/ReflectionUtils.newInstance:(Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;
+      20: checkcast     #111                // class org/apache/hadoop/hbase/client/Scan
+      23: aload_0
+      24: aload_1
+      25: invokevirtual #114                // Method org/apache/hadoop/hbase/client/Scan.getMaxResultSize:()J
+      28: lconst_0
+      29: lcmp
+      30: ifle          40
+      33: aload_1
+      34: invokevirtual #114                // Method org/apache/hadoop/hbase/client/Scan.getMaxResultSize:()J
+      37: goto          44
+      40: aload_0
+      41: getfield      #40                 // Field defaultScannerMaxResultSize:J
+      44: invokespecial #126                // Method resultSize2CacheSize:(J)J
+      47: invokespecial #127                // Method org/apache/hadoop/hbase/client/AsyncTableResultScanner."<init>":(Lorg/apache/hadoop/hbase/client/AsyncTable;Lorg/apache/hadoop/hbase/client/Scan;J)V
+      50: areturn
+
+  public java.util.concurrent.CompletableFuture<java.util.List<org.apache.hadoop.hbase.client.Result>> scanAll(org.apache.hadoop.hbase.client.Scan);
+    Code:
+       0: new           #45                 // class java/util/concurrent/CompletableFuture
+       3: dup
+       4: invokespecial #46                 // Method java/util/concurrent/CompletableFuture."<init>":()V
+       7: astore_2
+       8: new           #128                // class java/util/ArrayList
+      11: dup
+      12: invokespecial #129                // Method java/util/ArrayList."<init>":()V
+      15: astore_3
+      16: aload_0
+      17: aload_1
+      18: new           #130                // class org/apache/hadoop/hbase/client/RawAsyncTableImpl$3
+      21: dup
+      22: aload_0
+      23: aload_3
+      24: aload_2
+      25: invokespecial #131                // Method org/apache/hadoop/hbase/client/RawAsyncTableImpl$3."<init>":(Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)V
+      28: invokevirtual #132                // Method scan:(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/client/AdvancedScanResultConsumer;)V
+      31: aload_2
+      32: areturn
+
+  public java.util.List<java.util.concurrent.CompletableFuture<org.apache.hadoop.hbase.client.Result>> get(java.util.List<org.apache.hadoop.hbase.client.Get>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_0
+       3: getfield      #14                 // Field readRpcTimeoutNs:J
+       6: invokespecial #133                // Method batch:(Ljava/util/List;J)Ljava/util/List;
+       9: areturn
+
+  public java.util.List<java.util.concurrent.CompletableFuture<java.lang.Void>> put(java.util.List<org.apache.hadoop.hbase.client.Put>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #134                // Method voidMutate:(Ljava/util/List;)Ljava/util/List;
+       5: areturn
+
+  public java.util.List<java.util.concurrent.CompletableFuture<java.lang.Void>> delete(java.util.List<org.apache.hadoop.hbase.client.Delete>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #134                // Method voidMutate:(Ljava/util/List;)Ljava/util/List;
+       5: areturn
+
+  public <T> java.util.List<java.util.concurrent.CompletableFuture<T>> batch(java.util.List<? extends org.apache.hadoop.hbase.client.Row>);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_0
+       3: getfield      #7                  // Field rpcTimeoutNs:J
+       6: invokespecial #133                // Method batch:(Ljava/util/List;J)Ljava/util/List;
+       9: areturn
+
+  public long getRpcTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #7                  // Field rpcTimeoutNs:J
+       5: getstatic     #25                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+       8: invokevirtual #156                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      11: lreturn
+
+  public long getReadRpcTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #14                 // Field readRpcTimeoutNs:J
+       5: getstatic     #25                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+       8: invokevirtual #156                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      11: lreturn
+
+  public long getWriteRpcTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #16                 // Field writeRpcTimeoutNs:J
+       5: getstatic     #25                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+       8: invokevirtual #156                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      11: lreturn
+
+  public long getOperationTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #2                  // Field operationTimeoutNs:J
+       5: getstatic     #25                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+       8: invokevirtual #156                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      11: lreturn
+
+  public long getScanTimeout(java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: getfield      #19                 // Field scanTimeoutNs:J
+       5: getstatic     #25                 // Field java/util/concurrent/TimeUnit.NANOSECONDS:Ljava/util/concurrent/TimeUnit;
+       8: invokevirtual #156                // Method java/util/concurrent/TimeUnit.convert:(JLjava/util/concurrent/TimeUnit;)J
+      11: lreturn
+
+  public <S, R> java.util.concurrent.CompletableFuture<R> coprocessorService(java.util.function.Function<com.google.protobuf.RpcChannel, S>, org.apache.hadoop.hbase.client.ServiceCaller<S, R>, byte[]);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aconst_null
+       4: aload_3
+       5: invokespecial #164                // Method coprocessorService:(Ljava/util/function/Function;Lorg/apache/hadoop/hbase/client/ServiceCaller;Lorg/apache/hadoop/hbase/client/RegionInfo;[B)Ljava/util/concurrent/CompletableFuture;
+       8: areturn
+
+  public <S, R> org.apache.hadoop.hbase.client.AsyncTable$CoprocessorServiceBuilder<S, R> coprocessorService(java.util.function.Function<com.google.protobuf.RpcChannel, S>, org.apache.hadoop.hbase.client.ServiceCaller<S, R>, org.apache.hadoop.hbase.client.AsyncTable$CoprocessorCallback<R>);
+    Code:
+       0: new           #177                // class org/apache/hadoop/hbase/client/RawAsyncTableImpl$CoprocessorServiceBuilderImpl
+       3: dup
+       4: aload_0
+       5: aload_1
+       6: aload_2
+       7: aload_3
+       8: invokespecial #178                // Method org/apache/hadoop/hbase/client/RawAsyncTableImpl$CoprocessorServiceBuilderImpl."<init>":(Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl;Ljava/util/function/Function;Lorg/apache/hadoop/hbase/client/ServiceCaller;Lorg/apache/hadoop/hbase/client/AsyncTable$CoprocessorCallback;)V
+      11: areturn
+
+  public void scan(org.apache.hadoop.hbase.client.Scan, org.apache.hadoop.hbase.client.ScanResultConsumerBase);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: checkcast     #179                // class org/apache/hadoop/hbase/client/AdvancedScanResultConsumer
+       6: invokevirtual #132                // Method scan:(Lorg/apache/hadoop/hbase/client/Scan;Lorg/apache/hadoop/hbase/client/AdvancedScanResultConsumer;)V
+       9: return
+
+  static org.apache.hadoop.hbase.client.AsyncConnectionImpl access$000(org.apache.hadoop.hbase.client.RawAsyncTableImpl);
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field conn:Lorg/apache/hadoop/hbase/client/AsyncConnectionImpl;
+       4: areturn
+
+  static long access$100(org.apache.hadoop.hbase.client.RawAsyncTableImpl);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field rpcTimeoutNs:J
+       4: lreturn
+
+  static org.apache.hadoop.hbase.client.AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder access$200(org.apache.hadoop.hbase.client.RawAsyncTableImpl, byte[], int, long);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: lload_3
+       4: invokespecial #6                  // Method newCaller:([BIJ)Lorg/apache/hadoop/hbase/client/AsyncRpcRetryingCallerFactory$SingleRequestCallerBuilder;
+       7: areturn
+
+  static java.util.concurrent.CompletableFuture access$300(org.apache.hadoop.hbase.client.RawAsyncTableImpl, org.apache.hadoop.hbase.ipc.HBaseRpcController, org.apache.hadoop.hbase.HRegionLocation, org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$ClientService$Interface, org.apache.hadoop.hbase.client.RowMutations, org.apache.hadoop.hbase.client.RawAsyncTableImpl$Converter, java.util.function.Function);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: aload         6
+      10: invokespecial #5                  // Method mutateRow:(Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;Lorg/apache/hadoop/hbase/HRegionLocation;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$Interface;Lorg/apache/hadoop/hbase/client/RowMutations;Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl$Converter;Ljava/util/function/Function;)Ljava/util/concurrent/CompletableFuture;
+      13: areturn
+
+  static java.util.concurrent.CompletableFuture access$400(org.apache.hadoop.hbase.ipc.HBaseRpcController, org.apache.hadoop.hbase.HRegionLocation, org.apache.hadoop.hbase.shaded.protobuf.generated.ClientProtos$ClientService$Interface, java.lang.Object, org.apache.hadoop.hbase.client.RawAsyncTableImpl$Converter, org.apache.hadoop.hbase.client.RawAsyncTableImpl$Converter);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: invokestatic  #4                  // Method mutate:(Lorg/apache/hadoop/hbase/ipc/HBaseRpcController;Lorg/apache/hadoop/hbase/HRegionLocation;Lorg/apache/hadoop/hbase/shaded/protobuf/generated/ClientProtos$ClientService$Interface;Ljava/lang/Object;Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl$Converter;Lorg/apache/hadoop/hbase/client/RawAsyncTableImpl$Converter;)Ljava/util/concurrent/CompletableFuture;
+      11: areturn
+
+  static org.apache.hadoop.hbase.TableName access$500(org.apache.hadoop.hbase.client.RawAsyncTableImpl);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       4: areturn
+
+  static long access$600(org.apache.hadoop.hbase.client.RawAsyncTableImpl);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field operationTimeoutNs:J
+       4: lreturn
+
+  static void access$700(org.apache.hadoop.hbase.client.RawAsyncTableImpl, java.util.function.Function, org.apache.hadoop.hbase.client.ServiceCaller, org.apache.hadoop.hbase.client.AsyncTable$CoprocessorCallback, java.util.List, byte[], boolean, java.util.concurrent.atomic.AtomicBoolean, java.util.concurrent.atomic.AtomicInteger, org.apache.hadoop.hbase.HRegionLocation, java.lang.Throwable);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: aload_3
+       4: aload         4
+       6: aload         5
+       8: iload         6
+      10: aload         7
+      12: aload         8
+      14: aload         9
+      16: aload         10
+      18: invokespecial #1                  // Method onLocateComplete:(Ljava/util/function/Function;Lorg/apache/hadoop/hbase/client/ServiceCaller;Lorg/apache/hadoop/hbase/client/AsyncTable$CoprocessorCallback;Ljava/util/List;[BZLjava/util/concurrent/atomic/AtomicBoolean;Ljava/util/concurrent/atomic/AtomicInteger;Lorg/apache/hadoop/hbase/HRegionLocation;Ljava/lang/Throwable;)V
+      21: return
+
+  static {};
+    Code:
+       0: ldc           #216                // class org/apache/hadoop/hbase/client/RawAsyncTableImpl
+       2: invokestatic  #217                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

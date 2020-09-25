@@ -1,0 +1,291 @@
+Compiled from "RegionReplicaFlushHandler.java"
+public class org.apache.hadoop.hbase.regionserver.handler.RegionReplicaFlushHandler extends org.apache.hadoop.hbase.executor.EventHandler {
+  public org.apache.hadoop.hbase.regionserver.handler.RegionReplicaFlushHandler(org.apache.hadoop.hbase.Server, org.apache.hadoop.hbase.client.ClusterConnection, org.apache.hadoop.hbase.client.RpcRetryingCallerFactory, org.apache.hadoop.hbase.ipc.RpcControllerFactory, int, org.apache.hadoop.hbase.regionserver.HRegion);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: getstatic     #1                  // Field org/apache/hadoop/hbase/executor/EventType.RS_REGION_REPLICA_FLUSH:Lorg/apache/hadoop/hbase/executor/EventType;
+       5: invokespecial #2                  // Method org/apache/hadoop/hbase/executor/EventHandler."<init>":(Lorg/apache/hadoop/hbase/Server;Lorg/apache/hadoop/hbase/executor/EventType;)V
+       8: aload_0
+       9: aload_2
+      10: putfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      13: aload_0
+      14: aload_3
+      15: putfield      #4                  // Field rpcRetryingCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+      18: aload_0
+      19: aload         4
+      21: putfield      #5                  // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+      24: aload_0
+      25: iload         5
+      27: putfield      #6                  // Field operationTimeout:I
+      30: aload_0
+      31: aload         6
+      33: putfield      #7                  // Field region:Lorg/apache/hadoop/hbase/regionserver/HRegion;
+      36: return
+
+  public void process() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #7                  // Field region:Lorg/apache/hadoop/hbase/regionserver/HRegion;
+       5: invokevirtual #8                  // Method triggerFlushInPrimaryRegion:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+       8: return
+
+  protected void handleException(java.lang.Throwable);
+    Code:
+       0: aload_1
+       1: instanceof    #9                  // class java/io/InterruptedIOException
+       4: ifne          14
+       7: aload_1
+       8: instanceof    #10                 // class java/lang/InterruptedException
+      11: ifeq          48
+      14: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+      17: new           #12                 // class java/lang/StringBuilder
+      20: dup
+      21: invokespecial #13                 // Method java/lang/StringBuilder."<init>":()V
+      24: ldc           #14                 // String Caught throwable while processing event
+      26: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      29: aload_0
+      30: getfield      #16                 // Field eventType:Lorg/apache/hadoop/hbase/executor/EventType;
+      33: invokevirtual #17                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      36: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      39: aload_1
+      40: invokeinterface #19,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      45: goto          82
+      48: aload_1
+      49: instanceof    #20                 // class java/lang/RuntimeException
+      52: ifeq          70
+      55: aload_0
+      56: getfield      #21                 // Field server:Lorg/apache/hadoop/hbase/Server;
+      59: ldc           #22                 // String ServerAborting because a runtime exception was thrown
+      61: aload_1
+      62: invokeinterface #23,  3           // InterfaceMethod org/apache/hadoop/hbase/Server.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      67: goto          82
+      70: aload_0
+      71: getfield      #21                 // Field server:Lorg/apache/hadoop/hbase/Server;
+      74: ldc           #24                 // String ServerAborting because an exception was thrown
+      76: aload_1
+      77: invokeinterface #23,  3           // InterfaceMethod org/apache/hadoop/hbase/Server.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      82: return
+
+  void triggerFlushInPrimaryRegion(org.apache.hadoop.hbase.regionserver.HRegion) throws java.io.IOException, java.lang.RuntimeException;
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+       4: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       9: ldc           #30                 // String hbase.client.pause
+      11: ldc2_w        #31                 // long 100l
+      14: invokevirtual #33                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      17: lstore_2
+      18: aload_0
+      19: aload_0
+      20: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+      23: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      28: invokespecial #34                 // Method getRetriesCount:(Lorg/apache/hadoop/conf/Configuration;)I
+      31: istore        4
+      33: new           #35                 // class org/apache/hadoop/hbase/util/RetryCounterFactory
+      36: dup
+      37: iload         4
+      39: lload_2
+      40: l2i
+      41: invokespecial #36                 // Method org/apache/hadoop/hbase/util/RetryCounterFactory."<init>":(II)V
+      44: invokevirtual #37                 // Method org/apache/hadoop/hbase/util/RetryCounterFactory.create:()Lorg/apache/hadoop/hbase/util/RetryCounter;
+      47: astore        5
+      49: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+      52: invokeinterface #38,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+      57: ifeq          120
+      60: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+      63: new           #12                 // class java/lang/StringBuilder
+      66: dup
+      67: invokespecial #13                 // Method java/lang/StringBuilder."<init>":()V
+      70: ldc           #39                 // String Attempting to do an RPC to the primary region replica
+      72: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      75: aload_1
+      76: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      79: invokestatic  #41                 // Method org/apache/hadoop/hbase/util/ServerRegionReplicaUtil.getRegionInfoForDefaultReplica:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+      82: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      87: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      90: ldc           #43                 // String  of region
+      92: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      95: aload_1
+      96: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+      99: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     104: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     107: ldc           #44                 // String  to trigger a flush
+     109: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     112: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     115: invokeinterface #45,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     120: aload_1
+     121: invokevirtual #46                 // Method org/apache/hadoop/hbase/regionserver/HRegion.isClosing:()Z
+     124: ifne          541
+     127: aload_1
+     128: invokevirtual #47                 // Method org/apache/hadoop/hbase/regionserver/HRegion.isClosed:()Z
+     131: ifne          541
+     134: aload_0
+     135: getfield      #21                 // Field server:Lorg/apache/hadoop/hbase/Server;
+     138: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isAborted:()Z
+     143: ifne          541
+     146: aload_0
+     147: getfield      #21                 // Field server:Lorg/apache/hadoop/hbase/Server;
+     150: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.isStopped:()Z
+     155: ifne          541
+     158: new           #50                 // class org/apache/hadoop/hbase/client/FlushRegionCallable
+     161: dup
+     162: aload_0
+     163: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     166: aload_0
+     167: getfield      #5                  // Field rpcControllerFactory:Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;
+     170: aload_1
+     171: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     174: invokestatic  #51                 // Method org/apache/hadoop/hbase/client/RegionReplicaUtil.getRegionInfoForDefaultReplica:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+     177: iconst_1
+     178: invokespecial #52                 // Method org/apache/hadoop/hbase/client/FlushRegionCallable."<init>":(Lorg/apache/hadoop/hbase/client/ClusterConnection;Lorg/apache/hadoop/hbase/ipc/RpcControllerFactory;Lorg/apache/hadoop/hbase/client/RegionInfo;Z)V
+     181: astore        6
+     183: aconst_null
+     184: astore        7
+     186: aload_0
+     187: getfield      #4                  // Field rpcRetryingCallerFactory:Lorg/apache/hadoop/hbase/client/RpcRetryingCallerFactory;
+     190: invokevirtual #53                 // Method org/apache/hadoop/hbase/client/RpcRetryingCallerFactory.newCaller:()Lorg/apache/hadoop/hbase/client/RpcRetryingCaller;
+     193: aload         6
+     195: aload_0
+     196: getfield      #6                  // Field operationTimeout:I
+     199: invokeinterface #54,  3           // InterfaceMethod org/apache/hadoop/hbase/client/RpcRetryingCaller.callWithRetries:(Lorg/apache/hadoop/hbase/client/RetryingCallable;I)Ljava/lang/Object;
+     204: checkcast     #55                 // class org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$FlushRegionResponse
+     207: astore        7
+     209: goto          247
+     212: astore        8
+     214: aload         8
+     216: instanceof    #57                 // class org/apache/hadoop/hbase/TableNotFoundException
+     219: ifne          243
+     222: aload_0
+     223: getfield      #3                  // Field connection:Lorg/apache/hadoop/hbase/client/ClusterConnection;
+     226: aload_1
+     227: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     230: invokeinterface #58,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+     235: invokeinterface #59,  2           // InterfaceMethod org/apache/hadoop/hbase/client/ClusterConnection.isTableDisabled:(Lorg/apache/hadoop/hbase/TableName;)Z
+     240: ifeq          244
+     243: return
+     244: aload         8
+     246: athrow
+     247: aload         7
+     249: invokevirtual #60                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$FlushRegionResponse.getFlushed:()Z
+     252: ifeq          334
+     255: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+     258: invokeinterface #38,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     263: ifeq          326
+     266: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+     269: new           #12                 // class java/lang/StringBuilder
+     272: dup
+     273: invokespecial #13                 // Method java/lang/StringBuilder."<init>":()V
+     276: ldc           #61                 // String Successfully triggered a flush of primary region replica
+     278: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     281: aload_1
+     282: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     285: invokestatic  #41                 // Method org/apache/hadoop/hbase/util/ServerRegionReplicaUtil.getRegionInfoForDefaultReplica:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+     288: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     293: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     296: ldc           #43                 // String  of region
+     298: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     301: aload_1
+     302: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     305: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     310: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     313: ldc           #62                 // String  Now waiting and blocking reads until observing a full flush cycle
+     315: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     318: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     321: invokeinterface #45,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     326: aload_1
+     327: iconst_1
+     328: invokevirtual #63                 // Method org/apache/hadoop/hbase/regionserver/HRegion.setReadsEnabled:(Z)V
+     331: goto          541
+     334: aload         7
+     336: invokevirtual #64                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$FlushRegionResponse.hasWroteFlushWalMarker:()Z
+     339: ifeq          472
+     342: aload         7
+     344: invokevirtual #65                 // Method org/apache/hadoop/hbase/shaded/protobuf/generated/AdminProtos$FlushRegionResponse.getWroteFlushWalMarker:()Z
+     347: ifeq          429
+     350: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+     353: invokeinterface #38,  1           // InterfaceMethod org/slf4j/Logger.isDebugEnabled:()Z
+     358: ifeq          421
+     361: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+     364: new           #12                 // class java/lang/StringBuilder
+     367: dup
+     368: invokespecial #13                 // Method java/lang/StringBuilder."<init>":()V
+     371: ldc           #66                 // String Successfully triggered an empty flush marker(memstore empty) of primary region replica
+     373: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     376: aload_1
+     377: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     380: invokestatic  #41                 // Method org/apache/hadoop/hbase/util/ServerRegionReplicaUtil.getRegionInfoForDefaultReplica:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/client/RegionInfo;
+     383: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     388: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     391: ldc           #43                 // String  of region
+     393: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     396: aload_1
+     397: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     400: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     405: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     408: ldc           #67                 // String  Now waiting and blocking reads until observing a flush marker
+     410: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     413: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     416: invokeinterface #45,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     421: aload_1
+     422: iconst_1
+     423: invokevirtual #63                 // Method org/apache/hadoop/hbase/regionserver/HRegion.setReadsEnabled:(Z)V
+     426: goto          541
+     429: aload         5
+     431: invokevirtual #68                 // Method org/apache/hadoop/hbase/util/RetryCounter.shouldRetry:()Z
+     434: ifne          515
+     437: new           #56                 // class java/io/IOException
+     440: dup
+     441: new           #12                 // class java/lang/StringBuilder
+     444: dup
+     445: invokespecial #13                 // Method java/lang/StringBuilder."<init>":()V
+     448: ldc           #69                 // String Cannot cause primary to flush or drop a wal marker after retries. Failing opening of this region replica
+     450: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     453: aload_1
+     454: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     457: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     462: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     465: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     468: invokespecial #70                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     471: athrow
+     472: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+     475: new           #12                 // class java/lang/StringBuilder
+     478: dup
+     479: invokespecial #13                 // Method java/lang/StringBuilder."<init>":()V
+     482: ldc           #71                 // String Was not able to trigger a flush from primary region due to old server version? Continuing to open the secondary region replica:
+     484: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     487: aload_1
+     488: invokevirtual #40                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getRegionInfo:()Lorg/apache/hadoop/hbase/client/RegionInfo;
+     491: invokeinterface #42,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+     496: invokevirtual #15                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     499: invokevirtual #18                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     502: invokeinterface #72,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+     507: aload_1
+     508: iconst_1
+     509: invokevirtual #63                 // Method org/apache/hadoop/hbase/regionserver/HRegion.setReadsEnabled:(Z)V
+     512: goto          541
+     515: aload         5
+     517: invokevirtual #73                 // Method org/apache/hadoop/hbase/util/RetryCounter.sleepUntilNextRetry:()V
+     520: goto          538
+     523: astore        8
+     525: new           #9                  // class java/io/InterruptedIOException
+     528: dup
+     529: aload         8
+     531: invokevirtual #74                 // Method java/lang/InterruptedException.getMessage:()Ljava/lang/String;
+     534: invokespecial #75                 // Method java/io/InterruptedIOException."<init>":(Ljava/lang/String;)V
+     537: athrow
+     538: goto          120
+     541: return
+    Exception table:
+       from    to  target type
+         186   209   212   Class java/io/IOException
+         515   520   523   Class java/lang/InterruptedException
+
+  static {};
+    Code:
+       0: ldc           #76                 // class org/apache/hadoop/hbase/regionserver/handler/RegionReplicaFlushHandler
+       2: invokestatic  #77                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

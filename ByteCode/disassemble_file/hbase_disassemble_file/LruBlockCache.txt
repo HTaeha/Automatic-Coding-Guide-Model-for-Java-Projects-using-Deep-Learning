@@ -1,0 +1,1622 @@
+Compiled from "LruBlockCache.java"
+public class org.apache.hadoop.hbase.io.hfile.LruBlockCache implements org.apache.hadoop.hbase.io.hfile.FirstLevelBlockCache {
+  static final java.lang.String LRU_HARD_CAPACITY_LIMIT_FACTOR_CONFIG_NAME;
+
+  static final float DEFAULT_LOAD_FACTOR;
+
+  static final int DEFAULT_CONCURRENCY_LEVEL;
+
+  static final float DEFAULT_ACCEPTABLE_FACTOR;
+
+  public static final long CACHE_FIXED_OVERHEAD;
+
+  public org.apache.hadoop.hbase.io.hfile.LruBlockCache(long, long);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: lload_3
+       3: iconst_1
+       4: invokespecial #2                  // Method "<init>":(JJZ)V
+       7: return
+
+  public org.apache.hadoop.hbase.io.hfile.LruBlockCache(long, long, boolean);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: lload_3
+       3: iload         5
+       5: ldc2_w        #3                  // double 1.2d
+       8: lload_1
+       9: l2d
+      10: dmul
+      11: lload_3
+      12: l2d
+      13: ddiv
+      14: invokestatic  #5                  // Method java/lang/Math.ceil:(D)D
+      17: d2i
+      18: ldc           #7                  // float 0.75f
+      20: bipush        16
+      22: ldc           #8                  // float 0.95f
+      24: ldc           #9                  // float 0.99f
+      26: ldc           #10                 // float 0.25f
+      28: ldc           #11                 // float 0.5f
+      30: ldc           #10                 // float 0.25f
+      32: ldc           #12                 // float 1.2f
+      34: iconst_0
+      35: ldc2_w        #13                 // long 16777216l
+      38: invokespecial #15                 // Method "<init>":(JJZIFIFFFFFFZJ)V
+      41: return
+
+  public org.apache.hadoop.hbase.io.hfile.LruBlockCache(long, long, boolean, org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: lload_3
+       3: iload         5
+       5: ldc2_w        #3                  // double 1.2d
+       8: lload_1
+       9: l2d
+      10: dmul
+      11: lload_3
+      12: l2d
+      13: ddiv
+      14: invokestatic  #5                  // Method java/lang/Math.ceil:(D)D
+      17: d2i
+      18: ldc           #7                  // float 0.75f
+      20: bipush        16
+      22: aload         6
+      24: ldc           #16                 // String hbase.lru.blockcache.min.factor
+      26: ldc           #8                  // float 0.95f
+      28: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      31: aload         6
+      33: ldc           #18                 // String hbase.lru.blockcache.acceptable.factor
+      35: ldc           #9                  // float 0.99f
+      37: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      40: aload         6
+      42: ldc           #19                 // String hbase.lru.blockcache.single.percentage
+      44: ldc           #10                 // float 0.25f
+      46: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      49: aload         6
+      51: ldc           #20                 // String hbase.lru.blockcache.multi.percentage
+      53: ldc           #11                 // float 0.5f
+      55: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      58: aload         6
+      60: ldc           #21                 // String hbase.lru.blockcache.memory.percentage
+      62: ldc           #10                 // float 0.25f
+      64: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      67: aload         6
+      69: ldc           #22                 // String hbase.lru.blockcache.hard.capacity.limit.factor
+      71: ldc           #12                 // float 1.2f
+      73: invokevirtual #17                 // Method org/apache/hadoop/conf/Configuration.getFloat:(Ljava/lang/String;F)F
+      76: aload         6
+      78: ldc           #23                 // String hbase.lru.rs.inmemoryforcemode
+      80: iconst_0
+      81: invokevirtual #24                 // Method org/apache/hadoop/conf/Configuration.getBoolean:(Ljava/lang/String;Z)Z
+      84: aload         6
+      86: ldc           #25                 // String hbase.lru.max.block.size
+      88: ldc2_w        #13                 // long 16777216l
+      91: invokevirtual #26                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      94: invokespecial #15                 // Method "<init>":(JJZIFIFFFFFFZJ)V
+      97: return
+
+  public org.apache.hadoop.hbase.io.hfile.LruBlockCache(long, long, org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: lload_3
+       3: iconst_1
+       4: aload         5
+       6: invokespecial #27                 // Method "<init>":(JJZLorg/apache/hadoop/conf/Configuration;)V
+       9: return
+
+  public org.apache.hadoop.hbase.io.hfile.LruBlockCache(long, long, boolean, int, float, int, float, float, float, float, float, float, boolean, long);
+    Code:
+       0: aload_0
+       1: invokespecial #28                 // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #29                 // class java/util/concurrent/locks/ReentrantLock
+       8: dup
+       9: iconst_1
+      10: invokespecial #30                 // Method java/util/concurrent/locks/ReentrantLock."<init>":(Z)V
+      13: putfield      #31                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+      16: aload_0
+      17: iconst_0
+      18: putfield      #32                 // Field evictionInProgress:Z
+      21: aload_0
+      22: iconst_1
+      23: new           #33                 // class org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder
+      26: dup
+      27: invokespecial #34                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder."<init>":()V
+      30: ldc           #35                 // String LruBlockCacheStatsExecutor
+      32: invokevirtual #36                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setNameFormat:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      35: iconst_1
+      36: invokevirtual #37                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setDaemon:(Z)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      39: invokevirtual #38                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.build:()Ljava/util/concurrent/ThreadFactory;
+      42: invokestatic  #39                 // Method java/util/concurrent/Executors.newScheduledThreadPool:(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;
+      45: putfield      #40                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      48: aload_0
+      49: aconst_null
+      50: putfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      53: aload_0
+      54: lload         16
+      56: putfield      #42                 // Field maxBlockSize:J
+      59: fload         11
+      61: fload         12
+      63: fadd
+      64: fload         13
+      66: fadd
+      67: fconst_1
+      68: fcmpl
+      69: ifne          93
+      72: fload         11
+      74: fconst_0
+      75: fcmpg
+      76: iflt          93
+      79: fload         12
+      81: fconst_0
+      82: fcmpg
+      83: iflt          93
+      86: fload         13
+      88: fconst_0
+      89: fcmpg
+      90: ifge          103
+      93: new           #43                 // class java/lang/IllegalArgumentException
+      96: dup
+      97: ldc           #44                 // String Single, multi, and memory factors  should be non-negative and total 1.0
+      99: invokespecial #45                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+     102: athrow
+     103: fload         9
+     105: fload         10
+     107: fcmpl
+     108: iflt          121
+     111: new           #43                 // class java/lang/IllegalArgumentException
+     114: dup
+     115: ldc           #46                 // String minFactor must be smaller than acceptableFactor
+     117: invokespecial #45                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+     120: athrow
+     121: fload         9
+     123: fconst_1
+     124: fcmpl
+     125: ifge          135
+     128: fload         10
+     130: fconst_1
+     131: fcmpl
+     132: iflt          145
+     135: new           #43                 // class java/lang/IllegalArgumentException
+     138: dup
+     139: ldc           #47                 // String all factors must be < 1
+     141: invokespecial #45                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+     144: athrow
+     145: aload_0
+     146: lload_1
+     147: putfield      #48                 // Field maxSize:J
+     150: aload_0
+     151: lload_3
+     152: putfield      #49                 // Field blockSize:J
+     155: aload_0
+     156: iload         15
+     158: putfield      #50                 // Field forceInMemory:Z
+     161: aload_0
+     162: new           #51                 // class java/util/concurrent/ConcurrentHashMap
+     165: dup
+     166: iload         6
+     168: fload         7
+     170: iload         8
+     172: invokespecial #52                 // Method java/util/concurrent/ConcurrentHashMap."<init>":(IFI)V
+     175: putfield      #53                 // Field map:Ljava/util/Map;
+     178: aload_0
+     179: fload         9
+     181: putfield      #54                 // Field minFactor:F
+     184: aload_0
+     185: fload         10
+     187: putfield      #55                 // Field acceptableFactor:F
+     190: aload_0
+     191: fload         11
+     193: putfield      #56                 // Field singleFactor:F
+     196: aload_0
+     197: fload         12
+     199: putfield      #57                 // Field multiFactor:F
+     202: aload_0
+     203: fload         13
+     205: putfield      #58                 // Field memoryFactor:F
+     208: aload_0
+     209: new           #59                 // class org/apache/hadoop/hbase/io/hfile/CacheStats
+     212: dup
+     213: aload_0
+     214: invokevirtual #60                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     217: invokevirtual #61                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+     220: invokespecial #62                 // Method org/apache/hadoop/hbase/io/hfile/CacheStats."<init>":(Ljava/lang/String;)V
+     223: putfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     226: aload_0
+     227: new           #64                 // class java/util/concurrent/atomic/AtomicLong
+     230: dup
+     231: lconst_0
+     232: invokespecial #65                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+     235: putfield      #66                 // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+     238: aload_0
+     239: new           #64                 // class java/util/concurrent/atomic/AtomicLong
+     242: dup
+     243: lconst_0
+     244: invokespecial #65                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+     247: putfield      #67                 // Field elements:Ljava/util/concurrent/atomic/AtomicLong;
+     250: aload_0
+     251: new           #68                 // class java/util/concurrent/atomic/LongAdder
+     254: dup
+     255: invokespecial #69                 // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+     258: putfield      #70                 // Field dataBlockElements:Ljava/util/concurrent/atomic/LongAdder;
+     261: aload_0
+     262: new           #68                 // class java/util/concurrent/atomic/LongAdder
+     265: dup
+     266: invokespecial #69                 // Method java/util/concurrent/atomic/LongAdder."<init>":()V
+     269: putfield      #71                 // Field dataBlockSize:Ljava/util/concurrent/atomic/LongAdder;
+     272: aload_0
+     273: lload_1
+     274: lload_3
+     275: iload         8
+     277: invokestatic  #72                 // Method calculateOverhead:(JJI)J
+     280: putfield      #73                 // Field overhead:J
+     283: aload_0
+     284: new           #64                 // class java/util/concurrent/atomic/AtomicLong
+     287: dup
+     288: aload_0
+     289: getfield      #73                 // Field overhead:J
+     292: invokespecial #65                 // Method java/util/concurrent/atomic/AtomicLong."<init>":(J)V
+     295: putfield      #74                 // Field size:Ljava/util/concurrent/atomic/AtomicLong;
+     298: aload_0
+     299: fload         14
+     301: putfield      #75                 // Field hardCapacityLimitFactor:F
+     304: iload         5
+     306: ifeq          331
+     309: aload_0
+     310: new           #76                 // class org/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread
+     313: dup
+     314: aload_0
+     315: invokespecial #77                 // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread."<init>":(Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache;)V
+     318: putfield      #78                 // Field evictionThread:Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread;
+     321: aload_0
+     322: getfield      #78                 // Field evictionThread:Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread;
+     325: invokevirtual #79                 // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread.start:()V
+     328: goto          336
+     331: aload_0
+     332: aconst_null
+     333: putfield      #78                 // Field evictionThread:Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread;
+     336: aload_0
+     337: getfield      #40                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+     340: new           #80                 // class org/apache/hadoop/hbase/io/hfile/LruBlockCache$StatisticsThread
+     343: dup
+     344: aload_0
+     345: invokespecial #81                 // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$StatisticsThread."<init>":(Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache;)V
+     348: ldc2_w        #82                 // long 300l
+     351: ldc2_w        #82                 // long 300l
+     354: getstatic     #84                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     357: invokeinterface #85,  7           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+     362: pop
+     363: return
+
+  public void setVictimCache(org.apache.hadoop.hbase.io.hfile.BlockCache);
+    Code:
+       0: aload_0
+       1: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+       4: ifnull        17
+       7: new           #43                 // class java/lang/IllegalArgumentException
+      10: dup
+      11: ldc           #86                 // String The victim cache has already been set
+      13: invokespecial #45                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_0
+      18: aload_1
+      19: invokestatic  #87                 // Method java/util/Objects.requireNonNull:(Ljava/lang/Object;)Ljava/lang/Object;
+      22: checkcast     #88                 // class org/apache/hadoop/hbase/io/hfile/BlockCache
+      25: putfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      28: return
+
+  public void setMaxSize(long);
+    Code:
+       0: aload_0
+       1: lload_1
+       2: putfield      #48                 // Field maxSize:J
+       5: aload_0
+       6: getfield      #74                 // Field size:Ljava/util/concurrent/atomic/AtomicLong;
+       9: invokevirtual #89                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      12: aload_0
+      13: invokevirtual #90                 // Method acceptableSize:()J
+      16: lcmp
+      17: ifle          31
+      20: aload_0
+      21: getfield      #32                 // Field evictionInProgress:Z
+      24: ifne          31
+      27: aload_0
+      28: invokespecial #91                 // Method runEviction:()V
+      31: return
+
+  public void cacheBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey, org.apache.hadoop.hbase.io.hfile.Cacheable, boolean);
+    Code:
+       0: aload_2
+       1: invokeinterface #92,  1           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/Cacheable.heapSize:()J
+       6: aload_0
+       7: getfield      #42                 // Field maxBlockSize:J
+      10: lcmp
+      11: ifle          99
+      14: aload_0
+      15: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+      18: invokevirtual #93                 // Method org/apache/hadoop/hbase/io/hfile/CacheStats.failInsert:()J
+      21: ldc2_w        #94                 // long 50l
+      24: lrem
+      25: lconst_0
+      26: lcmp
+      27: ifne          98
+      30: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      33: new           #96                 // class java/lang/StringBuilder
+      36: dup
+      37: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+      40: ldc           #98                 // String Trying to cache too large a block
+      42: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      45: aload_1
+      46: invokevirtual #100                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getHfileName:()Ljava/lang/String;
+      49: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      52: ldc           #101                // String  @
+      54: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: aload_1
+      58: invokevirtual #102                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getOffset:()J
+      61: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      64: ldc           #104                // String  is
+      66: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: aload_2
+      70: invokeinterface #92,  1           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/Cacheable.heapSize:()J
+      75: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      78: ldc           #105                // String  which is larger than
+      80: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: aload_0
+      84: getfield      #42                 // Field maxBlockSize:J
+      87: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      90: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      93: invokeinterface #107,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      98: return
+      99: aload_0
+     100: getfield      #53                 // Field map:Ljava/util/Map;
+     103: aload_1
+     104: invokeinterface #108,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+     109: checkcast     #109                // class org/apache/hadoop/hbase/io/hfile/LruCachedBlock
+     112: astore        4
+     114: aload         4
+     116: ifnull        129
+     119: aload_0
+     120: aload_1
+     121: aload_2
+     122: invokestatic  #110                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheUtil.shouldReplaceExistingCacheBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCache;Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)Z
+     125: ifne          129
+     128: return
+     129: aload_0
+     130: getfield      #74                 // Field size:Ljava/util/concurrent/atomic/AtomicLong;
+     133: invokevirtual #89                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+     136: lstore        5
+     138: aload_0
+     139: invokevirtual #90                 // Method acceptableSize:()J
+     142: lstore        7
+     144: aload_0
+     145: getfield      #75                 // Field hardCapacityLimitFactor:F
+     148: lload         7
+     150: l2f
+     151: fmul
+     152: f2l
+     153: lstore        9
+     155: lload         5
+     157: lload         9
+     159: lcmp
+     160: iflt          265
+     163: aload_0
+     164: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     167: invokevirtual #93                 // Method org/apache/hadoop/hbase/io/hfile/CacheStats.failInsert:()J
+     170: pop2
+     171: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     174: invokeinterface #111,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     179: ifeq          253
+     182: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     185: new           #96                 // class java/lang/StringBuilder
+     188: dup
+     189: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+     192: ldc           #112                // String LruBlockCache current size
+     194: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     197: lload         5
+     199: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     202: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     205: ldc           #114                // String  has exceeded acceptable size
+     207: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     210: lload         7
+     212: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     215: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     218: ldc           #115                // String . The hard limit size is
+     220: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     223: lload         9
+     225: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     228: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     231: ldc           #116                // String , failed to put cacheKey:
+     233: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     236: aload_1
+     237: invokevirtual #117                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     240: ldc           #118                // String  into LruBlockCache.
+     242: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     245: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     248: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     253: aload_0
+     254: getfield      #32                 // Field evictionInProgress:Z
+     257: ifne          264
+     260: aload_0
+     261: invokespecial #91                 // Method runEviction:()V
+     264: return
+     265: new           #109                // class org/apache/hadoop/hbase/io/hfile/LruCachedBlock
+     268: dup
+     269: aload_1
+     270: aload_2
+     271: aload_0
+     272: getfield      #66                 // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+     275: invokevirtual #120                // Method java/util/concurrent/atomic/AtomicLong.incrementAndGet:()J
+     278: iload_3
+     279: invokespecial #121                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock."<init>":(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;JZ)V
+     282: astore        4
+     284: aload_0
+     285: aload         4
+     287: iconst_0
+     288: invokespecial #122                // Method updateSizeMetrics:(Lorg/apache/hadoop/hbase/io/hfile/LruCachedBlock;Z)J
+     291: lstore        11
+     293: aload_0
+     294: getfield      #53                 // Field map:Ljava/util/Map;
+     297: aload_1
+     298: aload         4
+     300: invokeinterface #123,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     305: pop
+     306: aload_0
+     307: getfield      #67                 // Field elements:Ljava/util/concurrent/atomic/AtomicLong;
+     310: invokevirtual #120                // Method java/util/concurrent/atomic/AtomicLong.incrementAndGet:()J
+     313: lstore        13
+     315: aload_2
+     316: invokeinterface #124,  1          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/Cacheable.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     321: invokevirtual #125                // Method org/apache/hadoop/hbase/io/hfile/BlockType.isData:()Z
+     324: ifeq          334
+     327: aload_0
+     328: getfield      #70                 // Field dataBlockElements:Ljava/util/concurrent/atomic/LongAdder;
+     331: invokevirtual #126                // Method java/util/concurrent/atomic/LongAdder.increment:()V
+     334: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     337: invokeinterface #111,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     342: ifeq          364
+     345: aload_0
+     346: getfield      #53                 // Field map:Ljava/util/Map;
+     349: invokeinterface #127,  1          // InterfaceMethod java/util/Map.size:()I
+     354: i2l
+     355: lstore        15
+     357: lload         15
+     359: lload         13
+     361: invokestatic  #128                // Method assertCounterSanity:(JJ)V
+     364: lload         11
+     366: lload         7
+     368: lcmp
+     369: ifle          383
+     372: aload_0
+     373: getfield      #32                 // Field evictionInProgress:Z
+     376: ifne          383
+     379: aload_0
+     380: invokespecial #91                 // Method runEviction:()V
+     383: return
+
+  public void cacheBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey, org.apache.hadoop.hbase.io.hfile.Cacheable);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: iconst_0
+       4: invokevirtual #138                // Method cacheBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;Z)V
+       7: return
+
+  public org.apache.hadoop.hbase.io.hfile.Cacheable getBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey, boolean, boolean, boolean);
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field map:Ljava/util/Map;
+       4: aload_1
+       5: invokeinterface #108,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #109                // class org/apache/hadoop/hbase/io/hfile/LruCachedBlock
+      13: astore        5
+      15: aload         5
+      17: ifnonnull     123
+      20: iload_3
+      21: ifne          45
+      24: iload         4
+      26: ifeq          45
+      29: aload_0
+      30: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+      33: iload_2
+      34: aload_1
+      35: invokevirtual #145                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.isPrimary:()Z
+      38: aload_1
+      39: invokevirtual #146                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      42: invokevirtual #147                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.miss:(ZZLorg/apache/hadoop/hbase/io/hfile/BlockType;)V
+      45: aload_0
+      46: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      49: ifnull        121
+      52: iload_3
+      53: ifne          121
+      56: aload_0
+      57: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      60: aload_1
+      61: iload_2
+      62: iload_3
+      63: iload         4
+      65: invokeinterface #148,  5          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.getBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;ZZZ)Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+      70: astore        6
+      72: aload         6
+      74: ifnull        118
+      77: iload_2
+      78: ifeq          118
+      81: aload         6
+      83: instanceof    #149                // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      86: ifeq          110
+      89: aload         6
+      91: checkcast     #149                // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      94: invokevirtual #150                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.usesSharedMemory:()Z
+      97: ifeq          110
+     100: aload         6
+     102: checkcast     #149                // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+     105: invokevirtual #151                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.deepClone:()Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;
+     108: astore        6
+     110: aload_0
+     111: aload_1
+     112: aload         6
+     114: iconst_0
+     115: invokevirtual #138                // Method cacheBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;Z)V
+     118: aload         6
+     120: areturn
+     121: aconst_null
+     122: areturn
+     123: iload         4
+     125: ifeq          144
+     128: aload_0
+     129: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     132: iload_2
+     133: aload_1
+     134: invokevirtual #145                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.isPrimary:()Z
+     137: aload_1
+     138: invokevirtual #146                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     141: invokevirtual #152                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.hit:(ZZLorg/apache/hadoop/hbase/io/hfile/BlockType;)V
+     144: aload         5
+     146: aload_0
+     147: getfield      #66                 // Field count:Ljava/util/concurrent/atomic/AtomicLong;
+     150: invokevirtual #120                // Method java/util/concurrent/atomic/AtomicLong.incrementAndGet:()J
+     153: invokevirtual #153                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.access:(J)V
+     156: aload         5
+     158: invokevirtual #140                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getBuffer:()Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+     161: areturn
+
+  public boolean containsBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey);
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field map:Ljava/util/Map;
+       4: aload_1
+       5: invokeinterface #154,  2          // InterfaceMethod java/util/Map.containsKey:(Ljava/lang/Object;)Z
+      10: ireturn
+
+  public boolean evictBlock(org.apache.hadoop.hbase.io.hfile.BlockCacheKey);
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field map:Ljava/util/Map;
+       4: aload_1
+       5: invokeinterface #108,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      10: checkcast     #109                // class org/apache/hadoop/hbase/io/hfile/LruCachedBlock
+      13: astore_2
+      14: aload_2
+      15: ifnull        33
+      18: aload_0
+      19: aload_2
+      20: iconst_0
+      21: invokevirtual #155                // Method evictBlock:(Lorg/apache/hadoop/hbase/io/hfile/LruCachedBlock;Z)J
+      24: lconst_0
+      25: lcmp
+      26: ifle          33
+      29: iconst_1
+      30: goto          34
+      33: iconst_0
+      34: ireturn
+
+  public int evictBlocksByHfileName(java.lang.String);
+    Code:
+       0: iconst_0
+       1: istore_2
+       2: aload_0
+       3: getfield      #53                 // Field map:Ljava/util/Map;
+       6: invokeinterface #156,  1          // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+      11: invokeinterface #157,  1          // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      16: astore_3
+      17: aload_3
+      18: invokeinterface #158,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      23: ifeq          64
+      26: aload_3
+      27: invokeinterface #159,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      32: checkcast     #160                // class org/apache/hadoop/hbase/io/hfile/BlockCacheKey
+      35: astore        4
+      37: aload         4
+      39: invokevirtual #100                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getHfileName:()Ljava/lang/String;
+      42: aload_1
+      43: invokevirtual #161                // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+      46: ifeq          61
+      49: aload_0
+      50: aload         4
+      52: invokevirtual #162                // Method evictBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;)Z
+      55: ifeq          61
+      58: iinc          2, 1
+      61: goto          17
+      64: aload_0
+      65: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      68: ifnull        84
+      71: iload_2
+      72: aload_0
+      73: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      76: aload_1
+      77: invokeinterface #163,  2          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.evictBlocksByHfileName:(Ljava/lang/String;)I
+      82: iadd
+      83: istore_2
+      84: iload_2
+      85: ireturn
+
+  protected long evictBlock(org.apache.hadoop.hbase.io.hfile.LruCachedBlock, boolean);
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field map:Ljava/util/Map;
+       4: aload_1
+       5: invokevirtual #164                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getCacheKey:()Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;
+       8: invokeinterface #165,  2          // InterfaceMethod java/util/Map.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      13: ifnull        20
+      16: iconst_1
+      17: goto          21
+      20: iconst_0
+      21: istore_3
+      22: iload_3
+      23: ifne          28
+      26: lconst_0
+      27: lreturn
+      28: aload_0
+      29: aload_1
+      30: iconst_1
+      31: invokespecial #122                // Method updateSizeMetrics:(Lorg/apache/hadoop/hbase/io/hfile/LruCachedBlock;Z)J
+      34: pop2
+      35: aload_0
+      36: getfield      #67                 // Field elements:Ljava/util/concurrent/atomic/AtomicLong;
+      39: invokevirtual #166                // Method java/util/concurrent/atomic/AtomicLong.decrementAndGet:()J
+      42: lstore        4
+      44: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      47: invokeinterface #111,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      52: ifeq          74
+      55: aload_0
+      56: getfield      #53                 // Field map:Ljava/util/Map;
+      59: invokeinterface #127,  1          // InterfaceMethod java/util/Map.size:()I
+      64: i2l
+      65: lstore        6
+      67: lload         6
+      69: lload         4
+      71: invokestatic  #128                // Method assertCounterSanity:(JJ)V
+      74: aload_1
+      75: invokevirtual #140                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getBuffer:()Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+      78: invokeinterface #124,  1          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/Cacheable.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      83: invokevirtual #125                // Method org/apache/hadoop/hbase/io/hfile/BlockType.isData:()Z
+      86: ifeq          96
+      89: aload_0
+      90: getfield      #70                 // Field dataBlockElements:Ljava/util/concurrent/atomic/LongAdder;
+      93: invokevirtual #167                // Method java/util/concurrent/atomic/LongAdder.decrement:()V
+      96: iload_2
+      97: ifeq          142
+     100: aload_0
+     101: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     104: aload_1
+     105: invokevirtual #168                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getCachedTime:()J
+     108: aload_1
+     109: invokevirtual #164                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getCacheKey:()Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;
+     112: invokevirtual #145                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.isPrimary:()Z
+     115: invokevirtual #169                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.evicted:(JZ)V
+     118: aload_0
+     119: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+     122: ifnull        142
+     125: aload_0
+     126: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+     129: aload_1
+     130: invokevirtual #164                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getCacheKey:()Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;
+     133: aload_1
+     134: invokevirtual #140                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getBuffer:()Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+     137: invokeinterface #170,  3          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.cacheBlock:(Lorg/apache/hadoop/hbase/io/hfile/BlockCacheKey;Lorg/apache/hadoop/hbase/io/hfile/Cacheable;)V
+     142: aload_1
+     143: invokevirtual #139                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.heapSize:()J
+     146: lreturn
+
+  boolean isEvictionInProgress();
+    Code:
+       0: aload_0
+       1: getfield      #32                 // Field evictionInProgress:Z
+       4: ireturn
+
+  long getOverhead();
+    Code:
+       0: aload_0
+       1: getfield      #73                 // Field overhead:J
+       4: lreturn
+
+  void evict();
+    Code:
+       0: aload_0
+       1: getfield      #31                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+       4: invokevirtual #173                // Method java/util/concurrent/locks/ReentrantLock.tryLock:()Z
+       7: ifne          11
+      10: return
+      11: aload_0
+      12: iconst_1
+      13: putfield      #32                 // Field evictionInProgress:Z
+      16: aload_0
+      17: getfield      #74                 // Field size:Ljava/util/concurrent/atomic/AtomicLong;
+      20: invokevirtual #89                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+      23: lstore_1
+      24: lload_1
+      25: aload_0
+      26: invokespecial #174                // Method minSize:()J
+      29: lsub
+      30: lstore_3
+      31: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      34: invokeinterface #111,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      39: ifeq          84
+      42: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      45: new           #96                 // class java/lang/StringBuilder
+      48: dup
+      49: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+      52: ldc           #175                // String Block cache LRU eviction started; Attempting to free
+      54: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: lload_3
+      58: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      61: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: ldc           #176                // String  of total=
+      66: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      69: lload_1
+      70: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      73: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      76: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      79: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      84: lload_3
+      85: lconst_0
+      86: lcmp
+      87: ifgt          110
+      90: aload_0
+      91: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+      94: invokevirtual #177                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.evict:()V
+      97: aload_0
+      98: iconst_0
+      99: putfield      #32                 // Field evictionInProgress:Z
+     102: aload_0
+     103: getfield      #31                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+     106: invokevirtual #178                // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     109: return
+     110: new           #179                // class org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket
+     113: dup
+     114: aload_0
+     115: ldc           #180                // String single
+     117: lload_3
+     118: aload_0
+     119: getfield      #49                 // Field blockSize:J
+     122: aload_0
+     123: invokespecial #181                // Method singleSize:()J
+     126: invokespecial #182                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket."<init>":(Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache;Ljava/lang/String;JJJ)V
+     129: astore        5
+     131: new           #179                // class org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket
+     134: dup
+     135: aload_0
+     136: ldc           #183                // String multi
+     138: lload_3
+     139: aload_0
+     140: getfield      #49                 // Field blockSize:J
+     143: aload_0
+     144: invokespecial #184                // Method multiSize:()J
+     147: invokespecial #182                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket."<init>":(Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache;Ljava/lang/String;JJJ)V
+     150: astore        6
+     152: new           #179                // class org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket
+     155: dup
+     156: aload_0
+     157: ldc           #185                // String memory
+     159: lload_3
+     160: aload_0
+     161: getfield      #49                 // Field blockSize:J
+     164: aload_0
+     165: invokespecial #186                // Method memorySize:()J
+     168: invokespecial #182                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket."<init>":(Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache;Ljava/lang/String;JJJ)V
+     171: astore        7
+     173: aload_0
+     174: getfield      #53                 // Field map:Ljava/util/Map;
+     177: invokeinterface #187,  1          // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+     182: invokeinterface #188,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+     187: astore        8
+     189: aload         8
+     191: invokeinterface #158,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+     196: ifeq          278
+     199: aload         8
+     201: invokeinterface #159,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     206: checkcast     #109                // class org/apache/hadoop/hbase/io/hfile/LruCachedBlock
+     209: astore        9
+     211: getstatic     #189                // Field org/apache/hadoop/hbase/io/hfile/LruBlockCache$2.$SwitchMap$org$apache$hadoop$hbase$io$hfile$BlockPriority:[I
+     214: aload         9
+     216: invokevirtual #190                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getPriority:()Lorg/apache/hadoop/hbase/io/hfile/BlockPriority;
+     219: invokevirtual #191                // Method org/apache/hadoop/hbase/io/hfile/BlockPriority.ordinal:()I
+     222: iaload
+     223: tableswitch   { // 1 to 3
+                     1: 248
+                     2: 258
+                     3: 268
+               default: 275
+          }
+     248: aload         5
+     250: aload         9
+     252: invokevirtual #192                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.add:(Lorg/apache/hadoop/hbase/io/hfile/LruCachedBlock;)V
+     255: goto          275
+     258: aload         6
+     260: aload         9
+     262: invokevirtual #192                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.add:(Lorg/apache/hadoop/hbase/io/hfile/LruCachedBlock;)V
+     265: goto          275
+     268: aload         7
+     270: aload         9
+     272: invokevirtual #192                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.add:(Lorg/apache/hadoop/hbase/io/hfile/LruCachedBlock;)V
+     275: goto          189
+     278: lconst_0
+     279: lstore        8
+     281: aload_0
+     282: getfield      #50                 // Field forceInMemory:Z
+     285: ifne          298
+     288: aload_0
+     289: getfield      #58                 // Field memoryFactor:F
+     292: ldc           #193                // float 0.999f
+     294: fcmpl
+     295: ifle          553
+     298: aload         5
+     300: invokevirtual #194                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.totalSize:()J
+     303: lstore        10
+     305: aload         6
+     307: invokevirtual #194                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.totalSize:()J
+     310: lstore        12
+     312: lload_3
+     313: lload         10
+     315: lload         12
+     317: ladd
+     318: lcmp
+     319: ifle          454
+     322: aload         5
+     324: lload         10
+     326: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     329: lstore        8
+     331: lload         8
+     333: aload         6
+     335: lload         12
+     337: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     340: ladd
+     341: lstore        8
+     343: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     346: invokeinterface #111,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     351: ifeq          390
+     354: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     357: new           #96                 // class java/lang/StringBuilder
+     360: dup
+     361: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+     364: ldc           #196                // String freed
+     366: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     369: lload         8
+     371: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     374: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     377: ldc           #197                // String  from single and multi buckets
+     379: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     382: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     385: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     390: lload         8
+     392: aload         7
+     394: lload_3
+     395: lload         8
+     397: lsub
+     398: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     401: ladd
+     402: lstore        8
+     404: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     407: invokeinterface #111,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     412: ifeq          550
+     415: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     418: new           #96                 // class java/lang/StringBuilder
+     421: dup
+     422: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+     425: ldc           #196                // String freed
+     427: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     430: lload         8
+     432: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     435: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     438: ldc           #198                // String  total from all three buckets
+     440: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     443: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     446: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     451: goto          550
+     454: lload         10
+     456: lload         12
+     458: ladd
+     459: lload_3
+     460: lsub
+     461: lstore        14
+     463: ldc2_w        #199                // long 3l
+     466: lload         10
+     468: lmul
+     469: lload         14
+     471: lcmp
+     472: ifgt          486
+     475: aload         6
+     477: lload_3
+     478: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     481: lstore        8
+     483: goto          550
+     486: ldc2_w        #199                // long 3l
+     489: lload         12
+     491: lmul
+     492: ldc2_w        #201                // long 2l
+     495: lload         14
+     497: lmul
+     498: lcmp
+     499: ifgt          513
+     502: aload         5
+     504: lload_3
+     505: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     508: lstore        8
+     510: goto          550
+     513: aload         5
+     515: lload         10
+     517: lload         14
+     519: ldc2_w        #199                // long 3l
+     522: ldiv
+     523: lsub
+     524: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     527: lstore        8
+     529: lload         8
+     531: lload_3
+     532: lcmp
+     533: ifge          550
+     536: lload         8
+     538: aload         6
+     540: lload_3
+     541: lload         8
+     543: lsub
+     544: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     547: ladd
+     548: lstore        8
+     550: goto          651
+     553: new           #203                // class java/util/PriorityQueue
+     556: dup
+     557: iconst_3
+     558: invokespecial #204                // Method java/util/PriorityQueue."<init>":(I)V
+     561: astore        10
+     563: aload         10
+     565: aload         5
+     567: invokevirtual #205                // Method java/util/PriorityQueue.add:(Ljava/lang/Object;)Z
+     570: pop
+     571: aload         10
+     573: aload         6
+     575: invokevirtual #205                // Method java/util/PriorityQueue.add:(Ljava/lang/Object;)Z
+     578: pop
+     579: aload         10
+     581: aload         7
+     583: invokevirtual #205                // Method java/util/PriorityQueue.add:(Ljava/lang/Object;)Z
+     586: pop
+     587: iconst_3
+     588: istore        11
+     590: aload         10
+     592: invokevirtual #206                // Method java/util/PriorityQueue.poll:()Ljava/lang/Object;
+     595: checkcast     #179                // class org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket
+     598: dup
+     599: astore        12
+     601: ifnull        651
+     604: aload         12
+     606: invokevirtual #207                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.overflow:()J
+     609: lstore        13
+     611: lload         13
+     613: lconst_0
+     614: lcmp
+     615: ifle          645
+     618: lload         13
+     620: lload_3
+     621: lload         8
+     623: lsub
+     624: iload         11
+     626: i2l
+     627: ldiv
+     628: invokestatic  #208                // Method java/lang/Math.min:(JJ)J
+     631: lstore        15
+     633: lload         8
+     635: aload         12
+     637: lload         15
+     639: invokevirtual #195                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.free:(J)J
+     642: ladd
+     643: lstore        8
+     645: iinc          11, -1
+     648: goto          590
+     651: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     654: invokeinterface #111,  1          // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+     659: ifeq          771
+     662: aload         5
+     664: invokevirtual #194                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.totalSize:()J
+     667: lstore        10
+     669: aload         6
+     671: invokevirtual #194                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.totalSize:()J
+     674: lstore        12
+     676: aload         7
+     678: invokevirtual #194                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$BlockBucket.totalSize:()J
+     681: lstore        14
+     683: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     686: new           #96                 // class java/lang/StringBuilder
+     689: dup
+     690: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+     693: ldc           #209                // String Block cache LRU eviction completed; freed=
+     695: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     698: lload         8
+     700: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     703: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     706: ldc           #210                // String , total=
+     708: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     711: aload_0
+     712: getfield      #74                 // Field size:Ljava/util/concurrent/atomic/AtomicLong;
+     715: invokevirtual #89                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+     718: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     721: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     724: ldc           #211                // String , single=
+     726: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     729: lload         10
+     731: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     734: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     737: ldc           #212                // String , multi=
+     739: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     742: lload         12
+     744: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     747: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     750: ldc           #213                // String , memory=
+     752: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     755: lload         14
+     757: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     760: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     763: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     766: invokeinterface #119,  2          // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+     771: aload_0
+     772: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     775: invokevirtual #177                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.evict:()V
+     778: aload_0
+     779: iconst_0
+     780: putfield      #32                 // Field evictionInProgress:Z
+     783: aload_0
+     784: getfield      #31                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+     787: invokevirtual #178                // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     790: goto          817
+     793: astore        17
+     795: aload_0
+     796: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     799: invokevirtual #177                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.evict:()V
+     802: aload_0
+     803: iconst_0
+     804: putfield      #32                 // Field evictionInProgress:Z
+     807: aload_0
+     808: getfield      #31                 // Field evictionLock:Ljava/util/concurrent/locks/ReentrantLock;
+     811: invokevirtual #178                // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+     814: aload         17
+     816: athrow
+     817: return
+    Exception table:
+       from    to  target type
+          11    90   793   any
+         110   771   793   any
+         793   795   793   any
+
+  public java.lang.String toString();
+    Code:
+       0: aload_0
+       1: invokestatic  #214                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects.toStringHelper:(Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+       4: ldc           #215                // String blockCount
+       6: aload_0
+       7: invokevirtual #216                // Method getBlockCount:()J
+      10: invokevirtual #217                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;J)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      13: ldc           #218                // String currentSize
+      15: aload_0
+      16: invokevirtual #219                // Method getCurrentSize:()J
+      19: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      22: invokevirtual #220                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      25: ldc           #221                // String freeSize
+      27: aload_0
+      28: invokevirtual #222                // Method getFreeSize:()J
+      31: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      34: invokevirtual #220                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      37: ldc           #223                // String maxSize
+      39: aload_0
+      40: invokevirtual #224                // Method getMaxSize:()J
+      43: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      46: invokevirtual #220                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      49: ldc           #225                // String heapSize
+      51: aload_0
+      52: invokevirtual #226                // Method heapSize:()J
+      55: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      58: invokevirtual #220                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      61: ldc           #227                // String minSize
+      63: aload_0
+      64: invokespecial #174                // Method minSize:()J
+      67: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      70: invokevirtual #220                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      73: ldc           #228                // String minFactor
+      75: aload_0
+      76: getfield      #54                 // Field minFactor:F
+      79: invokevirtual #229                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;F)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      82: ldc           #230                // String multiSize
+      84: aload_0
+      85: invokespecial #184                // Method multiSize:()J
+      88: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      91: invokevirtual #220                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+      94: ldc           #231                // String multiFactor
+      96: aload_0
+      97: getfield      #57                 // Field multiFactor:F
+     100: invokevirtual #229                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;F)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+     103: ldc           #232                // String singleSize
+     105: aload_0
+     106: invokespecial #181                // Method singleSize:()J
+     109: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+     112: invokevirtual #220                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;Ljava/lang/Object;)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+     115: ldc           #233                // String singleFactor
+     117: aload_0
+     118: getfield      #56                 // Field singleFactor:F
+     121: invokevirtual #229                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.add:(Ljava/lang/String;F)Lorg/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper;
+     124: invokevirtual #234                // Method org/apache/hbase/thirdparty/com/google/common/base/MoreObjects$ToStringHelper.toString:()Ljava/lang/String;
+     127: areturn
+
+  public long getMaxSize();
+    Code:
+       0: aload_0
+       1: getfield      #48                 // Field maxSize:J
+       4: lreturn
+
+  public long getCurrentSize();
+    Code:
+       0: aload_0
+       1: getfield      #74                 // Field size:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #89                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public long getCurrentDataSize();
+    Code:
+       0: aload_0
+       1: getfield      #71                 // Field dataBlockSize:Ljava/util/concurrent/atomic/LongAdder;
+       4: invokevirtual #235                // Method java/util/concurrent/atomic/LongAdder.sum:()J
+       7: lreturn
+
+  public long getFreeSize();
+    Code:
+       0: aload_0
+       1: invokevirtual #224                // Method getMaxSize:()J
+       4: aload_0
+       5: invokevirtual #219                // Method getCurrentSize:()J
+       8: lsub
+       9: lreturn
+
+  public long size();
+    Code:
+       0: aload_0
+       1: invokevirtual #224                // Method getMaxSize:()J
+       4: lreturn
+
+  public long getBlockCount();
+    Code:
+       0: aload_0
+       1: getfield      #67                 // Field elements:Ljava/util/concurrent/atomic/AtomicLong;
+       4: invokevirtual #89                 // Method java/util/concurrent/atomic/AtomicLong.get:()J
+       7: lreturn
+
+  public long getDataBlockCount();
+    Code:
+       0: aload_0
+       1: getfield      #70                 // Field dataBlockElements:Ljava/util/concurrent/atomic/LongAdder;
+       4: invokevirtual #235                // Method java/util/concurrent/atomic/LongAdder.sum:()J
+       7: lreturn
+
+  org.apache.hadoop.hbase.io.hfile.LruBlockCache$EvictionThread getEvictionThread();
+    Code:
+       0: aload_0
+       1: getfield      #78                 // Field evictionThread:Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread;
+       4: areturn
+
+  public void logStats();
+    Code:
+       0: aload_0
+       1: invokevirtual #226                // Method heapSize:()J
+       4: lstore_1
+       5: aload_0
+       6: getfield      #48                 // Field maxSize:J
+       9: lload_1
+      10: lsub
+      11: lstore_3
+      12: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      15: new           #96                 // class java/lang/StringBuilder
+      18: dup
+      19: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+      22: ldc           #236                // String totalSize=
+      24: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      27: lload_1
+      28: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      31: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: ldc           #237                // String , freeSize=
+      36: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: lload_3
+      40: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      43: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: ldc           #238                // String , max=
+      48: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: aload_0
+      52: getfield      #48                 // Field maxSize:J
+      55: invokestatic  #113                // Method org/apache/hadoop/util/StringUtils.byteDesc:(J)Ljava/lang/String;
+      58: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: ldc           #239                // String , blockCount=
+      63: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      66: aload_0
+      67: invokevirtual #216                // Method getBlockCount:()J
+      70: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      73: ldc           #240                // String , accesses=
+      75: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      78: aload_0
+      79: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+      82: invokevirtual #241                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getRequestCount:()J
+      85: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      88: ldc           #242                // String , hits=
+      90: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      93: aload_0
+      94: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+      97: invokevirtual #243                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getHitCount:()J
+     100: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     103: ldc           #244                // String , hitRatio=
+     105: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     108: aload_0
+     109: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     112: invokevirtual #243                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getHitCount:()J
+     115: lconst_0
+     116: lcmp
+     117: ifne          125
+     120: ldc           #245                // String 0
+     122: goto          154
+     125: new           #96                 // class java/lang/StringBuilder
+     128: dup
+     129: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+     132: aload_0
+     133: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     136: invokevirtual #246                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getHitRatio:()D
+     139: iconst_2
+     140: invokestatic  #247                // Method org/apache/hadoop/util/StringUtils.formatPercent:(DI)Ljava/lang/String;
+     143: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     146: ldc           #248                // String ,
+     148: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     151: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     154: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     157: ldc           #249                // String , cachingAccesses=
+     159: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     162: aload_0
+     163: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     166: invokevirtual #250                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getRequestCachingCount:()J
+     169: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     172: ldc           #251                // String , cachingHits=
+     174: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     177: aload_0
+     178: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     181: invokevirtual #252                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getHitCachingCount:()J
+     184: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     187: ldc           #253                // String , cachingHitsRatio=
+     189: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     192: aload_0
+     193: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     196: invokevirtual #252                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getHitCachingCount:()J
+     199: lconst_0
+     200: lcmp
+     201: ifne          209
+     204: ldc           #254                // String 0,
+     206: goto          238
+     209: new           #96                 // class java/lang/StringBuilder
+     212: dup
+     213: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+     216: aload_0
+     217: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     220: invokevirtual #255                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getHitCachingRatio:()D
+     223: iconst_2
+     224: invokestatic  #247                // Method org/apache/hadoop/util/StringUtils.formatPercent:(DI)Ljava/lang/String;
+     227: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     230: ldc           #248                // String ,
+     232: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     235: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     238: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     241: ldc_w         #256                // String evictions=
+     244: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     247: aload_0
+     248: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     251: invokevirtual #257                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getEvictionCount:()J
+     254: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     257: ldc_w         #258                // String , evicted=
+     260: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     263: aload_0
+     264: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     267: invokevirtual #259                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.getEvictedCount:()J
+     270: invokevirtual #103                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     273: ldc_w         #260                // String , evictedPerRun=
+     276: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     279: aload_0
+     280: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+     283: invokevirtual #261                // Method org/apache/hadoop/hbase/io/hfile/CacheStats.evictedPerEviction:()D
+     286: invokevirtual #262                // Method java/lang/StringBuilder.append:(D)Ljava/lang/StringBuilder;
+     289: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     292: invokeinterface #263,  2          // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     297: return
+
+  public org.apache.hadoop.hbase.io.hfile.CacheStats getStats();
+    Code:
+       0: aload_0
+       1: getfield      #63                 // Field stats:Lorg/apache/hadoop/hbase/io/hfile/CacheStats;
+       4: areturn
+
+  public long heapSize();
+    Code:
+       0: aload_0
+       1: invokevirtual #219                // Method getCurrentSize:()J
+       4: lreturn
+
+  public java.util.Iterator<org.apache.hadoop.hbase.io.hfile.CachedBlock> iterator();
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field map:Ljava/util/Map;
+       4: invokeinterface #187,  1          // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+       9: invokeinterface #188,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      14: astore_1
+      15: new           #268                // class org/apache/hadoop/hbase/io/hfile/LruBlockCache$1
+      18: dup
+      19: aload_0
+      20: aload_1
+      21: invokespecial #269                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$1."<init>":(Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache;Ljava/util/Iterator;)V
+      24: areturn
+
+  long acceptableSize();
+    Code:
+       0: aload_0
+       1: getfield      #48                 // Field maxSize:J
+       4: l2f
+       5: aload_0
+       6: getfield      #55                 // Field acceptableFactor:F
+       9: fmul
+      10: f2d
+      11: invokestatic  #270                // Method java/lang/Math.floor:(D)D
+      14: d2l
+      15: lreturn
+
+  public void shutdown();
+    Code:
+       0: aload_0
+       1: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+       4: ifnull        16
+       7: aload_0
+       8: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      11: invokeinterface #271,  1          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/BlockCache.shutdown:()V
+      16: aload_0
+      17: getfield      #40                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      20: invokeinterface #272,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.shutdown:()V
+      25: iconst_0
+      26: istore_1
+      27: iload_1
+      28: bipush        10
+      30: if_icmpge     81
+      33: aload_0
+      34: getfield      #40                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      37: invokeinterface #273,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.isShutdown:()Z
+      42: ifne          75
+      45: ldc2_w        #274                // long 10l
+      48: invokestatic  #276                // Method java/lang/Thread.sleep:(J)V
+      51: goto          75
+      54: astore_2
+      55: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      58: ldc_w         #278                // String Interrupted while sleeping
+      61: invokeinterface #107,  2          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      66: invokestatic  #279                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      69: invokevirtual #280                // Method java/lang/Thread.interrupt:()V
+      72: goto          81
+      75: iinc          1, 1
+      78: goto          27
+      81: aload_0
+      82: getfield      #40                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      85: invokeinterface #273,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.isShutdown:()Z
+      90: ifne          131
+      93: aload_0
+      94: getfield      #40                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      97: invokeinterface #281,  1          // InterfaceMethod java/util/concurrent/ScheduledExecutorService.shutdownNow:()Ljava/util/List;
+     102: astore_1
+     103: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     106: new           #96                 // class java/lang/StringBuilder
+     109: dup
+     110: invokespecial #97                 // Method java/lang/StringBuilder."<init>":()V
+     113: ldc_w         #282                // String Still running
+     116: invokevirtual #99                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     119: aload_1
+     120: invokevirtual #117                // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     123: invokevirtual #106                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     126: invokeinterface #283,  2          // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     131: aload_0
+     132: getfield      #78                 // Field evictionThread:Lorg/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread;
+     135: invokevirtual #284                // Method org/apache/hadoop/hbase/io/hfile/LruBlockCache$EvictionThread.shutdown:()V
+     138: return
+    Exception table:
+       from    to  target type
+          45    51    54   Class java/lang/InterruptedException
+
+  public void clearCache();
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field map:Ljava/util/Map;
+       4: invokeinterface #285,  1          // InterfaceMethod java/util/Map.clear:()V
+       9: aload_0
+      10: getfield      #67                 // Field elements:Ljava/util/concurrent/atomic/AtomicLong;
+      13: lconst_0
+      14: invokevirtual #286                // Method java/util/concurrent/atomic/AtomicLong.set:(J)V
+      17: return
+
+  java.util.SortedSet<java.lang.String> getCachedFileNamesForTest();
+    Code:
+       0: new           #287                // class java/util/TreeSet
+       3: dup
+       4: invokespecial #288                // Method java/util/TreeSet."<init>":()V
+       7: astore_1
+       8: aload_0
+       9: getfield      #53                 // Field map:Ljava/util/Map;
+      12: invokeinterface #156,  1          // InterfaceMethod java/util/Map.keySet:()Ljava/util/Set;
+      17: invokeinterface #157,  1          // InterfaceMethod java/util/Set.iterator:()Ljava/util/Iterator;
+      22: astore_2
+      23: aload_2
+      24: invokeinterface #158,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      29: ifeq          56
+      32: aload_2
+      33: invokeinterface #159,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      38: checkcast     #160                // class org/apache/hadoop/hbase/io/hfile/BlockCacheKey
+      41: astore_3
+      42: aload_1
+      43: aload_3
+      44: invokevirtual #100                // Method org/apache/hadoop/hbase/io/hfile/BlockCacheKey.getHfileName:()Ljava/lang/String;
+      47: invokeinterface #289,  2          // InterfaceMethod java/util/SortedSet.add:(Ljava/lang/Object;)Z
+      52: pop
+      53: goto          23
+      56: aload_1
+      57: areturn
+
+  java.util.Map<org.apache.hadoop.hbase.io.hfile.BlockType, java.lang.Integer> getBlockTypeCountsForTest();
+    Code:
+       0: new           #290                // class java/util/EnumMap
+       3: dup
+       4: ldc_w         #291                // class org/apache/hadoop/hbase/io/hfile/BlockType
+       7: invokespecial #292                // Method java/util/EnumMap."<init>":(Ljava/lang/Class;)V
+      10: astore_1
+      11: aload_0
+      12: getfield      #53                 // Field map:Ljava/util/Map;
+      15: invokeinterface #187,  1          // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+      20: invokeinterface #188,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      25: astore_2
+      26: aload_2
+      27: invokeinterface #158,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      32: ifeq          100
+      35: aload_2
+      36: invokeinterface #159,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      41: checkcast     #109                // class org/apache/hadoop/hbase/io/hfile/LruCachedBlock
+      44: astore_3
+      45: aload_3
+      46: invokevirtual #140                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getBuffer:()Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+      49: invokeinterface #124,  1          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/Cacheable.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      54: astore        4
+      56: aload_1
+      57: aload         4
+      59: invokeinterface #108,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      64: checkcast     #131                // class java/lang/Integer
+      67: astore        5
+      69: aload_1
+      70: aload         4
+      72: aload         5
+      74: ifnonnull     81
+      77: iconst_0
+      78: goto          86
+      81: aload         5
+      83: invokevirtual #293                // Method java/lang/Integer.intValue:()I
+      86: iconst_1
+      87: iadd
+      88: invokestatic  #294                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      91: invokeinterface #123,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      96: pop
+      97: goto          26
+     100: aload_1
+     101: areturn
+
+  public java.util.Map<org.apache.hadoop.hbase.io.encoding.DataBlockEncoding, java.lang.Integer> getEncodingCountsForTest();
+    Code:
+       0: new           #290                // class java/util/EnumMap
+       3: dup
+       4: ldc_w         #295                // class org/apache/hadoop/hbase/io/encoding/DataBlockEncoding
+       7: invokespecial #292                // Method java/util/EnumMap."<init>":(Ljava/lang/Class;)V
+      10: astore_1
+      11: aload_0
+      12: getfield      #53                 // Field map:Ljava/util/Map;
+      15: invokeinterface #187,  1          // InterfaceMethod java/util/Map.values:()Ljava/util/Collection;
+      20: invokeinterface #188,  1          // InterfaceMethod java/util/Collection.iterator:()Ljava/util/Iterator;
+      25: astore_2
+      26: aload_2
+      27: invokeinterface #158,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      32: ifeq          101
+      35: aload_2
+      36: invokeinterface #159,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      41: checkcast     #109                // class org/apache/hadoop/hbase/io/hfile/LruCachedBlock
+      44: astore_3
+      45: aload_3
+      46: invokevirtual #140                // Method org/apache/hadoop/hbase/io/hfile/LruCachedBlock.getBuffer:()Lorg/apache/hadoop/hbase/io/hfile/Cacheable;
+      49: checkcast     #149                // class org/apache/hadoop/hbase/io/hfile/HFileBlock
+      52: invokevirtual #296                // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.getDataBlockEncoding:()Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;
+      55: astore        4
+      57: aload_1
+      58: aload         4
+      60: invokeinterface #108,  2          // InterfaceMethod java/util/Map.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      65: checkcast     #131                // class java/lang/Integer
+      68: astore        5
+      70: aload_1
+      71: aload         4
+      73: aload         5
+      75: ifnonnull     82
+      78: iconst_0
+      79: goto          87
+      82: aload         5
+      84: invokevirtual #293                // Method java/lang/Integer.intValue:()I
+      87: iconst_1
+      88: iadd
+      89: invokestatic  #294                // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      92: invokeinterface #123,  3          // InterfaceMethod java/util/Map.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      97: pop
+      98: goto          26
+     101: aload_1
+     102: areturn
+
+  java.util.Map<org.apache.hadoop.hbase.io.hfile.BlockCacheKey, org.apache.hadoop.hbase.io.hfile.LruCachedBlock> getMapForTests();
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field map:Ljava/util/Map;
+       4: areturn
+
+  public org.apache.hadoop.hbase.io.hfile.BlockCache[] getBlockCaches();
+    Code:
+       0: aload_0
+       1: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+       4: ifnull        23
+       7: iconst_2
+       8: anewarray     #88                 // class org/apache/hadoop/hbase/io/hfile/BlockCache
+      11: dup
+      12: iconst_0
+      13: aload_0
+      14: aastore
+      15: dup
+      16: iconst_1
+      17: aload_0
+      18: getfield      #41                 // Field victimHandler:Lorg/apache/hadoop/hbase/io/hfile/BlockCache;
+      21: aastore
+      22: areturn
+      23: aconst_null
+      24: areturn
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #6                  // class org/apache/hadoop/hbase/io/hfile/LruBlockCache
+       2: invokestatic  #297                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: bipush        32
+      10: bipush        11
+      12: getstatic     #299                // Field org/apache/hadoop/hbase/util/ClassSize.REFERENCE:I
+      15: imul
+      16: iadd
+      17: bipush        24
+      19: iadd
+      20: iconst_2
+      21: iadd
+      22: getstatic     #300                // Field org/apache/hadoop/hbase/util/ClassSize.OBJECT:I
+      25: iadd
+      26: invokestatic  #301                // Method org/apache/hadoop/hbase/util/ClassSize.align:(I)I
+      29: i2l
+      30: putstatic     #264                // Field CACHE_FIXED_OVERHEAD:J
+      33: return
+}

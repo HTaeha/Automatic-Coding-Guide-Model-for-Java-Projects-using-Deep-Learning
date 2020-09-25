@@ -1,0 +1,201 @@
+Compiled from "SecureWALCellCodec.java"
+class org.apache.hadoop.hbase.regionserver.wal.SecureWALCellCodec$EncryptedKvDecoder extends org.apache.hadoop.hbase.codec.KeyValueCodecWithTags$KeyValueDecoder {
+  public org.apache.hadoop.hbase.regionserver.wal.SecureWALCellCodec$EncryptedKvDecoder(java.io.InputStream);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method org/apache/hadoop/hbase/codec/KeyValueCodecWithTags$KeyValueDecoder."<init>":(Ljava/io/InputStream;)V
+       5: return
+
+  public org.apache.hadoop.hbase.regionserver.wal.SecureWALCellCodec$EncryptedKvDecoder(java.io.InputStream, org.apache.hadoop.hbase.io.crypto.Decryptor);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #1                  // Method org/apache/hadoop/hbase/codec/KeyValueCodecWithTags$KeyValueDecoder."<init>":(Ljava/io/InputStream;)V
+       5: aload_0
+       6: aload_2
+       7: putfield      #2                  // Field decryptor:Lorg/apache/hadoop/hbase/io/crypto/Decryptor;
+      10: aload_2
+      11: ifnull        26
+      14: aload_0
+      15: aload_2
+      16: invokeinterface #3,  1            // InterfaceMethod org/apache/hadoop/hbase/io/crypto/Decryptor.getIvLength:()I
+      21: newarray       byte
+      23: putfield      #4                  // Field iv:[B
+      26: return
+
+  protected org.apache.hadoop.hbase.Cell parseCell() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field decryptor:Lorg/apache/hadoop/hbase/io/crypto/Decryptor;
+       4: ifnonnull     12
+       7: aload_0
+       8: invokespecial #5                  // Method org/apache/hadoop/hbase/codec/KeyValueCodecWithTags$KeyValueDecoder.parseCell:()Lorg/apache/hadoop/hbase/Cell;
+      11: areturn
+      12: iconst_0
+      13: istore_1
+      14: aload_0
+      15: getfield      #6                  // Field in:Ljava/io/InputStream;
+      18: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+      21: istore_1
+      22: iload_1
+      23: aload_0
+      24: getfield      #4                  // Field iv:[B
+      27: arraylength
+      28: if_icmpeq     71
+      31: new           #8                  // class java/io/IOException
+      34: dup
+      35: new           #9                  // class java/lang/StringBuilder
+      38: dup
+      39: invokespecial #10                 // Method java/lang/StringBuilder."<init>":()V
+      42: ldc           #11                 // String Incorrect IV length: expected=
+      44: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      47: aload_0
+      48: getfield      #4                  // Field iv:[B
+      51: arraylength
+      52: invokevirtual #13                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      55: ldc           #14                 // String  have=
+      57: invokevirtual #12                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      60: iload_1
+      61: invokevirtual #13                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      64: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      67: invokespecial #16                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      70: athrow
+      71: aload_0
+      72: getfield      #6                  // Field in:Ljava/io/InputStream;
+      75: aload_0
+      76: getfield      #4                  // Field iv:[B
+      79: invokestatic  #17                 // Method org/apache/commons/io/IOUtils.readFully:(Ljava/io/InputStream;[B)V
+      82: aload_0
+      83: getfield      #6                  // Field in:Ljava/io/InputStream;
+      86: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+      89: istore_2
+      90: iload_2
+      91: newarray       byte
+      93: astore_3
+      94: aload_0
+      95: getfield      #6                  // Field in:Ljava/io/InputStream;
+      98: aload_3
+      99: invokestatic  #17                 // Method org/apache/commons/io/IOUtils.readFully:(Ljava/io/InputStream;[B)V
+     102: aload_0
+     103: getfield      #2                  // Field decryptor:Lorg/apache/hadoop/hbase/io/crypto/Decryptor;
+     106: aload_0
+     107: getfield      #4                  // Field iv:[B
+     110: invokeinterface #18,  2           // InterfaceMethod org/apache/hadoop/hbase/io/crypto/Decryptor.setIv:([B)V
+     115: aload_0
+     116: getfield      #2                  // Field decryptor:Lorg/apache/hadoop/hbase/io/crypto/Decryptor;
+     119: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/io/crypto/Decryptor.reset:()V
+     124: aload_0
+     125: getfield      #2                  // Field decryptor:Lorg/apache/hadoop/hbase/io/crypto/Decryptor;
+     128: new           #20                 // class java/io/ByteArrayInputStream
+     131: dup
+     132: aload_3
+     133: invokespecial #21                 // Method java/io/ByteArrayInputStream."<init>":([B)V
+     136: invokeinterface #22,  2           // InterfaceMethod org/apache/hadoop/hbase/io/crypto/Decryptor.createDecryptionStream:(Ljava/io/InputStream;)Ljava/io/InputStream;
+     141: astore        4
+     143: aload         4
+     145: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+     148: istore        5
+     150: aload         4
+     152: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+     155: istore        6
+     157: aload         4
+     159: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+     162: istore        7
+     164: iconst_0
+     165: istore        8
+     167: iload         7
+     169: ifne          185
+     172: bipush        8
+     174: iload         5
+     176: iadd
+     177: iload         6
+     179: iadd
+     180: istore        8
+     182: goto          198
+     185: bipush        10
+     187: iload         5
+     189: iadd
+     190: iload         6
+     192: iadd
+     193: iload         7
+     195: iadd
+     196: istore        8
+     198: iload         8
+     200: newarray       byte
+     202: astore        9
+     204: iconst_0
+     205: istore        10
+     207: aload         9
+     209: iload         10
+     211: iload         5
+     213: invokestatic  #24                 // Method org/apache/hadoop/hbase/util/Bytes.putInt:([BII)I
+     216: istore        10
+     218: aload         9
+     220: iload         10
+     222: iload         6
+     224: invokestatic  #24                 // Method org/apache/hadoop/hbase/util/Bytes.putInt:([BII)I
+     227: istore        10
+     229: aload         4
+     231: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+     234: istore        11
+     236: aload         9
+     238: iload         10
+     240: iload         11
+     242: i2s
+     243: invokestatic  #25                 // Method org/apache/hadoop/hbase/util/Bytes.putShort:([BIS)I
+     246: istore        10
+     248: aload         4
+     250: aload         9
+     252: iload         10
+     254: iload         11
+     256: invokestatic  #26                 // Method org/apache/commons/io/IOUtils.readFully:(Ljava/io/InputStream;[BII)V
+     259: iload         10
+     261: iload         11
+     263: iadd
+     264: istore        10
+     266: aload         4
+     268: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+     271: istore        11
+     273: aload         9
+     275: iload         10
+     277: iload         11
+     279: i2b
+     280: invokestatic  #27                 // Method org/apache/hadoop/hbase/util/Bytes.putByte:([BIB)I
+     283: istore        10
+     285: aload         4
+     287: aload         9
+     289: iload         10
+     291: iload         11
+     293: invokestatic  #26                 // Method org/apache/commons/io/IOUtils.readFully:(Ljava/io/InputStream;[BII)V
+     296: iload         10
+     298: iload         11
+     300: iadd
+     301: istore        10
+     303: aload         4
+     305: invokestatic  #7                  // Method org/apache/hadoop/hbase/io/util/StreamUtils.readRawVarint32:(Ljava/io/InputStream;)I
+     308: istore        11
+     310: aload         4
+     312: aload         9
+     314: iload         10
+     316: iload         11
+     318: invokestatic  #26                 // Method org/apache/commons/io/IOUtils.readFully:(Ljava/io/InputStream;[BII)V
+     321: iload         10
+     323: iload         11
+     325: iadd
+     326: istore        10
+     328: aload         4
+     330: aload         9
+     332: iload         10
+     334: iload         8
+     336: iload         10
+     338: isub
+     339: invokestatic  #26                 // Method org/apache/commons/io/IOUtils.readFully:(Ljava/io/InputStream;[BII)V
+     342: new           #23                 // class org/apache/hadoop/hbase/KeyValue
+     345: dup
+     346: aload         9
+     348: iconst_0
+     349: iload         8
+     351: invokespecial #28                 // Method org/apache/hadoop/hbase/KeyValue."<init>":([BII)V
+     354: areturn
+}

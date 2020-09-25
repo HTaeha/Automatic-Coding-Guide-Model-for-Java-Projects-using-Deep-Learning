@@ -1,0 +1,687 @@
+Compiled from "HFileBlockIndex.java"
+class org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$CellBasedKeyBlockIndexReader extends org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$BlockIndexReader {
+  static final boolean $assertionsDisabled;
+
+  public org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$CellBasedKeyBlockIndexReader(org.apache.hadoop.hbase.CellComparator, int, org.apache.hadoop.hbase.io.hfile.HFile$CachingBlockReader);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iload_2
+       3: invokespecial #2                  // Method "<init>":(Lorg/apache/hadoop/hbase/CellComparator;I)V
+       6: aload_0
+       7: aload_3
+       8: putfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+      11: return
+
+  public org.apache.hadoop.hbase.io.hfile.HFileBlockIndex$CellBasedKeyBlockIndexReader(org.apache.hadoop.hbase.CellComparator, int);
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method org/apache/hadoop/hbase/io/hfile/HFileBlockIndex$BlockIndexReader."<init>":()V
+       4: aload_0
+       5: new           #5                  // class java/util/concurrent/atomic/AtomicReference
+       8: dup
+       9: invokespecial #6                  // Method java/util/concurrent/atomic/AtomicReference."<init>":()V
+      12: putfield      #7                  // Field midKey:Ljava/util/concurrent/atomic/AtomicReference;
+      15: aload_0
+      16: aload_1
+      17: putfield      #8                  // Field comparator:Lorg/apache/hadoop/hbase/CellComparator;
+      20: aload_0
+      21: iload_2
+      22: putfield      #9                  // Field searchTreeLevel:I
+      25: return
+
+  protected long calculateHeapSizeForBlockKeys(long);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+       4: ifnull        78
+       7: lload_1
+       8: getstatic     #11                 // Field org/apache/hadoop/hbase/util/ClassSize.REFERENCE:I
+      11: i2l
+      12: ladd
+      13: lstore_1
+      14: lload_1
+      15: getstatic     #12                 // Field org/apache/hadoop/hbase/util/ClassSize.ARRAY:I
+      18: aload_0
+      19: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      22: arraylength
+      23: getstatic     #11                 // Field org/apache/hadoop/hbase/util/ClassSize.REFERENCE:I
+      26: imul
+      27: iadd
+      28: invokestatic  #13                 // Method org/apache/hadoop/hbase/util/ClassSize.align:(I)I
+      31: i2l
+      32: ladd
+      33: lstore_1
+      34: aload_0
+      35: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      38: astore_3
+      39: aload_3
+      40: arraylength
+      41: istore        4
+      43: iconst_0
+      44: istore        5
+      46: iload         5
+      48: iload         4
+      50: if_icmpge     78
+      53: aload_3
+      54: iload         5
+      56: aaload
+      57: astore        6
+      59: lload_1
+      60: aload         6
+      62: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/Cell.heapSize:()J
+      67: invokestatic  #15                 // Method org/apache/hadoop/hbase/util/ClassSize.align:(J)J
+      70: ladd
+      71: lstore_1
+      72: iinc          5, 1
+      75: goto          46
+      78: lload_1
+      79: iconst_2
+      80: getstatic     #11                 // Field org/apache/hadoop/hbase/util/ClassSize.REFERENCE:I
+      83: imul
+      84: i2l
+      85: ladd
+      86: lstore_1
+      87: lload_1
+      88: lreturn
+
+  public boolean isEmpty();
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+       4: arraylength
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: ireturn
+
+  public org.apache.hadoop.hbase.Cell getRootBlockKey(int);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+       4: iload_1
+       5: aaload
+       6: areturn
+
+  public org.apache.hadoop.hbase.io.hfile.BlockWithScanInfo loadDataBlockWithScanInfo(org.apache.hadoop.hbase.Cell, org.apache.hadoop.hbase.io.hfile.HFileBlock, boolean, boolean, boolean, org.apache.hadoop.hbase.io.encoding.DataBlockEncoding) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #16                 // Method rootBlockContainingKey:(Lorg/apache/hadoop/hbase/Cell;)I
+       5: istore        7
+       7: iload         7
+       9: iflt          22
+      12: iload         7
+      14: aload_0
+      15: getfield      #17                 // Field blockOffsets:[J
+      18: arraylength
+      19: if_icmplt     24
+      22: aconst_null
+      23: areturn
+      24: aconst_null
+      25: astore        8
+      27: aload_0
+      28: getfield      #17                 // Field blockOffsets:[J
+      31: iload         7
+      33: laload
+      34: lstore        9
+      36: aload_0
+      37: getfield      #18                 // Field blockDataSizes:[I
+      40: iload         7
+      42: iaload
+      43: istore        11
+      45: iload         7
+      47: aload_0
+      48: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      51: arraylength
+      52: iconst_1
+      53: isub
+      54: if_icmpge     71
+      57: aload_0
+      58: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      61: iload         7
+      63: iconst_1
+      64: iadd
+      65: aaload
+      66: astore        8
+      68: goto          76
+      71: getstatic     #19                 // Field org/apache/hadoop/hbase/regionserver/KeyValueScanner.NO_NEXT_INDEXED_KEY:Lorg/apache/hadoop/hbase/Cell;
+      74: astore        8
+      76: iconst_1
+      77: istore        12
+      79: iconst_m1
+      80: istore        13
+      82: aconst_null
+      83: astore        14
+      85: iconst_0
+      86: istore        15
+      88: new           #20                 // class org/apache/hadoop/hbase/KeyValue$KeyOnlyKeyValue
+      91: dup
+      92: invokespecial #21                 // Method org/apache/hadoop/hbase/KeyValue$KeyOnlyKeyValue."<init>":()V
+      95: astore        16
+      97: aload_2
+      98: ifnull        117
+     101: aload_2
+     102: invokevirtual #22                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.getOffset:()J
+     105: lload         9
+     107: lcmp
+     108: ifne          117
+     111: aload_2
+     112: astore        14
+     114: goto          207
+     117: iload_3
+     118: ifne          130
+     121: iload         12
+     123: aload_0
+     124: getfield      #9                  // Field searchTreeLevel:I
+     127: if_icmpge     134
+     130: iconst_1
+     131: goto          135
+     134: iconst_0
+     135: istore        17
+     137: iload         12
+     139: aload_0
+     140: getfield      #9                  // Field searchTreeLevel:I
+     143: iconst_1
+     144: isub
+     145: if_icmpge     156
+     148: getstatic     #23                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.INTERMEDIATE_INDEX:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     151: astore        18
+     153: goto          180
+     156: iload         12
+     158: aload_0
+     159: getfield      #9                  // Field searchTreeLevel:I
+     162: iconst_1
+     163: isub
+     164: if_icmpne     175
+     167: getstatic     #24                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.LEAF_INDEX:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     170: astore        18
+     172: goto          180
+     175: getstatic     #25                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.DATA:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     178: astore        18
+     180: aload_0
+     181: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+     184: lload         9
+     186: iload         11
+     188: i2l
+     189: iload         17
+     191: iload         4
+     193: iload         5
+     195: iconst_1
+     196: aload         18
+     198: aload         6
+     200: invokeinterface #26,  11          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.readBlock:(JJZZZZLorg/apache/hadoop/hbase/io/hfile/BlockType;Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;
+     205: astore        14
+     207: aload         14
+     209: ifnonnull     250
+     212: new           #27                 // class java/io/IOException
+     215: dup
+     216: new           #28                 // class java/lang/StringBuilder
+     219: dup
+     220: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     223: ldc           #30                 // String Failed to read block at offset
+     225: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     228: lload         9
+     230: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     233: ldc           #33                 // String , onDiskSize=
+     235: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     238: iload         11
+     240: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     243: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     246: invokespecial #36                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     249: athrow
+     250: aload         14
+     252: invokevirtual #37                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.getBlockType:()Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+     255: invokevirtual #38                 // Method org/apache/hadoop/hbase/io/hfile/BlockType.isData:()Z
+     258: ifeq          283
+     261: iconst_1
+     262: istore        15
+     264: iload         15
+     266: ifne          489
+     269: aload_0
+     270: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+     273: aload         14
+     275: invokeinterface #39,  2           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.returnBlock:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;)V
+     280: goto          489
+     283: iinc          12, 1
+     286: iload         12
+     288: aload_0
+     289: getfield      #9                  // Field searchTreeLevel:I
+     292: if_icmple     335
+     295: new           #27                 // class java/io/IOException
+     298: dup
+     299: new           #28                 // class java/lang/StringBuilder
+     302: dup
+     303: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     306: ldc           #40                 // String Search Tree Level overflow: lookupLevel=
+     308: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     311: iload         12
+     313: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     316: ldc           #41                 // String , searchTreeLevel=
+     318: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     321: aload_0
+     322: getfield      #9                  // Field searchTreeLevel:I
+     325: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     328: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     331: invokespecial #36                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     334: athrow
+     335: aload         14
+     337: invokevirtual #42                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.getBufferWithoutHeader:()Lorg/apache/hadoop/hbase/nio/ByteBuff;
+     340: astore        17
+     342: aload         17
+     344: aload_1
+     345: aload_0
+     346: getfield      #8                  // Field comparator:Lorg/apache/hadoop/hbase/CellComparator;
+     349: invokestatic  #43                 // Method locateNonRootIndexEntry:(Lorg/apache/hadoop/hbase/nio/ByteBuff;Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/CellComparator;)I
+     352: istore        13
+     354: iload         13
+     356: iconst_m1
+     357: if_icmpne     400
+     360: new           #27                 // class java/io/IOException
+     363: dup
+     364: new           #28                 // class java/lang/StringBuilder
+     367: dup
+     368: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     371: ldc           #44                 // String The key
+     373: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     376: aload_1
+     377: invokestatic  #45                 // Method org/apache/hadoop/hbase/CellUtil.getCellKeyAsString:(Lorg/apache/hadoop/hbase/Cell;)Ljava/lang/String;
+     380: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     383: ldc           #46                 // String  is before the first key of the non-root index block
+     385: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     388: aload         14
+     390: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     393: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     396: invokespecial #36                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     399: athrow
+     400: aload         17
+     402: invokevirtual #48                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getLong:()J
+     405: lstore        9
+     407: aload         17
+     409: invokevirtual #49                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getInt:()I
+     412: istore        11
+     414: aload_0
+     415: aload         17
+     417: iload         13
+     419: iconst_1
+     420: iadd
+     421: invokevirtual #50                 // Method getNonRootIndexedKey:(Lorg/apache/hadoop/hbase/nio/ByteBuff;I)[B
+     424: astore        18
+     426: aload         18
+     428: ifnull        446
+     431: aload         16
+     433: aload         18
+     435: iconst_0
+     436: aload         18
+     438: arraylength
+     439: invokevirtual #51                 // Method org/apache/hadoop/hbase/KeyValue$KeyOnlyKeyValue.setKey:([BII)V
+     442: aload         16
+     444: astore        8
+     446: iload         15
+     448: ifne          486
+     451: aload_0
+     452: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+     455: aload         14
+     457: invokeinterface #39,  2           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.returnBlock:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;)V
+     462: goto          486
+     465: astore        19
+     467: iload         15
+     469: ifne          483
+     472: aload_0
+     473: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+     476: aload         14
+     478: invokeinterface #39,  2           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.returnBlock:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;)V
+     483: aload         19
+     485: athrow
+     486: goto          97
+     489: iload         12
+     491: aload_0
+     492: getfield      #9                  // Field searchTreeLevel:I
+     495: if_icmpeq     569
+     498: getstatic     #52                 // Field $assertionsDisabled:Z
+     501: ifne          518
+     504: iload         15
+     506: iconst_1
+     507: if_icmpeq     518
+     510: new           #53                 // class java/lang/AssertionError
+     513: dup
+     514: invokespecial #54                 // Method java/lang/AssertionError."<init>":()V
+     517: athrow
+     518: aload_0
+     519: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+     522: aload         14
+     524: invokeinterface #39,  2           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.returnBlock:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;)V
+     529: new           #27                 // class java/io/IOException
+     532: dup
+     533: new           #28                 // class java/lang/StringBuilder
+     536: dup
+     537: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+     540: ldc           #55                 // String Reached a data block at level
+     542: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     545: iload         12
+     547: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     550: ldc           #56                 // String  but the number of levels is
+     552: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     555: aload_0
+     556: getfield      #9                  // Field searchTreeLevel:I
+     559: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     562: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     565: invokespecial #36                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     568: athrow
+     569: new           #57                 // class org/apache/hadoop/hbase/io/hfile/BlockWithScanInfo
+     572: dup
+     573: aload         14
+     575: aload         8
+     577: invokespecial #58                 // Method org/apache/hadoop/hbase/io/hfile/BlockWithScanInfo."<init>":(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;Lorg/apache/hadoop/hbase/Cell;)V
+     580: astore        17
+     582: aload         17
+     584: areturn
+    Exception table:
+       from    to  target type
+          97   264   465   any
+         283   446   465   any
+         465   467   465   any
+
+  public org.apache.hadoop.hbase.Cell midkey() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #59                 // Field rootCount:I
+       4: ifne          17
+       7: new           #27                 // class java/io/IOException
+      10: dup
+      11: ldc           #60                 // String HFile empty
+      13: invokespecial #36                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_0
+      18: getfield      #7                  // Field midKey:Ljava/util/concurrent/atomic/AtomicReference;
+      21: invokevirtual #61                 // Method java/util/concurrent/atomic/AtomicReference.get:()Ljava/lang/Object;
+      24: checkcast     #62                 // class org/apache/hadoop/hbase/Cell
+      27: astore_1
+      28: aload_1
+      29: ifnull        34
+      32: aload_1
+      33: areturn
+      34: aload_0
+      35: getfield      #63                 // Field midLeafBlockOffset:J
+      38: lconst_0
+      39: lcmp
+      40: iflt          202
+      43: aload_0
+      44: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+      47: ifnonnull     60
+      50: new           #27                 // class java/io/IOException
+      53: dup
+      54: ldc           #64                 // String Have to read the middle leaf block but no block reader available
+      56: invokespecial #36                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+      59: athrow
+      60: aload_0
+      61: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+      64: aload_0
+      65: getfield      #63                 // Field midLeafBlockOffset:J
+      68: aload_0
+      69: getfield      #65                 // Field midLeafBlockOnDiskSize:I
+      72: i2l
+      73: iconst_1
+      74: iconst_1
+      75: iconst_0
+      76: iconst_1
+      77: getstatic     #24                 // Field org/apache/hadoop/hbase/io/hfile/BlockType.LEAF_INDEX:Lorg/apache/hadoop/hbase/io/hfile/BlockType;
+      80: aconst_null
+      81: invokeinterface #26,  11          // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.readBlock:(JJZZZZLorg/apache/hadoop/hbase/io/hfile/BlockType;Lorg/apache/hadoop/hbase/io/encoding/DataBlockEncoding;)Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;
+      86: astore_2
+      87: aload_2
+      88: invokevirtual #42                 // Method org/apache/hadoop/hbase/io/hfile/HFileBlock.getBufferWithoutHeader:()Lorg/apache/hadoop/hbase/nio/ByteBuff;
+      91: astore_3
+      92: aload_3
+      93: iconst_0
+      94: invokevirtual #66                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+      97: istore        4
+      99: aload_3
+     100: iconst_4
+     101: aload_0
+     102: getfield      #68                 // Field midKeyEntry:I
+     105: iconst_1
+     106: iadd
+     107: imul
+     108: invokevirtual #66                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+     111: istore        5
+     113: aload_3
+     114: iconst_4
+     115: aload_0
+     116: getfield      #68                 // Field midKeyEntry:I
+     119: iconst_2
+     120: iadd
+     121: imul
+     122: invokevirtual #66                 // Method org/apache/hadoop/hbase/nio/ByteBuff.getIntAfterPosition:(I)I
+     125: iload         5
+     127: isub
+     128: bipush        12
+     130: isub
+     131: istore        6
+     133: iconst_4
+     134: iload         4
+     136: iconst_2
+     137: iadd
+     138: imul
+     139: iload         5
+     141: iadd
+     142: bipush        12
+     144: iadd
+     145: istore        7
+     147: aload_3
+     148: iload         7
+     150: iload         6
+     152: invokevirtual #69                 // Method org/apache/hadoop/hbase/nio/ByteBuff.toBytes:(II)[B
+     155: astore        8
+     157: new           #20                 // class org/apache/hadoop/hbase/KeyValue$KeyOnlyKeyValue
+     160: dup
+     161: aload         8
+     163: iconst_0
+     164: aload         8
+     166: arraylength
+     167: invokespecial #70                 // Method org/apache/hadoop/hbase/KeyValue$KeyOnlyKeyValue."<init>":([BII)V
+     170: astore_1
+     171: aload_0
+     172: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+     175: aload_2
+     176: invokeinterface #39,  2           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.returnBlock:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;)V
+     181: goto          199
+     184: astore        9
+     186: aload_0
+     187: getfield      #3                  // Field cachingBlockReader:Lorg/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader;
+     190: aload_2
+     191: invokeinterface #39,  2           // InterfaceMethod org/apache/hadoop/hbase/io/hfile/HFile$CachingBlockReader.returnBlock:(Lorg/apache/hadoop/hbase/io/hfile/HFileBlock;)V
+     196: aload         9
+     198: athrow
+     199: goto          214
+     202: aload_0
+     203: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+     206: aload_0
+     207: getfield      #59                 // Field rootCount:I
+     210: iconst_2
+     211: idiv
+     212: aaload
+     213: astore_1
+     214: aload_0
+     215: getfield      #7                  // Field midKey:Ljava/util/concurrent/atomic/AtomicReference;
+     218: aload_1
+     219: invokevirtual #71                 // Method java/util/concurrent/atomic/AtomicReference.set:(Ljava/lang/Object;)V
+     222: aload_1
+     223: areturn
+    Exception table:
+       from    to  target type
+          87   171   184   any
+         184   186   184   any
+
+  protected void initialize(int);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: anewarray     #62                 // class org/apache/hadoop/hbase/Cell
+       5: putfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+       8: return
+
+  protected void add(byte[], long, int);
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field blockOffsets:[J
+       4: aload_0
+       5: getfield      #59                 // Field rootCount:I
+       8: lload_2
+       9: lastore
+      10: aload_0
+      11: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      14: aload_0
+      15: getfield      #59                 // Field rootCount:I
+      18: new           #20                 // class org/apache/hadoop/hbase/KeyValue$KeyOnlyKeyValue
+      21: dup
+      22: aload_1
+      23: iconst_0
+      24: aload_1
+      25: arraylength
+      26: invokespecial #70                 // Method org/apache/hadoop/hbase/KeyValue$KeyOnlyKeyValue."<init>":([BII)V
+      29: aastore
+      30: aload_0
+      31: getfield      #18                 // Field blockDataSizes:[I
+      34: aload_0
+      35: getfield      #59                 // Field rootCount:I
+      38: iload         4
+      40: iastore
+      41: aload_0
+      42: dup
+      43: getfield      #59                 // Field rootCount:I
+      46: iconst_1
+      47: iadd
+      48: putfield      #59                 // Field rootCount:I
+      51: return
+
+  public int rootBlockContainingKey(byte[], int, int, org.apache.hadoop.hbase.CellComparator);
+    Code:
+       0: new           #72                 // class java/lang/UnsupportedOperationException
+       3: dup
+       4: ldc           #73                 // String Cannot find for a key containing plain byte array. Only cell based keys can be searched for
+       6: invokespecial #74                 // Method java/lang/UnsupportedOperationException."<init>":(Ljava/lang/String;)V
+       9: athrow
+
+  public int rootBlockContainingKey(org.apache.hadoop.hbase.Cell);
+    Code:
+       0: aload_0
+       1: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+       4: aload_1
+       5: aload_0
+       6: getfield      #8                  // Field comparator:Lorg/apache/hadoop/hbase/CellComparator;
+       9: invokestatic  #75                 // Method org/apache/hadoop/hbase/util/Bytes.binarySearch:([Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/CellComparator;)I
+      12: istore_2
+      13: iload_2
+      14: iflt          42
+      17: getstatic     #52                 // Field $assertionsDisabled:Z
+      20: ifne          40
+      23: iload_2
+      24: aload_0
+      25: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      28: arraylength
+      29: if_icmplt     40
+      32: new           #53                 // class java/lang/AssertionError
+      35: dup
+      36: invokespecial #54                 // Method java/lang/AssertionError."<init>":()V
+      39: athrow
+      40: iload_2
+      41: ireturn
+      42: iload_2
+      43: ineg
+      44: iconst_1
+      45: isub
+      46: istore_3
+      47: getstatic     #52                 // Field $assertionsDisabled:Z
+      50: ifne          75
+      53: iconst_0
+      54: iload_3
+      55: if_icmpgt     67
+      58: iload_3
+      59: aload_0
+      60: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      63: arraylength
+      64: if_icmple     75
+      67: new           #53                 // class java/lang/AssertionError
+      70: dup
+      71: invokespecial #54                 // Method java/lang/AssertionError."<init>":()V
+      74: athrow
+      75: iload_3
+      76: iconst_1
+      77: isub
+      78: ireturn
+
+  public java.lang.String toString();
+    Code:
+       0: new           #28                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+       7: astore_1
+       8: aload_1
+       9: new           #28                 // class java/lang/StringBuilder
+      12: dup
+      13: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      16: ldc           #76                 // String size=
+      18: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      21: aload_0
+      22: getfield      #59                 // Field rootCount:I
+      25: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      28: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      31: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: ldc           #77                 // String \n
+      36: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      39: pop
+      40: iconst_0
+      41: istore_2
+      42: iload_2
+      43: aload_0
+      44: getfield      #59                 // Field rootCount:I
+      47: if_icmpge     118
+      50: aload_1
+      51: ldc           #78                 // String key=
+      53: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      56: aload_0
+      57: getfield      #10                 // Field blockKeys:[Lorg/apache/hadoop/hbase/Cell;
+      60: iload_2
+      61: aaload
+      62: invokevirtual #47                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      65: ldc           #79                 // String \n  offset=
+      67: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      70: aload_0
+      71: getfield      #17                 // Field blockOffsets:[J
+      74: iload_2
+      75: laload
+      76: invokevirtual #32                 // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+      79: new           #28                 // class java/lang/StringBuilder
+      82: dup
+      83: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      86: ldc           #80                 // String , dataSize=
+      88: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      91: aload_0
+      92: getfield      #18                 // Field blockDataSizes:[I
+      95: iload_2
+      96: iaload
+      97: invokevirtual #34                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     100: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     103: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     106: ldc           #77                 // String \n
+     108: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     111: pop
+     112: iinc          2, 1
+     115: goto          42
+     118: aload_1
+     119: invokevirtual #35                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     122: areturn
+
+  static {};
+    Code:
+       0: ldc           #1                  // class org/apache/hadoop/hbase/io/hfile/HFileBlockIndex
+       2: invokevirtual #81                 // Method java/lang/Class.desiredAssertionStatus:()Z
+       5: ifne          12
+       8: iconst_1
+       9: goto          13
+      12: iconst_0
+      13: putstatic     #52                 // Field $assertionsDisabled:Z
+      16: return
+}

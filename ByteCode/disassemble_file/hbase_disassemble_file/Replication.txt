@@ -1,0 +1,364 @@
+Compiled from "Replication.java"
+public class org.apache.hadoop.hbase.replication.regionserver.Replication implements org.apache.hadoop.hbase.regionserver.ReplicationSourceService,org.apache.hadoop.hbase.regionserver.ReplicationSinkService {
+  public org.apache.hadoop.hbase.replication.regionserver.Replication();
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public void initialize(org.apache.hadoop.hbase.Server, org.apache.hadoop.fs.FileSystem, org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path, org.apache.hadoop.hbase.wal.WALProvider) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #3                  // Field server:Lorg/apache/hadoop/hbase/Server;
+       5: aload_0
+       6: aload_0
+       7: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/Server;
+      10: invokeinterface #4,  1            // InterfaceMethod org/apache/hadoop/hbase/Server.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      15: putfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      18: aload_0
+      19: aload_0
+      20: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      23: invokestatic  #6                  // Method org/apache/hadoop/hbase/replication/ReplicationUtils.isReplicationForBulkLoadDataEnabled:(Lorg/apache/hadoop/conf/Configuration;)Z
+      26: putfield      #7                  // Field isReplicationForBulkLoadDataEnabled:Z
+      29: aload_0
+      30: iconst_1
+      31: new           #8                  // class org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder
+      34: dup
+      35: invokespecial #9                  // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder."<init>":()V
+      38: new           #10                 // class java/lang/StringBuilder
+      41: dup
+      42: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      45: aload_1
+      46: invokeinterface #12,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getServerName:()Lorg/apache/hadoop/hbase/ServerName;
+      51: invokevirtual #13                 // Method org/apache/hadoop/hbase/ServerName.toShortString:()Ljava/lang/String;
+      54: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      57: ldc           #15                 // String Replication Statistics #%d
+      59: invokevirtual #14                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      62: invokevirtual #16                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      65: invokevirtual #17                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setNameFormat:(Ljava/lang/String;)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      68: iconst_1
+      69: invokevirtual #18                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.setDaemon:(Z)Lorg/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder;
+      72: invokevirtual #19                 // Method org/apache/hbase/thirdparty/com/google/common/util/concurrent/ThreadFactoryBuilder.build:()Ljava/util/concurrent/ThreadFactory;
+      75: invokestatic  #20                 // Method java/util/concurrent/Executors.newScheduledThreadPool:(ILjava/util/concurrent/ThreadFactory;)Ljava/util/concurrent/ScheduledExecutorService;
+      78: putfield      #21                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      81: aload_0
+      82: getfield      #7                  // Field isReplicationForBulkLoadDataEnabled:Z
+      85: ifeq          125
+      88: aload_0
+      89: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      92: ldc           #23                 // String hbase.replication.cluster.id
+      94: invokevirtual #24                 // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;)Ljava/lang/String;
+      97: ifnull        115
+     100: aload_0
+     101: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     104: ldc           #23                 // String hbase.replication.cluster.id
+     106: invokevirtual #24                 // Method org/apache/hadoop/conf/Configuration.get:(Ljava/lang/String;)Ljava/lang/String;
+     109: invokevirtual #25                 // Method java/lang/String.isEmpty:()Z
+     112: ifeq          125
+     115: new           #26                 // class java/lang/IllegalArgumentException
+     118: dup
+     119: ldc           #27                 // String hbase.replication.cluster.id cannot be null/empty when hbase.replication.bulkload.enabled is set to true.
+     121: invokespecial #28                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+     124: athrow
+     125: aload_0
+     126: aload_1
+     127: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getZooKeeper:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     132: aload_0
+     133: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     136: invokestatic  #30                 // Method org/apache/hadoop/hbase/replication/ReplicationStorageFactory.getReplicationQueueStorage:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+     139: putfield      #31                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+     142: aload_0
+     143: aload_1
+     144: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getZooKeeper:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     149: aload_0
+     150: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     153: invokestatic  #32                 // Method org/apache/hadoop/hbase/replication/ReplicationFactory.getReplicationPeers:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+     156: putfield      #33                 // Field replicationPeers:Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+     159: aload_0
+     160: getfield      #33                 // Field replicationPeers:Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+     163: invokevirtual #34                 // Method org/apache/hadoop/hbase/replication/ReplicationPeers.init:()V
+     166: aload_0
+     167: aload_1
+     168: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getZooKeeper:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     173: aload_0
+     174: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/Server;
+     177: aload_0
+     178: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/Server;
+     181: invokestatic  #35                 // Method org/apache/hadoop/hbase/replication/ReplicationFactory.getReplicationTracker:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;Lorg/apache/hadoop/hbase/Abortable;Lorg/apache/hadoop/hbase/Stoppable;)Lorg/apache/hadoop/hbase/replication/ReplicationTracker;
+     184: putfield      #36                 // Field replicationTracker:Lorg/apache/hadoop/hbase/replication/ReplicationTracker;
+     187: goto          204
+     190: astore        6
+     192: new           #38                 // class java/io/IOException
+     195: dup
+     196: ldc           #39                 // String Failed replication handler create
+     198: aload         6
+     200: invokespecial #40                 // Method java/io/IOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     203: athrow
+     204: aconst_null
+     205: astore        6
+     207: aload_0
+     208: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/Server;
+     211: invokeinterface #29,  1           // InterfaceMethod org/apache/hadoop/hbase/Server.getZooKeeper:()Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;
+     216: invokestatic  #41                 // Method org/apache/hadoop/hbase/zookeeper/ZKClusterId.getUUIDForCluster:(Lorg/apache/hadoop/hbase/zookeeper/ZKWatcher;)Ljava/util/UUID;
+     219: astore        6
+     221: goto          238
+     224: astore        7
+     226: new           #38                 // class java/io/IOException
+     229: dup
+     230: ldc           #43                 // String Could not read cluster id
+     232: aload         7
+     234: invokespecial #40                 // Method java/io/IOException."<init>":(Ljava/lang/String;Ljava/lang/Throwable;)V
+     237: athrow
+     238: new           #44                 // class org/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerMappingManager
+     241: dup
+     242: invokespecial #45                 // Method org/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerMappingManager."<init>":()V
+     245: astore        7
+     247: aload_0
+     248: new           #46                 // class org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager
+     251: dup
+     252: aload_0
+     253: getfield      #31                 // Field queueStorage:Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;
+     256: aload_0
+     257: getfield      #33                 // Field replicationPeers:Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+     260: aload_0
+     261: getfield      #36                 // Field replicationTracker:Lorg/apache/hadoop/hbase/replication/ReplicationTracker;
+     264: aload_0
+     265: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     268: aload_0
+     269: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/Server;
+     272: aload_2
+     273: aload_3
+     274: aload         4
+     276: aload         6
+     278: aload         5
+     280: ifnull        293
+     283: aload         5
+     285: invokeinterface #47,  1           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.getWALFileLengthProvider:()Lorg/apache/hadoop/hbase/replication/regionserver/WALFileLengthProvider;
+     290: goto          298
+     293: invokedynamic #48,  0             // InvokeDynamic #0:getLogFileSizeIfBeingWritten:()Lorg/apache/hadoop/hbase/replication/regionserver/WALFileLengthProvider;
+     298: aload         7
+     300: invokespecial #49                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager."<init>":(Lorg/apache/hadoop/hbase/replication/ReplicationQueueStorage;Lorg/apache/hadoop/hbase/replication/ReplicationPeers;Lorg/apache/hadoop/hbase/replication/ReplicationTracker;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Server;Lorg/apache/hadoop/fs/FileSystem;Lorg/apache/hadoop/fs/Path;Lorg/apache/hadoop/fs/Path;Ljava/util/UUID;Lorg/apache/hadoop/hbase/replication/regionserver/WALFileLengthProvider;Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerMappingManager;)V
+     303: putfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+     306: aload_0
+     307: new           #51                 // class org/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProviderImpl
+     310: dup
+     311: aload_0
+     312: getfield      #33                 // Field replicationPeers:Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+     315: aload         7
+     317: invokespecial #52                 // Method org/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProviderImpl."<init>":(Lorg/apache/hadoop/hbase/replication/ReplicationPeers;Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerMappingManager;)V
+     320: putfield      #53                 // Field syncReplicationPeerInfoProvider:Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider;
+     323: getstatic     #54                 // Field org/apache/hadoop/hbase/replication/regionserver/PeerActionListener.DUMMY:Lorg/apache/hadoop/hbase/replication/regionserver/PeerActionListener;
+     326: astore        8
+     328: aload         5
+     330: ifnull        446
+     333: aload         5
+     335: new           #55                 // class org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceWALActionListener
+     338: dup
+     339: aload_0
+     340: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     343: aload_0
+     344: getfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+     347: invokespecial #56                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceWALActionListener."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;)V
+     350: invokeinterface #57,  2           // InterfaceMethod org/apache/hadoop/hbase/wal/WALProvider.addWALActionsListener:(Lorg/apache/hadoop/hbase/regionserver/wal/WALActionsListener;)V
+     355: aload         5
+     357: instanceof    #58                 // class org/apache/hadoop/hbase/wal/SyncReplicationWALProvider
+     360: ifeq          446
+     363: aload         5
+     365: checkcast     #58                 // class org/apache/hadoop/hbase/wal/SyncReplicationWALProvider
+     368: astore        9
+     370: aload         9
+     372: astore        8
+     374: aload         9
+     376: aload_0
+     377: getfield      #53                 // Field syncReplicationPeerInfoProvider:Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider;
+     380: invokevirtual #59                 // Method org/apache/hadoop/hbase/wal/SyncReplicationWALProvider.setPeerInfoProvider:(Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider;)V
+     383: aload_0
+     384: getfield      #33                 // Field replicationPeers:Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+     387: invokevirtual #60                 // Method org/apache/hadoop/hbase/replication/ReplicationPeers.getAllPeerIds:()Ljava/util/Set;
+     390: invokeinterface #61,  1           // InterfaceMethod java/util/Set.stream:()Ljava/util/stream/Stream;
+     395: aload_0
+     396: getfield      #33                 // Field replicationPeers:Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+     399: dup
+     400: invokevirtual #62                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+     403: pop
+     404: invokedynamic #63,  0             // InvokeDynamic #1:apply:(Lorg/apache/hadoop/hbase/replication/ReplicationPeers;)Ljava/util/function/Function;
+     409: invokeinterface #64,  2           // InterfaceMethod java/util/stream/Stream.map:(Ljava/util/function/Function;)Ljava/util/stream/Stream;
+     414: invokedynamic #65,  0             // InvokeDynamic #2:test:()Ljava/util/function/Predicate;
+     419: invokeinterface #66,  2           // InterfaceMethod java/util/stream/Stream.filter:(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;
+     424: invokedynamic #67,  0             // InvokeDynamic #3:test:()Ljava/util/function/Predicate;
+     429: invokeinterface #66,  2           // InterfaceMethod java/util/stream/Stream.filter:(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;
+     434: aload         9
+     436: invokedynamic #68,  0             // InvokeDynamic #4:accept:(Lorg/apache/hadoop/hbase/wal/SyncReplicationWALProvider;)Ljava/util/function/Consumer;
+     441: invokeinterface #69,  2           // InterfaceMethod java/util/stream/Stream.forEach:(Ljava/util/function/Consumer;)V
+     446: aload_0
+     447: aload_0
+     448: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+     451: ldc           #70                 // String replication.stats.thread.period.seconds
+     453: sipush        300
+     456: invokevirtual #71                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+     459: putfield      #72                 // Field statsThreadPeriod:I
+     462: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+     465: ldc           #73                 // String Replication stats-in-log period={} seconds
+     467: aload_0
+     468: getfield      #72                 // Field statsThreadPeriod:I
+     471: invokestatic  #74                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+     474: invokeinterface #75,  3           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;)V
+     479: aload_0
+     480: new           #76                 // class org/apache/hadoop/hbase/replication/regionserver/ReplicationLoad
+     483: dup
+     484: invokespecial #77                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationLoad."<init>":()V
+     487: putfield      #78                 // Field replicationLoad:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationLoad;
+     490: aload_0
+     491: new           #79                 // class org/apache/hadoop/hbase/replication/regionserver/PeerProcedureHandlerImpl
+     494: dup
+     495: aload_0
+     496: getfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+     499: aload         8
+     501: invokespecial #80                 // Method org/apache/hadoop/hbase/replication/regionserver/PeerProcedureHandlerImpl."<init>":(Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;Lorg/apache/hadoop/hbase/replication/regionserver/PeerActionListener;)V
+     504: putfield      #81                 // Field peerProcedureHandler:Lorg/apache/hadoop/hbase/replication/regionserver/PeerProcedureHandler;
+     507: return
+    Exception table:
+       from    to  target type
+         125   187   190   Class java/lang/Exception
+         207   221   224   Class org/apache/zookeeper/KeeperException
+
+  public org.apache.hadoop.hbase.replication.regionserver.PeerProcedureHandler getPeerProcedureHandler();
+    Code:
+       0: aload_0
+       1: getfield      #81                 // Field peerProcedureHandler:Lorg/apache/hadoop/hbase/replication/regionserver/PeerProcedureHandler;
+       4: areturn
+
+  public void stopReplicationService();
+    Code:
+       0: aload_0
+       1: invokevirtual #82                 // Method join:()V
+       4: return
+
+  public void join();
+    Code:
+       0: aload_0
+       1: getfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+       4: invokevirtual #83                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager.join:()V
+       7: aload_0
+       8: getfield      #84                 // Field replicationSink:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSink;
+      11: ifnull        21
+      14: aload_0
+      15: getfield      #84                 // Field replicationSink:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSink;
+      18: invokevirtual #85                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSink.stopReplicationSinkServices:()V
+      21: aload_0
+      22: getfield      #21                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      25: invokeinterface #86,  1           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.shutdown:()V
+      30: return
+
+  public void replicateLogEntries(java.util.List<org.apache.hadoop.hbase.shaded.protobuf.generated.AdminProtos$WALEntry>, org.apache.hadoop.hbase.CellScanner, java.lang.String, java.lang.String, java.lang.String) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #84                 // Field replicationSink:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSink;
+       4: aload_1
+       5: aload_2
+       6: aload_3
+       7: aload         4
+       9: aload         5
+      11: invokevirtual #87                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSink.replicateEntries:(Ljava/util/List;Lorg/apache/hadoop/hbase/CellScanner;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+      14: return
+
+  public void startReplicationService() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+       4: invokevirtual #88                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager.init:()Ljava/util/concurrent/Future;
+       7: pop
+       8: aload_0
+       9: new           #89                 // class org/apache/hadoop/hbase/replication/regionserver/ReplicationSink
+      12: dup
+      13: aload_0
+      14: getfield      #5                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      17: aload_0
+      18: getfield      #3                  // Field server:Lorg/apache/hadoop/hbase/Server;
+      21: invokespecial #90                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSink."<init>":(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/Stoppable;)V
+      24: putfield      #84                 // Field replicationSink:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSink;
+      27: aload_0
+      28: getfield      #21                 // Field scheduleThreadPool:Ljava/util/concurrent/ScheduledExecutorService;
+      31: new           #91                 // class org/apache/hadoop/hbase/replication/regionserver/Replication$ReplicationStatisticsTask
+      34: dup
+      35: aload_0
+      36: getfield      #84                 // Field replicationSink:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSink;
+      39: aload_0
+      40: getfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+      43: invokespecial #92                 // Method org/apache/hadoop/hbase/replication/regionserver/Replication$ReplicationStatisticsTask."<init>":(Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSink;Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;)V
+      46: aload_0
+      47: getfield      #72                 // Field statsThreadPeriod:I
+      50: i2l
+      51: aload_0
+      52: getfield      #72                 // Field statsThreadPeriod:I
+      55: i2l
+      56: getstatic     #93                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      59: invokeinterface #94,  7           // InterfaceMethod java/util/concurrent/ScheduledExecutorService.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+      64: pop
+      65: return
+
+  public org.apache.hadoop.hbase.replication.regionserver.ReplicationSourceManager getReplicationManager();
+    Code:
+       0: aload_0
+       1: getfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+       4: areturn
+
+  void addHFileRefsToQueue(org.apache.hadoop.hbase.TableName, byte[], java.util.List<org.apache.hadoop.hbase.util.Pair<org.apache.hadoop.fs.Path, org.apache.hadoop.fs.Path>>) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #50                 // Field replicationManager:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager;
+       4: aload_1
+       5: aload_2
+       6: aload_3
+       7: invokevirtual #95                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceManager.addHFileRefs:(Lorg/apache/hadoop/hbase/TableName;[BLjava/util/List;)V
+      10: goto          30
+      13: astore        4
+      15: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+      18: ldc           #96                 // String Failed to add hfile references in the replication queue.
+      20: aload         4
+      22: invokeinterface #97,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      27: aload         4
+      29: athrow
+      30: return
+    Exception table:
+       from    to  target type
+           0    10    13   Class java/io/IOException
+
+  public org.apache.hadoop.hbase.replication.regionserver.ReplicationLoad refreshAndGetReplicationLoad();
+    Code:
+       0: aload_0
+       1: getfield      #78                 // Field replicationLoad:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationLoad;
+       4: ifnonnull     9
+       7: aconst_null
+       8: areturn
+       9: aload_0
+      10: invokespecial #98                 // Method buildReplicationLoad:()V
+      13: aload_0
+      14: getfield      #78                 // Field replicationLoad:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationLoad;
+      17: areturn
+
+  public org.apache.hadoop.hbase.replication.regionserver.SyncReplicationPeerInfoProvider getSyncReplicationPeerInfoProvider();
+    Code:
+       0: aload_0
+       1: getfield      #53                 // Field syncReplicationPeerInfoProvider:Lorg/apache/hadoop/hbase/replication/regionserver/SyncReplicationPeerInfoProvider;
+       4: areturn
+
+  public org.apache.hadoop.hbase.replication.ReplicationPeers getReplicationPeers();
+    Code:
+       0: aload_0
+       1: getfield      #33                 // Field replicationPeers:Lorg/apache/hadoop/hbase/replication/ReplicationPeers;
+       4: areturn
+
+  static org.slf4j.Logger access$000();
+    Code:
+       0: getstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       3: areturn
+
+  static {};
+    Code:
+       0: ldc           #114                // class org/apache/hadoop/hbase/replication/regionserver/Replication
+       2: invokestatic  #115                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #1                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

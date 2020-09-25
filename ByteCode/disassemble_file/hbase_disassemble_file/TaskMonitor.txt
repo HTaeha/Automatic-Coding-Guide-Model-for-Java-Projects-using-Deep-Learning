@@ -1,0 +1,357 @@
+Compiled from "TaskMonitor.java"
+public class org.apache.hadoop.hbase.monitoring.TaskMonitor {
+  public static final java.lang.String MAX_TASKS_KEY;
+
+  public static final int DEFAULT_MAX_TASKS;
+
+  public static final java.lang.String RPC_WARN_TIME_KEY;
+
+  public static final long DEFAULT_RPC_WARN_TIME;
+
+  public static final java.lang.String EXPIRATION_TIME_KEY;
+
+  public static final long DEFAULT_EXPIRATION_TIME;
+
+  public static final java.lang.String MONITOR_INTERVAL_KEY;
+
+  public static final long DEFAULT_MONITOR_INTERVAL;
+
+  org.apache.hadoop.hbase.monitoring.TaskMonitor(org.apache.hadoop.conf.Configuration);
+    Code:
+       0: aload_0
+       1: invokespecial #5                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: ldc           #7                  // String hbase.taskmonitor.max.tasks
+       8: sipush        1000
+      11: invokevirtual #8                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      14: putfield      #9                  // Field maxTasks:I
+      17: aload_0
+      18: aload_1
+      19: ldc           #10                 // String hbase.taskmonitor.expiration.time
+      21: ldc2_w        #11                 // long 60000l
+      24: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      27: putfield      #14                 // Field expirationTime:J
+      30: aload_0
+      31: aload_1
+      32: ldc           #15                 // String hbase.taskmonitor.rpc.warn.time
+      34: lconst_0
+      35: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      38: putfield      #16                 // Field rpcWarnTime:J
+      41: aload_0
+      42: new           #17                 // class org/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue
+      45: dup
+      46: aload_0
+      47: getfield      #9                  // Field maxTasks:I
+      50: invokespecial #18                 // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue."<init>":(I)V
+      53: putfield      #3                  // Field tasks:Lorg/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue;
+      56: aload_0
+      57: invokestatic  #19                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayList:()Ljava/util/ArrayList;
+      60: putfield      #20                 // Field rpcTasks:Ljava/util/List;
+      63: aload_0
+      64: aload_1
+      65: ldc           #21                 // String hbase.taskmonitor.monitor.interval
+      67: ldc2_w        #22                 // long 10000l
+      70: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      73: putfield      #4                  // Field monitorInterval:J
+      76: aload_0
+      77: new           #24                 // class java/lang/Thread
+      80: dup
+      81: new           #25                 // class org/apache/hadoop/hbase/monitoring/TaskMonitor$MonitorRunnable
+      84: dup
+      85: aload_0
+      86: aconst_null
+      87: invokespecial #26                 // Method org/apache/hadoop/hbase/monitoring/TaskMonitor$MonitorRunnable."<init>":(Lorg/apache/hadoop/hbase/monitoring/TaskMonitor;Lorg/apache/hadoop/hbase/monitoring/TaskMonitor$1;)V
+      90: invokespecial #27                 // Method java/lang/Thread."<init>":(Ljava/lang/Runnable;)V
+      93: putfield      #28                 // Field monitorThread:Ljava/lang/Thread;
+      96: aload_0
+      97: getfield      #28                 // Field monitorThread:Ljava/lang/Thread;
+     100: ldc           #29                 // String Monitor thread for TaskMonitor
+     102: invokestatic  #30                 // Method org/apache/hadoop/hbase/util/Threads.setDaemonThreadRunning:(Ljava/lang/Thread;Ljava/lang/String;)Ljava/lang/Thread;
+     105: pop
+     106: return
+
+  public static synchronized org.apache.hadoop.hbase.monitoring.TaskMonitor get();
+    Code:
+       0: getstatic     #31                 // Field instance:Lorg/apache/hadoop/hbase/monitoring/TaskMonitor;
+       3: ifnonnull     19
+       6: new           #6                  // class org/apache/hadoop/hbase/monitoring/TaskMonitor
+       9: dup
+      10: invokestatic  #32                 // Method org/apache/hadoop/hbase/HBaseConfiguration.create:()Lorg/apache/hadoop/conf/Configuration;
+      13: invokespecial #33                 // Method "<init>":(Lorg/apache/hadoop/conf/Configuration;)V
+      16: putstatic     #31                 // Field instance:Lorg/apache/hadoop/hbase/monitoring/TaskMonitor;
+      19: getstatic     #31                 // Field instance:Lorg/apache/hadoop/hbase/monitoring/TaskMonitor;
+      22: areturn
+
+  public synchronized org.apache.hadoop.hbase.monitoring.MonitoredTask createStatus(java.lang.String);
+    Code:
+       0: new           #34                 // class org/apache/hadoop/hbase/monitoring/MonitoredTaskImpl
+       3: dup
+       4: invokespecial #35                 // Method org/apache/hadoop/hbase/monitoring/MonitoredTaskImpl."<init>":()V
+       7: astore_2
+       8: aload_2
+       9: aload_1
+      10: invokeinterface #36,  2           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.setDescription:(Ljava/lang/String;)V
+      15: aload_2
+      16: invokevirtual #37                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      19: invokevirtual #38                 // Method java/lang/Class.getClassLoader:()Ljava/lang/ClassLoader;
+      22: iconst_1
+      23: anewarray     #39                 // class java/lang/Class
+      26: dup
+      27: iconst_0
+      28: ldc           #40                 // class org/apache/hadoop/hbase/monitoring/MonitoredTask
+      30: aastore
+      31: new           #41                 // class org/apache/hadoop/hbase/monitoring/TaskMonitor$PassthroughInvocationHandler
+      34: dup
+      35: aload_2
+      36: invokespecial #42                 // Method org/apache/hadoop/hbase/monitoring/TaskMonitor$PassthroughInvocationHandler."<init>":(Ljava/lang/Object;)V
+      39: invokestatic  #43                 // Method java/lang/reflect/Proxy.newProxyInstance:(Ljava/lang/ClassLoader;[Ljava/lang/Class;Ljava/lang/reflect/InvocationHandler;)Ljava/lang/Object;
+      42: checkcast     #40                 // class org/apache/hadoop/hbase/monitoring/MonitoredTask
+      45: astore_3
+      46: new           #44                 // class org/apache/hadoop/hbase/monitoring/TaskMonitor$TaskAndWeakRefPair
+      49: dup
+      50: aload_2
+      51: aload_3
+      52: invokespecial #45                 // Method org/apache/hadoop/hbase/monitoring/TaskMonitor$TaskAndWeakRefPair."<init>":(Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;)V
+      55: astore        4
+      57: aload_0
+      58: getfield      #3                  // Field tasks:Lorg/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue;
+      61: invokevirtual #46                 // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue.isFull:()Z
+      64: ifeq          71
+      67: aload_0
+      68: invokespecial #2                  // Method purgeExpiredTasks:()V
+      71: aload_0
+      72: getfield      #3                  // Field tasks:Lorg/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue;
+      75: aload         4
+      77: invokevirtual #47                 // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue.add:(Ljava/lang/Object;)Z
+      80: pop
+      81: aload_3
+      82: areturn
+
+  public synchronized org.apache.hadoop.hbase.monitoring.MonitoredRPCHandler createRPCStatus(java.lang.String);
+    Code:
+       0: new           #48                 // class org/apache/hadoop/hbase/monitoring/MonitoredRPCHandlerImpl
+       3: dup
+       4: invokespecial #49                 // Method org/apache/hadoop/hbase/monitoring/MonitoredRPCHandlerImpl."<init>":()V
+       7: astore_2
+       8: aload_2
+       9: aload_1
+      10: invokeinterface #50,  2           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredRPCHandler.setDescription:(Ljava/lang/String;)V
+      15: aload_2
+      16: invokevirtual #37                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      19: invokevirtual #38                 // Method java/lang/Class.getClassLoader:()Ljava/lang/ClassLoader;
+      22: iconst_1
+      23: anewarray     #39                 // class java/lang/Class
+      26: dup
+      27: iconst_0
+      28: ldc           #51                 // class org/apache/hadoop/hbase/monitoring/MonitoredRPCHandler
+      30: aastore
+      31: new           #41                 // class org/apache/hadoop/hbase/monitoring/TaskMonitor$PassthroughInvocationHandler
+      34: dup
+      35: aload_2
+      36: invokespecial #42                 // Method org/apache/hadoop/hbase/monitoring/TaskMonitor$PassthroughInvocationHandler."<init>":(Ljava/lang/Object;)V
+      39: invokestatic  #43                 // Method java/lang/reflect/Proxy.newProxyInstance:(Ljava/lang/ClassLoader;[Ljava/lang/Class;Ljava/lang/reflect/InvocationHandler;)Ljava/lang/Object;
+      42: checkcast     #51                 // class org/apache/hadoop/hbase/monitoring/MonitoredRPCHandler
+      45: astore_3
+      46: new           #44                 // class org/apache/hadoop/hbase/monitoring/TaskMonitor$TaskAndWeakRefPair
+      49: dup
+      50: aload_2
+      51: aload_3
+      52: invokespecial #45                 // Method org/apache/hadoop/hbase/monitoring/TaskMonitor$TaskAndWeakRefPair."<init>":(Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;Lorg/apache/hadoop/hbase/monitoring/MonitoredTask;)V
+      55: astore        4
+      57: aload_0
+      58: getfield      #20                 // Field rpcTasks:Ljava/util/List;
+      61: aload         4
+      63: invokeinterface #52,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      68: pop
+      69: aload_3
+      70: areturn
+
+  public java.util.List<org.apache.hadoop.hbase.monitoring.MonitoredTask> getTasks();
+    Code:
+       0: aload_0
+       1: aconst_null
+       2: invokevirtual #77                 // Method getTasks:(Ljava/lang/String;)Ljava/util/List;
+       5: areturn
+
+  public synchronized java.util.List<org.apache.hadoop.hbase.monitoring.MonitoredTask> getTasks(java.lang.String);
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method purgeExpiredTasks:()V
+       4: aload_1
+       5: invokestatic  #78                 // Method createTaskFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/monitoring/TaskMonitor$TaskFilter;
+       8: astore_2
+       9: aload_0
+      10: getfield      #3                  // Field tasks:Lorg/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue;
+      13: invokevirtual #79                 // Method org/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue.size:()I
+      16: aload_0
+      17: getfield      #20                 // Field rpcTasks:Ljava/util/List;
+      20: invokeinterface #80,  1           // InterfaceMethod java/util/List.size:()I
+      25: iadd
+      26: invokestatic  #81                 // Method org/apache/hbase/thirdparty/com/google/common/collect/Lists.newArrayListWithCapacity:(I)Ljava/util/ArrayList;
+      29: astore_3
+      30: aload_0
+      31: getfield      #3                  // Field tasks:Lorg/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue;
+      34: aload_2
+      35: aload_3
+      36: invokestatic  #82                 // Method processTasks:(Ljava/lang/Iterable;Lorg/apache/hadoop/hbase/monitoring/TaskMonitor$TaskFilter;Ljava/util/List;)V
+      39: aload_0
+      40: getfield      #20                 // Field rpcTasks:Ljava/util/List;
+      43: aload_2
+      44: aload_3
+      45: invokestatic  #82                 // Method processTasks:(Ljava/lang/Iterable;Lorg/apache/hadoop/hbase/monitoring/TaskMonitor$TaskFilter;Ljava/util/List;)V
+      48: aload_3
+      49: areturn
+
+  public void dumpAsText(java.io.PrintWriter);
+    Code:
+       0: invokestatic  #53                 // Method org/apache/hadoop/hbase/util/EnvironmentEdgeManager.currentTime:()J
+       3: lstore_2
+       4: aload_0
+       5: invokevirtual #95                 // Method getTasks:()Ljava/util/List;
+       8: astore        4
+      10: aload         4
+      12: invokeinterface #54,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      17: astore        5
+      19: aload         5
+      21: invokeinterface #55,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      26: ifeq          272
+      29: aload         5
+      31: invokeinterface #56,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      36: checkcast     #40                 // class org/apache/hadoop/hbase/monitoring/MonitoredTask
+      39: astore        6
+      41: aload_1
+      42: new           #62                 // class java/lang/StringBuilder
+      45: dup
+      46: invokespecial #63                 // Method java/lang/StringBuilder."<init>":()V
+      49: ldc           #96                 // String Task:
+      51: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      54: aload         6
+      56: invokeinterface #97,  1           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getDescription:()Ljava/lang/String;
+      61: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      64: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      67: invokevirtual #98                 // Method java/io/PrintWriter.println:(Ljava/lang/String;)V
+      70: aload_1
+      71: new           #62                 // class java/lang/StringBuilder
+      74: dup
+      75: invokespecial #63                 // Method java/lang/StringBuilder."<init>":()V
+      78: ldc           #99                 // String Status:
+      80: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      83: aload         6
+      85: invokeinterface #58,  1           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getState:()Lorg/apache/hadoop/hbase/monitoring/MonitoredTask$State;
+      90: invokevirtual #66                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      93: ldc           #100                // String :
+      95: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      98: aload         6
+     100: invokeinterface #101,  1          // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getStatus:()Ljava/lang/String;
+     105: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     108: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     111: invokevirtual #98                 // Method java/io/PrintWriter.println:(Ljava/lang/String;)V
+     114: lload_2
+     115: aload         6
+     117: invokeinterface #102,  1          // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getStartTime:()J
+     122: lsub
+     123: ldc2_w        #103                // long 1000l
+     126: ldiv
+     127: lstore        7
+     129: aload         6
+     131: invokeinterface #94,  1           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getCompletionTimestamp:()J
+     136: ldc2_w        #105                // long -1l
+     139: lcmp
+     140: ifeq          236
+     143: lload_2
+     144: aload         6
+     146: invokeinterface #94,  1           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getCompletionTimestamp:()J
+     151: lsub
+     152: ldc2_w        #103                // long 1000l
+     155: ldiv
+     156: lstore        9
+     158: aload_1
+     159: new           #62                 // class java/lang/StringBuilder
+     162: dup
+     163: invokespecial #63                 // Method java/lang/StringBuilder."<init>":()V
+     166: ldc           #107                // String Completed
+     168: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     171: lload         9
+     173: invokevirtual #108                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     176: ldc           #109                // String s ago
+     178: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     181: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     184: invokevirtual #98                 // Method java/io/PrintWriter.println:(Ljava/lang/String;)V
+     187: aload_1
+     188: new           #62                 // class java/lang/StringBuilder
+     191: dup
+     192: invokespecial #63                 // Method java/lang/StringBuilder."<init>":()V
+     195: ldc           #110                // String Ran for
+     197: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     200: aload         6
+     202: invokeinterface #94,  1           // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getCompletionTimestamp:()J
+     207: aload         6
+     209: invokeinterface #102,  1          // InterfaceMethod org/apache/hadoop/hbase/monitoring/MonitoredTask.getStartTime:()J
+     214: lsub
+     215: ldc2_w        #103                // long 1000l
+     218: ldiv
+     219: invokevirtual #108                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     222: ldc           #111                // String s
+     224: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     227: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     230: invokevirtual #98                 // Method java/io/PrintWriter.println:(Ljava/lang/String;)V
+     233: goto          265
+     236: aload_1
+     237: new           #62                 // class java/lang/StringBuilder
+     240: dup
+     241: invokespecial #63                 // Method java/lang/StringBuilder."<init>":()V
+     244: ldc           #112                // String Running for
+     246: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     249: lload         7
+     251: invokevirtual #108                // Method java/lang/StringBuilder.append:(J)Ljava/lang/StringBuilder;
+     254: ldc           #111                // String s
+     256: invokevirtual #65                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     259: invokevirtual #67                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     262: invokevirtual #98                 // Method java/io/PrintWriter.println:(Ljava/lang/String;)V
+     265: aload_1
+     266: invokevirtual #113                // Method java/io/PrintWriter.println:()V
+     269: goto          19
+     272: return
+
+  public synchronized void shutdown();
+    Code:
+       0: aload_0
+       1: getfield      #28                 // Field monitorThread:Ljava/lang/Thread;
+       4: ifnull        14
+       7: aload_0
+       8: getfield      #28                 // Field monitorThread:Ljava/lang/Thread;
+      11: invokevirtual #114                // Method java/lang/Thread.interrupt:()V
+      14: return
+
+  static long access$100(org.apache.hadoop.hbase.monitoring.TaskMonitor);
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field monitorInterval:J
+       4: lreturn
+
+  static org.apache.hbase.thirdparty.org.apache.commons.collections4.queue.CircularFifoQueue access$200(org.apache.hadoop.hbase.monitoring.TaskMonitor);
+    Code:
+       0: aload_0
+       1: getfield      #3                  // Field tasks:Lorg/apache/hbase/thirdparty/org/apache/commons/collections4/queue/CircularFifoQueue;
+       4: areturn
+
+  static void access$300(org.apache.hadoop.hbase.monitoring.TaskMonitor);
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method purgeExpiredTasks:()V
+       4: return
+
+  static void access$400(org.apache.hadoop.hbase.monitoring.TaskMonitor);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method warnStuckTasks:()V
+       4: return
+
+  static {};
+    Code:
+       0: ldc           #6                  // class org/apache/hadoop/hbase/monitoring/TaskMonitor
+       2: invokestatic  #117                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #61                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

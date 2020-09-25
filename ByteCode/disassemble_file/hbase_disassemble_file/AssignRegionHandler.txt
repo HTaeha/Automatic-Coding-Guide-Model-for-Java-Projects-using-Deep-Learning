@@ -1,0 +1,253 @@
+Compiled from "AssignRegionHandler.java"
+public class org.apache.hadoop.hbase.regionserver.handler.AssignRegionHandler extends org.apache.hadoop.hbase.executor.EventHandler {
+  public org.apache.hadoop.hbase.regionserver.handler.AssignRegionHandler(org.apache.hadoop.hbase.regionserver.HRegionServer, org.apache.hadoop.hbase.client.RegionInfo, long, org.apache.hadoop.hbase.client.TableDescriptor, long, org.apache.hadoop.hbase.executor.EventType);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload         8
+       4: invokespecial #1                  // Method org/apache/hadoop/hbase/executor/EventHandler."<init>":(Lorg/apache/hadoop/hbase/Server;Lorg/apache/hadoop/hbase/executor/EventType;)V
+       7: aload_0
+       8: aload_2
+       9: putfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      12: aload_0
+      13: lload_3
+      14: putfield      #3                  // Field openProcId:J
+      17: aload_0
+      18: aload         5
+      20: putfield      #4                  // Field tableDesc:Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      23: aload_0
+      24: lload         6
+      26: putfield      #5                  // Field masterSystemTime:J
+      29: aload_0
+      30: invokestatic  #6                  // Method org/apache/hadoop/hbase/regionserver/handler/HandlerUtil.getRetryCounter:()Lorg/apache/hadoop/hbase/util/RetryCounter;
+      33: putfield      #7                  // Field retryCounter:Lorg/apache/hadoop/hbase/util/RetryCounter;
+      36: return
+
+  public void process() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #14                 // Method getServer:()Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+       4: astore_1
+       5: aload_0
+       6: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+       9: invokeinterface #33,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedName:()Ljava/lang/String;
+      14: astore_2
+      15: aload_0
+      16: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      19: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+      24: astore_3
+      25: aload_0
+      26: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      29: invokeinterface #12,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+      34: astore        4
+      36: aload_1
+      37: aload_2
+      38: invokevirtual #34                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegion:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/regionserver/HRegion;
+      41: astore        5
+      43: aload         5
+      45: ifnull        61
+      48: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+      51: ldc           #35                 // String Received OPEN for the region:{}, which is already online
+      53: aload         4
+      55: invokeinterface #36,  3           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;)V
+      60: return
+      61: aload_1
+      62: invokevirtual #15                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+      65: aload_3
+      66: getstatic     #17                 // Field java/lang/Boolean.TRUE:Ljava/lang/Boolean;
+      69: invokeinterface #37,  3           // InterfaceMethod java/util/concurrent/ConcurrentMap.putIfAbsent:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      74: checkcast     #38                 // class java/lang/Boolean
+      77: astore        6
+      79: aload         6
+      81: ifnull        147
+      84: aload         6
+      86: invokevirtual #39                 // Method java/lang/Boolean.booleanValue:()Z
+      89: ifeq          107
+      92: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+      95: ldc           #40                 // String Receiving OPEN for the region:{}, which we are already trying to OPEN - ignoring this new request for this region.
+      97: aload         4
+      99: invokeinterface #41,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+     104: goto          146
+     107: aload_0
+     108: getfield      #7                  // Field retryCounter:Lorg/apache/hadoop/hbase/util/RetryCounter;
+     111: invokevirtual #42                 // Method org/apache/hadoop/hbase/util/RetryCounter.getBackoffTimeAndIncrementAttempts:()J
+     114: lstore        7
+     116: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     119: ldc           #43                 // String Receiving OPEN for the region:{}, which we are trying to close, try again after {}ms
+     121: aload         4
+     123: lload         7
+     125: invokestatic  #44                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     128: invokeinterface #45,  4           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     133: aload_1
+     134: invokevirtual #46                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getExecutorService:()Lorg/apache/hadoop/hbase/executor/ExecutorService;
+     137: aload_0
+     138: lload         7
+     140: getstatic     #47                 // Field java/util/concurrent/TimeUnit.MILLISECONDS:Ljava/util/concurrent/TimeUnit;
+     143: invokevirtual #48                 // Method org/apache/hadoop/hbase/executor/ExecutorService.delayedSubmit:(Lorg/apache/hadoop/hbase/executor/EventHandler;JLjava/util/concurrent/TimeUnit;)V
+     146: return
+     147: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     150: ldc           #49                 // String Open {}
+     152: aload         4
+     154: invokeinterface #41,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+     159: aload_0
+     160: getfield      #4                  // Field tableDesc:Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     163: ifnull        173
+     166: aload_0
+     167: getfield      #4                  // Field tableDesc:Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     170: goto          191
+     173: aload_1
+     174: invokevirtual #50                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getTableDescriptors:()Lorg/apache/hadoop/hbase/TableDescriptors;
+     177: aload_0
+     178: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     181: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+     186: invokeinterface #52,  2           // InterfaceMethod org/apache/hadoop/hbase/TableDescriptors.get:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/TableDescriptor;
+     191: astore        8
+     193: aload         8
+     195: ifnonnull     226
+     198: new           #26                 // class java/io/IOException
+     201: dup
+     202: new           #27                 // class java/lang/StringBuilder
+     205: dup
+     206: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+     209: ldc           #53                 // String Missing table descriptor for
+     211: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     214: aload         4
+     216: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     219: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     222: invokespecial #32                 // Method java/io/IOException."<init>":(Ljava/lang/String;)V
+     225: athrow
+     226: aload_0
+     227: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     230: aload         8
+     232: aload_1
+     233: aload_0
+     234: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     237: invokevirtual #54                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getWAL:(Lorg/apache/hadoop/hbase/client/RegionInfo;)Lorg/apache/hadoop/hbase/wal/WAL;
+     240: aload_1
+     241: invokevirtual #55                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     244: aload_1
+     245: aconst_null
+     246: invokestatic  #56                 // Method org/apache/hadoop/hbase/regionserver/HRegion.openHRegion:(Lorg/apache/hadoop/hbase/client/RegionInfo;Lorg/apache/hadoop/hbase/client/TableDescriptor;Lorg/apache/hadoop/hbase/wal/WAL;Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/regionserver/RegionServerServices;Lorg/apache/hadoop/hbase/util/CancelableProgressable;)Lorg/apache/hadoop/hbase/regionserver/HRegion;
+     249: astore        7
+     251: goto          263
+     254: astore        8
+     256: aload_0
+     257: aload         8
+     259: invokespecial #57                 // Method cleanUpAndReportFailure:(Ljava/io/IOException;)V
+     262: return
+     263: aload_1
+     264: new           #58                 // class org/apache/hadoop/hbase/regionserver/RegionServerServices$PostOpenDeployContext
+     267: dup
+     268: aload         7
+     270: aload_0
+     271: getfield      #3                  // Field openProcId:J
+     274: aload_0
+     275: getfield      #5                  // Field masterSystemTime:J
+     278: invokespecial #59                 // Method org/apache/hadoop/hbase/regionserver/RegionServerServices$PostOpenDeployContext."<init>":(Lorg/apache/hadoop/hbase/regionserver/HRegion;JJ)V
+     281: invokevirtual #60                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.postOpenDeployTasks:(Lorg/apache/hadoop/hbase/regionserver/RegionServerServices$PostOpenDeployContext;)V
+     284: aload_1
+     285: aload         7
+     287: invokevirtual #61                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.addRegion:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+     290: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     293: ldc           #62                 // String Opened {}
+     295: aload         4
+     297: invokeinterface #41,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+     302: aload_1
+     303: aload_0
+     304: getfield      #3                  // Field openProcId:J
+     307: invokevirtual #63                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.finishRegionProcedure:(J)V
+     310: aload_1
+     311: invokevirtual #15                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionsInTransitionInRS:()Ljava/util/concurrent/ConcurrentMap;
+     314: aload_0
+     315: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+     318: invokeinterface #16,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getEncodedNameAsBytes:()[B
+     323: invokeinterface #64,  2           // InterfaceMethod java/util/concurrent/ConcurrentMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+     328: checkcast     #38                 // class java/lang/Boolean
+     331: astore        8
+     333: aload         8
+     335: ifnonnull     353
+     338: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     341: ldc           #65                 // String Bad state: we've just opened a region that was NOT in transition. Region={}
+     343: aload         4
+     345: invokeinterface #66,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;)V
+     350: goto          373
+     353: aload         8
+     355: invokevirtual #39                 // Method java/lang/Boolean.booleanValue:()Z
+     358: ifne          373
+     361: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+     364: ldc           #67                 // String Bad state: we've just opened a region that was closing. Region={}
+     366: aload         4
+     368: invokeinterface #66,  3           // InterfaceMethod org/slf4j/Logger.error:(Ljava/lang/String;Ljava/lang/Object;)V
+     373: return
+    Exception table:
+       from    to  target type
+         159   251   254   Class java/io/IOException
+
+  protected void handleException(java.lang.Throwable);
+    Code:
+       0: getstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #68                 // String Fatal error occurred while opening region {}, aborting...
+       5: aload_0
+       6: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+       9: invokeinterface #12,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+      14: aload_1
+      15: invokeinterface #13,  4           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      20: aload_0
+      21: invokespecial #14                 // Method getServer:()Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      24: new           #27                 // class java/lang/StringBuilder
+      27: dup
+      28: invokespecial #28                 // Method java/lang/StringBuilder."<init>":()V
+      31: ldc           #69                 // String Failed to open region
+      33: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      36: aload_0
+      37: getfield      #2                  // Field regionInfo:Lorg/apache/hadoop/hbase/client/RegionInfo;
+      40: invokeinterface #12,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getRegionNameAsString:()Ljava/lang/String;
+      45: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      48: ldc           #70                 // String  and can not recover
+      50: invokevirtual #30                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      53: invokevirtual #31                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      56: aload_1
+      57: invokevirtual #71                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.abort:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      60: return
+
+  public static org.apache.hadoop.hbase.regionserver.handler.AssignRegionHandler create(org.apache.hadoop.hbase.regionserver.HRegionServer, org.apache.hadoop.hbase.client.RegionInfo, long, org.apache.hadoop.hbase.client.TableDescriptor, long);
+    Code:
+       0: aload_1
+       1: invokeinterface #72,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.isMetaRegion:()Z
+       6: ifeq          17
+       9: getstatic     #73                 // Field org/apache/hadoop/hbase/executor/EventType.M_RS_CLOSE_META:Lorg/apache/hadoop/hbase/executor/EventType;
+      12: astore        7
+      14: goto          59
+      17: aload_1
+      18: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/client/RegionInfo.getTable:()Lorg/apache/hadoop/hbase/TableName;
+      23: invokevirtual #74                 // Method org/apache/hadoop/hbase/TableName.isSystemTable:()Z
+      26: ifne          46
+      29: aload         4
+      31: ifnull        54
+      34: aload         4
+      36: invokeinterface #75,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getPriority:()I
+      41: bipush        100
+      43: if_icmplt     54
+      46: getstatic     #76                 // Field org/apache/hadoop/hbase/executor/EventType.M_RS_OPEN_PRIORITY_REGION:Lorg/apache/hadoop/hbase/executor/EventType;
+      49: astore        7
+      51: goto          59
+      54: getstatic     #77                 // Field org/apache/hadoop/hbase/executor/EventType.M_RS_OPEN_REGION:Lorg/apache/hadoop/hbase/executor/EventType;
+      57: astore        7
+      59: new           #78                 // class org/apache/hadoop/hbase/regionserver/handler/AssignRegionHandler
+      62: dup
+      63: aload_0
+      64: aload_1
+      65: lload_2
+      66: aload         4
+      68: lload         5
+      70: aload         7
+      72: invokespecial #79                 // Method "<init>":(Lorg/apache/hadoop/hbase/regionserver/HRegionServer;Lorg/apache/hadoop/hbase/client/RegionInfo;JLorg/apache/hadoop/hbase/client/TableDescriptor;JLorg/apache/hadoop/hbase/executor/EventType;)V
+      75: areturn
+
+  static {};
+    Code:
+       0: ldc           #78                 // class org/apache/hadoop/hbase/regionserver/handler/AssignRegionHandler
+       2: invokestatic  #80                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #10                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

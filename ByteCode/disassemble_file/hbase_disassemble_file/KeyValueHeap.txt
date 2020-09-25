@@ -1,0 +1,453 @@
+Compiled from "KeyValueHeap.java"
+public class org.apache.hadoop.hbase.regionserver.KeyValueHeap extends org.apache.hadoop.hbase.regionserver.NonReversedNonLazyKeyValueScanner implements org.apache.hadoop.hbase.regionserver.KeyValueScanner,org.apache.hadoop.hbase.regionserver.InternalScanner {
+  protected java.util.PriorityQueue<org.apache.hadoop.hbase.regionserver.KeyValueScanner> heap;
+
+  protected java.util.List<org.apache.hadoop.hbase.regionserver.KeyValueScanner> scannersForDelayedClose;
+
+  protected org.apache.hadoop.hbase.regionserver.KeyValueScanner current;
+
+  protected org.apache.hadoop.hbase.regionserver.KeyValueHeap$KVScannerComparator comparator;
+
+  public org.apache.hadoop.hbase.regionserver.KeyValueHeap(java.util.List<? extends org.apache.hadoop.hbase.regionserver.KeyValueScanner>, org.apache.hadoop.hbase.CellComparator) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: aload_1
+       2: new           #1                  // class org/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator
+       5: dup
+       6: aload_2
+       7: invokespecial #2                  // Method org/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator."<init>":(Lorg/apache/hadoop/hbase/CellComparator;)V
+      10: invokespecial #3                  // Method "<init>":(Ljava/util/List;Lorg/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator;)V
+      13: return
+
+  org.apache.hadoop.hbase.regionserver.KeyValueHeap(java.util.List<? extends org.apache.hadoop.hbase.regionserver.KeyValueScanner>, org.apache.hadoop.hbase.regionserver.KeyValueHeap$KVScannerComparator) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: invokespecial #4                  // Method org/apache/hadoop/hbase/regionserver/NonReversedNonLazyKeyValueScanner."<init>":()V
+       4: aload_0
+       5: aconst_null
+       6: putfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+       9: aload_0
+      10: aconst_null
+      11: putfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+      14: aload_0
+      15: aconst_null
+      16: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      19: aload_0
+      20: aload_2
+      21: putfield      #8                  // Field comparator:Lorg/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator;
+      24: aload_0
+      25: new           #9                  // class java/util/ArrayList
+      28: dup
+      29: aload_1
+      30: invokeinterface #10,  1           // InterfaceMethod java/util/List.size:()I
+      35: invokespecial #11                 // Method java/util/ArrayList."<init>":(I)V
+      38: putfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+      41: aload_1
+      42: invokeinterface #12,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      47: ifne          144
+      50: aload_0
+      51: new           #13                 // class java/util/PriorityQueue
+      54: dup
+      55: aload_1
+      56: invokeinterface #10,  1           // InterfaceMethod java/util/List.size:()I
+      61: aload_0
+      62: getfield      #8                  // Field comparator:Lorg/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator;
+      65: invokespecial #14                 // Method java/util/PriorityQueue."<init>":(ILjava/util/Comparator;)V
+      68: putfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      71: aload_1
+      72: invokeinterface #15,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      77: astore_3
+      78: aload_3
+      79: invokeinterface #16,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      84: ifeq          136
+      87: aload_3
+      88: invokeinterface #17,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      93: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      96: astore        4
+      98: aload         4
+     100: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+     105: ifnull        121
+     108: aload_0
+     109: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+     112: aload         4
+     114: invokevirtual #20                 // Method java/util/PriorityQueue.add:(Ljava/lang/Object;)Z
+     117: pop
+     118: goto          133
+     121: aload_0
+     122: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+     125: aload         4
+     127: invokeinterface #21,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     132: pop
+     133: goto          78
+     136: aload_0
+     137: aload_0
+     138: invokevirtual #22                 // Method pollRealKV:()Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+     141: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+     144: return
+
+  public org.apache.hadoop.hbase.Cell peek();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+       4: ifnonnull     9
+       7: aconst_null
+       8: areturn
+       9: aload_0
+      10: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      13: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+      18: areturn
+
+  public org.apache.hadoop.hbase.Cell next() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+       4: ifnonnull     9
+       7: aconst_null
+       8: areturn
+       9: aload_0
+      10: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      13: invokeinterface #23,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.next:()Lorg/apache/hadoop/hbase/Cell;
+      18: astore_1
+      19: aload_0
+      20: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      23: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+      28: astore_2
+      29: aload_2
+      30: ifnonnull     63
+      33: aload_0
+      34: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+      37: aload_0
+      38: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      41: invokeinterface #21,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      46: pop
+      47: aload_0
+      48: aconst_null
+      49: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      52: aload_0
+      53: aload_0
+      54: invokevirtual #22                 // Method pollRealKV:()Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      57: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      60: goto          120
+      63: aload_0
+      64: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      67: invokevirtual #24                 // Method java/util/PriorityQueue.peek:()Ljava/lang/Object;
+      70: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      73: astore_3
+      74: aload_3
+      75: ifnull        120
+      78: aload_0
+      79: getfield      #8                  // Field comparator:Lorg/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator;
+      82: aload_2
+      83: aload_3
+      84: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+      89: invokevirtual #25                 // Method org/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator.compare:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/Cell;)I
+      92: iflt          120
+      95: aload_0
+      96: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      99: aload_0
+     100: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+     103: invokevirtual #20                 // Method java/util/PriorityQueue.add:(Ljava/lang/Object;)Z
+     106: pop
+     107: aload_0
+     108: aconst_null
+     109: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+     112: aload_0
+     113: aload_0
+     114: invokevirtual #22                 // Method pollRealKV:()Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+     117: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+     120: aload_1
+     121: areturn
+
+  public boolean next(java.util.List<org.apache.hadoop.hbase.Cell>, org.apache.hadoop.hbase.regionserver.ScannerContext) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+       4: ifnonnull     18
+       7: aload_2
+       8: getstatic     #26                 // Field org/apache/hadoop/hbase/regionserver/ScannerContext$NextState.NO_MORE_VALUES:Lorg/apache/hadoop/hbase/regionserver/ScannerContext$NextState;
+      11: invokevirtual #27                 // Method org/apache/hadoop/hbase/regionserver/ScannerContext.setScannerState:(Lorg/apache/hadoop/hbase/regionserver/ScannerContext$NextState;)Lorg/apache/hadoop/hbase/regionserver/ScannerContext$NextState;
+      14: invokevirtual #28                 // Method org/apache/hadoop/hbase/regionserver/ScannerContext$NextState.hasMoreValues:()Z
+      17: ireturn
+      18: aload_0
+      19: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      22: checkcast     #29                 // class org/apache/hadoop/hbase/regionserver/InternalScanner
+      25: astore_3
+      26: aload_3
+      27: aload_1
+      28: aload_2
+      29: invokeinterface #30,  3           // InterfaceMethod org/apache/hadoop/hbase/regionserver/InternalScanner.next:(Ljava/util/List;Lorg/apache/hadoop/hbase/regionserver/ScannerContext;)Z
+      34: istore        4
+      36: aload_0
+      37: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      40: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+      45: astore        5
+      47: aload         5
+      49: ifnull        57
+      52: iload         4
+      54: ifne          74
+      57: aload_0
+      58: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+      61: aload_0
+      62: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      65: invokeinterface #21,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      70: pop
+      71: goto          86
+      74: aload_0
+      75: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      78: aload_0
+      79: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      82: invokevirtual #20                 // Method java/util/PriorityQueue.add:(Ljava/lang/Object;)Z
+      85: pop
+      86: aload_0
+      87: aconst_null
+      88: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      91: aload_0
+      92: aload_0
+      93: invokevirtual #22                 // Method pollRealKV:()Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      96: putfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      99: aload_0
+     100: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+     103: ifnonnull     118
+     106: aload_2
+     107: getstatic     #26                 // Field org/apache/hadoop/hbase/regionserver/ScannerContext$NextState.NO_MORE_VALUES:Lorg/apache/hadoop/hbase/regionserver/ScannerContext$NextState;
+     110: invokevirtual #27                 // Method org/apache/hadoop/hbase/regionserver/ScannerContext.setScannerState:(Lorg/apache/hadoop/hbase/regionserver/ScannerContext$NextState;)Lorg/apache/hadoop/hbase/regionserver/ScannerContext$NextState;
+     113: invokevirtual #28                 // Method org/apache/hadoop/hbase/regionserver/ScannerContext$NextState.hasMoreValues:()Z
+     116: istore        4
+     118: iload         4
+     120: ireturn
+
+  public void close();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+       4: invokeinterface #15,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       9: astore_1
+      10: aload_1
+      11: invokeinterface #16,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      16: ifeq          38
+      19: aload_1
+      20: invokeinterface #17,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      25: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      28: astore_2
+      29: aload_2
+      30: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.close:()V
+      35: goto          10
+      38: aload_0
+      39: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+      42: invokeinterface #32,  1           // InterfaceMethod java/util/List.clear:()V
+      47: aload_0
+      48: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      51: ifnull        63
+      54: aload_0
+      55: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      58: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.close:()V
+      63: aload_0
+      64: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      67: ifnull        106
+      70: aload_0
+      71: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      74: invokevirtual #33                 // Method java/util/PriorityQueue.iterator:()Ljava/util/Iterator;
+      77: astore_1
+      78: aload_1
+      79: invokeinterface #16,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      84: ifeq          106
+      87: aload_1
+      88: invokeinterface #17,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      93: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      96: astore_2
+      97: aload_2
+      98: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.close:()V
+     103: goto          78
+     106: return
+
+  public boolean seek(org.apache.hadoop.hbase.Cell) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: aload_1
+       3: iconst_0
+       4: iconst_0
+       5: invokespecial #34                 // Method generalizedSeek:(ZLorg/apache/hadoop/hbase/Cell;ZZ)Z
+       8: ireturn
+
+  public boolean reseek(org.apache.hadoop.hbase.Cell) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: aload_1
+       3: iconst_1
+       4: iconst_0
+       5: invokespecial #34                 // Method generalizedSeek:(ZLorg/apache/hadoop/hbase/Cell;ZZ)Z
+       8: ireturn
+
+  public boolean requestSeek(org.apache.hadoop.hbase.Cell, boolean, boolean) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: iconst_1
+       2: aload_1
+       3: iload_2
+       4: iload_3
+       5: invokespecial #34                 // Method generalizedSeek:(ZLorg/apache/hadoop/hbase/Cell;ZZ)Z
+       8: ireturn
+
+  protected org.apache.hadoop.hbase.regionserver.KeyValueScanner pollRealKV() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+       4: invokevirtual #43                 // Method java/util/PriorityQueue.poll:()Ljava/lang/Object;
+       7: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      10: astore_1
+      11: aload_1
+      12: ifnonnull     17
+      15: aconst_null
+      16: areturn
+      17: aload_1
+      18: ifnull        169
+      21: aload_1
+      22: invokeinterface #48,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.realSeekDone:()Z
+      27: ifne          169
+      30: aload_1
+      31: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+      36: ifnull        144
+      39: aload_1
+      40: invokeinterface #49,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.enforceSeek:()V
+      45: goto          62
+      48: astore_2
+      49: aload_0
+      50: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+      53: aload_1
+      54: invokeinterface #21,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+      59: pop
+      60: aload_2
+      61: athrow
+      62: aload_1
+      63: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+      68: astore_2
+      69: aload_2
+      70: ifnull        130
+      73: aload_0
+      74: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      77: invokevirtual #24                 // Method java/util/PriorityQueue.peek:()Ljava/lang/Object;
+      80: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      83: astore_3
+      84: aload_3
+      85: ifnonnull     90
+      88: aload_1
+      89: areturn
+      90: aload_3
+      91: invokeinterface #19,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.peek:()Lorg/apache/hadoop/hbase/Cell;
+      96: astore        4
+      98: aload         4
+     100: ifnull        116
+     103: aload_0
+     104: getfield      #8                  // Field comparator:Lorg/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator;
+     107: aload_2
+     108: aload         4
+     110: invokevirtual #25                 // Method org/apache/hadoop/hbase/regionserver/KeyValueHeap$KVScannerComparator.compare:(Lorg/apache/hadoop/hbase/Cell;Lorg/apache/hadoop/hbase/Cell;)I
+     113: ifge          118
+     116: aload_1
+     117: areturn
+     118: aload_0
+     119: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+     122: aload_1
+     123: invokevirtual #20                 // Method java/util/PriorityQueue.add:(Ljava/lang/Object;)Z
+     126: pop
+     127: goto          141
+     130: aload_0
+     131: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+     134: aload_1
+     135: invokeinterface #21,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     140: pop
+     141: goto          155
+     144: aload_0
+     145: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+     148: aload_1
+     149: invokeinterface #21,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     154: pop
+     155: aload_0
+     156: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+     159: invokevirtual #43                 // Method java/util/PriorityQueue.poll:()Ljava/lang/Object;
+     162: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+     165: astore_1
+     166: goto          17
+     169: aload_1
+     170: areturn
+    Exception table:
+       from    to  target type
+          39    45    48   Class java/io/IOException
+
+  public java.util.PriorityQueue<org.apache.hadoop.hbase.regionserver.KeyValueScanner> getHeap();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+       4: areturn
+
+  org.apache.hadoop.hbase.regionserver.KeyValueScanner getCurrentForTesting();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+       4: areturn
+
+  public org.apache.hadoop.hbase.Cell getNextIndexedKey();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+       4: ifnonnull     11
+       7: aconst_null
+       8: goto          20
+      11: aload_0
+      12: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      15: invokeinterface #51,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.getNextIndexedKey:()Lorg/apache/hadoop/hbase/Cell;
+      20: areturn
+
+  public void shipped() throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+       4: invokeinterface #15,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       9: astore_1
+      10: aload_1
+      11: invokeinterface #16,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      16: ifeq          38
+      19: aload_1
+      20: invokeinterface #17,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      25: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      28: astore_2
+      29: aload_2
+      30: invokeinterface #31,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.close:()V
+      35: goto          10
+      38: aload_0
+      39: getfield      #6                  // Field scannersForDelayedClose:Ljava/util/List;
+      42: invokeinterface #32,  1           // InterfaceMethod java/util/List.clear:()V
+      47: aload_0
+      48: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      51: ifnull        63
+      54: aload_0
+      55: getfield      #7                  // Field current:Lorg/apache/hadoop/hbase/regionserver/KeyValueScanner;
+      58: invokeinterface #52,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.shipped:()V
+      63: aload_0
+      64: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      67: ifnull        106
+      70: aload_0
+      71: getfield      #5                  // Field heap:Ljava/util/PriorityQueue;
+      74: invokevirtual #33                 // Method java/util/PriorityQueue.iterator:()Ljava/util/Iterator;
+      77: astore_1
+      78: aload_1
+      79: invokeinterface #16,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      84: ifeq          106
+      87: aload_1
+      88: invokeinterface #17,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      93: checkcast     #18                 // class org/apache/hadoop/hbase/regionserver/KeyValueScanner
+      96: astore_2
+      97: aload_2
+      98: invokeinterface #52,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/KeyValueScanner.shipped:()V
+     103: goto          78
+     106: return
+
+  static {};
+    Code:
+       0: ldc           #53                 // class org/apache/hadoop/hbase/regionserver/KeyValueHeap
+       2: invokestatic  #54                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #45                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

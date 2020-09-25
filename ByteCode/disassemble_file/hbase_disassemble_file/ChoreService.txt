@@ -1,0 +1,322 @@
+Compiled from "ChoreService.java"
+public class org.apache.hadoop.hbase.ChoreService implements org.apache.hadoop.hbase.ScheduledChore$ChoreServicer {
+  public static final int MIN_CORE_POOL_SIZE;
+
+  public org.apache.hadoop.hbase.ChoreService(java.lang.String);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: iconst_0
+       4: invokespecial #2                  // Method "<init>":(Ljava/lang/String;IZ)V
+       7: return
+
+  public org.apache.hadoop.hbase.ChoreService(java.lang.String, boolean);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: iload_2
+       4: invokespecial #2                  // Method "<init>":(Ljava/lang/String;IZ)V
+       7: return
+
+  public org.apache.hadoop.hbase.ChoreService(java.lang.String, int, boolean);
+    Code:
+       0: aload_0
+       1: invokespecial #3                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: aload_1
+       6: putfield      #4                  // Field coreThreadPoolPrefix:Ljava/lang/String;
+       9: iload_2
+      10: iconst_1
+      11: if_icmpge     16
+      14: iconst_1
+      15: istore_2
+      16: new           #5                  // class org/apache/hadoop/hbase/ChoreService$ChoreServiceThreadFactory
+      19: dup
+      20: aload_1
+      21: invokespecial #6                  // Method org/apache/hadoop/hbase/ChoreService$ChoreServiceThreadFactory."<init>":(Ljava/lang/String;)V
+      24: astore        4
+      26: iload_3
+      27: ifeq          50
+      30: aload_0
+      31: new           #7                  // class org/apache/hadoop/hbase/JitterScheduledThreadPoolExecutorImpl
+      34: dup
+      35: iload_2
+      36: aload         4
+      38: ldc2_w        #8                  // double 0.1d
+      41: invokespecial #10                 // Method org/apache/hadoop/hbase/JitterScheduledThreadPoolExecutorImpl."<init>":(ILjava/util/concurrent/ThreadFactory;D)V
+      44: putfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+      47: goto          64
+      50: aload_0
+      51: new           #12                 // class java/util/concurrent/ScheduledThreadPoolExecutor
+      54: dup
+      55: iload_2
+      56: aload         4
+      58: invokespecial #13                 // Method java/util/concurrent/ScheduledThreadPoolExecutor."<init>":(ILjava/util/concurrent/ThreadFactory;)V
+      61: putfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+      64: aload_0
+      65: getfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+      68: iconst_1
+      69: invokevirtual #14                 // Method java/util/concurrent/ScheduledThreadPoolExecutor.setRemoveOnCancelPolicy:(Z)V
+      72: aload_0
+      73: new           #15                 // class java/util/HashMap
+      76: dup
+      77: invokespecial #16                 // Method java/util/HashMap."<init>":()V
+      80: putfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+      83: aload_0
+      84: new           #15                 // class java/util/HashMap
+      87: dup
+      88: invokespecial #16                 // Method java/util/HashMap."<init>":()V
+      91: putfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+      94: return
+
+  public synchronized boolean scheduleChore(org.apache.hadoop.hbase.ScheduledChore);
+    Code:
+       0: aload_1
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_1
+       7: aload_0
+       8: invokevirtual #19                 // Method org/apache/hadoop/hbase/ScheduledChore.setChoreServicer:(Lorg/apache/hadoop/hbase/ScheduledChore$ChoreServicer;)V
+      11: aload_0
+      12: getfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+      15: aload_1
+      16: aload_1
+      17: invokevirtual #20                 // Method org/apache/hadoop/hbase/ScheduledChore.getInitialDelay:()J
+      20: aload_1
+      21: invokevirtual #21                 // Method org/apache/hadoop/hbase/ScheduledChore.getPeriod:()I
+      24: i2l
+      25: aload_1
+      26: invokevirtual #22                 // Method org/apache/hadoop/hbase/ScheduledChore.getTimeUnit:()Ljava/util/concurrent/TimeUnit;
+      29: invokevirtual #23                 // Method java/util/concurrent/ScheduledThreadPoolExecutor.scheduleAtFixedRate:(Ljava/lang/Runnable;JJLjava/util/concurrent/TimeUnit;)Ljava/util/concurrent/ScheduledFuture;
+      32: astore_2
+      33: aload_0
+      34: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+      37: aload_1
+      38: aload_2
+      39: invokevirtual #24                 // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      42: pop
+      43: iconst_1
+      44: ireturn
+      45: astore_2
+      46: getstatic     #26                 // Field LOG:Lorg/slf4j/Logger;
+      49: invokeinterface #27,  1           // InterfaceMethod org/slf4j/Logger.isInfoEnabled:()Z
+      54: ifeq          87
+      57: getstatic     #26                 // Field LOG:Lorg/slf4j/Logger;
+      60: new           #28                 // class java/lang/StringBuilder
+      63: dup
+      64: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      67: ldc           #30                 // String Could not successfully schedule chore:
+      69: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      72: aload_1
+      73: invokevirtual #32                 // Method org/apache/hadoop/hbase/ScheduledChore.getName:()Ljava/lang/String;
+      76: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      79: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      82: invokeinterface #34,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      87: iconst_0
+      88: ireturn
+    Exception table:
+       from    to  target type
+           6    44    45   Class java/lang/Exception
+
+  public synchronized void cancelChore(org.apache.hadoop.hbase.ScheduledChore);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: invokevirtual #40                 // Method cancelChore:(Lorg/apache/hadoop/hbase/ScheduledChore;Z)V
+       6: return
+
+  public synchronized void cancelChore(org.apache.hadoop.hbase.ScheduledChore, boolean);
+    Code:
+       0: aload_1
+       1: ifnull        68
+       4: aload_0
+       5: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+       8: aload_1
+       9: invokevirtual #35                 // Method java/util/HashMap.containsKey:(Ljava/lang/Object;)Z
+      12: ifeq          68
+      15: aload_0
+      16: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+      19: aload_1
+      20: invokevirtual #36                 // Method java/util/HashMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      23: checkcast     #37                 // class java/util/concurrent/ScheduledFuture
+      26: astore_3
+      27: aload_3
+      28: iload_2
+      29: invokeinterface #38,  2           // InterfaceMethod java/util/concurrent/ScheduledFuture.cancel:(Z)Z
+      34: pop
+      35: aload_0
+      36: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+      39: aload_1
+      40: invokevirtual #41                 // Method java/util/HashMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      43: pop
+      44: aload_0
+      45: getfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+      48: aload_1
+      49: invokevirtual #35                 // Method java/util/HashMap.containsKey:(Ljava/lang/Object;)Z
+      52: ifeq          68
+      55: aload_0
+      56: getfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+      59: aload_1
+      60: invokevirtual #41                 // Method java/util/HashMap.remove:(Ljava/lang/Object;)Ljava/lang/Object;
+      63: pop
+      64: aload_0
+      65: invokespecial #42                 // Method requestCorePoolDecrease:()V
+      68: return
+
+  public synchronized boolean isChoreScheduled(org.apache.hadoop.hbase.ScheduledChore);
+    Code:
+       0: aload_1
+       1: ifnull        38
+       4: aload_0
+       5: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+       8: aload_1
+       9: invokevirtual #35                 // Method java/util/HashMap.containsKey:(Ljava/lang/Object;)Z
+      12: ifeq          38
+      15: aload_0
+      16: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+      19: aload_1
+      20: invokevirtual #36                 // Method java/util/HashMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      23: checkcast     #37                 // class java/util/concurrent/ScheduledFuture
+      26: invokeinterface #43,  1           // InterfaceMethod java/util/concurrent/ScheduledFuture.isDone:()Z
+      31: ifne          38
+      34: iconst_1
+      35: goto          39
+      38: iconst_0
+      39: ireturn
+
+  public synchronized boolean triggerNow(org.apache.hadoop.hbase.ScheduledChore);
+    Code:
+       0: aload_1
+       1: ifnonnull     6
+       4: iconst_0
+       5: ireturn
+       6: aload_0
+       7: aload_1
+       8: invokespecial #44                 // Method rescheduleChore:(Lorg/apache/hadoop/hbase/ScheduledChore;)V
+      11: iconst_1
+      12: ireturn
+
+  int getNumberOfScheduledChores();
+    Code:
+       0: aload_0
+       1: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+       4: invokevirtual #45                 // Method java/util/HashMap.size:()I
+       7: ireturn
+
+  int getNumberOfChoresMissingStartTime();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+       4: invokevirtual #45                 // Method java/util/HashMap.size:()I
+       7: ireturn
+
+  int getCorePoolSize();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+       4: invokevirtual #46                 // Method java/util/concurrent/ScheduledThreadPoolExecutor.getCorePoolSize:()I
+       7: ireturn
+
+  public synchronized void onChoreMissedStartTime(org.apache.hadoop.hbase.ScheduledChore);
+    Code:
+       0: aload_1
+       1: ifnull        15
+       4: aload_0
+       5: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+       8: aload_1
+       9: invokevirtual #35                 // Method java/util/HashMap.containsKey:(Ljava/lang/Object;)Z
+      12: ifne          16
+      15: return
+      16: aload_0
+      17: getfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+      20: aload_1
+      21: invokevirtual #35                 // Method java/util/HashMap.containsKey:(Ljava/lang/Object;)Z
+      24: ifeq          44
+      27: aload_0
+      28: getfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+      31: aload_1
+      32: invokevirtual #36                 // Method java/util/HashMap.get:(Ljava/lang/Object;)Ljava/lang/Object;
+      35: checkcast     #51                 // class java/lang/Boolean
+      38: invokevirtual #52                 // Method java/lang/Boolean.booleanValue:()Z
+      41: ifne          60
+      44: aload_0
+      45: getfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+      48: aload_1
+      49: aload_0
+      50: invokespecial #53                 // Method requestCorePoolIncrease:()Z
+      53: invokestatic  #54                 // Method java/lang/Boolean.valueOf:(Z)Ljava/lang/Boolean;
+      56: invokevirtual #24                 // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      59: pop
+      60: aload_0
+      61: aload_1
+      62: invokespecial #44                 // Method rescheduleChore:(Lorg/apache/hadoop/hbase/ScheduledChore;)V
+      65: aload_0
+      66: ldc           #55                 // String onChoreMissedStartTime
+      68: aload_1
+      69: invokespecial #56                 // Method printChoreDetails:(Ljava/lang/String;Lorg/apache/hadoop/hbase/ScheduledChore;)V
+      72: return
+
+  public synchronized void shutdown();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+       4: invokevirtual #57                 // Method java/util/concurrent/ScheduledThreadPoolExecutor.shutdownNow:()Ljava/util/List;
+       7: pop
+       8: getstatic     #26                 // Field LOG:Lorg/slf4j/Logger;
+      11: invokeinterface #27,  1           // InterfaceMethod org/slf4j/Logger.isInfoEnabled:()Z
+      16: ifeq          69
+      19: getstatic     #26                 // Field LOG:Lorg/slf4j/Logger;
+      22: new           #28                 // class java/lang/StringBuilder
+      25: dup
+      26: invokespecial #29                 // Method java/lang/StringBuilder."<init>":()V
+      29: ldc           #58                 // String Chore service for:
+      31: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: aload_0
+      35: getfield      #4                  // Field coreThreadPoolPrefix:Ljava/lang/String;
+      38: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      41: ldc           #59                 // String  had
+      43: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_0
+      47: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+      50: invokevirtual #60                 // Method java/util/HashMap.keySet:()Ljava/util/Set;
+      53: invokevirtual #61                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      56: ldc           #62                 // String  on shutdown
+      58: invokevirtual #31                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      61: invokevirtual #33                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      64: invokeinterface #34,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+      69: aload_0
+      70: iconst_1
+      71: invokespecial #63                 // Method cancelAllChores:(Z)V
+      74: aload_0
+      75: getfield      #17                 // Field scheduledChores:Ljava/util/HashMap;
+      78: invokevirtual #64                 // Method java/util/HashMap.clear:()V
+      81: aload_0
+      82: getfield      #18                 // Field choresMissingStartTime:Ljava/util/HashMap;
+      85: invokevirtual #64                 // Method java/util/HashMap.clear:()V
+      88: return
+
+  public boolean isShutdown();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+       4: invokevirtual #65                 // Method java/util/concurrent/ScheduledThreadPoolExecutor.isShutdown:()Z
+       7: ireturn
+
+  public boolean isTerminated();
+    Code:
+       0: aload_0
+       1: getfield      #11                 // Field scheduler:Ljava/util/concurrent/ScheduledThreadPoolExecutor;
+       4: invokevirtual #66                 // Method java/util/concurrent/ScheduledThreadPoolExecutor.isTerminated:()Z
+       7: ireturn
+
+  static {};
+    Code:
+       0: ldc           #1                  // class org/apache/hadoop/hbase/ChoreService
+       2: invokestatic  #100                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #26                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

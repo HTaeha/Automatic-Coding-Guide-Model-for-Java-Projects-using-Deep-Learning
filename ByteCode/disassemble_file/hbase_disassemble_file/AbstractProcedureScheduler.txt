@@ -1,0 +1,487 @@
+Compiled from "AbstractProcedureScheduler.java"
+public abstract class org.apache.hadoop.hbase.procedure2.AbstractProcedureScheduler implements org.apache.hadoop.hbase.procedure2.ProcedureScheduler {
+  public org.apache.hadoop.hbase.procedure2.AbstractProcedureScheduler();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/locks/ReentrantLock
+       8: dup
+       9: invokespecial #3                  // Method java/util/concurrent/locks/ReentrantLock."<init>":()V
+      12: putfield      #4                  // Field schedulerLock:Ljava/util/concurrent/locks/ReentrantLock;
+      15: aload_0
+      16: aload_0
+      17: getfield      #4                  // Field schedulerLock:Ljava/util/concurrent/locks/ReentrantLock;
+      20: invokevirtual #5                  // Method java/util/concurrent/locks/ReentrantLock.newCondition:()Ljava/util/concurrent/locks/Condition;
+      23: putfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+      26: aload_0
+      27: iconst_0
+      28: putfield      #7                  // Field running:Z
+      31: aload_0
+      32: lconst_0
+      33: putfield      #8                  // Field pollCalls:J
+      36: aload_0
+      37: lconst_0
+      38: putfield      #9                  // Field nullPollCalls:J
+      41: return
+
+  public void start();
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_0
+       5: iconst_1
+       6: putfield      #7                  // Field running:Z
+       9: aload_0
+      10: invokevirtual #11                 // Method schedUnlock:()V
+      13: goto          23
+      16: astore_1
+      17: aload_0
+      18: invokevirtual #11                 // Method schedUnlock:()V
+      21: aload_1
+      22: athrow
+      23: return
+    Exception table:
+       from    to  target type
+           4     9    16   any
+
+  public void stop();
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #7                  // Field running:Z
+       9: aload_0
+      10: getfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+      13: invokeinterface #12,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signalAll:()V
+      18: aload_0
+      19: invokevirtual #11                 // Method schedUnlock:()V
+      22: goto          32
+      25: astore_1
+      26: aload_0
+      27: invokevirtual #11                 // Method schedUnlock:()V
+      30: aload_1
+      31: athrow
+      32: return
+    Exception table:
+       from    to  target type
+           4    18    25   any
+
+  public void signalAll();
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_0
+       5: getfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+       8: invokeinterface #12,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signalAll:()V
+      13: aload_0
+      14: invokevirtual #11                 // Method schedUnlock:()V
+      17: goto          27
+      20: astore_1
+      21: aload_0
+      22: invokevirtual #11                 // Method schedUnlock:()V
+      25: aload_1
+      26: athrow
+      27: return
+    Exception table:
+       from    to  target type
+           4    13    20   any
+
+  protected abstract void enqueue(org.apache.hadoop.hbase.procedure2.Procedure, boolean);
+
+  public void addFront(org.apache.hadoop.hbase.procedure2.Procedure);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: iconst_1
+       4: invokevirtual #13                 // Method push:(Lorg/apache/hadoop/hbase/procedure2/Procedure;ZZ)V
+       7: return
+
+  public void addFront(org.apache.hadoop.hbase.procedure2.Procedure, boolean);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_1
+       3: iload_2
+       4: invokevirtual #13                 // Method push:(Lorg/apache/hadoop/hbase/procedure2/Procedure;ZZ)V
+       7: return
+
+  public void addFront(java.util.Iterator<org.apache.hadoop.hbase.procedure2.Procedure>);
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: iconst_0
+       5: istore_2
+       6: aload_1
+       7: invokeinterface #14,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      12: ifeq          76
+      15: aload_1
+      16: invokeinterface #15,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      21: checkcast     #16                 // class org/apache/hadoop/hbase/procedure2/Procedure
+      24: astore_3
+      25: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+      28: invokeinterface #18,  1           // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      33: ifeq          63
+      36: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+      39: new           #19                 // class java/lang/StringBuilder
+      42: dup
+      43: invokespecial #20                 // Method java/lang/StringBuilder."<init>":()V
+      46: ldc           #21                 // String Wake
+      48: invokevirtual #22                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      51: aload_3
+      52: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      55: invokevirtual #24                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      58: invokeinterface #25,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      63: aload_0
+      64: aload_3
+      65: iconst_1
+      66: iconst_0
+      67: invokevirtual #13                 // Method push:(Lorg/apache/hadoop/hbase/procedure2/Procedure;ZZ)V
+      70: iinc          2, 1
+      73: goto          6
+      76: aload_0
+      77: iload_2
+      78: invokevirtual #26                 // Method wakePollIfNeeded:(I)V
+      81: aload_0
+      82: invokevirtual #11                 // Method schedUnlock:()V
+      85: goto          97
+      88: astore        4
+      90: aload_0
+      91: invokevirtual #11                 // Method schedUnlock:()V
+      94: aload         4
+      96: athrow
+      97: return
+    Exception table:
+       from    to  target type
+           4    81    88   any
+          88    90    88   any
+
+  public void addBack(org.apache.hadoop.hbase.procedure2.Procedure);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_0
+       3: iconst_1
+       4: invokevirtual #13                 // Method push:(Lorg/apache/hadoop/hbase/procedure2/Procedure;ZZ)V
+       7: return
+
+  public void addBack(org.apache.hadoop.hbase.procedure2.Procedure, boolean);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: iconst_0
+       3: iload_2
+       4: invokevirtual #13                 // Method push:(Lorg/apache/hadoop/hbase/procedure2/Procedure;ZZ)V
+       7: return
+
+  protected void push(org.apache.hadoop.hbase.procedure2.Procedure, boolean, boolean);
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_0
+       5: aload_1
+       6: iload_2
+       7: invokevirtual #27                 // Method enqueue:(Lorg/apache/hadoop/hbase/procedure2/Procedure;Z)V
+      10: iload_3
+      11: ifeq          23
+      14: aload_0
+      15: getfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+      18: invokeinterface #28,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signal:()V
+      23: aload_0
+      24: invokevirtual #11                 // Method schedUnlock:()V
+      27: goto          39
+      30: astore        4
+      32: aload_0
+      33: invokevirtual #11                 // Method schedUnlock:()V
+      36: aload         4
+      38: athrow
+      39: return
+    Exception table:
+       from    to  target type
+           4    23    30   any
+          30    32    30   any
+
+  protected abstract org.apache.hadoop.hbase.procedure2.Procedure dequeue();
+
+  public org.apache.hadoop.hbase.procedure2.Procedure poll();
+    Code:
+       0: aload_0
+       1: ldc2_w        #29                 // long -1l
+       4: invokevirtual #31                 // Method poll:(J)Lorg/apache/hadoop/hbase/procedure2/Procedure;
+       7: areturn
+
+  public org.apache.hadoop.hbase.procedure2.Procedure poll(long, java.util.concurrent.TimeUnit);
+    Code:
+       0: aload_0
+       1: aload_3
+       2: lload_1
+       3: invokevirtual #32                 // Method java/util/concurrent/TimeUnit.toNanos:(J)J
+       6: invokevirtual #31                 // Method poll:(J)Lorg/apache/hadoop/hbase/procedure2/Procedure;
+       9: areturn
+
+  public org.apache.hadoop.hbase.procedure2.Procedure poll(long);
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_0
+       5: getfield      #7                  // Field running:Z
+       8: ifne          29
+      11: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+      14: ldc           #33                 // String the scheduler is not running
+      16: invokeinterface #34,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+      21: aconst_null
+      22: astore_3
+      23: aload_0
+      24: invokevirtual #11                 // Method schedUnlock:()V
+      27: aload_3
+      28: areturn
+      29: aload_0
+      30: invokevirtual #35                 // Method queueHasRunnables:()Z
+      33: ifne          90
+      36: lload_1
+      37: lconst_0
+      38: lcmp
+      39: ifge          54
+      42: aload_0
+      43: getfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+      46: invokeinterface #36,  1           // InterfaceMethod java/util/concurrent/locks/Condition.await:()V
+      51: goto          65
+      54: aload_0
+      55: getfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+      58: lload_1
+      59: invokeinterface #37,  3           // InterfaceMethod java/util/concurrent/locks/Condition.awaitNanos:(J)J
+      64: pop2
+      65: aload_0
+      66: invokevirtual #35                 // Method queueHasRunnables:()Z
+      69: ifne          90
+      72: aload_0
+      73: dup
+      74: getfield      #9                  // Field nullPollCalls:J
+      77: lconst_1
+      78: ladd
+      79: putfield      #9                  // Field nullPollCalls:J
+      82: aconst_null
+      83: astore_3
+      84: aload_0
+      85: invokevirtual #11                 // Method schedUnlock:()V
+      88: aload_3
+      89: areturn
+      90: aload_0
+      91: invokevirtual #38                 // Method dequeue:()Lorg/apache/hadoop/hbase/procedure2/Procedure;
+      94: astore_3
+      95: aload_0
+      96: dup
+      97: getfield      #8                  // Field pollCalls:J
+     100: lconst_1
+     101: ladd
+     102: putfield      #8                  // Field pollCalls:J
+     105: aload_0
+     106: dup
+     107: getfield      #9                  // Field nullPollCalls:J
+     110: aload_3
+     111: ifnonnull     118
+     114: lconst_1
+     115: goto          119
+     118: lconst_0
+     119: ladd
+     120: putfield      #9                  // Field nullPollCalls:J
+     123: aload_3
+     124: astore        4
+     126: aload_0
+     127: invokevirtual #11                 // Method schedUnlock:()V
+     130: aload         4
+     132: areturn
+     133: astore_3
+     134: invokestatic  #40                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     137: invokevirtual #41                 // Method java/lang/Thread.interrupt:()V
+     140: aload_0
+     141: dup
+     142: getfield      #9                  // Field nullPollCalls:J
+     145: lconst_1
+     146: ladd
+     147: putfield      #9                  // Field nullPollCalls:J
+     150: aconst_null
+     151: astore        4
+     153: aload_0
+     154: invokevirtual #11                 // Method schedUnlock:()V
+     157: aload         4
+     159: areturn
+     160: astore        5
+     162: aload_0
+     163: invokevirtual #11                 // Method schedUnlock:()V
+     166: aload         5
+     168: athrow
+    Exception table:
+       from    to  target type
+           4    23   133   Class java/lang/InterruptedException
+          29    84   133   Class java/lang/InterruptedException
+          90   126   133   Class java/lang/InterruptedException
+           4    23   160   any
+          29    84   160   any
+          90   126   160   any
+         133   153   160   any
+         160   162   160   any
+
+  protected abstract int queueSize();
+
+  protected abstract boolean queueHasRunnables();
+
+  public int size();
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_0
+       5: invokevirtual #42                 // Method queueSize:()I
+       8: istore_1
+       9: aload_0
+      10: invokevirtual #11                 // Method schedUnlock:()V
+      13: iload_1
+      14: ireturn
+      15: astore_2
+      16: aload_0
+      17: invokevirtual #11                 // Method schedUnlock:()V
+      20: aload_2
+      21: athrow
+    Exception table:
+       from    to  target type
+           4     9    15   any
+
+  public boolean hasRunnables();
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_0
+       5: invokevirtual #35                 // Method queueHasRunnables:()Z
+       8: istore_1
+       9: aload_0
+      10: invokevirtual #11                 // Method schedUnlock:()V
+      13: iload_1
+      14: ireturn
+      15: astore_2
+      16: aload_0
+      17: invokevirtual #11                 // Method schedUnlock:()V
+      20: aload_2
+      21: athrow
+    Exception table:
+       from    to  target type
+           4     9    15   any
+
+  public long getPollCalls();
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field pollCalls:J
+       4: lreturn
+
+  public long getNullPollCalls();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field nullPollCalls:J
+       4: lreturn
+
+  public void wakeEvents(org.apache.hadoop.hbase.procedure2.ProcedureEvent[]);
+    Code:
+       0: aload_0
+       1: invokevirtual #10                 // Method schedLock:()V
+       4: aload_1
+       5: astore_2
+       6: aload_2
+       7: arraylength
+       8: istore_3
+       9: iconst_0
+      10: istore        4
+      12: iload         4
+      14: iload_3
+      15: if_icmpge     44
+      18: aload_2
+      19: iload         4
+      21: aaload
+      22: astore        5
+      24: aload         5
+      26: ifnonnull     32
+      29: goto          38
+      32: aload         5
+      34: aload_0
+      35: invokevirtual #43                 // Method org/apache/hadoop/hbase/procedure2/ProcedureEvent.wakeInternal:(Lorg/apache/hadoop/hbase/procedure2/AbstractProcedureScheduler;)V
+      38: iinc          4, 1
+      41: goto          12
+      44: aload_0
+      45: invokevirtual #11                 // Method schedUnlock:()V
+      48: goto          60
+      51: astore        6
+      53: aload_0
+      54: invokevirtual #11                 // Method schedUnlock:()V
+      57: aload         6
+      59: athrow
+      60: return
+    Exception table:
+       from    to  target type
+           4    44    51   any
+          51    53    51   any
+
+  protected int wakeWaitingProcedures(org.apache.hadoop.hbase.procedure2.LockAndQueue);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: invokevirtual #44                 // Method org/apache/hadoop/hbase/procedure2/LockAndQueue.wakeWaitingProcedures:(Lorg/apache/hadoop/hbase/procedure2/ProcedureScheduler;)I
+       5: ireturn
+
+  protected void waitProcedure(org.apache.hadoop.hbase.procedure2.LockAndQueue, org.apache.hadoop.hbase.procedure2.Procedure);
+    Code:
+       0: aload_1
+       1: aload_2
+       2: invokevirtual #45                 // Method org/apache/hadoop/hbase/procedure2/LockAndQueue.addLast:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)V
+       5: return
+
+  protected void wakeProcedure(org.apache.hadoop.hbase.procedure2.Procedure);
+    Code:
+       0: getstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #46                 // String Wake {}
+       5: aload_1
+       6: invokeinterface #47,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Object;)V
+      11: aload_0
+      12: aload_1
+      13: iconst_1
+      14: iconst_0
+      15: invokevirtual #13                 // Method push:(Lorg/apache/hadoop/hbase/procedure2/Procedure;ZZ)V
+      18: return
+
+  protected void schedLock();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field schedulerLock:Ljava/util/concurrent/locks/ReentrantLock;
+       4: invokevirtual #48                 // Method java/util/concurrent/locks/ReentrantLock.lock:()V
+       7: return
+
+  protected void schedUnlock();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field schedulerLock:Ljava/util/concurrent/locks/ReentrantLock;
+       4: invokevirtual #49                 // Method java/util/concurrent/locks/ReentrantLock.unlock:()V
+       7: return
+
+  protected void wakePollIfNeeded(int);
+    Code:
+       0: iload_1
+       1: ifgt          5
+       4: return
+       5: iload_1
+       6: iconst_1
+       7: if_icmpne     22
+      10: aload_0
+      11: getfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+      14: invokeinterface #28,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signal:()V
+      19: goto          31
+      22: aload_0
+      23: getfield      #6                  // Field schedWaitCond:Ljava/util/concurrent/locks/Condition;
+      26: invokeinterface #12,  1           // InterfaceMethod java/util/concurrent/locks/Condition.signalAll:()V
+      31: return
+
+  static {};
+    Code:
+       0: ldc           #50                 // class org/apache/hadoop/hbase/procedure2/AbstractProcedureScheduler
+       2: invokestatic  #51                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #17                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

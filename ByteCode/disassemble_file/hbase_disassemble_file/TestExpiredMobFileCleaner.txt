@@ -1,0 +1,215 @@
+Compiled from "TestExpiredMobFileCleaner.java"
+public class org.apache.hadoop.hbase.mob.TestExpiredMobFileCleaner {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.apache.hadoop.hbase.mob.TestExpiredMobFileCleaner();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void setUpBeforeClass() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: ldc           #4                  // String hfile.format.version
+       8: iconst_3
+       9: invokevirtual #5                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      12: return
+
+  public static void tearDownAfterClass() throws java.lang.Exception;
+    Code:
+       0: return
+
+  public void setUp() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: iconst_1
+       4: invokevirtual #6                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+       7: pop
+       8: return
+
+  public void tearDown() throws java.lang.Exception;
+    Code:
+       0: getstatic     #7                  // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+       3: getstatic     #8                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+       6: invokeinterface #9,  2            // InterfaceMethod org/apache/hadoop/hbase/client/Admin.disableTable:(Lorg/apache/hadoop/hbase/TableName;)V
+      11: getstatic     #7                  // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+      14: getstatic     #8                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      17: invokeinterface #10,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.deleteTable:(Lorg/apache/hadoop/hbase/TableName;)V
+      22: getstatic     #7                  // Field admin:Lorg/apache/hadoop/hbase/client/Admin;
+      25: invokeinterface #11,  1           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.close:()V
+      30: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      33: invokevirtual #12                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+      36: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      39: invokevirtual #13                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      42: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      45: invokevirtual #14                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getDataTestDir:()Lorg/apache/hadoop/fs/Path;
+      48: iconst_1
+      49: invokevirtual #15                 // Method org/apache/hadoop/fs/FileSystem.delete:(Lorg/apache/hadoop/fs/Path;Z)Z
+      52: pop
+      53: return
+
+  public void testCleaner() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: invokespecial #44                 // Method init:()V
+       4: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       7: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      10: getstatic     #8                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      13: ldc           #20                 // String family
+      15: invokestatic  #45                 // Method org/apache/hadoop/hbase/mob/MobUtils.getMobFamilyPath:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/TableName;Ljava/lang/String;)Lorg/apache/hadoop/fs/Path;
+      18: astore_1
+      19: aload_0
+      20: sipush        600
+      23: invokespecial #46                 // Method makeDummyData:(I)[B
+      26: astore_2
+      27: invokestatic  #47                 // Method java/lang/System.currentTimeMillis:()J
+      30: iconst_3
+      31: aload_0
+      32: invokespecial #33                 // Method secondsOfDay:()I
+      35: imul
+      36: sipush        1000
+      39: imul
+      40: i2l
+      41: lsub
+      42: lstore_3
+      43: aload_0
+      44: getstatic     #32                 // Field table:Lorg/apache/hadoop/hbase/client/BufferedMutator;
+      47: getstatic     #48                 // Field row1:[B
+      50: aload_2
+      51: lload_3
+      52: invokespecial #49                 // Method putKVAndFlush:(Lorg/apache/hadoop/hbase/client/BufferedMutator;[B[BJ)V
+      55: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      58: invokevirtual #13                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+      61: aload_1
+      62: invokevirtual #50                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+      65: astore        5
+      67: ldc           #51                 // String Before cleanup without delay 1
+      69: lconst_1
+      70: aload         5
+      72: arraylength
+      73: i2l
+      74: invokestatic  #52                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+      77: aload         5
+      79: iconst_0
+      80: aaload
+      81: invokevirtual #53                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+      84: invokevirtual #54                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+      87: astore        6
+      89: invokestatic  #47                 // Method java/lang/System.currentTimeMillis:()J
+      92: iconst_1
+      93: aload_0
+      94: invokespecial #33                 // Method secondsOfDay:()I
+      97: imul
+      98: sipush        1000
+     101: imul
+     102: i2l
+     103: lsub
+     104: lstore_3
+     105: aload_0
+     106: getstatic     #32                 // Field table:Lorg/apache/hadoop/hbase/client/BufferedMutator;
+     109: getstatic     #55                 // Field row2:[B
+     112: aload_2
+     113: lload_3
+     114: invokespecial #49                 // Method putKVAndFlush:(Lorg/apache/hadoop/hbase/client/BufferedMutator;[B[BJ)V
+     117: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     120: invokevirtual #13                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+     123: aload_1
+     124: invokevirtual #50                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+     127: astore        7
+     129: ldc           #56                 // String Before cleanup without delay 2
+     131: ldc2_w        #57                 // long 2l
+     134: aload         7
+     136: arraylength
+     137: i2l
+     138: invokestatic  #52                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+     141: aload         7
+     143: iconst_0
+     144: aaload
+     145: invokevirtual #53                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     148: invokevirtual #54                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     151: astore        8
+     153: aload         7
+     155: iconst_1
+     156: aaload
+     157: invokevirtual #53                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     160: invokevirtual #54                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     163: astore        9
+     165: aload         8
+     167: aload         6
+     169: invokevirtual #59                 // Method java/lang/String.equals:(Ljava/lang/Object;)Z
+     172: ifeq          180
+     175: aload         9
+     177: goto          182
+     180: aload         8
+     182: astore        10
+     184: aload_0
+     185: iconst_2
+     186: invokespecial #60                 // Method modifyColumnExpiryDays:(I)V
+     189: iconst_2
+     190: anewarray     #61                 // class java/lang/String
+     193: astore        11
+     195: aload         11
+     197: iconst_0
+     198: getstatic     #8                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+     201: invokevirtual #62                 // Method org/apache/hadoop/hbase/TableName.getNameAsString:()Ljava/lang/String;
+     204: aastore
+     205: aload         11
+     207: iconst_1
+     208: ldc           #20                 // String family
+     210: aastore
+     211: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     214: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     217: new           #63                 // class org/apache/hadoop/hbase/mob/ExpiredMobFileCleaner
+     220: dup
+     221: invokespecial #64                 // Method org/apache/hadoop/hbase/mob/ExpiredMobFileCleaner."<init>":()V
+     224: aload         11
+     226: invokestatic  #65                 // Method org/apache/hadoop/util/ToolRunner.run:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/util/Tool;[Ljava/lang/String;)I
+     229: pop
+     230: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     233: invokevirtual #13                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getTestFileSystem:()Lorg/apache/hadoop/fs/FileSystem;
+     236: aload_1
+     237: invokevirtual #50                 // Method org/apache/hadoop/fs/FileSystem.listStatus:(Lorg/apache/hadoop/fs/Path;)[Lorg/apache/hadoop/fs/FileStatus;
+     240: astore        12
+     242: aload         12
+     244: iconst_0
+     245: aaload
+     246: invokevirtual #53                 // Method org/apache/hadoop/fs/FileStatus.getPath:()Lorg/apache/hadoop/fs/Path;
+     249: invokevirtual #54                 // Method org/apache/hadoop/fs/Path.getName:()Ljava/lang/String;
+     252: astore        13
+     254: ldc           #66                 // String After cleanup without delay 1
+     256: lconst_1
+     257: aload         12
+     259: arraylength
+     260: i2l
+     261: invokestatic  #52                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;JJ)V
+     264: ldc           #67                 // String After cleanup without delay 2
+     266: aload         10
+     268: aload         13
+     270: invokestatic  #68                 // Method org/junit/Assert.assertEquals:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+     273: return
+
+  static {};
+    Code:
+       0: ldc           #19                 // class org/apache/hadoop/hbase/mob/TestExpiredMobFileCleaner
+       2: invokestatic  #73                 // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       5: putstatic     #74                 // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       8: new           #75                 // class org/apache/hadoop/hbase/HBaseTestingUtility
+      11: dup
+      12: invokespecial #76                 // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      15: putstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      18: ldc           #77                 // String TestExpiredMobFileCleaner
+      20: invokestatic  #78                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      23: putstatic     #8                  // Field tableName:Lorg/apache/hadoop/hbase/TableName;
+      26: ldc           #79                 // String row1
+      28: invokestatic  #38                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      31: putstatic     #48                 // Field row1:[B
+      34: ldc           #80                 // String row2
+      36: invokestatic  #38                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      39: putstatic     #55                 // Field row2:[B
+      42: ldc           #81                 // String qf
+      44: invokestatic  #38                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      47: putstatic     #39                 // Field qf:[B
+      50: return
+}

@@ -1,0 +1,110 @@
+Compiled from "ConstraintProcessor.java"
+public class org.apache.hadoop.hbase.constraint.ConstraintProcessor implements org.apache.hadoop.hbase.coprocessor.RegionCoprocessor,org.apache.hadoop.hbase.coprocessor.RegionObserver {
+  public java.util.Optional<org.apache.hadoop.hbase.coprocessor.RegionObserver> getRegionObserver();
+    Code:
+       0: aload_0
+       1: invokestatic  #1                  // Method java/util/Optional.of:(Ljava/lang/Object;)Ljava/util/Optional;
+       4: areturn
+
+  public org.apache.hadoop.hbase.constraint.ConstraintProcessor();
+    Code:
+       0: aload_0
+       1: invokespecial #2                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: new           #3                  // class java/util/ArrayList
+       8: dup
+       9: invokespecial #4                  // Method java/util/ArrayList."<init>":()V
+      12: putfield      #5                  // Field constraints:Ljava/util/List;
+      15: aload_0
+      16: aload_0
+      17: invokevirtual #6                  // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      20: invokevirtual #7                  // Method java/lang/Class.getClassLoader:()Ljava/lang/ClassLoader;
+      23: putfield      #8                  // Field classloader:Ljava/lang/ClassLoader;
+      26: return
+
+  public void start(org.apache.hadoop.hbase.CoprocessorEnvironment);
+    Code:
+       0: aload_1
+       1: instanceof    #9                  // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+       4: ifne          17
+       7: new           #10                 // class java/lang/IllegalArgumentException
+      10: dup
+      11: ldc           #11                 // String Constraints only act on regions - started in an environment that was not a region
+      13: invokespecial #12                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      16: athrow
+      17: aload_1
+      18: checkcast     #9                  // class org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment
+      21: astore_2
+      22: aload_2
+      23: invokeinterface #13,  1           // InterfaceMethod org/apache/hadoop/hbase/coprocessor/RegionCoprocessorEnvironment.getRegion:()Lorg/apache/hadoop/hbase/regionserver/Region;
+      28: invokeinterface #14,  1           // InterfaceMethod org/apache/hadoop/hbase/regionserver/Region.getTableDescriptor:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      33: astore_3
+      34: aload_0
+      35: aload_3
+      36: aload_0
+      37: getfield      #8                  // Field classloader:Ljava/lang/ClassLoader;
+      40: invokestatic  #15                 // Method org/apache/hadoop/hbase/constraint/Constraints.getConstraints:(Lorg/apache/hadoop/hbase/client/TableDescriptor;Ljava/lang/ClassLoader;)Ljava/util/List;
+      43: putfield      #5                  // Field constraints:Ljava/util/List;
+      46: goto          61
+      49: astore        4
+      51: new           #10                 // class java/lang/IllegalArgumentException
+      54: dup
+      55: aload         4
+      57: invokespecial #17                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/Throwable;)V
+      60: athrow
+      61: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+      64: invokeinterface #19,  1           // InterfaceMethod org/slf4j/Logger.isInfoEnabled:()Z
+      69: ifeq          121
+      72: getstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+      75: new           #20                 // class java/lang/StringBuilder
+      78: dup
+      79: invokespecial #21                 // Method java/lang/StringBuilder."<init>":()V
+      82: ldc           #22                 // String Finished loading
+      84: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      87: aload_0
+      88: getfield      #5                  // Field constraints:Ljava/util/List;
+      91: invokeinterface #24,  1           // InterfaceMethod java/util/List.size:()I
+      96: invokevirtual #25                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      99: ldc           #26                 // String  user Constraints on table:
+     101: invokevirtual #23                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     104: aload_3
+     105: invokeinterface #27,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+     110: invokevirtual #28                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     113: invokevirtual #29                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     116: invokeinterface #30,  2           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;)V
+     121: return
+    Exception table:
+       from    to  target type
+          34    46    49   Class java/io/IOException
+
+  public void prePut(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.client.Put, org.apache.hadoop.hbase.wal.WALEdit, org.apache.hadoop.hbase.client.Durability) throws java.io.IOException;
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field constraints:Ljava/util/List;
+       4: invokeinterface #31,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+       9: astore        5
+      11: aload         5
+      13: invokeinterface #32,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      18: ifeq          44
+      21: aload         5
+      23: invokeinterface #33,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      28: checkcast     #34                 // class org/apache/hadoop/hbase/constraint/Constraint
+      31: astore        6
+      33: aload         6
+      35: aload_2
+      36: invokeinterface #35,  2           // InterfaceMethod org/apache/hadoop/hbase/constraint/Constraint.check:(Lorg/apache/hadoop/hbase/client/Put;)V
+      41: goto          11
+      44: return
+
+  public boolean postScannerFilterRow(org.apache.hadoop.hbase.coprocessor.ObserverContext<org.apache.hadoop.hbase.coprocessor.RegionCoprocessorEnvironment>, org.apache.hadoop.hbase.regionserver.InternalScanner, org.apache.hadoop.hbase.Cell, boolean) throws java.io.IOException;
+    Code:
+       0: iload         4
+       2: ireturn
+
+  static {};
+    Code:
+       0: ldc           #36                 // class org/apache/hadoop/hbase/constraint/ConstraintProcessor
+       2: invokestatic  #37                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #18                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

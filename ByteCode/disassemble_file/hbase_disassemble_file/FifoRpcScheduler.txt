@@ -1,0 +1,346 @@
+Compiled from "FifoRpcScheduler.java"
+public class org.apache.hadoop.hbase.ipc.FifoRpcScheduler extends org.apache.hadoop.hbase.ipc.RpcScheduler {
+  protected final int handlerCount;
+
+  protected final int maxQueueLength;
+
+  protected final java.util.concurrent.atomic.AtomicInteger queueSize;
+
+  protected java.util.concurrent.ThreadPoolExecutor executor;
+
+  public org.apache.hadoop.hbase.ipc.FifoRpcScheduler(org.apache.hadoop.conf.Configuration, int);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/ipc/RpcScheduler."<init>":()V
+       4: aload_0
+       5: new           #2                  // class java/util/concurrent/atomic/AtomicInteger
+       8: dup
+       9: iconst_0
+      10: invokespecial #3                  // Method java/util/concurrent/atomic/AtomicInteger."<init>":(I)V
+      13: putfield      #4                  // Field queueSize:Ljava/util/concurrent/atomic/AtomicInteger;
+      16: aload_0
+      17: iload_2
+      18: putfield      #5                  // Field handlerCount:I
+      21: aload_0
+      22: aload_1
+      23: ldc           #7                  // String hbase.ipc.server.max.callqueue.length
+      25: iload_2
+      26: bipush        10
+      28: imul
+      29: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      32: putfield      #10                 // Field maxQueueLength:I
+      35: return
+
+  public void init(org.apache.hadoop.hbase.ipc.RpcScheduler$Context);
+    Code:
+       0: return
+
+  public void start();
+    Code:
+       0: getstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+       3: ldc           #12                 // String Using {} as user call queue; handlerCount={}; maxQueueLength={}
+       5: iconst_3
+       6: anewarray     #13                 // class java/lang/Object
+       9: dup
+      10: iconst_0
+      11: aload_0
+      12: invokevirtual #14                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      15: invokevirtual #15                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: aload_0
+      22: getfield      #5                  // Field handlerCount:I
+      25: invokestatic  #16                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      28: aastore
+      29: dup
+      30: iconst_2
+      31: aload_0
+      32: getfield      #10                 // Field maxQueueLength:I
+      35: invokestatic  #16                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      38: aastore
+      39: invokeinterface #17,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;[Ljava/lang/Object;)V
+      44: aload_0
+      45: new           #18                 // class java/util/concurrent/ThreadPoolExecutor
+      48: dup
+      49: aload_0
+      50: getfield      #5                  // Field handlerCount:I
+      53: aload_0
+      54: getfield      #5                  // Field handlerCount:I
+      57: ldc2_w        #19                 // long 60l
+      60: getstatic     #21                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      63: new           #22                 // class java/util/concurrent/ArrayBlockingQueue
+      66: dup
+      67: aload_0
+      68: getfield      #10                 // Field maxQueueLength:I
+      71: invokespecial #23                 // Method java/util/concurrent/ArrayBlockingQueue."<init>":(I)V
+      74: new           #24                 // class org/apache/hadoop/hbase/DaemonThreadFactory
+      77: dup
+      78: ldc           #25                 // String FifoRpcScheduler.handler
+      80: invokespecial #26                 // Method org/apache/hadoop/hbase/DaemonThreadFactory."<init>":(Ljava/lang/String;)V
+      83: new           #27                 // class java/util/concurrent/ThreadPoolExecutor$CallerRunsPolicy
+      86: dup
+      87: invokespecial #28                 // Method java/util/concurrent/ThreadPoolExecutor$CallerRunsPolicy."<init>":()V
+      90: invokespecial #29                 // Method java/util/concurrent/ThreadPoolExecutor."<init>":(IIJLjava/util/concurrent/TimeUnit;Ljava/util/concurrent/BlockingQueue;Ljava/util/concurrent/ThreadFactory;Ljava/util/concurrent/RejectedExecutionHandler;)V
+      93: putfield      #30                 // Field executor:Ljava/util/concurrent/ThreadPoolExecutor;
+      96: return
+
+  public void stop();
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field executor:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #31                 // Method java/util/concurrent/ThreadPoolExecutor.shutdown:()V
+       7: return
+
+  public boolean dispatch(org.apache.hadoop.hbase.ipc.CallRunner) throws java.io.IOException, java.lang.InterruptedException;
+    Code:
+       0: aload_0
+       1: aload_0
+       2: getfield      #30                 // Field executor:Ljava/util/concurrent/ThreadPoolExecutor;
+       5: aload_0
+       6: getfield      #4                  // Field queueSize:Ljava/util/concurrent/atomic/AtomicInteger;
+       9: aload_1
+      10: invokevirtual #32                 // Method executeRpcCall:(Ljava/util/concurrent/ThreadPoolExecutor;Ljava/util/concurrent/atomic/AtomicInteger;Lorg/apache/hadoop/hbase/ipc/CallRunner;)Z
+      13: ireturn
+
+  protected boolean executeRpcCall(java.util.concurrent.ThreadPoolExecutor, java.util.concurrent.atomic.AtomicInteger, org.apache.hadoop.hbase.ipc.CallRunner);
+    Code:
+       0: aload_2
+       1: invokevirtual #33                 // Method java/util/concurrent/atomic/AtomicInteger.getAndIncrement:()I
+       4: istore        4
+       6: aload_0
+       7: getfield      #10                 // Field maxQueueLength:I
+      10: ifle          29
+      13: iload         4
+      15: aload_0
+      16: getfield      #10                 // Field maxQueueLength:I
+      19: if_icmplt     29
+      22: aload_2
+      23: invokevirtual #34                 // Method java/util/concurrent/atomic/AtomicInteger.decrementAndGet:()I
+      26: pop
+      27: iconst_0
+      28: ireturn
+      29: aload_1
+      30: new           #35                 // class org/apache/hadoop/hbase/ipc/FifoRpcScheduler$1
+      33: dup
+      34: aload_0
+      35: aload_3
+      36: aload_3
+      37: aload_2
+      38: invokespecial #36                 // Method org/apache/hadoop/hbase/ipc/FifoRpcScheduler$1."<init>":(Lorg/apache/hadoop/hbase/ipc/FifoRpcScheduler;Lorg/apache/hadoop/hbase/ipc/CallRunner;Lorg/apache/hadoop/hbase/ipc/CallRunner;Ljava/util/concurrent/atomic/AtomicInteger;)V
+      41: invokevirtual #37                 // Method java/util/concurrent/ThreadPoolExecutor.execute:(Ljava/lang/Runnable;)V
+      44: iconst_1
+      45: ireturn
+
+  public int getGeneralQueueLength();
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field executor:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #38                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+       7: invokeinterface #39,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.size:()I
+      12: ireturn
+
+  public int getPriorityQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getReplicationQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field executor:Ljava/util/concurrent/ThreadPoolExecutor;
+       4: invokevirtual #40                 // Method java/util/concurrent/ThreadPoolExecutor.getActiveCount:()I
+       7: ireturn
+
+  public int getActiveGeneralRpcHandlerCount();
+    Code:
+       0: aload_0
+       1: invokevirtual #41                 // Method getActiveRpcHandlerCount:()I
+       4: ireturn
+
+  public int getActivePriorityRpcHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveReplicationRpcHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveMetaPriorityRpcHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public long getNumGeneralCallsDropped();
+    Code:
+       0: lconst_0
+       1: lreturn
+
+  public long getNumLifoModeSwitches();
+    Code:
+       0: lconst_0
+       1: lreturn
+
+  public int getWriteQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getReadQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getScanQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveWriteRpcHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveReadRpcHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getActiveScanRpcHandlerCount();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public int getMetaPriorityQueueLength();
+    Code:
+       0: iconst_0
+       1: ireturn
+
+  public org.apache.hadoop.hbase.ipc.CallQueueInfo getCallQueueInfo();
+    Code:
+       0: ldc           #42                 // String Fifo Queue
+       2: astore_1
+       3: new           #43                 // class java/util/HashMap
+       6: dup
+       7: invokespecial #44                 // Method java/util/HashMap."<init>":()V
+      10: astore_2
+      11: new           #43                 // class java/util/HashMap
+      14: dup
+      15: invokespecial #44                 // Method java/util/HashMap."<init>":()V
+      18: astore_3
+      19: new           #45                 // class org/apache/hadoop/hbase/ipc/CallQueueInfo
+      22: dup
+      23: invokespecial #46                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo."<init>":()V
+      26: astore        4
+      28: aload         4
+      30: aload_1
+      31: aload_2
+      32: invokevirtual #47                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodCount:(Ljava/lang/String;Ljava/util/Map;)V
+      35: aload         4
+      37: aload_1
+      38: aload_3
+      39: invokevirtual #48                 // Method org/apache/hadoop/hbase/ipc/CallQueueInfo.setCallMethodSize:(Ljava/lang/String;Ljava/util/Map;)V
+      42: aload_0
+      43: aload_0
+      44: getfield      #30                 // Field executor:Ljava/util/concurrent/ThreadPoolExecutor;
+      47: invokevirtual #38                 // Method java/util/concurrent/ThreadPoolExecutor.getQueue:()Ljava/util/concurrent/BlockingQueue;
+      50: aload_2
+      51: aload_3
+      52: invokevirtual #49                 // Method updateMethodCountAndSizeByQueue:(Ljava/util/concurrent/BlockingQueue;Ljava/util/HashMap;Ljava/util/HashMap;)V
+      55: aload         4
+      57: areturn
+
+  protected void updateMethodCountAndSizeByQueue(java.util.concurrent.BlockingQueue<java.lang.Runnable>, java.util.HashMap<java.lang.String, java.lang.Long>, java.util.HashMap<java.lang.String, java.lang.Long>);
+    Code:
+       0: aload_1
+       1: invokeinterface #50,  1           // InterfaceMethod java/util/concurrent/BlockingQueue.iterator:()Ljava/util/Iterator;
+       6: astore        4
+       8: aload         4
+      10: invokeinterface #51,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      15: ifeq          139
+      18: aload         4
+      20: invokeinterface #52,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      25: checkcast     #53                 // class java/lang/Runnable
+      28: astore        5
+      30: aload         5
+      32: checkcast     #54                 // class org/apache/hadoop/hbase/ipc/FifoRpcScheduler$FifoCallRunner
+      35: astore        6
+      37: aload         6
+      39: invokevirtual #55                 // Method org/apache/hadoop/hbase/ipc/FifoRpcScheduler$FifoCallRunner.getCallRunner:()Lorg/apache/hadoop/hbase/ipc/CallRunner;
+      42: invokevirtual #56                 // Method org/apache/hadoop/hbase/ipc/CallRunner.getRpcCall:()Lorg/apache/hadoop/hbase/ipc/RpcCall;
+      45: astore        7
+      47: aload_0
+      48: aload         6
+      50: invokevirtual #55                 // Method org/apache/hadoop/hbase/ipc/FifoRpcScheduler$FifoCallRunner.getCallRunner:()Lorg/apache/hadoop/hbase/ipc/CallRunner;
+      53: invokevirtual #57                 // Method getCallMethod:(Lorg/apache/hadoop/hbase/ipc/CallRunner;)Ljava/lang/String;
+      56: astore        8
+      58: aload         8
+      60: invokestatic  #58                 // Method org/apache/hbase/thirdparty/io/netty/util/internal/StringUtil.isNullOrEmpty:(Ljava/lang/String;)Z
+      63: ifeq          70
+      66: ldc           #59                 // String Unknown
+      68: astore        8
+      70: aload         7
+      72: invokeinterface #60,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getSize:()J
+      77: lstore        9
+      79: aload_2
+      80: aload         8
+      82: lconst_1
+      83: aload_2
+      84: aload         8
+      86: lconst_0
+      87: invokestatic  #61                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+      90: invokevirtual #62                 // Method java/util/HashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+      93: checkcast     #63                 // class java/lang/Long
+      96: invokevirtual #64                 // Method java/lang/Long.longValue:()J
+      99: ladd
+     100: invokestatic  #61                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     103: invokevirtual #65                 // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     106: pop
+     107: aload_3
+     108: aload         8
+     110: lload         9
+     112: aload_3
+     113: aload         8
+     115: lconst_0
+     116: invokestatic  #61                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     119: invokevirtual #62                 // Method java/util/HashMap.getOrDefault:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     122: checkcast     #63                 // class java/lang/Long
+     125: invokevirtual #64                 // Method java/lang/Long.longValue:()J
+     128: ladd
+     129: invokestatic  #61                 // Method java/lang/Long.valueOf:(J)Ljava/lang/Long;
+     132: invokevirtual #65                 // Method java/util/HashMap.put:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+     135: pop
+     136: goto          8
+     139: return
+
+  protected java.lang.String getCallMethod(org.apache.hadoop.hbase.ipc.CallRunner);
+    Code:
+       0: aload_1
+       1: invokevirtual #56                 // Method org/apache/hadoop/hbase/ipc/CallRunner.getRpcCall:()Lorg/apache/hadoop/hbase/ipc/RpcCall;
+       4: astore_2
+       5: aload_2
+       6: ifnull        28
+       9: aload_2
+      10: invokeinterface #66,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getMethod:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;
+      15: ifnull        28
+      18: aload_2
+      19: invokeinterface #66,  1           // InterfaceMethod org/apache/hadoop/hbase/ipc/RpcCall.getMethod:()Lorg/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor;
+      24: invokevirtual #67                 // Method org/apache/hbase/thirdparty/com/google/protobuf/Descriptors$MethodDescriptor.getName:()Ljava/lang/String;
+      27: areturn
+      28: aconst_null
+      29: areturn
+
+  static {};
+    Code:
+       0: ldc           #68                 // class org/apache/hadoop/hbase/ipc/FifoRpcScheduler
+       2: invokestatic  #69                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #11                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

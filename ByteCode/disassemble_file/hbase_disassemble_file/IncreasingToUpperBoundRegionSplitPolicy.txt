@@ -1,0 +1,167 @@
+Compiled from "IncreasingToUpperBoundRegionSplitPolicy.java"
+public class org.apache.hadoop.hbase.regionserver.IncreasingToUpperBoundRegionSplitPolicy extends org.apache.hadoop.hbase.regionserver.ConstantSizeRegionSplitPolicy {
+  protected long initialSize;
+
+  public org.apache.hadoop.hbase.regionserver.IncreasingToUpperBoundRegionSplitPolicy();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method org/apache/hadoop/hbase/regionserver/ConstantSizeRegionSplitPolicy."<init>":()V
+       4: return
+
+  protected void configureForRegion(org.apache.hadoop.hbase.regionserver.HRegion);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokespecial #2                  // Method org/apache/hadoop/hbase/regionserver/ConstantSizeRegionSplitPolicy.configureForRegion:(Lorg/apache/hadoop/hbase/regionserver/HRegion;)V
+       5: aload_0
+       6: invokevirtual #3                  // Method getConf:()Lorg/apache/hadoop/conf/Configuration;
+       9: astore_2
+      10: aload_0
+      11: aload_2
+      12: ldc           #4                  // String hbase.increasing.policy.initial.size
+      14: ldc2_w        #5                  // long -1l
+      17: invokevirtual #7                  // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      20: putfield      #8                  // Field initialSize:J
+      23: aload_0
+      24: getfield      #8                  // Field initialSize:J
+      27: lconst_0
+      28: lcmp
+      29: ifle          33
+      32: return
+      33: aload_1
+      34: invokevirtual #9                  // Method org/apache/hadoop/hbase/regionserver/HRegion.getTableDescriptor:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      37: astore_3
+      38: aload_3
+      39: ifnull        56
+      42: aload_0
+      43: ldc2_w        #10                 // long 2l
+      46: aload_3
+      47: invokeinterface #12,  1           // InterfaceMethod org/apache/hadoop/hbase/client/TableDescriptor.getMemStoreFlushSize:()J
+      52: lmul
+      53: putfield      #8                  // Field initialSize:J
+      56: aload_0
+      57: getfield      #8                  // Field initialSize:J
+      60: lconst_0
+      61: lcmp
+      62: ifgt          82
+      65: aload_0
+      66: ldc2_w        #10                 // long 2l
+      69: aload_2
+      70: ldc           #14                 // String hbase.hregion.memstore.flush.size
+      72: ldc2_w        #16                 // long 134217728l
+      75: invokevirtual #7                  // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      78: lmul
+      79: putfield      #8                  // Field initialSize:J
+      82: return
+
+  protected boolean shouldSplit();
+    Code:
+       0: aload_0
+       1: getfield      #18                 // Field region:Lorg/apache/hadoop/hbase/regionserver/HRegion;
+       4: invokevirtual #19                 // Method org/apache/hadoop/hbase/regionserver/HRegion.shouldForceSplit:()Z
+       7: istore_1
+       8: iconst_0
+       9: istore_2
+      10: aload_0
+      11: invokespecial #20                 // Method getCountOfCommonTableRegions:()I
+      14: istore_3
+      15: aload_0
+      16: iload_3
+      17: invokevirtual #21                 // Method getSizeToCheck:(I)J
+      20: lstore        4
+      22: aload_0
+      23: getfield      #18                 // Field region:Lorg/apache/hadoop/hbase/regionserver/HRegion;
+      26: invokevirtual #22                 // Method org/apache/hadoop/hbase/regionserver/HRegion.getStores:()Ljava/util/List;
+      29: invokeinterface #23,  1           // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      34: astore        6
+      36: aload         6
+      38: invokeinterface #24,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      43: ifeq          156
+      46: aload         6
+      48: invokeinterface #25,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      53: checkcast     #26                 // class org/apache/hadoop/hbase/regionserver/HStore
+      56: astore        7
+      58: aload         7
+      60: invokevirtual #27                 // Method org/apache/hadoop/hbase/regionserver/HStore.canSplit:()Z
+      63: ifne          68
+      66: iconst_0
+      67: ireturn
+      68: aload         7
+      70: invokevirtual #28                 // Method org/apache/hadoop/hbase/regionserver/HStore.getSize:()J
+      73: lstore        8
+      75: lload         8
+      77: lload         4
+      79: lcmp
+      80: ifle          153
+      83: getstatic     #29                 // Field LOG:Lorg/slf4j/Logger;
+      86: new           #30                 // class java/lang/StringBuilder
+      89: dup
+      90: invokespecial #31                 // Method java/lang/StringBuilder."<init>":()V
+      93: ldc           #32                 // String ShouldSplit because
+      95: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      98: aload         7
+     100: invokevirtual #34                 // Method org/apache/hadoop/hbase/regionserver/HStore.getColumnFamilyName:()Ljava/lang/String;
+     103: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     106: ldc           #35                 // String  size=
+     108: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     111: lload         8
+     113: l2d
+     114: invokestatic  #36                 // Method org/apache/hadoop/hbase/procedure2/util/StringUtils.humanSize:(D)Ljava/lang/String;
+     117: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     120: ldc           #37                 // String , sizeToCheck=
+     122: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     125: lload         4
+     127: l2d
+     128: invokestatic  #36                 // Method org/apache/hadoop/hbase/procedure2/util/StringUtils.humanSize:(D)Ljava/lang/String;
+     131: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     134: ldc           #38                 // String , regionsWithCommonTable=
+     136: invokevirtual #33                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     139: iload_3
+     140: invokevirtual #39                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+     143: invokevirtual #40                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     146: invokeinterface #41,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     151: iconst_1
+     152: istore_2
+     153: goto          36
+     156: iload_2
+     157: ifne          164
+     160: iload_1
+     161: ifeq          168
+     164: iconst_1
+     165: goto          169
+     168: iconst_0
+     169: ireturn
+
+  protected long getSizeToCheck(int);
+    Code:
+       0: iload_1
+       1: ifeq          10
+       4: iload_1
+       5: bipush        100
+       7: if_icmple     17
+      10: aload_0
+      11: invokevirtual #51                 // Method getDesiredMaxFileSize:()J
+      14: goto          37
+      17: aload_0
+      18: invokevirtual #51                 // Method getDesiredMaxFileSize:()J
+      21: aload_0
+      22: getfield      #8                  // Field initialSize:J
+      25: iload_1
+      26: i2l
+      27: lmul
+      28: iload_1
+      29: i2l
+      30: lmul
+      31: iload_1
+      32: i2l
+      33: lmul
+      34: invokestatic  #52                 // Method java/lang/Math.min:(JJ)J
+      37: lreturn
+
+  static {};
+    Code:
+       0: ldc           #53                 // class org/apache/hadoop/hbase/regionserver/IncreasingToUpperBoundRegionSplitPolicy
+       2: invokestatic  #54                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #29                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

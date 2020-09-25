@@ -1,0 +1,244 @@
+Compiled from "ReplicationSourceShipper.java"
+public class org.apache.hadoop.hbase.replication.regionserver.ReplicationSourceShipper extends java.lang.Thread {
+  protected final java.lang.String walGroupId;
+
+  protected final java.util.concurrent.PriorityBlockingQueue<org.apache.hadoop.fs.Path> queue;
+
+  protected org.apache.hadoop.hbase.replication.regionserver.ReplicationSourceWALReader entryReader;
+
+  protected final long sleepForRetries;
+
+  protected final int maxRetriesMultiplier;
+
+  public org.apache.hadoop.hbase.replication.regionserver.ReplicationSourceShipper(org.apache.hadoop.conf.Configuration, java.lang.String, java.util.concurrent.PriorityBlockingQueue<org.apache.hadoop.fs.Path>, org.apache.hadoop.hbase.replication.regionserver.ReplicationSource);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Thread."<init>":()V
+       4: aload_0
+       5: ldc2_w        #2                  // long -1l
+       8: putfield      #4                  // Field currentPosition:J
+      11: aload_0
+      12: sipush        20000
+      15: putfield      #5                  // Field DEFAULT_TIMEOUT:I
+      18: aload_0
+      19: aload_1
+      20: putfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      23: aload_0
+      24: aload_2
+      25: putfield      #7                  // Field walGroupId:Ljava/lang/String;
+      28: aload_0
+      29: aload_3
+      30: putfield      #8                  // Field queue:Ljava/util/concurrent/PriorityBlockingQueue;
+      33: aload_0
+      34: aload         4
+      36: putfield      #9                  // Field source:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSource;
+      39: aload_0
+      40: aload_0
+      41: getfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      44: ldc           #10                 // String replication.source.sleepforretries
+      46: ldc2_w        #11                 // long 1000l
+      49: invokevirtual #13                 // Method org/apache/hadoop/conf/Configuration.getLong:(Ljava/lang/String;J)J
+      52: putfield      #14                 // Field sleepForRetries:J
+      55: aload_0
+      56: aload_0
+      57: getfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      60: ldc           #15                 // String replication.source.maxretriesmultiplier
+      62: sipush        300
+      65: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      68: putfield      #17                 // Field maxRetriesMultiplier:I
+      71: aload_0
+      72: aload_0
+      73: getfield      #6                  // Field conf:Lorg/apache/hadoop/conf/Configuration;
+      76: ldc           #18                 // String replication.source.getEntries.timeout
+      78: sipush        20000
+      81: invokevirtual #16                 // Method org/apache/hadoop/conf/Configuration.getInt:(Ljava/lang/String;I)I
+      84: putfield      #20                 // Field getEntriesTimeout:I
+      87: return
+
+  public final void run();
+    Code:
+       0: aload_0
+       1: getstatic     #21                 // Field org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState.RUNNING:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+       4: invokevirtual #22                 // Method setWorkerState:(Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;)V
+       7: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      10: ldc           #24                 // String Running ReplicationSourceShipper Thread for wal group: {}
+      12: aload_0
+      13: getfield      #7                  // Field walGroupId:Ljava/lang/String;
+      16: invokeinterface #25,  3           // InterfaceMethod org/slf4j/Logger.info:(Ljava/lang/String;Ljava/lang/Object;)V
+      21: aload_0
+      22: invokevirtual #26                 // Method isActive:()Z
+      25: ifeq          137
+      28: aload_0
+      29: getfield      #9                  // Field source:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSource;
+      32: invokevirtual #27                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSource.isPeerEnabled:()Z
+      35: ifne          56
+      38: ldc           #28                 // String Replication is disabled
+      40: aload_0
+      41: getfield      #14                 // Field sleepForRetries:J
+      44: iconst_1
+      45: aload_0
+      46: getfield      #17                 // Field maxRetriesMultiplier:I
+      49: invokestatic  #29                 // Method org/apache/hadoop/hbase/replication/ReplicationUtils.sleepForRetries:(Ljava/lang/String;JII)Z
+      52: pop
+      53: goto          21
+      56: aload_0
+      57: getfield      #30                 // Field entryReader:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceWALReader;
+      60: aload_0
+      61: getfield      #20                 // Field getEntriesTimeout:I
+      64: i2l
+      65: invokevirtual #31                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceWALReader.poll:(J)Lorg/apache/hadoop/hbase/replication/regionserver/WALEntryBatch;
+      68: astore_1
+      69: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+      72: ldc           #32                 // String Shipper from source {} got entry batch from reader: {}
+      74: aload_0
+      75: getfield      #9                  // Field source:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSource;
+      78: invokevirtual #33                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSource.getQueueId:()Ljava/lang/String;
+      81: aload_1
+      82: invokeinterface #34,  4           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V
+      87: aload_1
+      88: ifnonnull     94
+      91: goto          21
+      94: aload_1
+      95: getstatic     #35                 // Field org/apache/hadoop/hbase/replication/regionserver/WALEntryBatch.NO_MORE_DATA:Lorg/apache/hadoop/hbase/replication/regionserver/WALEntryBatch;
+      98: if_acmpne     108
+     101: aload_0
+     102: invokespecial #36                 // Method noMoreData:()V
+     105: goto          113
+     108: aload_0
+     109: aload_1
+     110: invokespecial #37                 // Method shipEdits:(Lorg/apache/hadoop/hbase/replication/regionserver/WALEntryBatch;)V
+     113: goto          21
+     116: astore_1
+     117: getstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+     120: ldc           #39                 // String Interrupted while waiting for next replication entry batch
+     122: aload_1
+     123: invokeinterface #40,  3           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     128: invokestatic  #41                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+     131: invokevirtual #42                 // Method java/lang/Thread.interrupt:()V
+     134: goto          21
+     137: aload_0
+     138: invokevirtual #43                 // Method isFinished:()Z
+     141: ifne          154
+     144: aload_0
+     145: getstatic     #44                 // Field org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState.STOPPED:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+     148: invokevirtual #22                 // Method setWorkerState:(Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;)V
+     151: goto          166
+     154: aload_0
+     155: getfield      #9                  // Field source:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSource;
+     158: aload_0
+     159: invokevirtual #45                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSource.removeWorker:(Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper;)V
+     162: aload_0
+     163: invokevirtual #46                 // Method postFinish:()V
+     166: return
+    Exception table:
+       from    to  target type
+          56    91   116   Class java/lang/InterruptedException
+          94   113   116   Class java/lang/InterruptedException
+
+  protected void postFinish();
+    Code:
+       0: return
+
+  public void startup(java.lang.Thread$UncaughtExceptionHandler);
+    Code:
+       0: invokestatic  #41                 // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+       3: invokevirtual #128                // Method java/lang/Thread.getName:()Ljava/lang/String;
+       6: astore_2
+       7: aload_0
+       8: new           #129                // class java/lang/StringBuilder
+      11: dup
+      12: invokespecial #130                // Method java/lang/StringBuilder."<init>":()V
+      15: aload_2
+      16: invokevirtual #131                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      19: ldc           #132                // String .replicationSource.shipper
+      21: invokevirtual #131                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      24: aload_0
+      25: getfield      #7                  // Field walGroupId:Ljava/lang/String;
+      28: invokevirtual #131                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: ldc           #133                // String ,
+      33: invokevirtual #131                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      36: aload_0
+      37: getfield      #9                  // Field source:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSource;
+      40: invokevirtual #33                 // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSource.getQueueId:()Ljava/lang/String;
+      43: invokevirtual #131                // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: invokevirtual #134                // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      49: aload_1
+      50: invokestatic  #135                // Method org/apache/hadoop/hbase/util/Threads.setDaemonThreadRunning:(Ljava/lang/Thread;Ljava/lang/String;Ljava/lang/Thread$UncaughtExceptionHandler;)Ljava/lang/Thread;
+      53: pop
+      54: return
+
+  org.apache.hadoop.fs.Path getCurrentPath();
+    Code:
+       0: aload_0
+       1: getfield      #30                 // Field entryReader:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceWALReader;
+       4: invokevirtual #127                // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceWALReader.getCurrentPath:()Lorg/apache/hadoop/fs/Path;
+       7: areturn
+
+  long getCurrentPosition();
+    Code:
+       0: aload_0
+       1: getfield      #4                  // Field currentPosition:J
+       4: lreturn
+
+  void setWALReader(org.apache.hadoop.hbase.replication.regionserver.ReplicationSourceWALReader);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #30                 // Field entryReader:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceWALReader;
+       5: return
+
+  long getStartPosition();
+    Code:
+       0: lconst_0
+       1: lreturn
+
+  protected boolean isActive();
+    Code:
+       0: aload_0
+       1: getfield      #9                  // Field source:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSource;
+       4: invokevirtual #136                // Method org/apache/hadoop/hbase/replication/regionserver/ReplicationSource.isSourceActive:()Z
+       7: ifeq          31
+      10: aload_0
+      11: getfield      #137                // Field state:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+      14: getstatic     #21                 // Field org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState.RUNNING:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+      17: if_acmpne     31
+      20: aload_0
+      21: invokevirtual #138                // Method isInterrupted:()Z
+      24: ifne          31
+      27: iconst_1
+      28: goto          32
+      31: iconst_0
+      32: ireturn
+
+  protected final void setWorkerState(org.apache.hadoop.hbase.replication.regionserver.ReplicationSourceShipper$WorkerState);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: putfield      #137                // Field state:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+       5: return
+
+  void stopWorker();
+    Code:
+       0: aload_0
+       1: getstatic     #44                 // Field org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState.STOPPED:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+       4: invokevirtual #22                 // Method setWorkerState:(Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;)V
+       7: return
+
+  public boolean isFinished();
+    Code:
+       0: aload_0
+       1: getfield      #137                // Field state:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+       4: getstatic     #52                 // Field org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState.FINISHED:Lorg/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper$WorkerState;
+       7: if_acmpne     14
+      10: iconst_1
+      11: goto          15
+      14: iconst_0
+      15: ireturn
+
+  static {};
+    Code:
+       0: ldc           #19                 // class org/apache/hadoop/hbase/replication/regionserver/ReplicationSourceShipper
+       2: invokestatic  #139                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #23                 // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}

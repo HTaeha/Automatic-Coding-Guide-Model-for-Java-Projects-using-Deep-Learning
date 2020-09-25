@@ -1,0 +1,2106 @@
+Compiled from "TestQuotaAdmin.java"
+public class org.apache.hadoop.hbase.quotas.TestQuotaAdmin {
+  public static final org.apache.hadoop.hbase.HBaseClassTestRule CLASS_RULE;
+
+  public org.apache.hadoop.hbase.quotas.TestQuotaAdmin();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  public static void setUpBeforeClass() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+       6: ldc           #5                  // String hbase.quota.enabled
+       8: iconst_1
+       9: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      12: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      15: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      18: ldc           #8                  // String hbase.quota.refresh.period
+      20: sipush        2000
+      23: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      26: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      29: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      32: ldc           #10                 // String hbase.hstore.compactionThreshold
+      34: bipush        10
+      36: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      39: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      42: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      45: ldc           #11                 // String hbase.regionserver.msginterval
+      47: bipush        100
+      49: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      52: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      55: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      58: ldc           #12                 // String hbase.client.pause
+      60: sipush        250
+      63: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      66: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      69: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      72: ldc           #14                 // String hbase.client.retries.number
+      74: bipush        6
+      76: invokevirtual #9                  // Method org/apache/hadoop/conf/Configuration.setInt:(Ljava/lang/String;I)V
+      79: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      82: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      85: ldc           #15                 // String hbase.master.enabletable.roundrobin
+      87: iconst_1
+      88: invokevirtual #6                  // Method org/apache/hadoop/conf/Configuration.setBoolean:(Ljava/lang/String;Z)V
+      91: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      94: iconst_1
+      95: invokevirtual #16                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniCluster:(I)Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      98: pop
+      99: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     102: getstatic     #17                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     105: invokevirtual #18                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.waitTableAvailable:(Lorg/apache/hadoop/hbase/TableName;)V
+     108: return
+
+  public void clearQuotaTable() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: getstatic     #20                 // Field org/apache/hadoop/hbase/quotas/QuotaUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+       9: invokeinterface #21,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.tableExists:(Lorg/apache/hadoop/hbase/TableName;)Z
+      14: ifeq          46
+      17: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      20: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      23: getstatic     #20                 // Field org/apache/hadoop/hbase/quotas/QuotaUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      26: invokeinterface #22,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.disableTable:(Lorg/apache/hadoop/hbase/TableName;)V
+      31: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      34: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      37: getstatic     #20                 // Field org/apache/hadoop/hbase/quotas/QuotaUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      40: iconst_0
+      41: invokeinterface #23,  3           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.truncateTable:(Lorg/apache/hadoop/hbase/TableName;Z)V
+      46: return
+
+  public static void tearDownAfterClass() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #24                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.shutdownMiniCluster:()V
+       6: return
+
+  public void testThrottleType() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: invokestatic  #25                 // Method org/apache/hadoop/hbase/security/User.getCurrent:()Lorg/apache/hadoop/hbase/security/User;
+      10: invokevirtual #26                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      13: astore_2
+      14: aload_1
+      15: aload_2
+      16: getstatic     #27                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.READ_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      19: ldc2_w        #28                 // long 6l
+      22: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      25: invokestatic  #31                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      28: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      33: aload_1
+      34: aload_2
+      35: getstatic     #33                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.WRITE_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      38: ldc2_w        #34                 // long 12l
+      41: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      44: invokestatic  #31                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      47: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      52: aload_1
+      53: aload_2
+      54: iconst_1
+      55: invokestatic  #36                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.bypassGlobals:(Ljava/lang/String;Z)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      58: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      63: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      66: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      69: invokestatic  #37                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+      72: astore_3
+      73: aconst_null
+      74: astore        4
+      76: iconst_0
+      77: istore        5
+      79: iconst_0
+      80: istore        6
+      82: aload_3
+      83: invokevirtual #38                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.iterator:()Ljava/util/Iterator;
+      86: astore        7
+      88: aload         7
+      90: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      95: ifeq          291
+      98: aload         7
+     100: invokeinterface #40,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     105: checkcast     #41                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+     108: astore        8
+     110: getstatic     #42                 // Field org/apache/hadoop/hbase/quotas/TestQuotaAdmin$1.$SwitchMap$org$apache$hadoop$hbase$quotas$QuotaType:[I
+     113: aload         8
+     115: invokevirtual #43                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getQuotaType:()Lorg/apache/hadoop/hbase/quotas/QuotaType;
+     118: invokevirtual #44                 // Method org/apache/hadoop/hbase/quotas/QuotaType.ordinal:()I
+     121: iaload
+     122: lookupswitch  { // 2
+                     1: 148
+                     2: 256
+               default: 262
+          }
+     148: aload         8
+     150: checkcast     #45                 // class org/apache/hadoop/hbase/quotas/ThrottleSettings
+     153: astore        9
+     155: aload         9
+     157: invokevirtual #46                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getSoftLimit:()J
+     160: ldc2_w        #28                 // long 6l
+     163: lcmp
+     164: ifne          181
+     167: getstatic     #27                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.READ_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     170: aload         9
+     172: invokevirtual #47                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getThrottleType:()Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     175: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     178: goto          212
+     181: aload         9
+     183: invokevirtual #46                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getSoftLimit:()J
+     186: ldc2_w        #34                 // long 12l
+     189: lcmp
+     190: ifne          207
+     193: getstatic     #33                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.WRITE_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     196: aload         9
+     198: invokevirtual #47                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getThrottleType:()Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     201: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     204: goto          212
+     207: ldc           #49                 // String should not come here, because don't set quota with this limit
+     209: invokestatic  #50                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     212: aload_2
+     213: aload         9
+     215: invokevirtual #51                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getUserName:()Ljava/lang/String;
+     218: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     221: aconst_null
+     222: aload         9
+     224: invokevirtual #52                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+     227: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     230: aconst_null
+     231: aload         9
+     233: invokevirtual #53                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getNamespace:()Ljava/lang/String;
+     236: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     239: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     242: aload         9
+     244: invokevirtual #54                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getTimeUnit:()Ljava/util/concurrent/TimeUnit;
+     247: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     250: iinc          5, 1
+     253: goto          288
+     256: iinc          6, 1
+     259: goto          288
+     262: new           #55                 // class java/lang/StringBuilder
+     265: dup
+     266: invokespecial #56                 // Method java/lang/StringBuilder."<init>":()V
+     269: ldc           #57                 // String unexpected settings type:
+     271: invokevirtual #58                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     274: aload         8
+     276: invokevirtual #43                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getQuotaType:()Lorg/apache/hadoop/hbase/quotas/QuotaType;
+     279: invokevirtual #59                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     282: invokevirtual #60                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     285: invokestatic  #50                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     288: goto          88
+     291: ldc2_w        #61                 // long 2l
+     294: iload         5
+     296: i2l
+     297: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     300: lconst_1
+     301: iload         6
+     303: i2l
+     304: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     307: aload_3
+     308: ifnull        388
+     311: aload         4
+     313: ifnull        335
+     316: aload_3
+     317: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     320: goto          388
+     323: astore        5
+     325: aload         4
+     327: aload         5
+     329: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     332: goto          388
+     335: aload_3
+     336: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     339: goto          388
+     342: astore        5
+     344: aload         5
+     346: astore        4
+     348: aload         5
+     350: athrow
+     351: astore        10
+     353: aload_3
+     354: ifnull        385
+     357: aload         4
+     359: ifnull        381
+     362: aload_3
+     363: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     366: goto          385
+     369: astore        11
+     371: aload         4
+     373: aload         11
+     375: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     378: goto          385
+     381: aload_3
+     382: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     385: aload         10
+     387: athrow
+     388: aload_1
+     389: aload_2
+     390: invokestatic  #67                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     393: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     398: aload_0
+     399: iconst_1
+     400: aconst_null
+     401: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     404: aload_1
+     405: aload_2
+     406: iconst_0
+     407: invokestatic  #36                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.bypassGlobals:(Ljava/lang/String;Z)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     410: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     415: aload_0
+     416: iconst_0
+     417: aconst_null
+     418: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     421: return
+    Exception table:
+       from    to  target type
+         316   320   323   Class java/lang/Throwable
+          76   307   342   Class java/lang/Throwable
+          76   307   351   any
+         362   366   369   Class java/lang/Throwable
+         342   353   351   any
+
+  public void testSimpleScan() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: invokestatic  #25                 // Method org/apache/hadoop/hbase/security/User.getCurrent:()Lorg/apache/hadoop/hbase/security/User;
+      10: invokevirtual #26                 // Method org/apache/hadoop/hbase/security/User.getShortName:()Ljava/lang/String;
+      13: astore_2
+      14: aload_1
+      15: aload_2
+      16: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      19: ldc2_w        #28                 // long 6l
+      22: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      25: invokestatic  #31                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      28: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      33: aload_1
+      34: aload_2
+      35: iconst_1
+      36: invokestatic  #36                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.bypassGlobals:(Ljava/lang/String;Z)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      39: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      44: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      47: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+      50: invokestatic  #37                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+      53: astore_3
+      54: aconst_null
+      55: astore        4
+      57: iconst_0
+      58: istore        5
+      60: iconst_0
+      61: istore        6
+      63: aload_3
+      64: invokevirtual #38                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.iterator:()Ljava/util/Iterator;
+      67: astore        7
+      69: aload         7
+      71: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      76: ifeq          250
+      79: aload         7
+      81: invokeinterface #40,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      86: checkcast     #41                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+      89: astore        8
+      91: getstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+      94: aload         8
+      96: invokestatic  #71                 // Method java/util/Objects.toString:(Ljava/lang/Object;)Ljava/lang/String;
+      99: invokeinterface #72,  2           // InterfaceMethod org/slf4j/Logger.debug:(Ljava/lang/String;)V
+     104: getstatic     #42                 // Field org/apache/hadoop/hbase/quotas/TestQuotaAdmin$1.$SwitchMap$org$apache$hadoop$hbase$quotas$QuotaType:[I
+     107: aload         8
+     109: invokevirtual #43                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getQuotaType:()Lorg/apache/hadoop/hbase/quotas/QuotaType;
+     112: invokevirtual #44                 // Method org/apache/hadoop/hbase/quotas/QuotaType.ordinal:()I
+     115: iaload
+     116: lookupswitch  { // 2
+                     1: 144
+                     2: 215
+               default: 221
+          }
+     144: aload         8
+     146: checkcast     #45                 // class org/apache/hadoop/hbase/quotas/ThrottleSettings
+     149: astore        9
+     151: aload_2
+     152: aload         9
+     154: invokevirtual #51                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getUserName:()Ljava/lang/String;
+     157: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     160: aconst_null
+     161: aload         9
+     163: invokevirtual #52                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getTableName:()Lorg/apache/hadoop/hbase/TableName;
+     166: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     169: aconst_null
+     170: aload         9
+     172: invokevirtual #53                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getNamespace:()Ljava/lang/String;
+     175: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     178: aconst_null
+     179: aload         9
+     181: invokevirtual #73                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getRegionServer:()Ljava/lang/String;
+     184: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     187: ldc2_w        #28                 // long 6l
+     190: aload         9
+     192: invokevirtual #46                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getSoftLimit:()J
+     195: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     198: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     201: aload         9
+     203: invokevirtual #54                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getTimeUnit:()Ljava/util/concurrent/TimeUnit;
+     206: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     209: iinc          5, 1
+     212: goto          247
+     215: iinc          6, 1
+     218: goto          247
+     221: new           #55                 // class java/lang/StringBuilder
+     224: dup
+     225: invokespecial #56                 // Method java/lang/StringBuilder."<init>":()V
+     228: ldc           #57                 // String unexpected settings type:
+     230: invokevirtual #58                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     233: aload         8
+     235: invokevirtual #43                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getQuotaType:()Lorg/apache/hadoop/hbase/quotas/QuotaType;
+     238: invokevirtual #59                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     241: invokevirtual #60                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     244: invokestatic  #50                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     247: goto          69
+     250: lconst_1
+     251: iload         5
+     253: i2l
+     254: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     257: lconst_1
+     258: iload         6
+     260: i2l
+     261: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     264: aload_3
+     265: ifnull        345
+     268: aload         4
+     270: ifnull        292
+     273: aload_3
+     274: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     277: goto          345
+     280: astore        5
+     282: aload         4
+     284: aload         5
+     286: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     289: goto          345
+     292: aload_3
+     293: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     296: goto          345
+     299: astore        5
+     301: aload         5
+     303: astore        4
+     305: aload         5
+     307: athrow
+     308: astore        10
+     310: aload_3
+     311: ifnull        342
+     314: aload         4
+     316: ifnull        338
+     319: aload_3
+     320: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     323: goto          342
+     326: astore        11
+     328: aload         4
+     330: aload         11
+     332: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     335: goto          342
+     338: aload_3
+     339: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     342: aload         10
+     344: athrow
+     345: aload_1
+     346: aload_2
+     347: invokestatic  #67                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     350: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     355: aload_0
+     356: iconst_1
+     357: aconst_null
+     358: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     361: aload_1
+     362: aload_2
+     363: iconst_0
+     364: invokestatic  #36                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.bypassGlobals:(Ljava/lang/String;Z)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     367: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     372: aload_0
+     373: iconst_0
+     374: aconst_null
+     375: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     378: return
+    Exception table:
+       from    to  target type
+         273   277   280   Class java/lang/Throwable
+          57   264   299   Class java/lang/Throwable
+          57   264   308   any
+         319   323   326   Class java/lang/Throwable
+         299   310   308   any
+
+  public void testMultiQuotaThrottling() throws java.lang.Exception;
+    Code:
+       0: ldc           #74                 // String testFamily
+       2: invokestatic  #75                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+       5: astore_1
+       6: ldc           #76                 // String testRow
+       8: invokestatic  #75                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      11: astore_2
+      12: ldc           #77                 // String testQualifier
+      14: invokestatic  #75                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      17: astore_3
+      18: ldc           #78                 // String testValue
+      20: invokestatic  #75                 // Method org/apache/hadoop/hbase/util/Bytes.toBytes:(Ljava/lang/String;)[B
+      23: astore        4
+      25: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      28: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      31: astore        5
+      33: ldc           #79                 // String testMultiQuotaThrottling
+      35: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      38: astore        6
+      40: aload         6
+      42: invokestatic  #81                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.newBuilder:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/TableDescriptorBuilder;
+      45: aload_1
+      46: invokestatic  #82                 // Method org/apache/hadoop/hbase/client/ColumnFamilyDescriptorBuilder.of:([B)Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;
+      49: invokevirtual #83                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.setColumnFamily:(Lorg/apache/hadoop/hbase/client/ColumnFamilyDescriptor;)Lorg/apache/hadoop/hbase/client/TableDescriptorBuilder;
+      52: invokevirtual #84                 // Method org/apache/hadoop/hbase/client/TableDescriptorBuilder.build:()Lorg/apache/hadoop/hbase/client/TableDescriptor;
+      55: astore        7
+      57: aload         5
+      59: aload         7
+      61: invokeinterface #85,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.createTable:(Lorg/apache/hadoop/hbase/client/TableDescriptor;)V
+      66: aload         5
+      68: aload         6
+      70: getstatic     #33                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.WRITE_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      73: ldc2_w        #28                 // long 6l
+      76: getstatic     #86                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      79: invokestatic  #87                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleTable:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      82: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      87: ldc2_w        #88                 // long 1000l
+      90: invokestatic  #90                 // Method java/lang/Thread.sleep:(J)V
+      93: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      96: aload         6
+      98: invokevirtual #91                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getRSForFirstRegionInTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+     101: invokevirtual #92                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerRpcQuotaManager:()Lorg/apache/hadoop/hbase/quotas/RegionServerRpcQuotaManager;
+     104: invokevirtual #93                 // Method org/apache/hadoop/hbase/quotas/RegionServerRpcQuotaManager.getQuotaCache:()Lorg/apache/hadoop/hbase/quotas/QuotaCache;
+     107: invokevirtual #94                 // Method org/apache/hadoop/hbase/quotas/QuotaCache.triggerCacheRefresh:()V
+     110: ldc2_w        #88                 // long 1000l
+     113: invokestatic  #90                 // Method java/lang/Thread.sleep:(J)V
+     116: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     119: invokevirtual #95                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     122: aload         6
+     124: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     129: astore        8
+     131: iconst_5
+     132: istore        9
+     134: new           #97                 // class java/util/ArrayList
+     137: dup
+     138: invokespecial #98                 // Method java/util/ArrayList."<init>":()V
+     141: astore        10
+     143: iload         9
+     145: anewarray     #99                 // class java/lang/Object
+     148: astore        11
+     150: iconst_0
+     151: istore        12
+     153: iload         12
+     155: iload         9
+     157: if_icmpge     196
+     160: new           #100                // class org/apache/hadoop/hbase/client/Put
+     163: dup
+     164: aload_2
+     165: invokespecial #101                // Method org/apache/hadoop/hbase/client/Put."<init>":([B)V
+     168: astore        13
+     170: aload         13
+     172: aload_1
+     173: aload_3
+     174: aload         4
+     176: invokevirtual #102                // Method org/apache/hadoop/hbase/client/Put.addColumn:([B[B[B)Lorg/apache/hadoop/hbase/client/Put;
+     179: pop
+     180: aload         10
+     182: aload         13
+     184: invokeinterface #103,  2          // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     189: pop
+     190: iinc          12, 1
+     193: goto          153
+     196: aload         8
+     198: aload         10
+     200: aload         11
+     202: invokeinterface #104,  3          // InterfaceMethod org/apache/hadoop/hbase/client/Table.batch:(Ljava/util/List;[Ljava/lang/Object;)V
+     207: aload         8
+     209: aload         10
+     211: aload         11
+     213: invokeinterface #104,  3          // InterfaceMethod org/apache/hadoop/hbase/client/Table.batch:(Ljava/util/List;[Ljava/lang/Object;)V
+     218: aload         8
+     220: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     225: goto          275
+     228: astore        9
+     230: new           #55                 // class java/lang/StringBuilder
+     233: dup
+     234: invokespecial #56                 // Method java/lang/StringBuilder."<init>":()V
+     237: ldc           #107                // String Not supposed to get ThrottlingExcepiton
+     239: invokevirtual #58                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+     242: aload         9
+     244: invokevirtual #59                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+     247: invokevirtual #60                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+     250: invokestatic  #50                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     253: aload         8
+     255: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     260: goto          275
+     263: astore        14
+     265: aload         8
+     267: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     272: aload         14
+     274: athrow
+     275: return
+    Exception table:
+       from    to  target type
+         131   218   228   Class java/io/IOException
+         131   218   263   any
+         228   253   263   any
+         263   265   263   any
+
+  public void testQuotaRetrieverFilter() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: iconst_3
+       8: anewarray     #108                // class org/apache/hadoop/hbase/TableName
+      11: dup
+      12: iconst_0
+      13: ldc           #109                // String T0
+      15: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      18: aastore
+      19: dup
+      20: iconst_1
+      21: ldc           #110                // String T01
+      23: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      26: aastore
+      27: dup
+      28: iconst_2
+      29: ldc           #111                // String NS0:T2
+      31: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      34: aastore
+      35: astore_2
+      36: iconst_3
+      37: anewarray     #112                // class java/lang/String
+      40: dup
+      41: iconst_0
+      42: ldc           #113                // String NS0
+      44: aastore
+      45: dup
+      46: iconst_1
+      47: ldc           #114                // String NS01
+      49: aastore
+      50: dup
+      51: iconst_2
+      52: ldc           #115                // String NS2
+      54: aastore
+      55: astore_3
+      56: iconst_3
+      57: anewarray     #112                // class java/lang/String
+      60: dup
+      61: iconst_0
+      62: ldc           #116                // String User0
+      64: aastore
+      65: dup
+      66: iconst_1
+      67: ldc           #117                // String User01
+      69: aastore
+      70: dup
+      71: iconst_2
+      72: ldc           #118                // String User2
+      74: aastore
+      75: astore        4
+      77: aload         4
+      79: astore        5
+      81: aload         5
+      83: arraylength
+      84: istore        6
+      86: iconst_0
+      87: istore        7
+      89: iload         7
+      91: iload         6
+      93: if_icmpge     233
+      96: aload         5
+      98: iload         7
+     100: aaload
+     101: astore        8
+     103: aload_1
+     104: aload         8
+     106: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     109: lconst_1
+     110: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     113: invokestatic  #31                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     116: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     121: aload_2
+     122: astore        9
+     124: aload         9
+     126: arraylength
+     127: istore        10
+     129: iconst_0
+     130: istore        11
+     132: iload         11
+     134: iload         10
+     136: if_icmpge     174
+     139: aload         9
+     141: iload         11
+     143: aaload
+     144: astore        12
+     146: aload_1
+     147: aload         8
+     149: aload         12
+     151: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     154: ldc2_w        #61                 // long 2l
+     157: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     160: invokestatic  #119                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     163: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     168: iinc          11, 1
+     171: goto          132
+     174: aload_3
+     175: astore        9
+     177: aload         9
+     179: arraylength
+     180: istore        10
+     182: iconst_0
+     183: istore        11
+     185: iload         11
+     187: iload         10
+     189: if_icmpge     227
+     192: aload         9
+     194: iload         11
+     196: aaload
+     197: astore        12
+     199: aload_1
+     200: aload         8
+     202: aload         12
+     204: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     207: ldc2_w        #120                // long 3l
+     210: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     213: invokestatic  #122                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     216: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     221: iinc          11, 1
+     224: goto          185
+     227: iinc          7, 1
+     230: goto          89
+     233: aload_0
+     234: bipush        21
+     236: aconst_null
+     237: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     240: aload_2
+     241: astore        5
+     243: aload         5
+     245: arraylength
+     246: istore        6
+     248: iconst_0
+     249: istore        7
+     251: iload         7
+     253: iload         6
+     255: if_icmpge     291
+     258: aload         5
+     260: iload         7
+     262: aaload
+     263: astore        8
+     265: aload_1
+     266: aload         8
+     268: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     271: ldc2_w        #123                // long 4l
+     274: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     277: invokestatic  #87                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleTable:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     280: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     285: iinc          7, 1
+     288: goto          251
+     291: aload_0
+     292: bipush        24
+     294: aconst_null
+     295: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     298: aload_3
+     299: astore        5
+     301: aload         5
+     303: arraylength
+     304: istore        6
+     306: iconst_0
+     307: istore        7
+     309: iload         7
+     311: iload         6
+     313: if_icmpge     349
+     316: aload         5
+     318: iload         7
+     320: aaload
+     321: astore        8
+     323: aload_1
+     324: aload         8
+     326: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     329: ldc2_w        #125                // long 5l
+     332: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     335: invokestatic  #127                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleNamespace:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     338: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     343: iinc          7, 1
+     346: goto          309
+     349: aload_0
+     350: bipush        27
+     352: aconst_null
+     353: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     356: aload_0
+     357: bipush        7
+     359: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     362: dup
+     363: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     366: ldc           #116                // String User0
+     368: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     371: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     374: aload_0
+     375: iconst_0
+     376: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     379: dup
+     380: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     383: ldc           #131                // String User
+     385: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     388: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     391: aload_0
+     392: bipush        21
+     394: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     397: dup
+     398: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     401: ldc           #132                // String User.*
+     403: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     406: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     409: aload_0
+     410: iconst_3
+     411: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     414: dup
+     415: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     418: ldc           #132                // String User.*
+     420: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     423: ldc           #109                // String T0
+     425: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     428: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     431: aload_0
+     432: iconst_3
+     433: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     436: dup
+     437: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     440: ldc           #132                // String User.*
+     442: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     445: ldc           #134                // String NS.*
+     447: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     450: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     453: aload_0
+     454: iconst_0
+     455: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     458: dup
+     459: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     462: ldc           #132                // String User.*
+     464: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     467: ldc           #135                // String T
+     469: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     472: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     475: aload_0
+     476: bipush        6
+     478: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     481: dup
+     482: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     485: ldc           #132                // String User.*
+     487: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     490: ldc           #136                // String T.*
+     492: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     495: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     498: aload_0
+     499: iconst_3
+     500: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     503: dup
+     504: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     507: ldc           #132                // String User.*
+     509: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     512: ldc           #113                // String NS0
+     514: invokevirtual #137                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setNamespaceFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     517: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     520: aload_0
+     521: iconst_0
+     522: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     525: dup
+     526: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     529: ldc           #132                // String User.*
+     531: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     534: ldc           #138                // String NS
+     536: invokevirtual #137                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setNamespaceFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     539: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     542: aload_0
+     543: bipush        9
+     545: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     548: dup
+     549: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     552: ldc           #132                // String User.*
+     554: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     557: ldc           #134                // String NS.*
+     559: invokevirtual #137                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setNamespaceFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     562: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     565: aload_0
+     566: bipush        6
+     568: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     571: dup
+     572: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     575: ldc           #132                // String User.*
+     577: invokevirtual #130                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setUserFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     580: ldc           #109                // String T0
+     582: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     585: ldc           #113                // String NS0
+     587: invokevirtual #137                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setNamespaceFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     590: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     593: aload_0
+     594: iconst_1
+     595: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     598: dup
+     599: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     602: ldc           #109                // String T0
+     604: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     607: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     610: aload_0
+     611: iconst_0
+     612: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     615: dup
+     616: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     619: ldc           #135                // String T
+     621: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     624: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     627: aload_0
+     628: iconst_2
+     629: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     632: dup
+     633: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     636: ldc           #136                // String T.*
+     638: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     641: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     644: aload_0
+     645: iconst_3
+     646: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     649: dup
+     650: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     653: ldc           #139                // String .*T.*
+     655: invokevirtual #133                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setTableFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     658: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     661: aload_0
+     662: iconst_1
+     663: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     666: dup
+     667: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     670: ldc           #113                // String NS0
+     672: invokevirtual #137                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setNamespaceFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     675: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     678: aload_0
+     679: iconst_0
+     680: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     683: dup
+     684: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     687: ldc           #138                // String NS
+     689: invokevirtual #137                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setNamespaceFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     692: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     695: aload_0
+     696: iconst_3
+     697: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     700: dup
+     701: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     704: ldc           #134                // String NS.*
+     706: invokevirtual #137                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setNamespaceFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     709: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     712: aload         4
+     714: astore        5
+     716: aload         5
+     718: arraylength
+     719: istore        6
+     721: iconst_0
+     722: istore        7
+     724: iload         7
+     726: iload         6
+     728: if_icmpge     843
+     731: aload         5
+     733: iload         7
+     735: aaload
+     736: astore        8
+     738: aload_1
+     739: aload         8
+     741: invokestatic  #67                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     744: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     749: aload_2
+     750: astore        9
+     752: aload         9
+     754: arraylength
+     755: istore        10
+     757: iconst_0
+     758: istore        11
+     760: iload         11
+     762: iload         10
+     764: if_icmpge     793
+     767: aload         9
+     769: iload         11
+     771: aaload
+     772: astore        12
+     774: aload_1
+     775: aload         8
+     777: aload         12
+     779: invokestatic  #140                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     782: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     787: iinc          11, 1
+     790: goto          760
+     793: aload_3
+     794: astore        9
+     796: aload         9
+     798: arraylength
+     799: istore        10
+     801: iconst_0
+     802: istore        11
+     804: iload         11
+     806: iload         10
+     808: if_icmpge     837
+     811: aload         9
+     813: iload         11
+     815: aaload
+     816: astore        12
+     818: aload_1
+     819: aload         8
+     821: aload         12
+     823: invokestatic  #141                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     826: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     831: iinc          11, 1
+     834: goto          804
+     837: iinc          7, 1
+     840: goto          724
+     843: aload_0
+     844: bipush        6
+     846: aconst_null
+     847: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     850: aload_2
+     851: astore        5
+     853: aload         5
+     855: arraylength
+     856: istore        6
+     858: iconst_0
+     859: istore        7
+     861: iload         7
+     863: iload         6
+     865: if_icmpge     892
+     868: aload         5
+     870: iload         7
+     872: aaload
+     873: astore        8
+     875: aload_1
+     876: aload         8
+     878: invokestatic  #142                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     881: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     886: iinc          7, 1
+     889: goto          861
+     892: aload_0
+     893: iconst_3
+     894: aconst_null
+     895: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     898: aload_3
+     899: astore        5
+     901: aload         5
+     903: arraylength
+     904: istore        6
+     906: iconst_0
+     907: istore        7
+     909: iload         7
+     911: iload         6
+     913: if_icmpge     940
+     916: aload         5
+     918: iload         7
+     920: aaload
+     921: astore        8
+     923: aload_1
+     924: aload         8
+     926: invokestatic  #143                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleNamespace:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     929: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     934: iinc          7, 1
+     937: goto          909
+     940: aload_0
+     941: iconst_0
+     942: aconst_null
+     943: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     946: return
+
+  public void testSetGetRemoveSpaceQuota() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: ldc           #144                // String sq_table1
+       9: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      12: astore_2
+      13: ldc2_w        #145                // long 5497558138880l
+      16: lstore_3
+      17: getstatic     #147                // Field org/apache/hadoop/hbase/quotas/SpaceViolationPolicy.NO_WRITES:Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;
+      20: astore        5
+      22: aload_2
+      23: ldc2_w        #145                // long 5497558138880l
+      26: aload         5
+      28: invokestatic  #148                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.limitTableSpace:(Lorg/apache/hadoop/hbase/TableName;JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      31: astore        6
+      33: aload_1
+      34: aload         6
+      36: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      41: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      44: invokevirtual #95                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      47: getstatic     #17                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      50: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      55: astore        7
+      57: aconst_null
+      58: astore        8
+      60: aload         7
+      62: new           #149                // class org/apache/hadoop/hbase/client/Scan
+      65: dup
+      66: invokespecial #150                // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+      69: invokeinterface #151,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+      74: astore        9
+      76: aload         9
+      78: invokestatic  #152                // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.getOnlyElement:(Ljava/lang/Iterable;)Ljava/lang/Object;
+      81: checkcast     #153                // class org/apache/hadoop/hbase/client/Result
+      84: astore        10
+      86: aload         10
+      88: invokevirtual #154                // Method org/apache/hadoop/hbase/client/Result.cellScanner:()Lorg/apache/hadoop/hbase/CellScanner;
+      91: astore        11
+      93: ldc           #155                // String Expected to find a cell
+      95: aload         11
+      97: invokeinterface #156,  1          // InterfaceMethod org/apache/hadoop/hbase/CellScanner.advance:()Z
+     102: invokestatic  #157                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     105: aload_0
+     106: ldc2_w        #145                // long 5497558138880l
+     109: aload         5
+     111: aload         11
+     113: invokeinterface #158,  1          // InterfaceMethod org/apache/hadoop/hbase/CellScanner.current:()Lorg/apache/hadoop/hbase/Cell;
+     118: invokespecial #159                // Method assertSpaceQuota:(JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;Lorg/apache/hadoop/hbase/Cell;)V
+     121: aload         9
+     123: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     128: goto          143
+     131: astore        12
+     133: aload         9
+     135: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     140: aload         12
+     142: athrow
+     143: aload         7
+     145: ifnull        238
+     148: aload         8
+     150: ifnull        175
+     153: aload         7
+     155: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     160: goto          238
+     163: astore        9
+     165: aload         8
+     167: aload         9
+     169: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     172: goto          238
+     175: aload         7
+     177: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     182: goto          238
+     185: astore        9
+     187: aload         9
+     189: astore        8
+     191: aload         9
+     193: athrow
+     194: astore        13
+     196: aload         7
+     198: ifnull        235
+     201: aload         8
+     203: ifnull        228
+     206: aload         7
+     208: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     213: goto          235
+     216: astore        14
+     218: aload         8
+     220: aload         14
+     222: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     225: goto          235
+     228: aload         7
+     230: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     235: aload         13
+     237: athrow
+     238: aload_1
+     239: invokeinterface #161,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     244: invokestatic  #37                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+     247: astore        7
+     249: aload_0
+     250: ldc2_w        #145                // long 5497558138880l
+     253: aload         5
+     255: aload         7
+     257: invokestatic  #152                // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.getOnlyElement:(Ljava/lang/Iterable;)Ljava/lang/Object;
+     260: checkcast     #41                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+     263: invokespecial #162                // Method assertSpaceQuota:(JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     266: aload         7
+     268: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     271: goto          284
+     274: astore        15
+     276: aload         7
+     278: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     281: aload         15
+     283: athrow
+     284: aload_2
+     285: invokestatic  #163                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.removeTableSpaceLimit:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     288: astore        8
+     290: aload_1
+     291: aload         8
+     293: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     298: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     301: invokevirtual #95                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     304: getstatic     #17                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     307: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     312: astore        9
+     314: aconst_null
+     315: astore        10
+     317: aload         9
+     319: new           #149                // class org/apache/hadoop/hbase/client/Scan
+     322: dup
+     323: invokespecial #150                // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+     326: invokeinterface #151,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+     331: astore        11
+     333: ldc           #164                // String Did not expect to find a quota entry
+     335: aload         11
+     337: invokeinterface #165,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.next:()Lorg/apache/hadoop/hbase/client/Result;
+     342: invokestatic  #166                // Method org/junit/Assert.assertNull:(Ljava/lang/String;Ljava/lang/Object;)V
+     345: aload         11
+     347: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     352: goto          367
+     355: astore        16
+     357: aload         11
+     359: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     364: aload         16
+     366: athrow
+     367: aload         9
+     369: ifnull        462
+     372: aload         10
+     374: ifnull        399
+     377: aload         9
+     379: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     384: goto          462
+     387: astore        11
+     389: aload         10
+     391: aload         11
+     393: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     396: goto          462
+     399: aload         9
+     401: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     406: goto          462
+     409: astore        11
+     411: aload         11
+     413: astore        10
+     415: aload         11
+     417: athrow
+     418: astore        17
+     420: aload         9
+     422: ifnull        459
+     425: aload         10
+     427: ifnull        452
+     430: aload         9
+     432: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     437: goto          459
+     440: astore        18
+     442: aload         10
+     444: aload         18
+     446: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     449: goto          459
+     452: aload         9
+     454: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     459: aload         17
+     461: athrow
+     462: aload_1
+     463: invokeinterface #161,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     468: invokestatic  #37                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+     471: astore        7
+     473: ldc           #164                // String Did not expect to find a quota entry
+     475: aload         7
+     477: invokevirtual #167                // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.next:()Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     480: invokestatic  #166                // Method org/junit/Assert.assertNull:(Ljava/lang/String;Ljava/lang/Object;)V
+     483: aload         7
+     485: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     488: goto          501
+     491: astore        19
+     493: aload         7
+     495: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     498: aload         19
+     500: athrow
+     501: return
+    Exception table:
+       from    to  target type
+          76   121   131   any
+         131   133   131   any
+         153   160   163   Class java/lang/Throwable
+          60   143   185   Class java/lang/Throwable
+          60   143   194   any
+         206   213   216   Class java/lang/Throwable
+         185   196   194   any
+         249   266   274   any
+         274   276   274   any
+         333   345   355   any
+         355   357   355   any
+         377   384   387   Class java/lang/Throwable
+         317   367   409   Class java/lang/Throwable
+         317   367   418   any
+         430   437   440   Class java/lang/Throwable
+         409   420   418   any
+         473   483   491   any
+         491   493   491   any
+
+  public void testSetModifyRemoveSpaceQuota() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: ldc           #168                // String sq_table2
+       9: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      12: astore_2
+      13: ldc2_w        #145                // long 5497558138880l
+      16: lstore_3
+      17: getstatic     #147                // Field org/apache/hadoop/hbase/quotas/SpaceViolationPolicy.NO_WRITES:Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;
+      20: astore        5
+      22: aload_2
+      23: ldc2_w        #145                // long 5497558138880l
+      26: aload         5
+      28: invokestatic  #148                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.limitTableSpace:(Lorg/apache/hadoop/hbase/TableName;JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      31: astore        6
+      33: aload_1
+      34: aload         6
+      36: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      41: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      44: invokevirtual #95                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+      47: getstatic     #17                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+      50: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+      55: astore        7
+      57: aconst_null
+      58: astore        8
+      60: aload         7
+      62: new           #149                // class org/apache/hadoop/hbase/client/Scan
+      65: dup
+      66: invokespecial #150                // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+      69: invokeinterface #151,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+      74: astore        9
+      76: aload         9
+      78: invokestatic  #152                // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.getOnlyElement:(Ljava/lang/Iterable;)Ljava/lang/Object;
+      81: checkcast     #153                // class org/apache/hadoop/hbase/client/Result
+      84: astore        10
+      86: aload         10
+      88: invokevirtual #154                // Method org/apache/hadoop/hbase/client/Result.cellScanner:()Lorg/apache/hadoop/hbase/CellScanner;
+      91: astore        11
+      93: ldc           #155                // String Expected to find a cell
+      95: aload         11
+      97: invokeinterface #156,  1          // InterfaceMethod org/apache/hadoop/hbase/CellScanner.advance:()Z
+     102: invokestatic  #157                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     105: aload_0
+     106: ldc2_w        #145                // long 5497558138880l
+     109: aload         5
+     111: aload         11
+     113: invokeinterface #158,  1          // InterfaceMethod org/apache/hadoop/hbase/CellScanner.current:()Lorg/apache/hadoop/hbase/Cell;
+     118: invokespecial #159                // Method assertSpaceQuota:(JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;Lorg/apache/hadoop/hbase/Cell;)V
+     121: aload         9
+     123: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     128: goto          143
+     131: astore        12
+     133: aload         9
+     135: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     140: aload         12
+     142: athrow
+     143: aload         7
+     145: ifnull        238
+     148: aload         8
+     150: ifnull        175
+     153: aload         7
+     155: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     160: goto          238
+     163: astore        9
+     165: aload         8
+     167: aload         9
+     169: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     172: goto          238
+     175: aload         7
+     177: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     182: goto          238
+     185: astore        9
+     187: aload         9
+     189: astore        8
+     191: aload         9
+     193: athrow
+     194: astore        13
+     196: aload         7
+     198: ifnull        235
+     201: aload         8
+     203: ifnull        228
+     206: aload         7
+     208: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     213: goto          235
+     216: astore        14
+     218: aload         8
+     220: aload         14
+     222: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     225: goto          235
+     228: aload         7
+     230: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     235: aload         13
+     237: athrow
+     238: aload_1
+     239: invokeinterface #161,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     244: invokestatic  #37                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+     247: astore        7
+     249: aload_0
+     250: ldc2_w        #145                // long 5497558138880l
+     253: aload         5
+     255: aload         7
+     257: invokestatic  #152                // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.getOnlyElement:(Ljava/lang/Iterable;)Ljava/lang/Object;
+     260: checkcast     #41                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+     263: invokespecial #162                // Method assertSpaceQuota:(JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     266: aload         7
+     268: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     271: goto          284
+     274: astore        15
+     276: aload         7
+     278: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     281: aload         15
+     283: athrow
+     284: ldc2_w        #169                // long 1099511627776l
+     287: lstore        8
+     289: getstatic     #171                // Field org/apache/hadoop/hbase/quotas/SpaceViolationPolicy.NO_WRITES_COMPACTIONS:Lorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;
+     292: astore        10
+     294: aload_2
+     295: ldc2_w        #169                // long 1099511627776l
+     298: aload         10
+     300: invokestatic  #148                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.limitTableSpace:(Lorg/apache/hadoop/hbase/TableName;JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     303: astore        11
+     305: aload_1
+     306: aload         11
+     308: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     313: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     316: invokevirtual #95                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     319: getstatic     #17                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     322: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     327: astore        12
+     329: aconst_null
+     330: astore        13
+     332: aload         12
+     334: new           #149                // class org/apache/hadoop/hbase/client/Scan
+     337: dup
+     338: invokespecial #150                // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+     341: invokeinterface #151,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+     346: astore        14
+     348: aload         14
+     350: invokestatic  #152                // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.getOnlyElement:(Ljava/lang/Iterable;)Ljava/lang/Object;
+     353: checkcast     #153                // class org/apache/hadoop/hbase/client/Result
+     356: astore        15
+     358: aload         15
+     360: invokevirtual #154                // Method org/apache/hadoop/hbase/client/Result.cellScanner:()Lorg/apache/hadoop/hbase/CellScanner;
+     363: astore        16
+     365: ldc           #155                // String Expected to find a cell
+     367: aload         16
+     369: invokeinterface #156,  1          // InterfaceMethod org/apache/hadoop/hbase/CellScanner.advance:()Z
+     374: invokestatic  #157                // Method org/junit/Assert.assertTrue:(Ljava/lang/String;Z)V
+     377: aload_0
+     378: ldc2_w        #169                // long 1099511627776l
+     381: aload         10
+     383: aload         16
+     385: invokeinterface #158,  1          // InterfaceMethod org/apache/hadoop/hbase/CellScanner.current:()Lorg/apache/hadoop/hbase/Cell;
+     390: invokespecial #159                // Method assertSpaceQuota:(JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;Lorg/apache/hadoop/hbase/Cell;)V
+     393: aload         14
+     395: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     400: goto          415
+     403: astore        17
+     405: aload         14
+     407: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     412: aload         17
+     414: athrow
+     415: aload         12
+     417: ifnull        510
+     420: aload         13
+     422: ifnull        447
+     425: aload         12
+     427: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     432: goto          510
+     435: astore        14
+     437: aload         13
+     439: aload         14
+     441: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     444: goto          510
+     447: aload         12
+     449: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     454: goto          510
+     457: astore        14
+     459: aload         14
+     461: astore        13
+     463: aload         14
+     465: athrow
+     466: astore        18
+     468: aload         12
+     470: ifnull        507
+     473: aload         13
+     475: ifnull        500
+     478: aload         12
+     480: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     485: goto          507
+     488: astore        19
+     490: aload         13
+     492: aload         19
+     494: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     497: goto          507
+     500: aload         12
+     502: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     507: aload         18
+     509: athrow
+     510: aload_1
+     511: invokeinterface #161,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     516: invokestatic  #37                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+     519: astore        7
+     521: aload_0
+     522: ldc2_w        #169                // long 1099511627776l
+     525: aload         10
+     527: aload         7
+     529: invokestatic  #152                // Method org/apache/hbase/thirdparty/com/google/common/collect/Iterables.getOnlyElement:(Ljava/lang/Iterable;)Ljava/lang/Object;
+     532: checkcast     #41                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+     535: invokespecial #162                // Method assertSpaceQuota:(JLorg/apache/hadoop/hbase/quotas/SpaceViolationPolicy;Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     538: aload         7
+     540: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     543: goto          556
+     546: astore        20
+     548: aload         7
+     550: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     553: aload         20
+     555: athrow
+     556: aload_2
+     557: invokestatic  #163                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.removeTableSpaceLimit:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     560: astore        12
+     562: aload_1
+     563: aload         12
+     565: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     570: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     573: invokevirtual #95                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConnection:()Lorg/apache/hadoop/hbase/client/Connection;
+     576: getstatic     #17                 // Field org/apache/hadoop/hbase/quotas/QuotaTableUtil.QUOTA_TABLE_NAME:Lorg/apache/hadoop/hbase/TableName;
+     579: invokeinterface #96,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Connection.getTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/client/Table;
+     584: astore        13
+     586: aconst_null
+     587: astore        14
+     589: aload         13
+     591: new           #149                // class org/apache/hadoop/hbase/client/Scan
+     594: dup
+     595: invokespecial #150                // Method org/apache/hadoop/hbase/client/Scan."<init>":()V
+     598: invokeinterface #151,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Table.getScanner:(Lorg/apache/hadoop/hbase/client/Scan;)Lorg/apache/hadoop/hbase/client/ResultScanner;
+     603: astore        15
+     605: ldc           #164                // String Did not expect to find a quota entry
+     607: aload         15
+     609: invokeinterface #165,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.next:()Lorg/apache/hadoop/hbase/client/Result;
+     614: invokestatic  #166                // Method org/junit/Assert.assertNull:(Ljava/lang/String;Ljava/lang/Object;)V
+     617: aload         15
+     619: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     624: goto          639
+     627: astore        21
+     629: aload         15
+     631: invokeinterface #160,  1          // InterfaceMethod org/apache/hadoop/hbase/client/ResultScanner.close:()V
+     636: aload         21
+     638: athrow
+     639: aload         13
+     641: ifnull        734
+     644: aload         14
+     646: ifnull        671
+     649: aload         13
+     651: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     656: goto          734
+     659: astore        15
+     661: aload         14
+     663: aload         15
+     665: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     668: goto          734
+     671: aload         13
+     673: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     678: goto          734
+     681: astore        15
+     683: aload         15
+     685: astore        14
+     687: aload         15
+     689: athrow
+     690: astore        22
+     692: aload         13
+     694: ifnull        731
+     697: aload         14
+     699: ifnull        724
+     702: aload         13
+     704: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     709: goto          731
+     712: astore        23
+     714: aload         14
+     716: aload         23
+     718: invokevirtual #66                 // Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V
+     721: goto          731
+     724: aload         13
+     726: invokeinterface #105,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Table.close:()V
+     731: aload         22
+     733: athrow
+     734: aload_1
+     735: invokeinterface #161,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     740: invokestatic  #37                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+     743: astore        7
+     745: ldc           #164                // String Did not expect to find a quota entry
+     747: aload         7
+     749: invokevirtual #167                // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.next:()Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     752: invokestatic  #166                // Method org/junit/Assert.assertNull:(Ljava/lang/String;Ljava/lang/Object;)V
+     755: aload         7
+     757: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     760: goto          773
+     763: astore        24
+     765: aload         7
+     767: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     770: aload         24
+     772: athrow
+     773: return
+    Exception table:
+       from    to  target type
+          76   121   131   any
+         131   133   131   any
+         153   160   163   Class java/lang/Throwable
+          60   143   185   Class java/lang/Throwable
+          60   143   194   any
+         206   213   216   Class java/lang/Throwable
+         185   196   194   any
+         249   266   274   any
+         274   276   274   any
+         348   393   403   any
+         403   405   403   any
+         425   432   435   Class java/lang/Throwable
+         332   415   457   Class java/lang/Throwable
+         332   415   466   any
+         478   485   488   Class java/lang/Throwable
+         457   468   466   any
+         521   538   546   any
+         546   548   546   any
+         605   617   627   any
+         627   629   627   any
+         649   656   659   Class java/lang/Throwable
+         589   639   681   Class java/lang/Throwable
+         589   639   690   any
+         702   709   712   Class java/lang/Throwable
+         681   692   690   any
+         745   755   763   any
+         763   765   763   any
+
+  public void testSetGetRemoveRPCQuota() throws java.lang.Exception;
+    Code:
+       0: aload_0
+       1: getstatic     #173                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_SIZE:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+       4: invokespecial #174                // Method testSetGetRemoveRPCQuota:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;)V
+       7: aload_0
+       8: getstatic     #175                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_CAPACITY_UNIT:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      11: invokespecial #174                // Method testSetGetRemoveRPCQuota:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;)V
+      14: return
+
+  public void testSetModifyRemoveRPCQuota() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: ldc           #144                // String sq_table1
+       9: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      12: astore_2
+      13: aload_2
+      14: getstatic     #173                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_SIZE:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      17: ldc2_w        #61                 // long 2l
+      20: getstatic     #176                // Field java/util/concurrent/TimeUnit.HOURS:Ljava/util/concurrent/TimeUnit;
+      23: invokestatic  #87                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleTable:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      26: astore_3
+      27: aload_1
+      28: aload_3
+      29: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      34: aload_0
+      35: getstatic     #173                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_SIZE:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      38: ldc2_w        #61                 // long 2l
+      41: getstatic     #176                // Field java/util/concurrent/TimeUnit.HOURS:Ljava/util/concurrent/TimeUnit;
+      44: invokespecial #177                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)V
+      47: aload_0
+      48: aload_1
+      49: getstatic     #173                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_SIZE:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      52: ldc2_w        #61                 // long 2l
+      55: getstatic     #176                // Field java/util/concurrent/TimeUnit.HOURS:Ljava/util/concurrent/TimeUnit;
+      58: invokespecial #178                // Method verifyFetchableViaAPI:(Lorg/apache/hadoop/hbase/client/Admin;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)V
+      61: aload_2
+      62: getstatic     #173                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_SIZE:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      65: ldc2_w        #120                // long 3l
+      68: getstatic     #181                // Field java/util/concurrent/TimeUnit.DAYS:Ljava/util/concurrent/TimeUnit;
+      71: invokestatic  #87                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleTable:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      74: astore        4
+      76: aload_1
+      77: aload         4
+      79: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      84: aload_0
+      85: getstatic     #173                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_SIZE:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      88: ldc2_w        #120                // long 3l
+      91: getstatic     #181                // Field java/util/concurrent/TimeUnit.DAYS:Ljava/util/concurrent/TimeUnit;
+      94: invokespecial #177                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)V
+      97: aload_0
+      98: aload_1
+      99: getstatic     #173                // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_SIZE:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     102: ldc2_w        #120                // long 3l
+     105: getstatic     #181                // Field java/util/concurrent/TimeUnit.DAYS:Ljava/util/concurrent/TimeUnit;
+     108: invokespecial #178                // Method verifyFetchableViaAPI:(Lorg/apache/hadoop/hbase/client/Admin;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)V
+     111: aload_2
+     112: invokestatic  #142                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     115: astore        5
+     117: aload_1
+     118: aload         5
+     120: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     125: aload_0
+     126: invokespecial #179                // Method verifyRecordNotPresentInQuotaTable:()V
+     129: aload_0
+     130: aload_1
+     131: invokespecial #180                // Method verifyNotFetchableViaAPI:(Lorg/apache/hadoop/hbase/client/Admin;)V
+     134: return
+
+  public void testSetAndRemoveRegionServerQuota() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: ldc           #183                // String all
+       9: astore_2
+      10: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+      13: dup
+      14: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+      17: aload_2
+      18: invokevirtual #184                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setRegionServerFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+      21: astore_3
+      22: aload_1
+      23: aload_2
+      24: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      27: ldc2_w        #185                // long 10l
+      30: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      33: invokestatic  #187                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleRegionServer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      36: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      41: aload_0
+      42: iconst_1
+      43: aload_3
+      44: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+      47: aload_0
+      48: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      51: ldc2_w        #185                // long 10l
+      54: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      57: invokespecial #177                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)V
+      60: aload_1
+      61: aload_2
+      62: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      65: ldc2_w        #188                // long 20l
+      68: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      71: invokestatic  #187                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleRegionServer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      74: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      79: aload_0
+      80: iconst_1
+      81: aload_3
+      82: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+      85: aload_0
+      86: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      89: ldc2_w        #188                // long 20l
+      92: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      95: invokespecial #177                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)V
+      98: aload_1
+      99: aload_2
+     100: getstatic     #27                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.READ_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     103: ldc2_w        #190                // long 30l
+     106: getstatic     #86                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     109: invokestatic  #187                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleRegionServer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     112: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     117: iconst_0
+     118: istore        4
+     120: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     123: invokevirtual #3                  // Method org/apache/hadoop/hbase/HBaseTestingUtility.getConfiguration:()Lorg/apache/hadoop/conf/Configuration;
+     126: aload_3
+     127: invokestatic  #192                // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.open:(Lorg/apache/hadoop/conf/Configuration;Lorg/apache/hadoop/hbase/quotas/QuotaFilter;)Lorg/apache/hadoop/hbase/quotas/QuotaRetriever;
+     130: astore        5
+     132: aload         5
+     134: invokevirtual #38                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.iterator:()Ljava/util/Iterator;
+     137: astore        6
+     139: aload         6
+     141: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+     146: ifeq          271
+     149: aload         6
+     151: invokeinterface #40,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+     156: checkcast     #41                 // class org/apache/hadoop/hbase/quotas/QuotaSettings
+     159: astore        7
+     161: aload         7
+     163: invokevirtual #43                 // Method org/apache/hadoop/hbase/quotas/QuotaSettings.getQuotaType:()Lorg/apache/hadoop/hbase/quotas/QuotaType;
+     166: getstatic     #193                // Field org/apache/hadoop/hbase/quotas/QuotaType.THROTTLE:Lorg/apache/hadoop/hbase/quotas/QuotaType;
+     169: if_acmpne     176
+     172: iconst_1
+     173: goto          177
+     176: iconst_0
+     177: invokestatic  #194                // Method org/junit/Assert.assertTrue:(Z)V
+     180: aload         7
+     182: checkcast     #45                 // class org/apache/hadoop/hbase/quotas/ThrottleSettings
+     185: astore        8
+     187: aload_2
+     188: aload         8
+     190: invokevirtual #73                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getRegionServer:()Ljava/lang/String;
+     193: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     196: iinc          4, 1
+     199: aload         8
+     201: invokevirtual #47                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getThrottleType:()Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     204: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     207: if_acmpne     235
+     210: ldc2_w        #188                // long 20l
+     213: aload         8
+     215: invokevirtual #46                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getSoftLimit:()J
+     218: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     221: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     224: aload         8
+     226: invokevirtual #54                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getTimeUnit:()Ljava/util/concurrent/TimeUnit;
+     229: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     232: goto          268
+     235: aload         8
+     237: invokevirtual #47                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getThrottleType:()Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     240: getstatic     #27                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.READ_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     243: if_acmpne     268
+     246: ldc2_w        #190                // long 30l
+     249: aload         8
+     251: invokevirtual #46                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getSoftLimit:()J
+     254: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     257: getstatic     #86                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     260: aload         8
+     262: invokevirtual #54                 // Method org/apache/hadoop/hbase/quotas/ThrottleSettings.getTimeUnit:()Ljava/util/concurrent/TimeUnit;
+     265: invokestatic  #48                 // Method org/junit/Assert.assertEquals:(Ljava/lang/Object;Ljava/lang/Object;)V
+     268: goto          139
+     271: aload         5
+     273: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     276: goto          289
+     279: astore        9
+     281: aload         5
+     283: invokevirtual #64                 // Method org/apache/hadoop/hbase/quotas/QuotaRetriever.close:()V
+     286: aload         9
+     288: athrow
+     289: ldc2_w        #61                 // long 2l
+     292: iload         4
+     294: i2l
+     295: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     298: aload_1
+     299: aload_2
+     300: invokestatic  #195                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleRegionServer:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     303: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     308: aload_0
+     309: iconst_0
+     310: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     313: dup
+     314: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     317: aload_2
+     318: invokevirtual #184                // Method org/apache/hadoop/hbase/quotas/QuotaFilter.setRegionServerFilter:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaFilter;
+     321: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     324: return
+    Exception table:
+       from    to  target type
+         132   271   279   any
+         279   281   279   any
+
+  public void testRpcThrottleWhenStartup() throws java.io.IOException, java.lang.InterruptedException;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: iconst_0
+       7: invokeinterface #196,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.switchRpcThrottle:(Z)Z
+      12: pop
+      13: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      16: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      19: invokeinterface #197,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.isRpcThrottleEnabled:()Z
+      24: invokestatic  #198                // Method org/junit/Assert.assertFalse:(Z)V
+      27: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      30: invokevirtual #199                // Method org/apache/hadoop/hbase/HBaseTestingUtility.killMiniHBaseCluster:()V
+      33: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      36: invokevirtual #200                // Method org/apache/hadoop/hbase/HBaseTestingUtility.startMiniHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      39: pop
+      40: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      43: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+      46: invokeinterface #197,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.isRpcThrottleEnabled:()Z
+      51: invokestatic  #198                // Method org/junit/Assert.assertFalse:(Z)V
+      54: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      57: invokevirtual #201                // Method org/apache/hadoop/hbase/HBaseTestingUtility.getHBaseCluster:()Lorg/apache/hadoop/hbase/MiniHBaseCluster;
+      60: invokevirtual #202                // Method org/apache/hadoop/hbase/MiniHBaseCluster.getRegionServerThreads:()Ljava/util/List;
+      63: invokeinterface #203,  1          // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+      68: astore_1
+      69: aload_1
+      70: invokeinterface #39,  1           // InterfaceMethod java/util/Iterator.hasNext:()Z
+      75: ifeq          106
+      78: aload_1
+      79: invokeinterface #40,  1           // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      84: checkcast     #204                // class org/apache/hadoop/hbase/util/JVMClusterUtil$RegionServerThread
+      87: astore_2
+      88: aload_2
+      89: invokevirtual #205                // Method org/apache/hadoop/hbase/util/JVMClusterUtil$RegionServerThread.getRegionServer:()Lorg/apache/hadoop/hbase/regionserver/HRegionServer;
+      92: invokevirtual #92                 // Method org/apache/hadoop/hbase/regionserver/HRegionServer.getRegionServerRpcQuotaManager:()Lorg/apache/hadoop/hbase/quotas/RegionServerRpcQuotaManager;
+      95: astore_3
+      96: aload_3
+      97: invokevirtual #206                // Method org/apache/hadoop/hbase/quotas/RegionServerRpcQuotaManager.isRpcThrottleEnabled:()Z
+     100: invokestatic  #198                // Method org/junit/Assert.assertFalse:(Z)V
+     103: goto          69
+     106: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     109: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     112: iconst_1
+     113: invokeinterface #196,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.switchRpcThrottle:(Z)Z
+     118: pop
+     119: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+     122: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+     125: invokeinterface #197,  1          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.isRpcThrottleEnabled:()Z
+     130: invokestatic  #194                // Method org/junit/Assert.assertTrue:(Z)V
+     133: return
+
+  public void testSwitchRpcThrottle() throws java.io.IOException;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: aload_0
+       8: aload_1
+       9: iconst_1
+      10: iconst_1
+      11: invokespecial #207                // Method testSwitchRpcThrottle:(Lorg/apache/hadoop/hbase/client/Admin;ZZ)V
+      14: aload_0
+      15: aload_1
+      16: iconst_1
+      17: iconst_0
+      18: invokespecial #207                // Method testSwitchRpcThrottle:(Lorg/apache/hadoop/hbase/client/Admin;ZZ)V
+      21: aload_0
+      22: aload_1
+      23: iconst_0
+      24: iconst_0
+      25: invokespecial #207                // Method testSwitchRpcThrottle:(Lorg/apache/hadoop/hbase/client/Admin;ZZ)V
+      28: aload_0
+      29: aload_1
+      30: iconst_0
+      31: iconst_1
+      32: invokespecial #207                // Method testSwitchRpcThrottle:(Lorg/apache/hadoop/hbase/client/Admin;ZZ)V
+      35: return
+
+  public void testSwitchExceedThrottleQuota() throws java.io.IOException;
+    Code:
+       0: ldc           #183                // String all
+       2: astore_1
+       3: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       6: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       9: astore_2
+      10: aload_2
+      11: iconst_1
+      12: invokeinterface #208,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.exceedThrottleQuotaSwitch:(Z)Z
+      17: pop
+      18: ldc           #209                // String should not come here, because can't enable exceed throttle quota if there is no region server quota
+      20: invokestatic  #50                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+      23: goto          38
+      26: astore_3
+      27: getstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+      30: ldc           #210                // String Expected exception
+      32: aload_3
+      33: invokeinterface #211,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      38: aload_2
+      39: aload_1
+      40: getstatic     #33                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.WRITE_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      43: ldc2_w        #212                // long 100l
+      46: getstatic     #86                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+      49: invokestatic  #187                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleRegionServer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      52: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      57: aload_2
+      58: iconst_1
+      59: invokeinterface #208,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.exceedThrottleQuotaSwitch:(Z)Z
+      64: pop
+      65: ldc           #214                // String should not come here, because can't enable exceed throttle quota if there is no read region server quota
+      67: invokestatic  #50                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+      70: goto          85
+      73: astore_3
+      74: getstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+      77: ldc           #210                // String Expected exception
+      79: aload_3
+      80: invokeinterface #211,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+      85: aload_2
+      86: aload_1
+      87: getstatic     #27                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.READ_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      90: ldc2_w        #188                // long 20l
+      93: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      96: invokestatic  #187                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleRegionServer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      99: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     104: aload_2
+     105: iconst_1
+     106: invokeinterface #208,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.exceedThrottleQuotaSwitch:(Z)Z
+     111: pop
+     112: ldc           #215                // String should not come here, because can't enable exceed throttle quota because not all region server quota are in seconds time unit
+     114: invokestatic  #50                 // Method org/junit/Assert.fail:(Ljava/lang/String;)V
+     117: goto          132
+     120: astore_3
+     121: getstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+     124: ldc           #210                // String Expected exception
+     126: aload_3
+     127: invokeinterface #211,  3          // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;Ljava/lang/Throwable;)V
+     132: aload_2
+     133: aload_1
+     134: getstatic     #27                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.READ_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     137: ldc2_w        #188                // long 20l
+     140: getstatic     #86                 // Field java/util/concurrent/TimeUnit.SECONDS:Ljava/util/concurrent/TimeUnit;
+     143: invokestatic  #187                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleRegionServer:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     146: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     151: aload_2
+     152: iconst_1
+     153: invokeinterface #208,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.exceedThrottleQuotaSwitch:(Z)Z
+     158: invokestatic  #198                // Method org/junit/Assert.assertFalse:(Z)V
+     161: aload_2
+     162: iconst_1
+     163: invokeinterface #208,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.exceedThrottleQuotaSwitch:(Z)Z
+     168: invokestatic  #194                // Method org/junit/Assert.assertTrue:(Z)V
+     171: aload_2
+     172: iconst_0
+     173: invokeinterface #208,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.exceedThrottleQuotaSwitch:(Z)Z
+     178: invokestatic  #194                // Method org/junit/Assert.assertTrue:(Z)V
+     181: aload_2
+     182: iconst_0
+     183: invokeinterface #208,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.exceedThrottleQuotaSwitch:(Z)Z
+     188: invokestatic  #198                // Method org/junit/Assert.assertFalse:(Z)V
+     191: ldc2_w        #61                 // long 2l
+     194: aload_2
+     195: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+     198: dup
+     199: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+     202: invokeinterface #216,  2          // InterfaceMethod org/apache/hadoop/hbase/client/Admin.getQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaFilter;)Ljava/util/List;
+     207: invokeinterface #217,  1          // InterfaceMethod java/util/List.size:()I
+     212: i2l
+     213: invokestatic  #63                 // Method org/junit/Assert.assertEquals:(JJ)V
+     216: aload_2
+     217: aload_1
+     218: invokestatic  #195                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleRegionServer:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     221: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     226: return
+    Exception table:
+       from    to  target type
+          10    23    26   Class java/io/IOException
+          57    70    73   Class java/io/IOException
+         104   117   120   Class java/io/IOException
+
+  public void testQuotaScope() throws java.lang.Exception;
+    Code:
+       0: getstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+       3: invokevirtual #19                 // Method org/apache/hadoop/hbase/HBaseTestingUtility.getAdmin:()Lorg/apache/hadoop/hbase/client/Admin;
+       6: astore_1
+       7: ldc           #218                // String user1
+       9: astore_2
+      10: ldc           #219                // String testQuotaScope_ns
+      12: astore_3
+      13: ldc           #220                // String testQuotaScope
+      15: invokestatic  #80                 // Method org/apache/hadoop/hbase/TableName.valueOf:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/TableName;
+      18: astore        4
+      20: new           #128                // class org/apache/hadoop/hbase/quotas/QuotaFilter
+      23: dup
+      24: invokespecial #129                // Method org/apache/hadoop/hbase/quotas/QuotaFilter."<init>":()V
+      27: astore        5
+      29: aload_1
+      30: aload_3
+      31: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      34: ldc2_w        #185                // long 10l
+      37: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      40: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+      43: invokestatic  #222                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleNamespace:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      46: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      51: aload_0
+      52: iconst_1
+      53: aload         5
+      55: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+      58: aload_0
+      59: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      62: ldc2_w        #185                // long 10l
+      65: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      68: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+      71: invokespecial #223                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)V
+      74: aload_1
+      75: aload_3
+      76: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+      79: ldc2_w        #185                // long 10l
+      82: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+      85: getstatic     #224                // Field org/apache/hadoop/hbase/quotas/QuotaScope.MACHINE:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+      88: invokestatic  #222                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleNamespace:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+      91: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+      96: aload_0
+      97: iconst_1
+      98: aload         5
+     100: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     103: aload_0
+     104: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     107: ldc2_w        #185                // long 10l
+     110: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     113: getstatic     #224                // Field org/apache/hadoop/hbase/quotas/QuotaScope.MACHINE:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     116: invokespecial #223                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)V
+     119: aload_1
+     120: aload_3
+     121: invokestatic  #143                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleNamespace:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     124: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     129: aload_0
+     130: iconst_0
+     131: aload         5
+     133: invokespecial #68                 // Method assertNumResults:(ILorg/apache/hadoop/hbase/quotas/QuotaFilter;)V
+     136: aload_1
+     137: aload         4
+     139: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     142: ldc2_w        #185                // long 10l
+     145: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     148: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     151: invokestatic  #225                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleTable:(Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     154: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     159: aload_0
+     160: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     163: ldc2_w        #185                // long 10l
+     166: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     169: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     172: invokespecial #223                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)V
+     175: aload_1
+     176: aload         4
+     178: invokestatic  #142                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleTable:(Lorg/apache/hadoop/hbase/TableName;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     181: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     186: aload_1
+     187: aload_2
+     188: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     191: ldc2_w        #185                // long 10l
+     194: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     197: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     200: invokestatic  #226                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     203: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     208: aload_0
+     209: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     212: ldc2_w        #185                // long 10l
+     215: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     218: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     221: invokespecial #223                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)V
+     224: aload_1
+     225: aload_2
+     226: invokestatic  #67                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     229: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     234: aload_1
+     235: aload_2
+     236: aload         4
+     238: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     241: ldc2_w        #185                // long 10l
+     244: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     247: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     250: invokestatic  #227                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Lorg/apache/hadoop/hbase/TableName;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     253: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     258: aload_0
+     259: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     262: ldc2_w        #185                // long 10l
+     265: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     268: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     271: invokespecial #223                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)V
+     274: aload_1
+     275: aload_2
+     276: invokestatic  #67                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     279: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     284: aload_1
+     285: aload_2
+     286: aload_3
+     287: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     290: ldc2_w        #185                // long 10l
+     293: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     296: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     299: invokestatic  #228                // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.throttleUser:(Ljava/lang/String;Ljava/lang/String;Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     302: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     307: aload_0
+     308: getstatic     #69                 // Field org/apache/hadoop/hbase/quotas/ThrottleType.REQUEST_NUMBER:Lorg/apache/hadoop/hbase/quotas/ThrottleType;
+     311: ldc2_w        #185                // long 10l
+     314: getstatic     #30                 // Field java/util/concurrent/TimeUnit.MINUTES:Ljava/util/concurrent/TimeUnit;
+     317: getstatic     #221                // Field org/apache/hadoop/hbase/quotas/QuotaScope.CLUSTER:Lorg/apache/hadoop/hbase/quotas/QuotaScope;
+     320: invokespecial #223                // Method verifyRecordPresentInQuotaTable:(Lorg/apache/hadoop/hbase/quotas/ThrottleType;JLjava/util/concurrent/TimeUnit;Lorg/apache/hadoop/hbase/quotas/QuotaScope;)V
+     323: aload_1
+     324: aload_2
+     325: invokestatic  #67                 // Method org/apache/hadoop/hbase/quotas/QuotaSettingsFactory.unthrottleUser:(Ljava/lang/String;)Lorg/apache/hadoop/hbase/quotas/QuotaSettings;
+     328: invokeinterface #32,  2           // InterfaceMethod org/apache/hadoop/hbase/client/Admin.setQuota:(Lorg/apache/hadoop/hbase/quotas/QuotaSettings;)V
+     333: return
+
+  static {};
+    Code:
+       0: ldc_w         #283                // class org/apache/hadoop/hbase/quotas/TestQuotaAdmin
+       3: invokestatic  #284                // Method org/apache/hadoop/hbase/HBaseClassTestRule.forClass:(Ljava/lang/Class;)Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       6: putstatic     #285                // Field CLASS_RULE:Lorg/apache/hadoop/hbase/HBaseClassTestRule;
+       9: ldc_w         #283                // class org/apache/hadoop/hbase/quotas/TestQuotaAdmin
+      12: invokestatic  #286                // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+      15: putstatic     #70                 // Field LOG:Lorg/slf4j/Logger;
+      18: new           #287                // class org/apache/hadoop/hbase/HBaseTestingUtility
+      21: dup
+      22: invokespecial #288                // Method org/apache/hadoop/hbase/HBaseTestingUtility."<init>":()V
+      25: putstatic     #2                  // Field TEST_UTIL:Lorg/apache/hadoop/hbase/HBaseTestingUtility;
+      28: return
+}

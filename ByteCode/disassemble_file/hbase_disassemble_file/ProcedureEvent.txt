@@ -1,0 +1,187 @@
+Compiled from "ProcedureEvent.java"
+public class org.apache.hadoop.hbase.procedure2.ProcedureEvent<T> {
+  public org.apache.hadoop.hbase.procedure2.ProcedureEvent(T);
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: aload_0
+       5: iconst_0
+       6: putfield      #2                  // Field ready:Z
+       9: aload_0
+      10: new           #3                  // class org/apache/hadoop/hbase/procedure2/ProcedureDeque
+      13: dup
+      14: invokespecial #4                  // Method org/apache/hadoop/hbase/procedure2/ProcedureDeque."<init>":()V
+      17: putfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+      20: aload_0
+      21: aload_1
+      22: putfield      #6                  // Field object:Ljava/lang/Object;
+      25: return
+
+  public synchronized boolean isReady();
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field ready:Z
+       4: ireturn
+
+  public synchronized boolean suspendIfNotReady(org.apache.hadoop.hbase.procedure2.Procedure);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field ready:Z
+       4: ifne          15
+       7: aload_0
+       8: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+      11: aload_1
+      12: invokevirtual #7                  // Method org/apache/hadoop/hbase/procedure2/ProcedureDeque.addLast:(Ljava/lang/Object;)V
+      15: aload_0
+      16: getfield      #2                  // Field ready:Z
+      19: ifne          26
+      22: iconst_1
+      23: goto          27
+      26: iconst_0
+      27: ireturn
+
+  public synchronized void suspend();
+    Code:
+       0: aload_0
+       1: iconst_0
+       2: putfield      #2                  // Field ready:Z
+       5: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+       8: invokeinterface #9,  1            // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      13: ifeq          46
+      16: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      19: new           #10                 // class java/lang/StringBuilder
+      22: dup
+      23: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      26: ldc           #12                 // String Suspend
+      28: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      31: aload_0
+      32: invokevirtual #14                 // Method toString:()Ljava/lang/String;
+      35: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      38: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      41: invokeinterface #16,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      46: return
+
+  public void wake(org.apache.hadoop.hbase.procedure2.AbstractProcedureScheduler);
+    Code:
+       0: aload_1
+       1: iconst_1
+       2: anewarray     #17                 // class org/apache/hadoop/hbase/procedure2/ProcedureEvent
+       5: dup
+       6: iconst_0
+       7: aload_0
+       8: aastore
+       9: invokevirtual #18                 // Method org/apache/hadoop/hbase/procedure2/AbstractProcedureScheduler.wakeEvents:([Lorg/apache/hadoop/hbase/procedure2/ProcedureEvent;)V
+      12: return
+
+  public synchronized boolean wakeIfSuspended(org.apache.hadoop.hbase.procedure2.AbstractProcedureScheduler, org.apache.hadoop.hbase.procedure2.Procedure<?>);
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+       4: invokevirtual #19                 // Method org/apache/hadoop/hbase/procedure2/ProcedureDeque.stream:()Ljava/util/stream/Stream;
+       7: aload_2
+       8: invokedynamic #20,  0             // InvokeDynamic #0:test:(Lorg/apache/hadoop/hbase/procedure2/Procedure;)Ljava/util/function/Predicate;
+      13: invokeinterface #21,  2           // InterfaceMethod java/util/stream/Stream.anyMatch:(Ljava/util/function/Predicate;)Z
+      18: ifeq          28
+      21: aload_0
+      22: aload_1
+      23: invokevirtual #22                 // Method wake:(Lorg/apache/hadoop/hbase/procedure2/AbstractProcedureScheduler;)V
+      26: iconst_1
+      27: ireturn
+      28: iconst_0
+      29: ireturn
+
+  public static void wakeEvents(org.apache.hadoop.hbase.procedure2.AbstractProcedureScheduler, org.apache.hadoop.hbase.procedure2.ProcedureEvent...);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: invokevirtual #18                 // Method org/apache/hadoop/hbase/procedure2/AbstractProcedureScheduler.wakeEvents:([Lorg/apache/hadoop/hbase/procedure2/ProcedureEvent;)V
+       5: return
+
+  public synchronized void wakeInternal(org.apache.hadoop.hbase.procedure2.AbstractProcedureScheduler);
+    Code:
+       0: aload_0
+       1: getfield      #2                  // Field ready:Z
+       4: ifeq          50
+       7: aload_0
+       8: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+      11: invokevirtual #23                 // Method org/apache/hadoop/hbase/procedure2/ProcedureDeque.isEmpty:()Z
+      14: ifne          50
+      17: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      20: new           #10                 // class java/lang/StringBuilder
+      23: dup
+      24: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      27: ldc           #24                 // String Found procedures suspended in a ready event! Size=
+      29: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      32: aload_0
+      33: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+      36: invokevirtual #25                 // Method org/apache/hadoop/hbase/procedure2/ProcedureDeque.size:()I
+      39: invokevirtual #26                 // Method java/lang/StringBuilder.append:(I)Ljava/lang/StringBuilder;
+      42: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      45: invokeinterface #27,  2           // InterfaceMethod org/slf4j/Logger.warn:(Ljava/lang/String;)V
+      50: aload_0
+      51: iconst_1
+      52: putfield      #2                  // Field ready:Z
+      55: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      58: invokeinterface #9,  1            // InterfaceMethod org/slf4j/Logger.isTraceEnabled:()Z
+      63: ifeq          96
+      66: getstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+      69: new           #10                 // class java/lang/StringBuilder
+      72: dup
+      73: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+      76: ldc           #28                 // String Unsuspend
+      78: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      81: aload_0
+      82: invokevirtual #14                 // Method toString:()Ljava/lang/String;
+      85: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      88: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      91: invokeinterface #16,  2           // InterfaceMethod org/slf4j/Logger.trace:(Ljava/lang/String;)V
+      96: aload_1
+      97: aload_0
+      98: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+     101: invokevirtual #29                 // Method org/apache/hadoop/hbase/procedure2/ProcedureDeque.descendingIterator:()Ljava/util/Iterator;
+     104: invokevirtual #30                 // Method org/apache/hadoop/hbase/procedure2/AbstractProcedureScheduler.addFront:(Ljava/util/Iterator;)V
+     107: aload_0
+     108: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+     111: invokevirtual #31                 // Method org/apache/hadoop/hbase/procedure2/ProcedureDeque.clear:()V
+     114: return
+
+  public org.apache.hadoop.hbase.procedure2.ProcedureDeque getSuspendedProcedures();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+       4: areturn
+
+  public java.lang.String toString();
+    Code:
+       0: new           #10                 // class java/lang/StringBuilder
+       3: dup
+       4: invokespecial #11                 // Method java/lang/StringBuilder."<init>":()V
+       7: aload_0
+       8: invokevirtual #32                 // Method java/lang/Object.getClass:()Ljava/lang/Class;
+      11: invokevirtual #33                 // Method java/lang/Class.getSimpleName:()Ljava/lang/String;
+      14: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      17: ldc           #34                 // String  for
+      19: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      22: aload_0
+      23: getfield      #6                  // Field object:Ljava/lang/Object;
+      26: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      29: ldc           #36                 // String , ready=
+      31: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      34: aload_0
+      35: invokevirtual #37                 // Method isReady:()Z
+      38: invokevirtual #38                 // Method java/lang/StringBuilder.append:(Z)Ljava/lang/StringBuilder;
+      41: ldc           #39                 // String ,
+      43: invokevirtual #13                 // Method java/lang/StringBuilder.append:(Ljava/lang/String;)Ljava/lang/StringBuilder;
+      46: aload_0
+      47: getfield      #5                  // Field suspendedProcedures:Lorg/apache/hadoop/hbase/procedure2/ProcedureDeque;
+      50: invokevirtual #35                 // Method java/lang/StringBuilder.append:(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+      53: invokevirtual #15                 // Method java/lang/StringBuilder.toString:()Ljava/lang/String;
+      56: areturn
+
+  static {};
+    Code:
+       0: ldc           #17                 // class org/apache/hadoop/hbase/procedure2/ProcedureEvent
+       2: invokestatic  #41                 // Method org/slf4j/LoggerFactory.getLogger:(Ljava/lang/Class;)Lorg/slf4j/Logger;
+       5: putstatic     #8                  // Field LOG:Lorg/slf4j/Logger;
+       8: return
+}
