@@ -45,7 +45,7 @@ int main(){
 //	fp_r = fopen("input/Sample/Sample-real.txt","r");
 //	fp_w = fopen("output/Sample/Sample-real.json", "w");
 	fp_r = fopen("../input/Logging/hbase-code.txt","r");
-	fp_w = fopen("../output/Logging/hbase-code.json", "w");
+	fp_w = fopen("../output/Logging/hbase-code2.json", "w");
 
 
 	if(fp_r == NULL || fp_w == NULL){
