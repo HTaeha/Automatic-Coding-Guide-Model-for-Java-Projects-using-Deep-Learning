@@ -96,6 +96,8 @@ test_path = [0 for _ in range(input_file_num)]
 train_method = [0 for _ in range(input_file_num)]
 test_method = [0 for _ in range(input_file_num)]
 
+max_sentence_len = [0 for _ in range(input_file_num)]
+
 X_train = [0 for _ in range(input_file_num)]
 X_test = [0 for _ in range(input_file_num)]
 
@@ -124,12 +126,12 @@ for r in range(input_file_num):
 
     pr.print_the_number_of_data_split_document_size(train_data[r]+test_data[r])
 
-    max_sentence_len = pr.check_max_sentence_len(train_data[r] + test_data[r], train_path[r]+test_path[r], train_method[r]+test_method[r])
-    print(max_sentence_len)
+    max_sentence_len[r] = pr.check_max_sentence_len(train_data[r] + test_data[r], train_path[r]+test_path[r], train_method[r]+test_method[r])
+    print(max_sentence_len[r])
 
     # Make model input.
-    X_train[r], Y_train = pr.create_deep_learning_input_data(train_data[r], train_label[r], max_sentence_len, embed_size_word2vec, vocabulary, wordvec_model)
-    X_test[r], Y_test = pr.create_deep_learning_input_data(test_data[r], test_label[r], max_sentence_len, embed_size_word2vec, vocabulary, wordvec_model)
+    X_train[r], Y_train = pr.create_deep_learning_input_data(train_data[r], train_label[r], max_sentence_len[r], embed_size_word2vec, vocabulary, wordvec_model)
+    X_test[r], Y_test = pr.create_deep_learning_input_data(test_data[r], test_label[r], max_sentence_len[r], embed_size_word2vec, vocabulary, wordvec_model)
 
 '''
 # Save input data to json format.
@@ -141,13 +143,13 @@ pr.make_input_merge_data_json(input_test_data_path, label_name, merge_test_data,
 
 # Construct the deep learning model
 if input_file_num == 1:
-    model = md.bidirectional_RNN(max_sentence_len, embed_size_word2vec, LSTM_output_size)
+    model = md.bidirectional_RNN(max_sentence_len[0], embed_size_word2vec, LSTM_output_size)
 elif input_file_num == 2:
-    model = md.merge_2_bidirectional_RNN(max_sentence_len, max_sentence_len2, embed_size_word2vec, LSTM_output_size)
+    model = md.merge_2_bidirectional_RNN(max_sentence_len[0], max_sentence_len[1], embed_size_word2vec, LSTM_output_size)
 elif input_file_num == 3:
-    model = md.merge_3_bidirectional_RNN(max_sentence_len, max_sentence_len2, max_sentence_len3,  embed_size_word2vec, LSTM_output_size)
+    model = md.merge_3_bidirectional_RNN(max_sentence_len[0], max_sentence_len[1], max_sentence_len[2],  embed_size_word2vec, LSTM_output_size)
 elif input_file_num == 4:
-    model = md.merge_4_bidirectional_RNN(max_sentence_len, max_sentence_len2, max_sentence_len3, max_sentence_len4, embed_size_word2vec, LSTM_output_size)
+    model = md.merge_4_bidirectional_RNN(max_sentence_len[0], max_sentence_len[1], max_sentence_len[2], max_sentence_len[3], embed_size_word2vec, LSTM_output_size)
 print("Count model parameter.")
 model.count_params()
 print("Get a short summary of each layer dimensions and parameters.")
