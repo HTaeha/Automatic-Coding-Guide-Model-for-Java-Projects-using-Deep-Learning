@@ -1,5 +1,5 @@
 #!/bin/bash
-input_data=hbase
+input_data=guava
 test_rate=1
 nth_fold=5
 seed=1398

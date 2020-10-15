@@ -1,8 +1,8 @@
 typedef struct TreeNode TreeNode;
 typedef struct Tree Tree;
 
-#define MAX_QUEUE 1000
-#define MAX_STACK 1000
+#define MAX_QUEUE 10000
+#define MAX_STACK 10000
 
 typedef enum{false, true} bool;
 
