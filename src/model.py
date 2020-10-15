@@ -45,7 +45,7 @@ def stacking_merge_2_bidirectional_RNN(max_sentence_len, max_sentence_len2, embe
     layer4 = Dense(64, activation='relu')(layer3)
     output = Dense(2, activation='softmax', name='output')(layer4)
 
-    model = Model(input=[input1, input2], output=output)            
+    model = Model(input1, input2], output)            
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
@@ -92,7 +92,7 @@ def stacking_merge_3_bidirectional_RNN(max_sentence_len, max_sentence_len2, max_
     layer6 = Dense(64, activation='relu')(layer5)
     output = Dense(2, activation='softmax', name='output')(layer6)
 
-    model = Model(input=[input1, input2, input3], output=output) 
+    model = Model([input1, input2, input3], output) 
     rms = RMSprop(lr=0.001, rho=0.9, epsilon=1e-08)
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
@@ -149,7 +149,7 @@ def stacking_merge_4_bidirectional_RNN(max_sentence_len,max_sentence_len2, max_s
     layer6 = Dense(128, activation='relu')(layer5)
     output = Dense(2, activation='softmax', name='output')(layer6)
 
-    model = Model(input=[input1, input2, input3, input4], output=output) 
+    model = Model([input1, input2, input3, input4], output) 
     rms = RMSprop(lr=0.001, rho=0.9, epsilon=1e-08)
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
@@ -200,7 +200,7 @@ def merge_2_bidirectional_RNN(max_sentence_len, max_sentence_len2, embed_size_wo
     layer2 = Dense(64, activation='relu')(layer1)
     output = Dense(2, activation='softmax', name='output')(layer2)
 
-    model = Model(input=[input1, input2], output=output)            
+    model = Model([input1, input2], output)            
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
@@ -245,7 +245,7 @@ def merge_3_bidirectional_RNN(max_sentence_len, max_sentence_len2, max_sentence_
     layer4 = Dense(64, activation='relu')(layer3)
     output = Dense(2, activation='softmax', name='output')(layer4)
 
-    model = Model(input=[input1, input2, input3], output=output) 
+    model = Model([input1, input2, input3], output) 
     rms = RMSprop(lr=0.001, rho=0.9, epsilon=1e-08)
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
@@ -301,7 +301,7 @@ def merge_4_bidirectional_RNN(max_sentence_len,max_sentence_len2, max_sentence_l
     layer4 = Dense(128, activation='relu')(layer3)
     output = Dense(2, activation='softmax', name='output')(layer4)
 
-    model = Model(input=[input1, input2, input3, input4], output=output) 
+    model = Model([input1, input2, input3, input4], output) 
     rms = RMSprop(lr=0.001, rho=0.9, epsilon=1e-08)
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
