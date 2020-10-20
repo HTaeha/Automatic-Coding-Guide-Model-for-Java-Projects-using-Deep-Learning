@@ -132,7 +132,7 @@ for r in range(input_file_num):
     # Make model input.
     X_train[r], Y_train = pr.create_deep_learning_input_data(train_data[r], train_label[r], max_sentence_len[r], embed_size_word2vec, vocabulary, wordvec_model)
     X_test[r], Y_test = pr.create_deep_learning_input_data(test_data[r], test_label[r], max_sentence_len[r], embed_size_word2vec, vocabulary, wordvec_model)
-
+quit()
 '''
 # Save input data to json format.
 input_train_data_path = "../input_data/train/"+str(test_rate)+"/"+filename+".json"

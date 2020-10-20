@@ -45,7 +45,7 @@ def stacking_merge_2_bidirectional_RNN(max_sentence_len, max_sentence_len2, embe
     layer4 = Dense(64, activation='relu')(layer3)
     output = Dense(2, activation='softmax', name='output')(layer4)
 
-    model = Model(input1, input2], output)            
+    model = Model([input1, input2], output)            
     adam = Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
 
     model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['accuracy'])
