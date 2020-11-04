@@ -1,4 +1,4 @@
-# Deep Learning based Coding Guide on Aspect
+# Automatic Coding Guide Model for Java Projects using Deep Learning
 
 ## License
 
