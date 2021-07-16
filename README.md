@@ -1,5 +1,8 @@
 # Automatic Coding Guide Model for Java Projects using Deep Learning
 
+## Paper
+* [RISS](http://kren.rinfo.kr/search/detail/DetailView.do?p_mat_type=1a0202e37d52c72d&control_no=45556eba0c8ad81bb36097776a77e665)
+
 ## License
 
 This project is licensed under the MIT. Copyright 2020 HTaeha
