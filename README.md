@@ -1,7 +1,7 @@
 # Automatic Coding Guide Model for Java Projects using Deep Learning
 
 ## Paper
-* [DBpia Link](https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE10530023&language=ko_KR#)
+* [Link](https://drive.google.com/file/d/1__ymkvJxYdx19zGOm2Mhz-j4_zMm8UO9/view?usp=sharing)
 
 ## License
 
